@@ -8,6 +8,7 @@ public enum GameState
     Normal,           // สถานะปกติ สามารถเดินและโต้ตอบได้
     RepairingGlue,    // กำลังซ่อมด้วยกาว
     RepairingThread,  // กำลังซ่อมด้วยด้าย
+    Crafting,         // กำลังประดิษฐ์จากกองขยะ
     RopeSwinging,     // กำลังโหนเชือก
     PushingObject,    // กำลังดันของ
     Menu,             // เมนู/หยุดชั่วคราว
@@ -26,12 +27,16 @@ public class GameManager : MonoBehaviour
     [Header("Repair Progress Tracking")]
     public List<RepairProgress> repairProgresses = new List<RepairProgress>();
 
+    [Header("Crafting Progress Tracking")]
+    public List<CraftingProgress> craftingProgresses = new List<CraftingProgress>();
+
     [Header("Debug")]
     public bool showDebugInfo = true;
 
     // Events
     public static System.Action<GameState> OnGameStateChanged;
     public static System.Action<string> OnRepairCompleted;
+    public static System.Action<string> OnCraftingCompleted;
     public static System.Action OnAllRepairsCompleted;
 
     // Singleton
@@ -39,6 +44,7 @@ public class GameManager : MonoBehaviour
 
     private GameState previousState = GameState.Normal;
     private Dictionary<string, RepairProgress> repairDict = new Dictionary<string, RepairProgress>();
+    private Dictionary<string, CraftingProgress> craftingDict = new Dictionary<string, CraftingProgress>();
 
     void Awake()
     {
@@ -59,6 +65,7 @@ public class GameManager : MonoBehaviour
     {
         SetupReferences();
         BuildRepairDictionary();
+        BuildCraftingDictionary();
     }
 
     void Update()
@@ -79,19 +86,14 @@ public class GameManager : MonoBehaviour
             playerController = player.GetComponent<PlayerController>();
     }
 
-    // เพิ่มใน GameManager.cs ในส่วน SetupReferences()
-
     void SetupReferences()
     {
-        // ค้นหาและเชื่อมต่อกับระบบต่างๆ ในเกม
+        // ค้นหาและเชื่อมต่อกับระบบซ่อมตุ๊กตา
         var dollSystems = FindObjectsByType<DollRepairSystem>(FindObjectsSortMode.None);
-
         foreach (var system in dollSystems)
         {
-            // ให้ DollRepairSystem อ้างอิงถึง GameManager
             system.gameManager = this;
 
-            // เพิ่ม RepairProgress ใน List หากยังไม่มี
             string systemId = system.GetRepairId();
             bool found = false;
 
@@ -111,10 +113,40 @@ public class GameManager : MonoBehaviour
                 Debug.Log($"Auto-added repair progress for: {system.repairName}");
             }
         }
+
+        // ค้นหาและเชื่อมต่อกับระบบประดิษฐ์จากขยะ
+        var trashSystems = FindObjectsByType<TrashCraftingSystem>(FindObjectsSortMode.None);
+        foreach (var system in trashSystems)
+        {
+            system.gameManager = this;
+
+            string systemId = system.GetTrashId();
+            bool found = false;
+
+            foreach (var progress in craftingProgresses)
+            {
+                if (progress.trashId == systemId)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                var newProgress = new CraftingProgress(systemId, system.trashName);
+                craftingProgresses.Add(newProgress);
+                Debug.Log($"Auto-added crafting progress for: {system.trashName}");
+            }
+        }
     }
 
-    // เพิ่ม Method ใหม่สำหรับตรวจสอบการซ่อม
     public bool CanInteractWithRepairSystem()
+    {
+        return currentState == GameState.Normal;
+    }
+
+    public bool CanInteractWithCraftingSystem()
     {
         return currentState == GameState.Normal;
     }
@@ -122,6 +154,11 @@ public class GameManager : MonoBehaviour
     public List<DollRepairSystem> GetAllRepairSystems()
     {
         return new List<DollRepairSystem>(FindObjectsByType<DollRepairSystem>(FindObjectsSortMode.None));
+    }
+
+    public List<TrashCraftingSystem> GetAllCraftingSystems()
+    {
+        return new List<TrashCraftingSystem>(FindObjectsByType<TrashCraftingSystem>(FindObjectsSortMode.None));
     }
 
     public DollRepairSystem GetRepairSystemById(string repairId)
@@ -135,6 +172,17 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
+    public TrashCraftingSystem GetCraftingSystemById(string trashId)
+    {
+        var systems = FindObjectsByType<TrashCraftingSystem>(FindObjectsSortMode.None);
+        foreach (var system in systems)
+        {
+            if (system.GetTrashId() == trashId)
+                return system;
+        }
+        return null;
+    }
+
     void BuildRepairDictionary()
     {
         repairDict.Clear();
@@ -143,6 +191,18 @@ public class GameManager : MonoBehaviour
             if (!string.IsNullOrEmpty(progress.repairId))
             {
                 repairDict[progress.repairId] = progress;
+            }
+        }
+    }
+
+    void BuildCraftingDictionary()
+    {
+        craftingDict.Clear();
+        foreach (var progress in craftingProgresses)
+        {
+            if (!string.IsNullOrEmpty(progress.trashId))
+            {
+                craftingDict[progress.trashId] = progress;
             }
         }
     }
@@ -189,6 +249,10 @@ public class GameManager : MonoBehaviour
                 // ออกจากระบบซ่อมได้เฉพาะไป Normal หรือ Menu
                 return targetState == GameState.Normal || targetState == GameState.Menu;
 
+            case GameState.Crafting:
+                // ออกจากระบบประดิษฐ์ได้เฉพาะไป Normal หรือ Menu
+                return targetState == GameState.Normal || targetState == GameState.Menu;
+
             case GameState.RopeSwinging:
                 // ระหว่างโหนสามารถหยุดได้
                 return targetState == GameState.Normal || targetState == GameState.Menu;
@@ -222,6 +286,7 @@ public class GameManager : MonoBehaviour
 
             case GameState.RepairingGlue:
             case GameState.RepairingThread:
+            case GameState.Crafting:
                 EnablePlayerControl(false);
                 break;
 
@@ -285,7 +350,7 @@ public class GameManager : MonoBehaviour
         if (currentState != GameState.Normal) return false;
         if (IsRepairCompleted(repairId)) return false;
 
-        // ตรวจสอบไอเทมที่จำเป็น - เช็คว่ามีพอใช้หรือไม่
+        // ตรวจสอบไอเทมที่จำเป็น
         if (ItemManager.Instance != null)
         {
             ItemManager.ItemType requiredItem = toolType == DollRepairSystem.RepairTool.Glue
@@ -304,7 +369,6 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    // แก้ไข StartRepair - ไม่ใช้ไอเทมที่นี่แล้ว
     public bool StartRepair(string repairId, DollRepairSystem.RepairTool toolType)
     {
         if (!CanStartRepair(repairId, toolType)) return false;
@@ -325,17 +389,13 @@ public class GameManager : MonoBehaviour
             progress.completionTime = Time.time;
             progress.toolUsed = toolType;
 
-            // แจ้งเหตุการณ์
             OnRepairCompleted?.Invoke(repairId);
 
             if (showDebugInfo)
                 Debug.Log($"Repair completed: {repairId} using {toolType}");
         }
 
-        // กลับสู่สถานะปกติ
         ChangeState(GameState.Normal, "Repair completed");
-
-        // ตรวจสอบว่าซ่อมครบทุกตัวแล้วหรือยัง
         CheckAllRepairsCompleted();
     }
 
@@ -374,7 +434,7 @@ public class GameManager : MonoBehaviour
         return completed;
     }
 
-    public void UseItemRepair (string repairId, DollRepairSystem.RepairTool toolType)
+    public void UseItemRepair(string repairId, DollRepairSystem.RepairTool toolType)
     {
         if (ItemManager.Instance != null)
         {
@@ -385,7 +445,6 @@ public class GameManager : MonoBehaviour
             if (!ItemManager.Instance.UseItem(requiredItem))
             {
                 Debug.LogWarning($"Warning: Failed to consume {requiredItem} after repair completion");
-                // ไม่ return เพราะการซ่อมเสร็จแล้ว แค่แจ้งเตือน
             }
             else
             {
@@ -393,6 +452,69 @@ public class GameManager : MonoBehaviour
                     Debug.Log($"Consumed 1 {requiredItem} for completed repair: {repairId}");
             }
         }
+    }
+
+    #endregion
+
+    #region Crafting System Management
+
+    public bool CanStartCrafting(string trashId, TrashCraftingSystem.CraftTool toolType)
+    {
+        // ตรวจสอบสถานะเกม
+        if (currentState != GameState.Normal) return false;
+
+        // ตรวจสอบไอเทมที่จำเป็น
+        if (ItemManager.Instance != null)
+        {
+            ItemManager.ItemType requiredItem = toolType == TrashCraftingSystem.CraftTool.Glue
+                ? ItemManager.ItemType.Glue
+                : ItemManager.ItemType.Thread;
+
+            int itemCount = ItemManager.Instance.GetItemCount(requiredItem);
+            if (itemCount <= 0)
+            {
+                if (showDebugInfo)
+                    Debug.LogWarning($"Cannot start crafting - no {requiredItem} available (count: {itemCount})");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool StartCrafting(string trashId, TrashCraftingSystem.CraftTool toolType)
+    {
+        if (!CanStartCrafting(trashId, toolType)) return false;
+
+        return ChangeState(GameState.Crafting, $"Starting crafting {trashId} with {toolType}");
+    }
+
+    public void CompleteCrafting(string trashId, TrashCraftingSystem.CraftTool toolType)
+    {
+        if (craftingDict.ContainsKey(trashId))
+        {
+            var progress = craftingDict[trashId];
+            progress.totalCrafted++;
+            progress.lastCraftTime = Time.time;
+            progress.lastToolUsed = toolType;
+
+            OnCraftingCompleted?.Invoke(trashId);
+
+            if (showDebugInfo)
+                Debug.Log($"Crafting completed: {trashId} using {toolType} (Total: {progress.totalCrafted})");
+        }
+
+        ChangeState(GameState.Normal, "Crafting completed");
+    }
+
+    public CraftingProgress GetCraftingProgress(string trashId)
+    {
+        return craftingDict.ContainsKey(trashId) ? craftingDict[trashId] : null;
+    }
+
+    public List<CraftingProgress> GetAllCraftingProgresses()
+    {
+        return new List<CraftingProgress>(craftingProgresses);
     }
 
     #endregion
@@ -461,18 +583,23 @@ public class GameManager : MonoBehaviour
 
     void DisplayDebugInfo()
     {
-        // แสดงข้อมูล Debug บน Console หรือ UI
         if (Input.GetKeyDown(KeyCode.F1))
         {
             Debug.Log("=== Game Manager Debug Info ===");
             Debug.Log($"Current State: {currentState}");
             Debug.Log($"Previous State: {previousState}");
             Debug.Log($"Completed Repairs: {GetCompletedRepairs().Count}/{repairProgresses.Count}");
+            Debug.Log($"Total Crafting Sessions: {craftingProgresses.Count}");
 
             foreach (var progress in repairProgresses)
             {
                 string status = progress.isCompleted ? "✓" : "✗";
                 Debug.Log($"{status} {progress.repairId} - {progress.repairName}");
+            }
+
+            foreach (var progress in craftingProgresses)
+            {
+                Debug.Log($"🔨 {progress.trashId} - {progress.trashName}: {progress.totalCrafted} items crafted");
             }
         }
     }
@@ -481,9 +608,16 @@ public class GameManager : MonoBehaviour
     {
         if (!showDebugInfo) return;
 
-        GUILayout.BeginArea(new Rect(10, 10, 300, 200));
+        GUILayout.BeginArea(new Rect(10, 10, 300, 250));
         GUILayout.Label($"Game State: {currentState}", GUI.skin.box);
         GUILayout.Label($"Repairs: {GetCompletedRepairs().Count}/{repairProgresses.Count}", GUI.skin.box);
+
+        int totalCrafted = 0;
+        foreach (var progress in craftingProgresses)
+        {
+            totalCrafted += progress.totalCrafted;
+        }
+        GUILayout.Label($"Items Crafted: {totalCrafted}", GUI.skin.box);
 
         if (GUILayout.Button("Toggle Debug"))
         {
@@ -504,21 +638,40 @@ public class GameManager : MonoBehaviour
 public class RepairProgress
 {
     [Header("Repair Info")]
-    public string repairId;           // ID เฉพาะของการซ่อม
-    public string repairName;         // ชื่อที่แสดงผล
-    public bool isCompleted = false;  // สถานะการเสร็จสิ้น
+    public string repairId;
+    public string repairName;
+    public bool isCompleted = false;
 
     [Header("Progress Details")]
-    public float completionTime;                    // เวลาที่เสร็จสิ้น
-    public DollRepairSystem.RepairTool toolUsed;    // เครื่องมือที่ใช้ซ่อม
+    public float completionTime;
+    public DollRepairSystem.RepairTool toolUsed;
 
     [Header("Requirements (Optional)")]
-    public List<string> prerequisiteRepairs = new List<string>(); // ต้องซ่อมอะไรก่อน
+    public List<string> prerequisiteRepairs = new List<string>();
 
     public RepairProgress(string id, string name)
     {
         repairId = id;
         repairName = name;
+    }
+}
+
+[System.Serializable]
+public class CraftingProgress
+{
+    [Header("Crafting Info")]
+    public string trashId;            // ID เฉพาะของกองขยะ
+    public string trashName;          // ชื่อที่แสดงผล
+    public int totalCrafted = 0;      // จำนวนรวมที่ประดิษฐ์มาแล้ว
+
+    [Header("Progress Details")]
+    public float lastCraftTime;                         // เวลาล่าสุดที่ประดิษฐ์
+    public TrashCraftingSystem.CraftTool lastToolUsed; // เครื่องมือที่ใช้ล่าสุด
+
+    public CraftingProgress(string id, string name)
+    {
+        trashId = id;
+        trashName = name;
     }
 }
 
