@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 3
   tags:
   - Pushable
+  - Box
+  - Enemy
+  - DistractableDoll
+  - FakeDoll
   layers:
   - Default
   - TransparentFX
@@ -17,7 +21,7 @@ TagManager:
   - System
   - Doll
   - Box
-  - 
+  - Enemy
   - 
   - 
   - 

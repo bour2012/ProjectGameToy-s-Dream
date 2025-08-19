@@ -136,11 +136,11 @@ public class PlayerPush : MonoBehaviour
             availableBox = null;
         }
 
-        // Debug Ray
-        if (showDebugRay)
-        {
-            Debug.DrawRay(origin, direction * distanceToPush, raycastColor, 0.1f);
-        }
+        //// Debug Ray
+        //if (showDebugRay)
+        //{
+        //    Debug.DrawRay(origin, direction * distanceToPush, raycastColor, 0.1f);
+        //}
     }
 
     void HandlePushInput()

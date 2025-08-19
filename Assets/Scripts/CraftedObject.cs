@@ -6,6 +6,12 @@ public class CraftedObject : MonoBehaviour
     [Header("Object Status")]
     public bool isPossessed = false;
     public int currentHitPoints = 3;
+    public int maxHitPoints = 3;
+
+    [Header("Possession")]
+    private StationaryEnemy possessionController;
+    private Enemy originalEnemy;
+    private CraftedObject originalDoll;
 
     [Header("Debug")]
     public bool showDebugInfo = true;
@@ -93,15 +99,15 @@ public class CraftedObject : MonoBehaviour
             col.isTrigger = false; // ต้องเป็น solid เพื่อให้ผลักได้
         }
 
-        // ตั้งค่า Tag เพื่อระบุประเภท
-        if (itemData.canBePushed && !itemData.canDistractEnemies)
-        {
-            gameObject.tag = "PushableBox";
-        }
-        else if (itemData.canDistractEnemies)
-        {
-            gameObject.tag = "DistractableDoll";
-        }
+        //// ตั้งค่า Tag เพื่อระบุประเภท
+        //if (itemData.canBePushed && !itemData.canDistractEnemies)
+        //{
+        //    gameObject.tag = "PushableBox";
+        //}
+        //else if (itemData.canDistractEnemies)
+        //{
+        //    gameObject.tag = "DistractableDoll";
+        //}
 
         // เพิ่ม Layer สำหรับ Enemy detection ถ้าเป็นตุ๊กตา
         if (itemData.canDistractEnemies)
@@ -186,6 +192,18 @@ public class CraftedObject : MonoBehaviour
         }
     }
 
+    public void ResetToTrashState()
+    {
+        isPossessed = false;
+        currentHitPoints = 3;
+        // รีเซ็ตสี/เอฟเฟกต์/สถานะอื่น ๆ ตามต้องการ
+        if (spriteRenderer != null)
+            spriteRenderer.color = originalColor;
+        // อื่น ๆ ...
+    }
+
+
+
     #region Possession System (สำหรับตุ๊กตา)
 
     /// <summary>
@@ -207,8 +225,10 @@ public class CraftedObject : MonoBehaviour
         // หยุดกระพริบเตือน
         StopBlinkWarning();
 
+      
+
         // เปลี่ยนคุณสมบัติเมื่อถูกสิง
-        EnablePossessedProperties();
+        //EnablePossessedProperties();
 
         // เอฟเฟกต์การสิง
         if (itemData.spawnEffect)
@@ -236,18 +256,29 @@ public class CraftedObject : MonoBehaviour
         return true;
     }
 
+    public void SetupPossession(Enemy enemy, CraftedObject doll, StationaryEnemy controller)
+    {
+        originalEnemy = enemy;
+        originalDoll = doll;
+        possessionController = controller;
+        isPossessed = true;
+        currentHitPoints = maxHitPoints;
+        //EnablePossessedProperties();
+        if (animator != null)
+            animator.SetBool("IsPossessed", true);
+        if (spriteRenderer != null)
+            spriteRenderer.color = Color.red * 0.8f;
+    }
+
     void EnablePossessedProperties()
     {
-        // เปิดใช้งานการผลักเมื่อถูกสิง (ถ้ายังไม่สามารถผลักได้)
-        if (!itemData.canBePushed && rb != null)
+        if (rb != null)
         {
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.freezeRotation = true;
             rb.mass = 1f;
             rb.linearDamping = 5f;
         }
-
-        // อัปเดต Tag
         gameObject.tag = "PossessedDoll";
     }
 
@@ -257,17 +288,11 @@ public class CraftedObject : MonoBehaviour
     public void TakeDamage(int damage = 1)
     {
         if (!isPossessed) return;
-
         currentHitPoints -= damage;
-
-        // เอฟเฟกต์การโดนโจมตี
-        StartCoroutine(HitFlash());
-
         if (showDebugInfo)
         {
-            Debug.Log($"{itemData.itemName} took {damage} damage. HP: {currentHitPoints}/{itemData.maxHitPoints}");
+            Debug.Log($" took {damage} damage. HP: {currentHitPoints}/{maxHitPoints}");
         }
-
         if (currentHitPoints <= 0)
         {
             ReleasePossession();
@@ -287,19 +312,12 @@ public class CraftedObject : MonoBehaviour
     void ReleasePossession()
     {
         if (!isPossessed) return;
-
         isPossessed = false;
-
-        // ปล่อยปีศาจออกมา (สร้าง effect หรือ spawn ปีศาจใหม่)
-        SpawnReleasedSpirit();
-
-        // กลับสู่สภาพกองขยะ
-        ReturnToTrash();
-
-        if (showDebugInfo)
+        if (possessionController != null)
         {
-            Debug.Log($"{itemData.itemName} possession released!");
+            possessionController.ReleasePossession(transform.position);
         }
+        ReturnToTrash();
     }
 
     void SpawnReleasedSpirit()
@@ -319,32 +337,24 @@ public class CraftedObject : MonoBehaviour
 
     #region Destruction and Return
 
-    void ReturnToTrash()
+    public void ReturnToTrash()
     {
-        // เอฟเฟกต์การทำลาย
         if (itemData.destroyEffect)
         {
             Instantiate(itemData.destroyEffect, transform.position, transform.rotation);
         }
-
-        // เล่นเสียงการทำลาย
         if (itemData.destroySound && parentCraftingSystem != null)
         {
             AudioSource.PlayClipAtPoint(itemData.destroySound, transform.position);
         }
-
-        // แจ้ง TrashCraftingSystem ให้ย้ายกองขยะมาที่ตำแหน่งนี้
         if (parentCraftingSystem != null)
         {
             parentCraftingSystem.OnCraftedObjectDestroyed(transform.position);
         }
-
         if (showDebugInfo)
         {
             Debug.Log($"{itemData.itemName} returned to trash at {transform.position}");
         }
-
-        // ทำลาย GameObject
         Destroy(gameObject);
     }
 
@@ -355,7 +365,6 @@ public class CraftedObject : MonoBehaviour
     {
         // หยุด Coroutines ทั้งหมด
         StopAllCoroutines();
-
         ReturnToTrash();
     }
 
@@ -363,19 +372,15 @@ public class CraftedObject : MonoBehaviour
 
     #region Collision Detection
 
+    // ใน OnTriggerEnter2D ของ CraftedObject.cs
     void OnTriggerEnter2D(Collider2D other)
     {
-        // ตรวจสอบการชนกับปีศาจ (สำหรับการสิง)
         if (itemData.canBePossessed && !isPossessed && other.CompareTag("Enemy"))
         {
-            // ลองให้ปีศาจสิงตุ๊กตา
-            var enemyPossession = other.GetComponent<EnemyPossession>();
-            if (enemyPossession != null && enemyPossession.CanPossess())
+            var enemyPossession = other.GetComponent<StationaryEnemy>();
+            if (enemyPossession != null)
             {
-                if (TryPossess(other.gameObject))
-                {
-                    enemyPossession.PossessObject(this);
-                }
+                enemyPossession.Possess(this);
             }
         }
     }
@@ -387,11 +392,11 @@ public class CraftedObject : MonoBehaviour
                            collision.gameObject.CompareTag("PlayerWeapon")))
         {
             // ตรวจสอบว่าเป็นการโจมตีหรือแค่การสัมผัส
-            float impactForce = collision.relativeVelocity.magnitude;
-            if (impactForce > 3f) // threshold สำหรับการโจมตี
-            {
+           // float impactForce = collision.relativeVelocity.magnitude;
+          //  if (impactForce > 1f) // threshold สำหรับการโจมตี
+           // {
                 TakeDamage(1);
-            }
+           // }
         }
     }
 
@@ -496,55 +501,56 @@ public class CraftedObject : MonoBehaviour
     #endregion
 }
 
-// ========================================
-// Enemy Possession Component (Example)
-// ========================================
+//// ========================================
+//// Enemy Possession Component (Example)
+//// ========================================
 
-/// <summary>
-/// Component สำหรับปีศาจที่สามารถสิงตุ๊กตาได้
-/// </summary>
-public class EnemyPossession : MonoBehaviour
-{
-    [Header("Possession Settings")]
-    public bool canPossessObjects = true;
-    public float possessionRange = 2f;
-    public float possessionCooldown = 5f;
+///// <summary>
+///// Component สำหรับปีศาจที่สามารถสิงตุ๊กตาได้
+///// </summary>
+//public class EnemyPossession : MonoBehaviour
+//{
+//    [Header("Possession Settings")]
+//    public bool canPossessObjects = true;
+//    public float possessionRange = 2f;
+//    public float possessionCooldown = 5f;
 
-    private float lastPossessionTime = 0f;
-    private CraftedObject currentPossessedObject = null;
+//    private float lastPossessionTime = 0f;
+//    private CraftedObject currentPossessedObject = null;
 
-    public bool CanPossess()
-    {
-        return canPossessObjects &&
-               currentPossessedObject == null &&
-               Time.time - lastPossessionTime >= possessionCooldown;
-    }
+//    public bool CanPossess()
+//    {
+//        return canPossessObjects &&
+//               currentPossessedObject == null &&
+//               Time.time - lastPossessionTime >= possessionCooldown;
+//    }
 
-    public void PossessObject(CraftedObject craftedObject)
-    {
-        currentPossessedObject = craftedObject;
-        lastPossessionTime = Time.time;
+//    public void PossessObject(CraftedObject craftedObject)
+//    {
+//        currentPossessedObject = craftedObject;
+//        lastPossessionTime = Time.time;
 
-        // เปลี่ยนพฤติกรรมของปีศาจ (ถ้าต้องการ)
-        // เช่น หยุดเคลื่อนไหว, เปลี่ยน AI state, etc.
+//        // เปลี่ยนพฤติกรรมของปีศาจ (ถ้าต้องการ)
+//        // เช่น หยุดเคลื่อนไหว, เปลี่ยน AI state, etc.
 
-        Debug.Log($"Enemy {gameObject.name} possessed {craftedObject.GetItemData().itemName}");
-    }
+//        Debug.Log($"Enemy {gameObject.name} possessed {craftedObject.GetItemData().itemName}");
+//    }
 
-    public void OnPossessedObjectDestroyed()
-    {
-        currentPossessedObject = null;
+//    public void OnPossessedObjectDestroyed()
+//    {
+//        currentPossessedObject = null;
 
-        // กลับมามีพฤติกรรมปกติ
-        Debug.Log($"Enemy {gameObject.name} lost possessed object");
-    }
+//        // กลับมามีพฤติกรรมปกติ
+//        Debug.Log($"Enemy {gameObject.name} lost possessed object");
+//    }
 
-    void OnDrawGizmosSelected()
-    {
-        if (canPossessObjects)
-        {
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(transform.position, possessionRange);
-        }
-    }
-}
+
+//    void OnDrawGizmosSelected()
+//    {
+//        if (canPossessObjects)
+//        {
+//            Gizmos.color = Color.magenta;
+//            Gizmos.DrawWireSphere(transform.position, possessionRange);
+//        }
+//    }
+//}
