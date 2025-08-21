@@ -496,7 +496,7 @@ public class TrashCraftingSystem : MonoBehaviour
                     if (itemCount > 0)
                     {
                         promptText.text = $"Press E to craft {itemName} with {toolName} [{itemCount}]";
-                        promptText.color = Color.white;
+                        promptText.color = Color.black;
                     }
                     else
                     {

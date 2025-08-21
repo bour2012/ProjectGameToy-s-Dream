@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class StationaryEnemy : Enemy
 {
@@ -20,7 +20,7 @@ public class StationaryEnemy : Enemy
 
     protected override void Update()
     {
-        // ��Ǩ�Ѻ��꡵һ�������� possessRange
+        // ตรวจจับตุ๊กตาปลอม
         Collider2D dollCol = Physics2D.OverlapCircle(transform.position, possessRange, fakeDollLayer);
         if (dollCol != null)
         {
@@ -32,41 +32,71 @@ public class StationaryEnemy : Enemy
             }
         }
 
-        // ���������Ѻ������/Patrol
+        // หาเป้าหมาย
         GameObject target = DetectTarget();
         if (target != null)
         {
-            isChasing = true;
-            isReturningBlocked = false;
-            Chase(target);
-            chaseTimer = 0f;
-        }
-        else if (isChasing)
-        {
-            chaseTimer += Time.deltaTime;
-            if (chaseTimer >= chaseCooldown)
+            // 🔥 เช็กว่ามีกำแพงบังหรือไม่
+            if (HasLineOfSight(target))
             {
-                isChasing = false;
+                isChasing = true;
+                isReturningBlocked = false;
+                Chase(target);
+                chaseTimer = 0f;
+            }
+            else
+            {
+                // ผู้เล่นอยู่หลังกำแพง → เหมือนตรวจไม่เจอ
+                target = null;
             }
         }
-        else
+
+        if (target == null)
         {
-            if (isReturningBlocked)
+            if (isChasing)
             {
-                Vector3 direction = (initialPosition - transform.position).normalized;
-                float distance = Vector3.Distance(transform.position, initialPosition);
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
-                if (hit.collider == null)
+                chaseTimer += Time.deltaTime;
+                if (chaseTimer >= chaseCooldown)
                 {
-                    isReturningBlocked = false;
+                    isChasing = false;
                 }
             }
-
-            if (!isReturningBlocked && Vector3.Distance(transform.position, initialPosition) > 1f)
+            else
             {
-                Patrol();
+                if (isReturningBlocked)
+                {
+                    Vector3 direction = (initialPosition - transform.position).normalized;
+                    float distance = Vector3.Distance(transform.position, initialPosition);
+                    RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
+                    if (hit.collider == null)
+                    {
+                        isReturningBlocked = false;
+                    }
+                }
+
+                if (!isReturningBlocked && Vector3.Distance(transform.position, initialPosition) > 0.1f)
+                {
+                    Patrol();
+                }
             }
         }
+    }
+
+    private bool HasLineOfSight(GameObject target)
+    {
+        Vector2 direction = (target.transform.position - transform.position).normalized;
+        float distance = Vector2.Distance(transform.position, target.transform.position);
+
+        // Raycast ตรวจหาสิ่งกีดขวางระหว่าง Enemy และ Player
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
+
+        if (hit.collider != null)
+        {
+            // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น Player
+            return false;
+        }
+
+        return true; // ไม่มีสิ่งกีดขวาง → มองเห็น
     }
 
     protected override void Patrol()
@@ -74,24 +104,24 @@ public class StationaryEnemy : Enemy
         Vector3 direction = (initialPosition - transform.position).normalized;
         float step = moveSpeed * Time.deltaTime;
 
-        // ��Ǩ�Ѻ��觡մ��ҧ��ҧ˹��
+        // ตรวจจับสิ่งกีดขวางข้างหน้า
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, wallCheckDistance, obstacleLayers);
 
         if (hit.collider == null)
         {
-            // �������觡մ��ҧ �Թ��Ѻ价�����
+            // ไม่มีสิ่งกีดขวาง เดินกลับไปที่เดิม
             transform.position = Vector3.MoveTowards(transform.position, initialPosition, step);
             isReturningBlocked = false;
         }
         else
         {
-            // �͡�ᾧ������觡մ��ҧ �����ش����Ѻ���
+            // เจอกำแพงหรือสิ่งกีดขวาง ให้หยุดอยู่กับที่
             isReturningBlocked = true;
             return;
         }
 
-        // �֧���˹�������� ����׹���
-        if (Vector3.Distance(transform.position, initialPosition) <= 0.05f)
+        // ถึงตำแหน่งเดิมแล้ว ให้ยืนนิ่ง
+        if (Vector3.Distance(transform.position, initialPosition) <= 0.01f)
         {
             transform.position = initialPosition;
             isReturningBlocked = false;
@@ -114,20 +144,20 @@ public class StationaryEnemy : Enemy
     {
         if (currentPossessedDoll != null) return;
 
-        // ��͹ Enemy ��е�꡵����
+        // ซ่อน Enemy และตุ๊กตาเดิม
         originalEnemy = GetComponent<Enemy>();
         originalDoll = doll;
         originalEnemy.gameObject.SetActive(false);
-        originalDoll.gameObject.SetActive(false); // ���͹ �ѧ��� ReturnToTrash
+        originalDoll.gameObject.SetActive(false); // แค่ซ่อน ยังไม่ ReturnToTrash
 
 
-        // ���ҧ��꡵ҷ��١�ԧ
+        // สร้างตุ๊กตาที่ถูกสิง
         currentPossessedDoll = Instantiate(possessedDollPrefab, doll.transform.position, Quaternion.identity);
         var possessedScript = currentPossessedDoll.GetComponent<CraftedObject>();
         possessedScript.SetupPossession(originalEnemy, originalDoll, this);
     }
 
-    // ���¡�ҡ PossessedDollObject ����Ͷ١�����
+    // เรียกจาก PossessedDollObject เมื่อถูกทำลาย
     public void ReleasePossession(Vector3 releasePosition)
     {
 
@@ -145,7 +175,7 @@ public class StationaryEnemy : Enemy
 
         if (originalDoll != null)
         {
-            // ���¡ ReturnToTrash �����
+            // เรียก ReturnToTrash ที่นี่
             originalDoll.ReturnToTrash();
         }
         else

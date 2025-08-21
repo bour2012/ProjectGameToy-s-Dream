@@ -17,6 +17,9 @@ public class PlayerPush : MonoBehaviour
     public AudioClip grabSound;
     public AudioClip releaseSound;
 
+    [Header("Direction Settings")]
+    public bool maintainLastDirection = true; // คงทิศทางสุดท้ายไว้
+
     // Private Variables
     private GameObject targetBox; // กล่องที่กำลังจับ
     private GameObject availableBox; // กล่องที่สามารถจับได้
@@ -24,6 +27,9 @@ public class PlayerPush : MonoBehaviour
     private Rigidbody2D playerRb;
     private SpriteRenderer playerSprite;
     private PlayerController playerController;
+
+    private float lastFacingDirection = 1f; // 1 = right, -1 = left
+    private float lastHorizontalInput = 0f;
 
     // การอ้างอิงระบบอื่นๆ
     private GameManager gameManager;
@@ -43,6 +49,8 @@ public class PlayerPush : MonoBehaviour
 
     void Update()
     {
+
+        UpdateFacingDirection();
         // ตรวจสอบว่าสามารถใช้งานได้หรือไม่
         if (!CanUsePushSystem()) return;
 
@@ -61,6 +69,12 @@ public class PlayerPush : MonoBehaviour
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        // กำหนดทิศทางเริ่มต้นจาก Sprite
+        if (playerSprite != null)
+        {
+            lastFacingDirection = playerSprite.flipX ? -1f : 1f;
+        }
     }
 
     void SetupReferences()
@@ -230,6 +244,8 @@ public class PlayerPush : MonoBehaviour
 
     #endregion
 
+
+
     #region Visual & Audio Feedback
 
     void UpdateVisualFeedback()
@@ -268,7 +284,14 @@ public class PlayerPush : MonoBehaviour
 
     float GetFacingDirection()
     {
-        return playerSprite != null && playerSprite.flipX ? -1f : 1f;
+        if (maintainLastDirection)
+        {
+            return lastFacingDirection;
+        }
+        else
+        {
+            return playerSprite != null && playerSprite.flipX ? -1f : 1f;
+        }
     }
 
     Vector2 GetRaycastOrigin(float facingDir)
@@ -280,6 +303,34 @@ public class PlayerPush : MonoBehaviour
     }
 
     #endregion
+
+
+    #region Direction Management
+
+    void UpdateFacingDirection()
+    {
+        float currentHorizontalInput = Input.GetAxis("Horizontal");
+
+        // อัพเดททิศทางเฉพาะเมื่อมีการกดปุ่ม
+        if (Mathf.Abs(currentHorizontalInput) > 0.01f)
+        {
+            float newDirection = currentHorizontalInput > 0 ? 1f : -1f;
+            lastFacingDirection = newDirection;
+
+            // อัพเดท Sprite flip ทุกครั้งที่กดเดิน
+            if (playerSprite != null)
+            {
+                playerSprite.flipX = lastFacingDirection < 0;
+            }
+        }
+
+        lastHorizontalInput = currentHorizontalInput;
+    }
+
+ 
+
+    #endregion
+
 
     #region Public Methods (สำหรับระบบอื่นเรียกใช้)
 
@@ -304,6 +355,20 @@ public class PlayerPush : MonoBehaviour
     public bool HasAvailablePushTarget()
     {
         return availableBox != null;
+    }
+
+    public float GetLastFacingDirection()
+    {
+        return lastFacingDirection;
+    }
+
+    public void SetFacingDirection(float direction)
+    {
+        lastFacingDirection = direction > 0 ? 1f : -1f;
+        if (playerSprite != null)
+        {
+            playerSprite.flipX = lastFacingDirection < 0;
+        }
     }
 
     #endregion

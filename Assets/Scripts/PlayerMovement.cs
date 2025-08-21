@@ -5,7 +5,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Settings")]
     public float speed = 3f;              // ความเร็วเดินบนพื้น
     public float jumpSpeed = 6f;          // ความแรงกระโดด
-    public float airControl = 0.5f;       // การควบคุมในอากaศ (0-1)
+    public float airControl = 0.5f;       // การควบคุมในอากาศ (0-1)
     public float maxAirSpeed = 2f;        // ความเร็วสูงสุดในอากาศ
     public float swingForce = 4f;         // แรงแกว่ง
 
@@ -17,13 +17,26 @@ public class PlayerMovement : MonoBehaviour
     public float wallCheckDistance = 0.2f; // ระยะตรวจกำแพง
     public float wallCheckRadius = 0.3f;   // รัศมีของ CircleCast สำหรับตรวจกำแพง
 
+    [Header("Ladder Settings")]
+    public LayerMask ladderLayer = 8;     // Layer สำหรับบันได
+    public float climbSpeed = 3f;         // ความเร็วปีนบันได
+    public int playerLayerNumber = 10;    // Layer number ของ Player
+    public int groundLayerNumber = 9;     // Layer number ของ Ground
+    public int wallLayerNumber = 11;      // Layer number ของกำแพง
+
     [Header("Rope Hook")]
     public bool isSwinging;
     public Vector2 ropeHook;
 
+    // Ladder variables
+    private bool isOnLadder = false;
+    private bool isClimbing = false;
+    private GameObject currentLadder;
+
     private SpriteRenderer playerSprite;
     private Rigidbody2D rBody;
     private Animator animator;
+    private Collider2D playerCollider;
     private float jumpInput;
     private float horizontalInput;
     private bool groundCheck;
@@ -35,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
         playerSprite = GetComponent<SpriteRenderer>();
         rBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        playerCollider = GetComponent<Collider2D>();
     }
 
     void Update()
@@ -44,6 +58,39 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
 
         // ตรวจพื้นด้วย Raycast 3 จุด (ซ้าย, กลาง, ขวา)
+        CheckGround();
+
+        // ตรวจกำแพงซ้าย-ขวา
+        CheckWalls();
+
+        // จัดการ Ladder Input
+        HandleLadderInput();
+
+        // Debug Line
+        DrawGroundCheckDebug();
+
+        // Animation
+        UpdateAnimations();
+    }
+
+    void FixedUpdate()
+    {
+        if (isClimbing)
+        {
+            HandleLadderMovement();
+        }
+        else if (isSwinging)
+        {
+            HandleSwingMovement();
+        }
+        else
+        {
+            HandleGroundMovement();
+        }
+    }
+
+    void CheckGround()
+    {
         float halfHeight = playerSprite.bounds.extents.y;
         float halfWidth = playerSprite.bounds.extents.x;
 
@@ -56,37 +103,205 @@ public class PlayerMovement : MonoBehaviour
         bool rightHit = Physics2D.Raycast(rightFoot, Vector2.down, rayLength, groundLayer);
 
         groundCheck = leftHit || midHit || rightHit;
+    }
 
-        // ตรวจกำแพงซ้าย-ขวา
-        CheckWalls();
+    void DrawGroundCheckDebug()
+    {
+        float halfHeight = playerSprite.bounds.extents.y;
+        float halfWidth = playerSprite.bounds.extents.x;
 
-        // Debug Line
+        Vector2 leftFoot = new Vector2(transform.position.x - halfWidth * 0.8f, transform.position.y - halfHeight);
+        Vector2 midFoot = new Vector2(transform.position.x, transform.position.y - halfHeight);
+        Vector2 rightFoot = new Vector2(transform.position.x + halfWidth * 0.8f, transform.position.y - halfHeight);
+
         Debug.DrawRay(leftFoot, Vector2.down * rayLength, Color.red);
         Debug.DrawRay(midFoot, Vector2.down * rayLength, Color.green);
         Debug.DrawRay(rightFoot, Vector2.down * rayLength, Color.blue);
-
-        // Animation เดิน
-        animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
-        animator.SetBool("IsGrounded", groundCheck);
-        playerSprite.flipX = horizontalInput < 0f;
     }
 
-    void FixedUpdate()
+    void UpdateAnimations()
     {
-        if (isSwinging)
+        animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
+        animator.SetBool("IsGrounded", groundCheck);
+        animator.SetBool("IsSwinging", isSwinging);
+        playerSprite.flipX = horizontalInput < 0f;
+
+        // เพิ่ม Animation สำหรับปีนบันได (ถ้ามี)
+        if (animator.parameters.Length > 0)
         {
-            HandleSwingMovement();
+            foreach (var param in animator.parameters)
+            {
+                if (param.name == "IsClimbing")
+                {
+                    animator.SetBool("IsClimbing", isClimbing);
+                    break;
+                }
+            }
+        }
+    }
+
+    #region Ladder System
+    void HandleLadderInput()
+    {
+        // ตรวจสอบการกดปุ่ม W หรือ ลูกศรขึ้น
+        bool climbInput = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
+        bool downInput = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
+
+        if (isOnLadder)
+        {
+            if (climbInput || downInput)
+            {
+                if (!isClimbing)
+                {
+                    StartClimbing();
+                }
+            }
+            else
+            {
+                if (isClimbing)
+                {
+                    StopClimbing();
+                }
+            }
+        }
+    }
+
+    void HandleLadderMovement()
+    {
+        // ปิด gravity ขณะปีน
+        rBody.gravityScale = 0f;
+
+        // การเคลื่อนที่แนวตั้ง
+        float verticalInput = 0f;
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            verticalInput = 1f;
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+            verticalInput = -1f;
+
+        // การเคลื่อนที่แนวนอน (สำหรับออกจากบันได)
+        Vector2 movement = new Vector2(horizontalInput * speed, verticalInput * climbSpeed);
+
+        // ใช้ MovePosition แทน velocity เพื่อทะลุผ่าน collider
+        Vector2 newPosition = rBody.position + movement * Time.fixedDeltaTime;
+        rBody.MovePosition(newPosition);
+
+        // ออกจากบันไดเมื่อเดินไปข้าง
+        if (Mathf.Abs(horizontalInput) > 0.1f)
+        {
+            // ตรวจสอบว่ายังอยู่ในพื้นที่บันไดหรือไม่
+            if (!IsOnLadderArea())
+            {
+                ExitLadder();
+            }
+        }
+    }
+
+    void StartClimbing()
+    {
+        isClimbing = true;
+        rBody.gravityScale = 0f;
+
+        // ปิดการชนกับพื้นชั้นบนขณะปีนบันได
+        Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, true);
+
+        // เปลี่ยน Collider เป็น Trigger ชั่วคราว
+        if (playerCollider != null)
+        {
+            playerCollider.isTrigger = true;
+        }
+    }
+
+    void StopClimbing()
+    {
+        isClimbing = false;
+        rBody.gravityScale = 1f;
+
+        // เปิดการชนกับพื้นกลับมา
+        Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
+
+        // เปลี่ยน Collider กลับเป็นปกติ
+        if (playerCollider != null)
+        {
+            playerCollider.isTrigger = false;
+        }
+    }
+
+    void ExitLadder()
+    {
+        isOnLadder = false;
+        isClimbing = false;
+        currentLadder = null;
+        rBody.gravityScale = 1f;
+
+        // เปิดการชนกับพื้นกลับมาเมื่ออยู่บนพื้น
+        if (groundCheck)
+        {
+            Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
+            if (wallLayerNumber > 0)
+            {
+                Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
+            }
         }
         else
         {
-            HandleGroundMovement();
+            // รอจนกว่าจะแตะพื้นก่อนเปิด collision กลับมา
+            Invoke("EnableGroundCollision", 0.1f);
+        }
+
+        // เปลี่ยน Collider กลับเป็นปกติ
+        if (playerCollider != null)
+        {
+            playerCollider.isTrigger = false;
         }
     }
 
+    void EnableGroundCollision()
+    {
+        Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
+        if (wallLayerNumber > 0)
+        {
+            Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
+        }
+    }
+
+    bool IsOnLadderArea()
+    {
+        // ตรวจสอบว่ายังอยู่ในพื้นที่บันไดหรือไม่
+        Collider2D ladderCollider = Physics2D.OverlapBox(
+            transform.position,
+            playerCollider.bounds.size,
+            0f,
+            ladderLayer
+        );
+
+        return ladderCollider != null;
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (((1 << other.gameObject.layer) & ladderLayer) != 0)
+        {
+            isOnLadder = true;
+            currentLadder = other.gameObject;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject == currentLadder)
+        {
+            // ออกจากบันไดเมื่อไม่ได้ปีนอยู่
+            if (!isClimbing)
+            {
+                ExitLadder();
+            }
+        }
+    }
+    #endregion
+
+    #region Original Movement System
     void HandleSwingMovement()
     {
-        animator.SetBool("IsSwinging", true);
-
         if (horizontalInput != 0)
         {
             var playerToHookDir = (ropeHook - (Vector2)transform.position).normalized;
@@ -104,8 +319,6 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleGroundMovement()
     {
-        animator.SetBool("IsSwinging", false);
-
         if (groundCheck)
         {
             // บนพื้น: เดินได้เต็มที่
@@ -230,4 +443,5 @@ public class PlayerMovement : MonoBehaviour
             prevPoint = newPoint;
         }
     }
+    #endregion
 }
