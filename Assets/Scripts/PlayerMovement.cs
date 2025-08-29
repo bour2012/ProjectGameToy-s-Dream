@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
     private bool hitWallLeft;    // ชนกำแพงซ้าย
     private bool hitWallRight;   // ชนกำแพงขวา
 
-    void Awake()
+     void Awake()
     {
         playerSprite = GetComponent<SpriteRenderer>();
         rBody = GetComponent<Rigidbody2D>();
@@ -122,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
     void UpdateAnimations()
     {
         animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
-        animator.SetBool("IsGrounded", groundCheck);
+        //animator.SetBool("IsGrounded", groundCheck);
         animator.SetBool("IsSwinging", isSwinging);
         playerSprite.flipX = horizontalInput < 0f;
 

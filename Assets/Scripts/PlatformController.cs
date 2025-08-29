@@ -19,9 +19,16 @@ public class PlatformController : MonoBehaviour
     {
         if (isRotationMode)
         {
-            // กำหนดค่า rotation เริ่มต้นให้กับ platform
             startRotation = platform.eulerAngles.z;
             currentRotation = startRotation;
+        }
+        else
+        {
+            // ถ้าไม่ได้ตั้งค่า downPosition ใน Inspector ให้ใช้ตำแหน่งปัจจุบัน
+            if (Mathf.Approximately(downPosition.x, 0f) && Mathf.Approximately(downPosition.y, 0f) && Mathf.Approximately(downPosition.z, 0f))
+            {
+                downPosition = platform.position;
+            }
         }
     }
 

@@ -1,6 +1,8 @@
+// MovementBase.cs
+using System.Collections;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour, ISlowable
 {
     [Header("Basic Stats")]
     public string enemyName;
@@ -12,6 +14,13 @@ public class Enemy : MonoBehaviour
     protected float currentHealth;
     protected Vector3 initialPosition;
     protected bool isChasing;
+    private float originalSpeed;
+    private Coroutine slowRoutine;
+
+    protected virtual void Awake()
+    {
+        originalSpeed = moveSpeed;
+    }
 
     protected virtual void Start()
     {
@@ -22,6 +31,20 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         if (!isChasing) Patrol();
+    }
+
+
+    public virtual void ApplySlow(float slowAmount, float duration)
+    {
+        if (slowRoutine != null) StopCoroutine(slowRoutine);
+        slowRoutine = StartCoroutine(SlowRoutine(slowAmount, duration));
+    }
+
+    private IEnumerator SlowRoutine(float slowAmount, float duration)
+    {
+        moveSpeed = originalSpeed * slowAmount;
+        yield return new WaitForSeconds(duration);
+        moveSpeed = originalSpeed;
     }
 
     public virtual void TakeDamage(float damage)

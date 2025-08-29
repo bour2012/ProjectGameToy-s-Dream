@@ -29,6 +29,9 @@ public class Rope : MonoBehaviour
     private bool distanceSet;
     private bool wasSwingingLastFrame = false;
 
+    // Integration with GlueShooting
+    private GlueShooting glueShootingScript;
+
     void Awake()
     {
         // Initialize components
@@ -36,6 +39,9 @@ public class Rope : MonoBehaviour
         playerPosition = transform.position;
         ropeHingeAnchorRb = ropeHingeAnchor.GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
+
+        // หา GlueShooting script
+        glueShootingScript = GetComponent<GlueShooting>();
     }
 
     void Update()
@@ -44,6 +50,20 @@ public class Rope : MonoBehaviour
         if (!CanUseRope())
         {
             // หากไม่สามารถใช้เชือกได้ และกำลังโหนอยู่ ให้รีเซ็ต
+            if (ropeAttached)
+            {
+                ResetRope();
+            }
+            return;
+        }
+
+        // ตรวจสอบว่าเลือกใช้ Thread หรือไม่
+        bool usingThread = (glueShootingScript != null &&
+                           glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Thread);
+
+        if (!usingThread)
+        {
+            // ถ้าไม่ได้เลือก Thread และกำลังโหนอยู่ ให้รีเซ็ต
             if (ropeAttached)
             {
                 ResetRope();
@@ -123,69 +143,6 @@ public class Rope : MonoBehaviour
     /// <summary>
     /// ตรวจสอบว่าสามารถใช้เชือกได้หรือไม่ตามสถานะของ GameManager และไอเทม
     /// </summary>
-    private bool CanUseRope()
-    {
-        if (!respectGameManagerState) return true;
-
-        if (GameManager.Instance == null) return true;
-
-        // ตรวจสอบสถานะเกม
-        GameState currentState = GameManager.Instance.currentState;
-        bool stateAllowed = currentState == GameState.Normal || currentState == GameState.RopeSwinging;
-
-        if (!stateAllowed) return false;
-
-        // ตรวจสอบไอเทม Thread (ใช้ร่วมกันระหว่างซ่อมและโหนเชือก)
-        if (ItemManager.Instance != null)
-        {
-            bool hasThread = ItemManager.Instance.HasItem(ItemManager.ItemType.Thread);
-            if (!hasThread && !ropeAttached) // ถ้าไม่มีด้ายและยังไม่ได้โหนอยู่
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// แจ้ง GameManager ว่าเริ่มโหนเชือกแล้ว
-    /// </summary>
-    private void NotifySwingingStart()
-    {
-        if (!respectGameManagerState || GameManager.Instance == null) return;
-
-        bool success = GameManager.Instance.StartRopeSwinging();
-
-        if (!success)
-        {
-            Debug.LogWarning("Failed to start rope swinging - GameManager rejected state change");
-            // หากไม่สามารถเปลี่ยนสถานะได้ ให้รีเซ็ตเชือก
-            ResetRope();
-        }
-    }
-
-    /// <summary>
-    /// แจ้ง GameManager ว่าหยุดโหนเชือกแล้ว
-    /// </summary>
-    private void NotifySwingingEnd()
-    {
-        if (!respectGameManagerState || GameManager.Instance == null) return;
-
-        GameManager.Instance.EndRopeSwinging();
-    }
-
-    /// <summary>
-    /// ตรวจสอบว่าสามารถเริ่มโหนเชือกใหม่ได้หรือไม่
-    /// </summary>
-    private bool CanStartSwinging()
-    {
-        if (!respectGameManagerState) return true;
-
-        if (GameManager.Instance == null) return true;
-
-        return GameManager.Instance.currentState == GameState.Normal;
-    }
 
     #endregion
 
@@ -211,10 +168,16 @@ public class Rope : MonoBehaviour
 
     private void HandleInput(Vector2 aimDirection)
     {
-        // คลิกซ้าย - ยิงเชือก
+        // คลิกซ้าย - ยิงเชือก (เฉพาะเมื่อเลือก Thread)
         if (Input.GetMouseButton(0))
         {
             if (ropeAttached) return;
+
+            // ตรวจสอบว่าเลือกใช้ Thread หรือไม่
+            bool usingThread = (glueShootingScript != null &&
+                               glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Thread);
+
+            if (!usingThread) return;
 
             // ตรวจสอบว่าสามารถเริ่มโหนได้หรือไม่
             if (!CanStartSwinging()) return;
@@ -272,10 +235,17 @@ public class Rope : MonoBehaviour
             }
         }
 
-        // คลิกขวา - รีเซ็ตเชือก
+        // คลิกขวา - รีเซ็ตเชือก (แต่เฉพาะเมื่อไม่ได้เล็งกาว)
         if (Input.GetMouseButton(1))
         {
-            ResetRope();
+            bool isAimingGlue = (glueShootingScript != null &&
+                                glueShootingScript.IsAiming() &&
+                                glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Glue);
+
+            if (!isAimingGlue)
+            {
+                ResetRope();
+            }
         }
 
         // ESC - รีเซ็ตเชือกฉุกเฉิน (สำหรับกรณีติดขัด)
@@ -451,17 +421,23 @@ public class Rope : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        // วาดเส้นการเล็งสำหรับ Debug
+        // วาดเส้นการเล็งสำหรับ Debug (เฉพาะเมื่อเลือก Thread)
         if (!ropeAttached && Application.isPlaying)
         {
-            var worldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            worldMousePosition.z = 0;
+            bool usingThread = (glueShootingScript != null &&
+                               glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Thread);
 
-            var direction = (worldMousePosition - transform.position).normalized;
-            var endPoint = transform.position + direction * ropeMaxCastDistance;
+            if (usingThread)
+            {
+                var worldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                worldMousePosition.z = 0;
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, endPoint);
+                var direction = (worldMousePosition - transform.position).normalized;
+                var endPoint = transform.position + direction * ropeMaxCastDistance;
+
+                Gizmos.color = Color.blue; // สีน้ำเงินสำหรับเชือก
+                Gizmos.DrawLine(transform.position, endPoint);
+            }
         }
 
         // วาดจุดยึดเชือก
@@ -473,6 +449,77 @@ public class Rope : MonoBehaviour
                 Gizmos.DrawWireSphere(pos, 0.2f);
             }
         }
+    }
+
+    #endregion
+
+    #region GameManager Integration
+
+    /// <summary>
+    /// ตรวจสอบว่าสามารถใช้เชือกได้หรือไม่ตามสถานะของ GameManager และไอเทม
+    /// </summary>
+    private bool CanUseRope()
+    {
+        if (!respectGameManagerState) return true;
+
+        if (GameManager.Instance == null) return true;
+
+        // ตรวจสอบสถานะเกม
+        GameState currentState = GameManager.Instance.currentState;
+        bool stateAllowed = currentState == GameState.Normal || currentState == GameState.RopeSwinging;
+
+        if (!stateAllowed) return false;
+
+        // ตรวจสอบไอเทม Thread (ใช้ร่วมกันระหว่างซ่อมและโหนเชือก)
+        if (ItemManager.Instance != null)
+        {
+            bool hasThread = ItemManager.Instance.HasItem(ItemManager.ItemType.Thread);
+            if (!hasThread && !ropeAttached) // ถ้าไม่มีด้ายและยังไม่ได้โหนอยู่
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// แจ้ง GameManager ว่าเริ่มโหนเชือกแล้ว
+    /// </summary>
+    private void NotifySwingingStart()
+    {
+        if (!respectGameManagerState || GameManager.Instance == null) return;
+
+        bool success = GameManager.Instance.StartRopeSwinging();
+
+        if (!success)
+        {
+            Debug.LogWarning("Failed to start rope swinging - GameManager rejected state change");
+            // หากไม่สามารถเปลี่ยนสถานะได้ ให้รีเซ็ตเชือก
+            ResetRope();
+        }
+    }
+
+    /// <summary>
+    /// แจ้ง GameManager ว่าหยุดโหนเชือกแล้ว
+    /// </summary>
+    private void NotifySwingingEnd()
+    {
+        if (!respectGameManagerState || GameManager.Instance == null) return;
+
+        GameManager.Instance.EndRopeSwinging();
+    }
+
+    /// <summary>
+    /// ตรวจสอบว่าสามารถเริ่มโหนเชือกใหม่ได้หรือไม่
+    /// </summary>
+    private bool CanStartSwinging()
+    {
+        if (!respectGameManagerState) return true;
+
+        if (GameManager.Instance == null) return true;
+
+        return GameManager.Instance.currentState == GameState.Normal;
     }
 
     #endregion
