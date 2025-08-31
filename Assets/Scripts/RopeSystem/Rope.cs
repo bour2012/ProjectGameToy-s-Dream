@@ -15,7 +15,7 @@ public class Rope : MonoBehaviour
     [Header("Rope Settings")]
     public LineRenderer ropeRenderer;
     public LayerMask ropeLayerMask;
-    private float ropeMaxCastDistance = 20f;
+    public float ropeMaxCastDistance = 20f;
 
     [Header("Game Manager Integration")]
     public bool respectGameManagerState = true; // เปิด/ปิดการใช้ GameManager
@@ -211,17 +211,26 @@ public class Rope : MonoBehaviour
                 {
                     // เพิ่มแรงกระตุ้นเล็กน้อย
                     transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 1f), ForceMode2D.Impulse);
-
+                    var playerRb = transform.GetComponent<Rigidbody2D>();
+                    Vector2 preSwingVelocity = playerRb.linearVelocity;
                     // เพิ่มตำแหน่งปลายเชือก
                     ropePositions.Add(hit.point);
 
                     // ตั้งค่าเชือกให้สั้นลงเล็กน้อยทันที
                     float actualDistance = Vector2.Distance(playerPosition, hit.point);
-                    StartCoroutine(SmoothShortenRope(actualDistance, actualDistance * 0.65f, 0.5f));
+                    StartCoroutine(SmoothShortenRope(actualDistance, actualDistance * 0.75f, 0.5f));
 
                     // เปิดใช้งานเชือกและ anchor
                     ropeJoint.enabled = true;
                     ropeHingeAnchorSprite.enabled = true;
+
+                    if (preSwingVelocity.magnitude < 1f)
+                    {
+                        Vector2 swingDirection = Vector2.Perpendicular((hit.point - (Vector2)transform.position).normalized);
+                        if (aimDirection.x > 0) swingDirection *= -1; // ถ้าเล็งขวา ให้แกว่งซ้าย
+                        playerRb.AddForce(swingDirection * 2f, ForceMode2D.Impulse);
+                    }
+
 
                     Debug.Log("Rope attached successfully - Thread consumed");
                 }
@@ -236,7 +245,7 @@ public class Rope : MonoBehaviour
         }
 
         // คลิกขวา - รีเซ็ตเชือก (แต่เฉพาะเมื่อไม่ได้เล็งกาว)
-        if (Input.GetMouseButton(1))
+        if (/*Input.GetMouseButton(1)|| */Input.GetKeyDown(KeyCode.Space))
         {
             bool isAimingGlue = (glueShootingScript != null &&
                                 glueShootingScript.IsAiming() &&
@@ -244,6 +253,16 @@ public class Rope : MonoBehaviour
 
             if (!isAimingGlue)
             {
+
+                var playerRb = transform.GetComponent<Rigidbody2D>();
+                Vector2 releaseVelocity = playerRb.linearVelocity;
+
+                if (releaseVelocity.magnitude > 2f)
+                {
+                    // เพิ่มแรงส่งล่วงในทิศทางที่แกว่งไป
+                    Vector2 forwardForce = releaseVelocity.normalized * Mathf.Min(releaseVelocity.magnitude * 0.3f, 3f);
+                    playerRb.linearVelocity = releaseVelocity + forwardForce;
+                }
                 ResetRope();
             }
         }
@@ -281,6 +300,15 @@ public class Rope : MonoBehaviour
 
     private void ResetRope()
     {
+
+        // เก็บ velocity ก่อนรีเซ็ต (สำหรับกรณีอื่นๆ ที่เรียก ResetRope)
+        var playerRb = GetComponent<Rigidbody2D>();
+        Vector2 currentVelocity = Vector2.zero;
+
+        if (ropeAttached && playerRb != null)
+        {
+            currentVelocity = playerRb.linearVelocity;
+        }
         // รีเซ็ตสถานะเชือก
         ropeJoint.enabled = false;
         ropeAttached = false;
@@ -290,9 +318,17 @@ public class Rope : MonoBehaviour
         ropePositions.Clear();
         ropeHingeAnchorSprite.enabled = false;
         distanceSet = false;
+        // คืนค่า gravity เป็นปกติ
+        if (playerRb != null)
+        {
+            playerRb.gravityScale = 1f;
 
-        // รีเซ็ตแรงโน้มถ่วง
-        GetComponent<Rigidbody2D>().gravityScale = 1f;
+            // รักษา momentum ไว้บางส่วน (ถ้ามี)
+            if (currentVelocity.magnitude > 1f)
+            {
+                playerRb.linearVelocity = currentVelocity * 0.8f; // ลดลง 20%
+            }
+        }
 
         // รีเซ็ตสถานะ PlayerMovement
         if (playerMovement != null)

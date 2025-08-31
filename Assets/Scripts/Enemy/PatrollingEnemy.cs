@@ -39,7 +39,9 @@ public class PatrollingEnemy : Enemy
     protected override void Patrol()
     {
         // เดิน
-        transform.position += Vector3.right * (moveSpeed * Time.deltaTime * (movingRight ? 1 : -1));
+        Vector3 direction = (initialPosition - transform.position).normalized;
+        float step = moveSpeed * Time.deltaTime;
+
 
         // ตรวจสอบกำแพง
         Vector2 dir = movingRight ? Vector2.right : Vector2.left;

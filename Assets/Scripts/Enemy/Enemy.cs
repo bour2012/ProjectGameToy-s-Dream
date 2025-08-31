@@ -64,8 +64,10 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
     protected virtual void Chase(GameObject target)
     {
-        Vector2 direction = (target.transform.position - transform.position).normalized;
-        transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
+        float directionX = target.transform.position.x - transform.position.x;
+        directionX = Mathf.Sign(directionX); // +1 หรือ -1
+
+        transform.position += Vector3.right * directionX * moveSpeed * Time.deltaTime;
     }
 
     protected GameObject DetectTarget()

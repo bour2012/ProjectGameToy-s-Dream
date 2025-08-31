@@ -312,8 +312,49 @@ public class PlayerMovement : MonoBehaviour
             else
                 perpendicularDir = new Vector2(playerToHookDir.y, -playerToHookDir.x);
 
-            var force = perpendicularDir * swingForce * Mathf.Abs(horizontalInput);
+            // ปรับแรงให้ขึ้นอยู่กับความเร็วปัจจุบันและมุม
+            float currentSpeed = rBody.linearVelocity.magnitude;
+            float distanceFromHook = Vector2.Distance(transform.position, ropeHook);
+
+            // คำนวณมุมจากจุดแขวนเชือก (0 = ตรงด้านล่าง, ±180 = ด้านบน)
+            Vector2 dirFromHook = ((Vector2)transform.position - ropeHook).normalized;
+            float angleFromVertical = Mathf.Acos(-dirFromHook.y) * Mathf.Rad2Deg;
+            if (dirFromHook.x < 0) angleFromVertical = 360 - angleFromVertical;
+
+            // ปรับแรงตามตำแหน่ง (แรงมากที่สุดเมื่ออยู่ด้านล่าง)
+            float positionMultiplier = Mathf.Lerp(0.3f, 1.2f, Mathf.Cos(angleFromVertical * Mathf.Deg2Rad) * 0.5f + 0.5f);
+
+            // ปรับแรงตามความเร็วปัจจุบัน (ป้องกันความเร็วเกินจริง)
+            float speedMultiplier = Mathf.Lerp(1.0f, 0.4f, currentSpeed / 15f);
+
+            // ปรับแรงตามระยะจากจุดแขวน (ใกล้ = แรงมาก)
+            float distanceMultiplier = Mathf.Lerp(1.2f, 0.8f, (distanceFromHook - 1f) / 10f);
+
+            // รวมแรงทั้งหมด
+            float finalForce = swingForce * positionMultiplier * speedMultiplier * distanceMultiplier * Mathf.Abs(horizontalInput);
+
+            var force = perpendicularDir * finalForce;
             rBody.AddForce(force, ForceMode2D.Force);
+
+            // เพิ่มแรงโน้มถ่วงเสมือนเมื่อแกว่งขึ้น (เพื่อความสมจริง)
+            if (dirFromHook.y < -0.1f) // กำลังแกว่งขึ้น
+            {
+                float upwardPenalty = Mathf.Abs(dirFromHook.y) * 2f;
+                rBody.AddForce(Vector2.down * upwardPenalty, ForceMode2D.Force);
+            }
+        }
+        else
+        {
+            // ไม่กดปุ่ม = ลดแรงเสียดทานในอากาศเล็กน้อย (Air Resistance)
+            Vector2 currentVel = rBody.linearVelocity;
+            float airResistance = 0.98f; // ลด 2% ต่อเฟรม
+            rBody.linearVelocity = currentVel * airResistance;
+        }
+
+        // จำกัดความเร็วสูงสุด (ป้องกันความเร็วผิดปกติ)
+        if (rBody.linearVelocity.magnitude > 12f)
+        {
+            rBody.linearVelocity = rBody.linearVelocity.normalized * 12f;
         }
     }
 
@@ -341,44 +382,61 @@ public class PlayerMovement : MonoBehaviour
     {
         if (horizontalInput != 0)
         {
-            // ตรวจสอบว่าชนกำแพงหรือไม่
             bool blockedByWall = (horizontalInput < 0 && hitWallLeft) || (horizontalInput > 0 && hitWallRight);
-
-            if (blockedByWall)
-            {
-                // ถ้าชนกำแพง ไม่ให้เดินไปทางนั้น
-                // แต่ยังสามารถเดินกลับได้
-                return;
-            }
+            if (blockedByWall) return;
 
             float targetVelocityX = horizontalInput * maxAirSpeed;
             float currentVelocityX = rBody.linearVelocity.x;
-
-            // คำนวณความแตกต่างระหว่างความเร็วปัจจุบันกับความเร็วที่ต้องการ
             float velocityDifference = targetVelocityX - currentVelocityX;
 
-            // ใช้ Air Control เป็นตัวกำหนดว่าจะปรับความเร็วได้มากแค่ไหน
-            float changeAmount = velocityDifference * airControl;
+            // ปรับ Air Control แบบ Progressive (ยิ่งใกล้ target ยิ่งนุ่ม)
+            float progressiveControl = airControl * (1f - Mathf.Abs(currentVelocityX) / (maxAirSpeed * 2f));
+            progressiveControl = Mathf.Clamp(progressiveControl, airControl * 0.2f, airControl);
 
-            // จำกัดการเปลี่ยนแปลงไม่ให้เกิน maxAirSpeed
+            float changeAmount = velocityDifference * progressiveControl;
             float newVelocityX = currentVelocityX + changeAmount;
             newVelocityX = Mathf.Clamp(newVelocityX, -maxAirSpeed, maxAirSpeed);
 
-            // ป้องกันการเปลี่ยนทิศทางอย่างรวดเร็วในอากาศ
-            if (Mathf.Sign(horizontalInput) != Mathf.Sign(currentVelocityX) && Mathf.Abs(currentVelocityX) > maxAirSpeed * 0.5f)
+            // Smooth direction change (การเปลี่ยนทิศทางนุ่มขึ้น)
+            if (Mathf.Sign(horizontalInput) != Mathf.Sign(currentVelocityX) && Mathf.Abs(currentVelocityX) > maxAirSpeed * 0.3f)
             {
-                // ถ้ากำลังเปลี่ยนทิศและเร็วอยู่ ให้ลดความเร็วก่อน
-                newVelocityX = currentVelocityX * (1f - airControl * 0.5f);
+                float smoothFactor = 1f - (Mathf.Abs(currentVelocityX) / maxAirSpeed) * 0.3f;
+                newVelocityX = Mathf.Lerp(currentVelocityX, targetVelocityX, progressiveControl * smoothFactor);
             }
 
             rBody.linearVelocity = new Vector2(newVelocityX, rBody.linearVelocity.y);
         }
         else
         {
-            // ไม่กดปุ่มใดๆ ในอากาศ: ลด Air Drag เล็กน้อย
+            // ไม่กดปุ่มใดๆ: Air Drag ที่นุ่มนวล
             float currentVelocityX = rBody.linearVelocity.x;
-            float newVelocityX = currentVelocityX * (1f - airControl * 0.1f);
+            float dragFactor = 1f - (airControl * 0.15f); // ลด drag ลงเล็กน้อย
+            float newVelocityX = currentVelocityX * dragFactor;
             rBody.linearVelocity = new Vector2(newVelocityX, rBody.linearVelocity.y);
+        }
+    }
+    void RestoreAirControl()
+    {
+        // คืนค่า airControl เป็นค่าเริ่มต้น
+        // ค่านี้ควรเก็บไว้ใน variable แยก
+        airControl = 0.5f; // หรือค่าที่ตั้งใน Inspector
+    }
+
+    void HandlePostSwingMovement()
+    {
+        // ใช้ในกรณีพิเศษที่ต้องการควบคุมการเคลื่อนไหวหลังปล่อยเชือก
+        // สามารถเรียกจาก Rope script ได้
+
+        float currentSpeed = rBody.linearVelocity.magnitude;
+
+        if (currentSpeed > 3f) // ถ้ามีความเร็วพอ
+        {
+            // ลดการควบคุมในอากาศชั่วคราว เพื่อรักษา momentum
+            float originalAirControl = airControl;
+            airControl *= 0.3f; // ลดการควบคุมลง 70%
+
+            // คืนค่าการควบคุมกลับมาหลัง 0.5 วินาที
+            Invoke("RestoreAirControl", 0.5f);
         }
     }
 

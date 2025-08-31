@@ -18,6 +18,11 @@ public class StationaryEnemy : Enemy
     private GameObject currentPossessedDoll;
     private CraftedObject originalDoll;
 
+    protected override void Start()
+    {
+        base.Start(); // สำคัญ! จะได้ค่า initialPosition จาก Enemy
+    }
+
     protected override void Update()
     {
         // ตรวจจับตุ๊กตาปลอม
