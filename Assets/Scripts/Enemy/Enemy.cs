@@ -1,4 +1,4 @@
-// MovementBase.cs
+﻿// MovementBase.cs
 using System.Collections;
 using UnityEngine;
 
@@ -17,6 +17,8 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     private float originalSpeed;
     private Coroutine slowRoutine;
 
+    protected GameObject currentTarget;
+
     protected virtual void Awake()
     {
         originalSpeed = moveSpeed;
@@ -33,11 +35,17 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         if (!isChasing) Patrol();
     }
 
-
-    public virtual void ApplySlow(float slowAmount, float duration)
+    #region Slowing Glue Effect
+    public void ApplySlow(float slowAmount, float duration)
     {
         if (slowRoutine != null) StopCoroutine(slowRoutine);
         slowRoutine = StartCoroutine(SlowRoutine(slowAmount, duration));
+    }
+
+    public void ApplyGradualSlow(float targetSlowAmount, float duration, float lerpTime)
+    {
+        if (slowRoutine != null) StopCoroutine(slowRoutine);
+        slowRoutine = StartCoroutine(GradualSlowRoutine(targetSlowAmount, duration, lerpTime));
     }
 
     private IEnumerator SlowRoutine(float slowAmount, float duration)
@@ -45,6 +53,52 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         moveSpeed = originalSpeed * slowAmount;
         yield return new WaitForSeconds(duration);
         moveSpeed = originalSpeed;
+    }
+
+    private IEnumerator GradualSlowRoutine(float targetSlowAmount, float duration, float lerpTime)
+    {
+        float startSpeed = moveSpeed;
+        float targetSpeed = originalSpeed * targetSlowAmount;
+        float elapsed = 0f;
+
+        // ค่อยๆ ลดความเร็ว
+        while (elapsed < lerpTime)
+        {
+            moveSpeed = Mathf.Lerp(startSpeed, targetSpeed, elapsed / lerpTime);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        moveSpeed = targetSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        // กลับสู่ความเร็วปกติ
+        moveSpeed = originalSpeed;
+    }
+    #endregion
+
+    protected GameObject DetectAndLockTarget()
+    {
+        if (currentTarget != null)
+        {
+            float dist = Vector3.Distance(transform.position, currentTarget.transform.position);
+
+            // เช็คว่า target ยังอยู่ในเลเยอร์ที่ตรวจจับ
+            if (((1 << currentTarget.layer) & detectionLayers) != 0 && dist <= detectionRange)
+            {
+                return currentTarget;
+            }
+
+        }
+
+        // หาเป้าหมายใหม่ถ้ายังไม่มี
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
+        if (hits.Length > 0)
+        {
+            currentTarget = hits[0].gameObject;
+            return currentTarget;
+        }
+        return null;
     }
 
     public virtual void TakeDamage(float damage)
@@ -65,7 +119,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected virtual void Chase(GameObject target)
     {
         float directionX = target.transform.position.x - transform.position.x;
-        directionX = Mathf.Sign(directionX); // +1 ���� -1
+        directionX = Mathf.Sign(directionX); // +1 หรือ -1
 
         transform.position += Vector3.right * directionX * moveSpeed * Time.deltaTime;
     }
@@ -79,12 +133,12 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     public void ResetToInitialState()
     {
         isChasing = false;
-        // ����ʶҹ���� � �����ͧ���
+        // รีเซ็ตสถานะอื่น ๆ ตามต้องการ
     }
 
     protected virtual void OnDrawGizmosSelected()
     {
-        // �Ҵǧ����ʴ����е�Ǩ�Ѻ� Scene View
+        // วาดวงกลมแสดงระยะตรวจจับใน Scene View
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
     }

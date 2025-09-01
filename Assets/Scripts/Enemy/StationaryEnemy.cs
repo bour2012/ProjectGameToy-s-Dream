@@ -38,10 +38,10 @@ public class StationaryEnemy : Enemy
         }
 
         // หาเป้าหมาย
-        GameObject target = DetectTarget();
+        GameObject target = DetectAndLockTarget();
         if (target != null)
         {
-            // 🔥 เช็กว่ามีกำแพงบังหรือไม่
+            //  เช็กว่ามีกำแพงบังหรือไม่
             if (HasLineOfSight(target))
             {
                 isChasing = true;
@@ -64,6 +64,7 @@ public class StationaryEnemy : Enemy
                 if (chaseTimer >= chaseCooldown)
                 {
                     isChasing = false;
+                    //currentTarget = null; // ปลดล็อกเป้าหมายเมื่อหยุดไล่ล่า
                 }
             }
             else

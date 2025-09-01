@@ -33,6 +33,7 @@ public class GlueProjectile : MonoBehaviour
     private bool hasSlowed = false;              // ป้องกัน slow ซ้ำ
     private bool isOnGround = false;             // ตรวจสอบว่าติดพื้นหรือไม่
     private bool hasStartedDestroyCountdown = false;
+    private bool hasExtendedDestroyTime = false; // เพิ่ม flag
 
     private float currentDestroyDelay;           // เวลาปัจจุบันสำหรับ Destroy
     private Coroutine destroyCoroutine;          // เก็บ Coroutine ปัจจุบัน
@@ -91,7 +92,12 @@ public class GlueProjectile : MonoBehaviour
         if (timeNow - lastSlowTime < slowCooldown) return;
         lastSlowTime = timeNow;
 
-        ExtendDestroyTime();
+        // ยืดเวลาแค่ครั้งเดียว
+        if (!hasExtendedDestroyTime)
+        {
+            ExtendDestroyTime();
+            hasExtendedDestroyTime = true;
+        }
         ApplySlow(other);
         AttachJoint(other);
     }
@@ -133,6 +139,35 @@ public class GlueProjectile : MonoBehaviour
             Debug.Log($"Glue stuck directly to target: {target.name}");
 
         StartDestroyCountdown(destroyDelay);
+    }
+
+    private IEnumerator SlowDownAndStick(Vector3 stickPoint)
+    {
+        if (rb == null) yield break;
+
+        rb.bodyType = RigidbodyType2D.Dynamic; // ให้ยังขยับได้
+
+        float t = 0f;
+        Vector3 startPos = transform.position;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime / 1.5f; // 1.5f = เวลา slowdown (ปรับได้)
+
+            // ค่อย ๆ ลดความเร็วลง
+            rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, Vector2.zero, t);
+
+            // ค่อย ๆ ขยับเข้าหาจุด stickPoint
+            transform.position = Vector3.Lerp(startPos, stickPoint, t);
+
+            yield return null;
+        }
+
+        // สุดท้ายล็อกติดแน่น
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        transform.position = stickPoint;
     }
 
     private void StopMovement()
@@ -179,7 +214,8 @@ public class GlueProjectile : MonoBehaviour
         ISlowable slowable = target.GetComponent<ISlowable>();
         if (slowable != null)
         {
-            slowable.ApplySlow(0.05f, 5f); // ชะลอ 5 วินาที
+            // ค่อยๆ ลดความเร็วลงเหลือ 0.05 ภายใน 1 วินาที และ slow ค้างไว้ 5 วินาที
+            slowable.ApplyGradualSlow(0.05f, 5f, 0.35f);
             hasSlowed = true;
         }
     }

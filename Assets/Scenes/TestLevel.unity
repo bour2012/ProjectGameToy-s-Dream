@@ -4307,7 +4307,7 @@ Transform:
   m_GameObject: {fileID: 459519731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.298334, y: 5.7995567, z: 0}
+  m_LocalPosition: {x: -4.1654263, y: -2.466258, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11158,8 +11158,10 @@ MonoBehaviour:
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
-  patrolRange: 5
   chaseCooldown: 1
+  usePatrolRange: 0
+  patrolLeftOffset: -3
+  patrolRightOffset: 3
   groundLayer:
     serializedVersion: 2
     m_Bits: 128

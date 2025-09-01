@@ -52,6 +52,11 @@ public class CameraLerpToTransform : MonoBehaviour
         );
     }
 
+    public void SetZoneOffset(Vector2 newOffset)
+    {
+        offset = newOffset;
+    }
+
     // เรียกจาก Zone เวลา Player เข้า
     public void SetTargetSize(float newSize)
     {

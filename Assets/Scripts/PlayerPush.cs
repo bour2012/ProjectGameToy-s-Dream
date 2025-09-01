@@ -54,6 +54,12 @@ public class PlayerPush : MonoBehaviour
         // ตรวจสอบว่าสามารถใช้งานได้หรือไม่
         if (!CanUsePushSystem()) return;
 
+        if (isHolding && (targetBox == null || !targetBox.activeInHierarchy))
+        {
+            StopPushing();
+            return;
+        }
+
         CheckForPushableObjects();
         HandlePushInput();
         UpdateVisualFeedback();
@@ -217,14 +223,26 @@ public class PlayerPush : MonoBehaviour
 
     void StopPushing()
     {
-        if (!CanStopPushing() || targetBox == null) return;
+        if (!CanStopPushing()) return;
 
-        // ปล่อยกล่อง
-        FixedJoint2D joint = targetBox.GetComponent<FixedJoint2D>();
-        if (joint != null)
+        // ปล่อยกล่อง (ถ้ายังมีอยู่)
+        if (targetBox != null)
         {
-            joint.enabled = false;
-            joint.connectedBody = null;
+            FixedJoint2D joint = targetBox.GetComponent<FixedJoint2D>();
+            if (joint != null)
+            {
+                joint.enabled = false;
+                joint.connectedBody = null;
+            }
+
+            // เล่นเสียง
+            PlaySound(releaseSound);
+
+            Debug.Log($"Stopped pushing: {targetBox.name}");
+        }
+        else
+        {
+            Debug.Log("Stopped pushing: (box destroyed or missing)");
         }
 
         // แจ้ง GameManager ว่าหยุดดันของ
@@ -232,11 +250,6 @@ public class PlayerPush : MonoBehaviour
         {
             gameManager.EndPushingObject();
         }
-
-        // เล่นเสียง
-        PlaySound(releaseSound);
-
-        Debug.Log($"Stopped pushing: {targetBox.name}");
 
         targetBox = null;
         isHolding = false;
