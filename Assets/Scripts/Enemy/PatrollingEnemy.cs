@@ -15,9 +15,9 @@ public class PatrollingEnemy : Enemy
     public float patrolRightOffset = 3f;   // ระยะขวาจากจุดเริ่ม
 
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private LayerMask obstacleLayers; // เพิ่มสำหรับ Raycast กันกำแพง
     [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private float groundCheckDistance = 1f;
+
 
     protected override void Start()
     {
@@ -27,13 +27,14 @@ public class PatrollingEnemy : Enemy
 
     protected override void Update()
     {
-        GameObject target = DetectAndLockTarget();
+        GameObject target = DetectTarget();
 
         // เช็กว่ามีกำแพงบังหรือไม่ (เหมือน StationaryEnemy)
         if (target != null )
         {
 
-            if(HasLineOfSight(target))
+
+            if (HasLineOfSight(target))
             {
                 isChasing = true;
                 Chase(target);
@@ -44,6 +45,7 @@ public class PatrollingEnemy : Enemy
             {
                 // ผู้เล่นอยู่หลังกำแพง → เหมือนตรวจไม่เจอ
                 target = null;
+                //Debug.Log("Lost sight due to obstacle");
             }
 
         }
@@ -64,22 +66,24 @@ public class PatrollingEnemy : Enemy
     }
 
 
-    private bool HasLineOfSight(GameObject target)
-    {
-        Vector2 direction = (target.transform.position - transform.position).normalized;
-        float distance = Vector2.Distance(transform.position, target.transform.position);
+    //private bool HasLineOfSight(GameObject target)
+    //{
+   
+    //    Vector2 direction = (target.transform.position - transform.position).normalized;
+    //    float distance = Vector2.Distance(transform.position, target.transform.position);
 
-        // Raycast ตรวจหาสิ่งกีดขวางระหว่าง Enemy และ Player
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
+    //    // Raycast ตรวจหาสิ่งกีดขวางระหว่าง Enemy และ Player
+    //    RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
 
-        if (hit.collider != null)
-        {
-            // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น Player
-            return false;
-        }
+    //    if (hit.collider != null)
+    //    {
+    //        // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น Player
+    //        return false;
+    //    }
 
-        return true; // ไม่มีสิ่งกีดขวาง → มองเห็น
-    }
+    //    return true; // ไม่มีสิ่งกีดขวาง → มองเห็น
+    
+    //}
     protected override void Patrol()
     {
         if (usePatrolRange)

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 365348626949128812}
   - component: {fileID: 3149609764986300899}
   - component: {fileID: 6760489363640272181}
-  - component: {fileID: 8461609124315582677}
   - component: {fileID: 4945594338080861516}
   m_Layer: 10
   m_Name: Box
@@ -163,26 +162,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!255 &8461609124315582677
-FixedJoint2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7899959792572343891}
-  m_Enabled: 0
-  serializedVersion: 4
-  m_EnableCollision: 0
-  m_ConnectedRigidBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_BreakAction: 3
-  m_AutoConfigureConnectedAnchor: 1
-  m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 2.57, y: -2.93}
-  m_DampingRatio: 0
-  m_Frequency: 0
+  m_Constraints: 4
 --- !u!114 &4945594338080861516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,4 +177,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPossessed: 0
   currentHitPoints: 3
+  maxHitPoints: 3
   showDebugInfo: 1

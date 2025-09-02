@@ -10,6 +10,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     public float moveSpeed = 2f;
     public float detectionRange = 3f;
     public LayerMask detectionLayers;
+    public LayerMask obstacleLayers; // สำหรับตรวจ LOS
 
     protected float currentHealth;
     protected Vector3 initialPosition;
@@ -79,26 +80,50 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
     protected GameObject DetectAndLockTarget()
     {
-        if (currentTarget != null)
-        {
-            float dist = Vector3.Distance(transform.position, currentTarget.transform.position);
+        //// ถ้ามี target อยู่แล้ว → ตรวจสอบว่ายัง valid อยู่มั้ย
+        //if (currentTarget != null)
+        //{
+        //    float dist = Vector3.Distance(transform.position, currentTarget.transform.position);
 
-            // เช็คว่า target ยังอยู่ในเลเยอร์ที่ตรวจจับ
-            if (((1 << currentTarget.layer) & detectionLayers) != 0 && dist <= detectionRange)
-            {
-                return currentTarget;
-            }
+        //    // target ยังอยู่ใน layer ที่ตรวจจับและไม่ออกนอกระยะ
+        //    if (((1 << currentTarget.layer) & detectionLayers) != 0 && dist <= detectionRange)
+        //    {
+        //        return currentTarget; // ยัง lock เป้าเดิมไว้
+        //    }
+        //    else
+        //    {
+        //        currentTarget = null; // หลุดระยะ → reset
+        //    }
+        //}
 
-        }
+        //// ถ้าไม่มี target → หาตัวใหม่
+        //Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
+        //if (hits.Length > 0)
+        //{
+        //    // หาเป้าที่ใกล้ที่สุด
+        //    Collider2D closest = null;
+        //    float closestDist = Mathf.Infinity;
 
-        // หาเป้าหมายใหม่ถ้ายังไม่มี
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
-        if (hits.Length > 0)
-        {
-            currentTarget = hits[0].gameObject;
-            return currentTarget;
-        }
-        return null;
+        //    foreach (var hit in hits)
+        //    {
+        //        float dist = Vector3.Distance(transform.position, hit.transform.position);
+        //        if (dist < closestDist)
+        //        {
+        //            closestDist = dist;
+        //            closest = hit;
+        //        }
+        //    }
+
+        //    if (closest != null)
+        //    {
+        //        currentTarget = closest.gameObject;
+        //        return currentTarget;
+        //    }
+        //}
+
+        //return null; // ไม่มีเป้าในระยะ
+
+        return currentTarget;
     }
 
     public virtual void TakeDamage(float damage)
@@ -116,6 +141,25 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
     protected virtual void Patrol() { }
 
+    protected bool HasLineOfSight(GameObject target)
+    {
+        if (target == null) return false;
+
+        Vector2 direction = (target.transform.position - transform.position).normalized;
+        float distance = Vector2.Distance(transform.position, target.transform.position);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
+
+        if (hit.collider != null)
+        {
+            // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น
+            // Debug.Log($"{enemyName} LOS blocked by {hit.collider.name}");
+            return false;
+        }
+
+        return true;
+    }
+
     protected virtual void Chase(GameObject target)
     {
         float directionX = target.transform.position.x - transform.position.x;
@@ -126,10 +170,39 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
     protected GameObject DetectTarget()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
-        return hits.Length > 0 ? hits[0].gameObject : null;
-    }
+        // ถ้ามี target เดิมแล้ว → ตรวจสอบว่ายัง valid อยู่มั้ย
+        if (currentTarget != null)
+        {
+            float dist = Vector2.Distance(transform.position, currentTarget.transform.position);
 
+            // ยังอยู่ใน detection layer + ระยะ + มี LOS
+            if (((1 << currentTarget.layer) & detectionLayers) != 0 &&
+                dist <= detectionRange &&
+                HasLineOfSight(currentTarget))
+            {
+                return currentTarget; // ล็อกเป้าเดิมไว้
+            }
+            else
+            {
+                currentTarget = null; // ไม่ valid แล้ว → ปล่อย
+            }
+        }
+
+        // ถ้าไม่มี target → หาตัวใหม่
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
+
+        foreach (var hit in hits)
+        {
+            GameObject candidate = hit.gameObject;
+            if (HasLineOfSight(candidate))
+            {
+                currentTarget = candidate; // ล็อกเป้าใหม่
+                return currentTarget;
+            }
+        }
+
+        return null; // ไม่มีเป้า
+    }
     public void ResetToInitialState()
     {
         isChasing = false;

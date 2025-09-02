@@ -141,26 +141,27 @@ public class PlayerPush : MonoBehaviour
     void CheckForPushableObjects()
     {
         float facingDir = GetFacingDirection();
-        Vector2 origin = GetRaycastOrigin(facingDir);
-        Vector2 direction = Vector2.right * facingDir;
 
-        // ยิง Raycast เพื่อหาวัตถุที่สามารถดันได้
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, distanceToPush, boxMask);
+        // จุดศูนย์กลางของโซนตรวจจับ (หน้า player)
+        Vector2 origin = new Vector2(
+            transform.position.x + 0.5f * facingDir,
+            transform.position.y
+        );
 
-        if (hit.collider != null && hit.collider.CompareTag("Pushable"))
+        // ขนาดกล่องตรวจจับ (กว้าง x สูง)
+        Vector2 boxSize = new Vector2(1.2f, 1.0f);
+
+        // หาวัตถุในโซน
+        Collider2D hit = Physics2D.OverlapBox(origin, boxSize, 0f, boxMask);
+
+        if (hit != null && hit.CompareTag("Pushable"))
         {
-            availableBox = hit.collider.gameObject;
+            availableBox = hit.gameObject;
         }
         else
         {
             availableBox = null;
         }
-
-        //// Debug Ray
-        //if (showDebugRay)
-        //{
-        //    Debug.DrawRay(origin, direction * distanceToPush, raycastColor, 0.1f);
-        //}
     }
 
     void HandlePushInput()

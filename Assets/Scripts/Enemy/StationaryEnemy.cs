@@ -3,7 +3,6 @@
 public class StationaryEnemy : Enemy
 {
     public LayerMask fakeDollLayer;
-    public LayerMask obstacleLayers;
     public float possessRange = 0.5f;
 
     [SerializeField] private float wallCheckDistance = 0.5f;
@@ -88,22 +87,22 @@ public class StationaryEnemy : Enemy
         }
     }
 
-    private bool HasLineOfSight(GameObject target)
-    {
-        Vector2 direction = (target.transform.position - transform.position).normalized;
-        float distance = Vector2.Distance(transform.position, target.transform.position);
+    //private bool HasLineOfSight(GameObject target)
+    //{
+    //    Vector2 direction = (target.transform.position - transform.position).normalized;
+    //    float distance = Vector2.Distance(transform.position, target.transform.position);
 
-        // Raycast ตรวจหาสิ่งกีดขวางระหว่าง Enemy และ Player
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
+    //    // Raycast ตรวจหาสิ่งกีดขวางระหว่าง Enemy และ Player
+    //    RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
 
-        if (hit.collider != null)
-        {
-            // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น Player
-            return false;
-        }
+    //    if (hit.collider != null)
+    //    {
+    //        // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น Player
+    //        return false;
+    //    }
 
-        return true; // ไม่มีสิ่งกีดขวาง → มองเห็น
-    }
+    //    return true; // ไม่มีสิ่งกีดขวาง → มองเห็น
+    //}
 
     protected override void Patrol()
     {
