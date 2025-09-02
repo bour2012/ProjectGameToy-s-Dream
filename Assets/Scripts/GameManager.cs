@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 public enum GameState
@@ -12,11 +13,26 @@ public enum GameState
     RopeSwinging,     // กำลังโหนเชือก
     PushingObject,    // กำลังดันของ
     Menu,             // เมนู/หยุดชั่วคราว
-    Cutscene          // ดูฉาก
+    Cutscene,           // ดูฉาก
+    Dead
 }
 
 public class GameManager : MonoBehaviour
+
 {
+
+    [Header("Checkpoint Settings")]
+    [Tooltip("Checkpoint เริ่มต้น (ถ้าไม่มีจะใช้ตำแหน่งเริ่มต้นของ Player)")]
+    public Checkpoint defaultCheckpoint;
+
+    [Header("Checkpoint Debug")]
+    public bool showCheckpointDebugInfo = true;
+
+    private Checkpoint currentActiveCheckpoint;
+    private Vector3 defaultSpawnPosition;
+    private PlayerDeathSystem playerDeath;
+
+
     [Header("Game State")]
     public GameState currentState = GameState.Normal;
 
@@ -54,6 +70,8 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializeManager();
+            InitializeCheckpointSystem();
+            SetupCheckpointSystem();
         }
         else
         {
@@ -64,13 +82,35 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetupReferences();
+        SetupCheckpointSystem();
         BuildRepairDictionary();
         BuildCraftingDictionary();
+
+
+        // โหลด Checkpoint และไอเทมหลัง reload
+     //   ApplyCheckpointAndItemsAfterReload();
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ApplyCheckpointAndItemsAfterReload();
     }
 
     void Update()
     {
         HandleGlobalInput();
+        HandleCheckpointInput();
+        HandleDebugResetInput();
         if (showDebugInfo) DisplayDebugInfo();
     }
 
@@ -269,6 +309,11 @@ public class GameManager : MonoBehaviour
                 // ระหว่างฉากไม่สามารถเปลี่ยนสถานะได้ จนกว่าจะจบ
                 return targetState == GameState.Normal;
 
+            case GameState.Dead:
+                // ตอนตาย ห้ามเปลี่ยนสถานะ ยกเว้น Respawning
+                return targetState == GameState.Normal;
+
+
             default:
                 return false;
         }
@@ -304,7 +349,265 @@ public class GameManager : MonoBehaviour
             case GameState.Cutscene:
                 EnablePlayerControl(false);
                 break;
+
+            case GameState.Dead: // หยุดทุกอย่างเมื่อผู้เล่นตาย
+                EnablePlayerControl(false);
+                EnablePlayerMovement(false);
+                EnablePlayerInteraction(false);
+                break;
         }
+    }
+
+    #endregion
+
+    #region Checkpoint Management
+
+
+    private void ApplyCheckpointAndItemsAfterReload()
+    {
+        // หา Player ใหม่
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        if (player != null)
+            playerDeath = player.GetComponent<PlayerDeathSystem>();
+
+        // โหลด Checkpoint ล่าสุด
+        if (PlayerPrefs.HasKey("LastCheckpoint"))
+        {
+            string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
+            Checkpoint[] allCheckpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
+            foreach (Checkpoint checkpoint in allCheckpoints)
+            {
+                if (checkpoint.GetCheckpointID() == checkpointID)
+                {
+                    SetActiveCheckpoint(checkpoint);
+                    checkpoint.ActivateCheckpoint();
+                    break;
+                }
+            }
+        }
+
+        // ย้าย Player ไปที่ Checkpoint ล่าสุด
+        if (player != null && currentActiveCheckpoint != null)
+        {
+            player.position = currentActiveCheckpoint.GetSpawnPosition();
+            if (playerDeath != null)
+                playerDeath.Respawn(currentActiveCheckpoint.GetSpawnPosition());
+        }
+
+        // โหลดจำนวนไอเทม
+        if (ItemManager.Instance != null)
+        {
+           // ItemManager.Instance.InitializeItems();
+            PlayerPrefs.SetInt("GlueCount", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Glue));
+            PlayerPrefs.SetInt("ThreadCount", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Thread));
+
+            // เรียกอัปเดต UI หลังเซ็ตค่า
+            ItemManager.Instance.UpdateUI();
+        }
+
+        // รีเซ็ตสถานะเกม
+        ChangeState(GameState.Normal, "Reset state after reload scene");
+    }
+
+
+
+    private void InitializeCheckpointSystem()
+    {
+        // หา PlayerDeath component
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            playerDeath = playerObj.GetComponent<PlayerDeathSystem>();
+            defaultSpawnPosition = playerObj.transform.position;
+        }
+        else
+        {
+            Debug.LogError("ไม่พบ Player ใน Scene!");
+        }
+    }
+
+    // เรียกใน Start() ของ GameManager
+    private void SetupCheckpointSystem()
+    {
+        // ตั้งค่า Default Checkpoint
+        if (defaultCheckpoint != null)
+        {
+            SetActiveCheckpoint(defaultCheckpoint);
+            defaultCheckpoint.ActivateCheckpoint();
+        }
+        else
+        {
+            Debug.LogWarning("ไม่ได้กำหนด Default Checkpoint");
+        }
+    }
+
+    // เรียกใน Update() ของ GameManager
+    private void HandleCheckpointInput()
+    {
+        // ปุ่มรีเซ็ตแมนนวล (R key)
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ManualReset();
+        }
+
+        // Debug Info
+        if (showCheckpointDebugInfo && Input.GetKeyDown(KeyCode.F1))
+        {
+            ShowCheckpointDebugInfo();
+        }
+    }
+
+    public void SetActiveCheckpoint(Checkpoint checkpoint)
+    {
+        // ปิด Checkpoint เก่า 
+        if (currentActiveCheckpoint != null && currentActiveCheckpoint != checkpoint)
+        {
+            currentActiveCheckpoint.DeactivateCheckpoint();
+        }
+
+        currentActiveCheckpoint = checkpoint;
+
+        if (checkpoint != null)
+        {
+            checkpoint.ApplyItemDefaults();
+        }
+
+        // บันทึกลงใน PlayerPrefs (สำหรับการเซฟข้ามเกม)
+        if (checkpoint != null)
+        {
+            PlayerPrefs.SetString("LastCheckpoint", checkpoint.GetCheckpointID());
+            PlayerPrefs.SetFloat("CheckpointX", checkpoint.transform.position.x);
+            PlayerPrefs.SetFloat("CheckpointY", checkpoint.transform.position.y);
+            PlayerPrefs.SetFloat("CheckpointZ", checkpoint.transform.position.z);
+            PlayerPrefs.Save();
+
+            if (showCheckpointDebugInfo)
+            {
+                Debug.Log($"บันทึก Checkpoint: {checkpoint.GetCheckpointID()} ที่ตำแหน่ง {checkpoint.transform.position}");
+            }
+        }
+    }
+
+    public Vector3 GetCurrentSpawnPosition()
+    {
+        if (currentActiveCheckpoint != null)
+        {
+            return currentActiveCheckpoint.GetSpawnPosition();
+        }
+        return defaultSpawnPosition;
+    }
+
+    public void RespawnPlayer()
+    {
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
+        if (player != null)
+            playerDeath = player.GetComponent<PlayerDeathSystem>();
+
+        if (playerDeath != null)
+        {
+            playerDeath.Respawn(GetCurrentSpawnPosition());
+        }
+        else
+        {
+            Debug.LogError("ไม่พบ PlayerDeath component!");
+        }
+    }
+
+    public void ManualReset()
+    {
+        if (showCheckpointDebugInfo)
+        {
+            Debug.Log("รีเซ็ตแมนนวลด้วยปุ่ม R");
+        }
+
+        // เซฟ checkpoint และไอเทมก่อน reload scene
+        if (currentActiveCheckpoint != null)
+        {
+            PlayerPrefs.SetString("LastCheckpoint", currentActiveCheckpoint.GetCheckpointID());
+            PlayerPrefs.SetFloat("CheckpointX", currentActiveCheckpoint.transform.position.x);
+            PlayerPrefs.SetFloat("CheckpointY", currentActiveCheckpoint.transform.position.y);
+            PlayerPrefs.SetFloat("CheckpointZ", currentActiveCheckpoint.transform.position.z);
+        }
+
+        if (ItemManager.Instance != null)
+        {
+            PlayerPrefs.SetInt("GlueCount", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Glue));
+            PlayerPrefs.SetInt("ThreadCount", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Thread));
+        }
+
+        PlayerPrefs.Save();
+
+        // Reload scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void LoadCheckpointFromSave()
+    {
+        if (PlayerPrefs.HasKey("LastCheckpoint"))
+        {
+            string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
+            Vector3 savedPosition = new Vector3(
+                PlayerPrefs.GetFloat("CheckpointX"),
+                PlayerPrefs.GetFloat("CheckpointY"),
+                PlayerPrefs.GetFloat("CheckpointZ")
+            );
+
+            // หา Checkpoint ที่ตรงกับ ID
+            Checkpoint[] allCheckpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
+            foreach (Checkpoint checkpoint in allCheckpoints)
+            {
+                if (checkpoint.GetCheckpointID() == checkpointID)
+                {
+                    SetActiveCheckpoint(checkpoint);
+                    checkpoint.ActivateCheckpoint();
+
+                    if (showCheckpointDebugInfo)
+                    {
+                        Debug.Log($"โหลด Checkpoint จากเซฟ: {checkpointID}");
+                    }
+                    return;
+                }
+            }
+
+            Debug.LogWarning($"ไม่พบ Checkpoint ID: {checkpointID}");
+        }
+    }
+
+    public void ClearCheckpointSaveData()
+    {
+        PlayerPrefs.DeleteKey("LastCheckpoint");
+        PlayerPrefs.DeleteKey("CheckpointX");
+        PlayerPrefs.DeleteKey("CheckpointY");
+        PlayerPrefs.DeleteKey("CheckpointZ");
+        PlayerPrefs.Save();
+
+        Debug.Log("ลบข้อมูลเซฟ Checkpoint แล้ว");
+    }
+
+    private void ShowCheckpointDebugInfo()
+    {
+        if (currentActiveCheckpoint != null)
+        {
+            Debug.Log($"=== Checkpoint Debug Info ===");
+            Debug.Log($"Active Checkpoint: {currentActiveCheckpoint.GetCheckpointID()}");
+            Debug.Log($"Position: {currentActiveCheckpoint.transform.position}");
+            Debug.Log($"Spawn Position: {GetCurrentSpawnPosition()}");
+        }
+        else
+        {
+            Debug.Log("ไม่มี Active Checkpoint");
+        }
+
+        Debug.Log($"Controls: R = Manual Reset, F1 = Debug Info");
+    }
+
+    // สำหรับเรียกจาก UI หรือ External Script
+    public Checkpoint GetCurrentCheckpoint()
+    {
+        return currentActiveCheckpoint;
     }
 
     #endregion
@@ -628,6 +931,79 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    #region Full Debug Reset
+
+    private void HandleDebugResetInput()
+    {
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            DebugResetAll();
+        }
+    }
+
+    public void DebugResetAll()
+    {
+        Debug.Log("=== Debug Reset All Triggered ===");
+
+        // Reset Game State
+        ChangeState(GameState.Normal, "Debug Reset");
+
+        // Reset Checkpoint
+        if (defaultCheckpoint != null)
+        {
+            SetActiveCheckpoint(defaultCheckpoint);
+            defaultCheckpoint.ActivateCheckpoint();
+            Debug.Log($"Checkpoint reset to default: {defaultCheckpoint.GetCheckpointID()}");
+        }
+
+        // Reset Player Position
+        if (player != null)
+        {
+            player.position = defaultSpawnPosition;
+            if (playerDeath != null)
+                playerDeath.Respawn(defaultSpawnPosition);
+            Debug.Log($"Player position reset to default: {defaultSpawnPosition}");
+        }
+
+        // Reset Repair Progress
+        foreach (var progress in repairProgresses)
+        {
+            progress.isCompleted = false;
+            progress.completionTime = 0f;
+            progress.toolUsed = default;
+        }
+        Debug.Log("All repair progress reset.");
+
+        // Reset Crafting Progress
+        foreach (var progress in craftingProgresses)
+        {
+            progress.totalCrafted = 0;
+            progress.lastCraftTime = 0f;
+            progress.lastToolUsed = default;
+        }
+        Debug.Log("All crafting progress reset.");
+
+        // Reset Items
+        if (ItemManager.Instance != null)
+        {
+            ItemManager.Instance.UpdateUI();
+            Debug.Log("All player items reset.");
+        }
+
+        // Clear PlayerPrefs
+        ClearCheckpointSaveData();
+        PlayerPrefs.SetInt("GlueCount", 0);
+        PlayerPrefs.SetInt("ThreadCount", 0);
+        PlayerPrefs.Save();
+        Debug.Log("PlayerPrefs cleared for debug reset.");
+
+        Debug.Log("=== Debug Reset Complete ===");
+    }
+
+    #endregion
+
+
 }
 
 // ========================================
@@ -759,4 +1135,6 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+
+
 }

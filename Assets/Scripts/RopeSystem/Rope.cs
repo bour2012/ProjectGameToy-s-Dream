@@ -262,6 +262,9 @@ public class Rope : MonoBehaviour
                     // เพิ่มแรงส่งล่วงในทิศทางที่แกว่งไป
                     Vector2 forwardForce = releaseVelocity.normalized * Mathf.Min(releaseVelocity.magnitude * 0.3f, 3f);
                     playerRb.linearVelocity = releaseVelocity + forwardForce;
+
+                    NotifySwingingEnd();
+                    wasSwingingLastFrame = false;
                 }
                 ResetRope();
             }

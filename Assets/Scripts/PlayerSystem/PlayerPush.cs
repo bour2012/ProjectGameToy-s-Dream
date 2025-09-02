@@ -426,55 +426,55 @@ public class PlayerPush : MonoBehaviour
 
     #endregion
 
-    #region Debug & Gizmos
+    //#region Debug & Gizmos
 
-    void OnDrawGizmos()
-    {
-        if (!showDebugRay) return;
+    //void OnDrawGizmos()
+    //{
+    //    if (!showDebugRay) return;
 
-        if (playerSprite == null)
-            playerSprite = GetComponent<SpriteRenderer>();
+    //    if (playerSprite == null)
+    //        playerSprite = GetComponent<SpriteRenderer>();
 
-        float facingDir = GetFacingDirection();
-        Vector2 origin = GetRaycastOrigin(facingDir);
-        Vector2 direction = Vector2.right * facingDir;
+    //    float facingDir = GetFacingDirection();
+    //    Vector2 origin = GetRaycastOrigin(facingDir);
+    //    Vector2 direction = Vector2.right * facingDir;
 
-        // วาด Ray
-        Gizmos.color = raycastColor;
-        Gizmos.DrawLine(origin, origin + direction * distanceToPush);
+    //    // วาด Ray
+    //    Gizmos.color = raycastColor;
+    //    Gizmos.DrawLine(origin, origin + direction * distanceToPush);
 
-        // วาด Sphere ที่จุดเริ่มต้นของ Ray
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(origin, 0.1f);
+    //    // วาด Sphere ที่จุดเริ่มต้นของ Ray
+    //    Gizmos.color = Color.green;
+    //    Gizmos.DrawWireSphere(origin, 0.1f);
 
-        // แสดงสถานะปัจจุบัน
-        if (isHolding)
-        {
-            Gizmos.color = Color.blue;
-            if (targetBox != null)
-            {
-                Gizmos.DrawWireCube(targetBox.transform.position, targetBox.GetComponent<Collider2D>().bounds.size);
-            }
-        }
-        else if (availableBox != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(availableBox.transform.position, availableBox.GetComponent<Collider2D>().bounds.size);
-        }
-    }
+    //    // แสดงสถานะปัจจุบัน
+    //    if (isHolding)
+    //    {
+    //        Gizmos.color = Color.blue;
+    //        if (targetBox != null)
+    //        {
+    //            Gizmos.DrawWireCube(targetBox.transform.position, targetBox.GetComponent<Collider2D>().bounds.size);
+    //        }
+    //    }
+    //    else if (availableBox != null)
+    //    {
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawWireCube(availableBox.transform.position, availableBox.GetComponent<Collider2D>().bounds.size);
+    //    }
+    //}
 
-    void OnGUI()
-    {
-        if (!showDebugRay) return;
+    //void OnGUI()
+    //{
+    //    if (!showDebugRay) return;
 
-        GUILayout.BeginArea(new Rect(Screen.width - 200, 10, 190, 100));
-        GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
-        GUILayout.Label($"Is Holding: {isHolding}");
-        GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
-        GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
-        GUILayout.Label($"Can Use: {CanUsePushSystem()}");
-        GUILayout.EndArea();
-    }
+    //    GUILayout.BeginArea(new Rect(Screen.width - 200, 10, 190, 100));
+    //    GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
+    //    GUILayout.Label($"Is Holding: {isHolding}");
+    //    GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
+    //    GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
+    //    GUILayout.Label($"Can Use: {CanUsePushSystem()}");
+    //    GUILayout.EndArea();
+    //}
 
-    #endregion
+    //#endregion
 }

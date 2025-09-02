@@ -54,10 +54,12 @@ public class ItemManager : MonoBehaviour
 
     void Start()
     {
+      
         UpdateUI();
     }
 
-    void InitializeItems()
+
+    public void InitializeItems()
     {
         itemCounts[ItemType.Glue] = glueCount;
         itemCounts[ItemType.Thread] = threadCount;
@@ -65,6 +67,8 @@ public class ItemManager : MonoBehaviour
         if (showDebugInfo)
             Debug.Log($"ItemManager initialized - Glue: {glueCount}, Thread: {threadCount}");
     }
+
+
 
     #region Item Operations
 
@@ -139,6 +143,8 @@ public class ItemManager : MonoBehaviour
         OnItemCountChanged?.Invoke(itemType, itemCounts[itemType]);
         UpdateUI();
 
+
+
         if (showDebugInfo)
             Debug.Log($"Set {itemType} count to {count}");
     }
@@ -147,8 +153,12 @@ public class ItemManager : MonoBehaviour
 
     #region UI Management
 
-    void UpdateUI()
+    public void UpdateUI()
     {
+        glueCountText = GameObject.Find("GText (TMP)")?.GetComponent<TMPro.TextMeshProUGUI>();
+        threadCountText = GameObject.Find("TText (TMP) (1)")?.GetComponent<TMPro.TextMeshProUGUI>();
+        itemDisplayPanel = GameObject.Find("BGPanel");
+
         if (glueCountText != null)
             glueCountText.text = GetItemCount(ItemType.Glue).ToString();
 
@@ -156,11 +166,11 @@ public class ItemManager : MonoBehaviour
             threadCountText.text = GetItemCount(ItemType.Thread).ToString();
 
         // แสดง/ซ่อน Panel ตามการมีไอเทม
-        if (itemDisplayPanel != null)
-        {
-            bool hasAnyItems = GetItemCount(ItemType.Glue) > 0 || GetItemCount(ItemType.Thread) > 0;
-            itemDisplayPanel.SetActive(hasAnyItems);
-        }
+        //if (itemDisplayPanel != null)
+        //{
+        //    bool hasAnyItems = GetItemCount(ItemType.Glue) > 0 || GetItemCount(ItemType.Thread) > 0;
+        //    itemDisplayPanel.SetActive(hasAnyItems);
+        //}
     }
 
     #endregion

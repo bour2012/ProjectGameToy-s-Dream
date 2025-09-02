@@ -2,6 +2,8 @@
 
 public class PlayerMovement : MonoBehaviour
 {
+
+
     [Header("Movement Settings")]
     public float speed = 3f;              // ความเร็วเดินบนพื้น
     public float jumpSpeed = 6f;          // ความแรงกระโดด
@@ -138,6 +140,36 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void ResetMovementState()
+    {
+        isSwinging = false;
+        isOnLadder = false;
+        isClimbing = false;
+        currentLadder = null;
+        ropeHook = Vector2.zero;
+
+        //// คืนค่า Physics
+        //if (rBody != null)
+        //{
+        //    //rBody.gravityScale = 1f;
+        //    rBody.linearVelocity = Vector2.zero;
+        //    rBody.angularVelocity = 0f;
+        //}
+
+        //// คืนค่า Collision
+        //Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
+        //if (wallLayerNumber > 0)
+        //{
+        //    Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
+        //}
+
+        //// คืนค่า Collider
+        //if (playerCollider != null)
+        //{
+        //    playerCollider.isTrigger = false;
+        //}
     }
 
     #region Ladder System
