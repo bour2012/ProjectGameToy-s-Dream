@@ -5395,6 +5395,9 @@ MonoBehaviour:
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 128
   chaseCooldown: 2
   usePatrolRange: 0
   patrolLeftOffset: -3
@@ -5402,9 +5405,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  obstacleLayers:
-    serializedVersion: 2
-    m_Bits: 0
   wallCheckDistance: 0.5
   groundCheckDistance: 1
 --- !u!1 &459519731
@@ -5807,7 +5807,7 @@ MonoBehaviour:
   distanceToPush: 0.8
   boxMask:
     serializedVersion: 2
-    m_Bits: 1539
+    m_Bits: 1537
   pushKey: 101
   pushIndicator: {fileID: 0}
   raycastColor: {r: 1, g: 0, b: 0, a: 1}
@@ -12951,7 +12951,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCheckpoint: {fileID: 0}
+  defaultCheckpoint: {fileID: 963019930}
   showCheckpointDebugInfo: 1
   currentState: 0
   player: {fileID: 459519741}
@@ -15409,14 +15409,14 @@ MonoBehaviour:
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 128
   chaseCooldown: 2
   usePatrolRange: 0
   patrolLeftOffset: -2
   patrolRightOffset: 2
   groundLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  obstacleLayers:
     serializedVersion: 2
     m_Bits: 128
   wallCheckDistance: 0.5
@@ -16955,14 +16955,14 @@ MonoBehaviour:
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 128
   chaseCooldown: 2
   usePatrolRange: 1
   patrolLeftOffset: -2
   patrolRightOffset: 2
   groundLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  obstacleLayers:
     serializedVersion: 2
     m_Bits: 128
   wallCheckDistance: 0.5
