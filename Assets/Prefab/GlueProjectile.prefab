@@ -188,7 +188,7 @@ MonoBehaviour:
     m_Bits: 128
   excludedTargetLayers:
     serializedVersion: 2
-    m_Bits: 2369
+    m_Bits: 321
   impactEffect: {fileID: 0}
   splatEffect: {fileID: 0}
   shootSound: {fileID: 0}
