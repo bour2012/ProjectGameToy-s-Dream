@@ -323,7 +323,7 @@ Transform:
   m_GameObject: {fileID: 37097451}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 54.43362, y: -21.337223, z: 0}
+  m_LocalPosition: {x: 55.120785, y: -21.337223, z: 0}
   m_LocalScale: {x: 0.38399217, y: 0.68481684, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -443,7 +443,7 @@ GameObject:
   - component: {fileID: 39191836}
   - component: {fileID: 39191835}
   m_Layer: 0
-  m_Name: GlueIcon
+  m_Name: BoxIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -503,7 +503,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 42b21fdbe084b5647a6174a681c8552e, type: 3}
+  m_Sprite: {fileID: -8445210560121782024, guid: ed074d8658b8c16488e8628a94ba310f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1833,13 +1833,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 190385534}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.25830522, w: 0.96606344}
-  m_LocalPosition: {x: 17.559113, y: -9.159278, z: 0}
-  m_LocalScale: {x: 3.5900133, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: 0.39513233, w: 0.9186243}
+  m_LocalPosition: {x: 16.608326, y: -9.317662, z: 0}
+  m_LocalScale: {x: 2.500085, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1694092555}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 29.939}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 46.548}
 --- !u!61 &190385536
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2231,10 +2231,12 @@ MonoBehaviour:
   craftingTime: 2.5
   trashId: trash_pile_01
   trashName: Trash Pile
-  boxItem:
-    itemName: Box
+  craftableItems:
+  - itemName: Box
     prefab: {fileID: 7899959792572343891, guid: 827dacadc5514b742944f95cd505e986, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 0
     canBePossessed: 0
@@ -2243,10 +2245,11 @@ MonoBehaviour:
     destroyEffect: {fileID: 0}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
-  dollItem:
-    itemName: Doll
+  - itemName: Doll
     prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 1
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 1
@@ -2257,8 +2260,9 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 599663482}
   iconHolder: {fileID: 868896868}
-  glueIcon: {fileID: 39191833}
-  threadIcon: {fileID: 1327512236}
+  itemIcons:
+  - {fileID: 39191833}
+  - {fileID: 1327512236}
   interactPrompt: {fileID: 1747913057}
   progressPanel: {fileID: 764768801}
   progressText: {fileID: 1821797642}
@@ -3048,7 +3052,7 @@ GameObject:
   - component: {fileID: 272028315}
   - component: {fileID: 272028314}
   m_Layer: 0
-  m_Name: ThreadIcon
+  m_Name: DollIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3108,7 +3112,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4279557776402022635, guid: 390f9b0a80f005e4e989e235cab508a0, type: 3}
+  m_Sprite: {fileID: 1780922917589292398, guid: f3a84596ad8ce5b4f8c22d880824ae13, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3713,6 +3717,140 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.6477184, y: 2.5834355}
   m_EdgeRadius: 0
+--- !u!1 &347406083
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 347406084}
+  - component: {fileID: 347406086}
+  - component: {fileID: 347406085}
+  m_Layer: 7
+  m_Name: Square (51)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &347406084
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 347406083}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 20.556366, y: -13.0591135, z: 0}
+  m_LocalScale: {x: 1.5928848, y: 3, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1694092555}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &347406085
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 347406083}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!212 &347406086
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 347406083}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 13
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &350648254
 GameObject:
   m_ObjectHideFlags: 0
@@ -3781,8 +3919,8 @@ Transform:
   m_GameObject: {fileID: 354662992}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 29.181816, y: -8.27041, z: 0}
-  m_LocalScale: {x: 20.590162, y: 1, z: 1}
+  m_LocalPosition: {x: 28.181816, y: -8.27041, z: 0}
+  m_LocalScale: {x: 22.589468, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1694092555}
@@ -3915,7 +4053,7 @@ Transform:
   m_GameObject: {fileID: 376560846}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 171.17139, y: -18.1312, z: 0}
+  m_LocalPosition: {x: 171.17812, y: -18.137934, z: 0}
   m_LocalScale: {x: 7.099538, y: 0.51799935, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5597,8 +5735,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32bff3e13d391dc42bf3bcd28abbd90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2.5
-  jumpSpeed: 5.5
+  speed: 2.8
+  jumpSpeed: 5.8
   airControl: 0.5
   maxAirSpeed: 2
   swingForce: 4
@@ -5780,7 +5918,7 @@ Transform:
   m_GameObject: {fileID: 459519731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 120.69, y: -19.64, z: 0}
+  m_LocalPosition: {x: 126.62398, y: -22.334711, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7822,7 +7960,7 @@ GameObject:
   - component: {fileID: 690159388}
   - component: {fileID: 690159387}
   m_Layer: 0
-  m_Name: ThreadIcon
+  m_Name: DollIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7882,7 +8020,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4279557776402022635, guid: 390f9b0a80f005e4e989e235cab508a0, type: 3}
+  m_Sprite: {fileID: 1780922917589292398, guid: f3a84596ad8ce5b4f8c22d880824ae13, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7913,7 +8051,7 @@ GameObject:
   - component: {fileID: 692567002}
   - component: {fileID: 692567001}
   m_Layer: 0
-  m_Name: ThreadIcon
+  m_Name: DollIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7973,7 +8111,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4279557776402022635, guid: 390f9b0a80f005e4e989e235cab508a0, type: 3}
+  m_Sprite: {fileID: 1780922917589292398, guid: f3a84596ad8ce5b4f8c22d880824ae13, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8315,7 +8453,7 @@ GameObject:
   - component: {fileID: 730643627}
   - component: {fileID: 730643626}
   m_Layer: 0
-  m_Name: GlueIcon
+  m_Name: BoxIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8375,7 +8513,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 42b21fdbe084b5647a6174a681c8552e, type: 3}
+  m_Sprite: {fileID: -8445210560121782024, guid: ed074d8658b8c16488e8628a94ba310f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8643,7 +8781,7 @@ GameObject:
   - component: {fileID: 762939489}
   - component: {fileID: 762939488}
   m_Layer: 0
-  m_Name: GlueIcon
+  m_Name: BoxIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8703,7 +8841,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 42b21fdbe084b5647a6174a681c8552e, type: 3}
+  m_Sprite: {fileID: -8445210560121782024, guid: ed074d8658b8c16488e8628a94ba310f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9632,10 +9770,12 @@ MonoBehaviour:
   craftingTime: 2.5
   trashId: trash_pile_01
   trashName: Trash Pile
-  boxItem:
-    itemName: Box
+  craftableItems:
+  - itemName: Box
     prefab: {fileID: 7899959792572343891, guid: 827dacadc5514b742944f95cd505e986, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 0
     canBePossessed: 0
@@ -9644,10 +9784,11 @@ MonoBehaviour:
     destroyEffect: {fileID: 0}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
-  dollItem:
-    itemName: Doll
+  - itemName: Doll
     prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 1
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 1
@@ -9658,8 +9799,9 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 1120627837}
   iconHolder: {fileID: 1007239868}
-  glueIcon: {fileID: 1430977188}
-  threadIcon: {fileID: 272028312}
+  itemIcons:
+  - {fileID: 1430977188}
+  - {fileID: 272028312}
   interactPrompt: {fileID: 1855063506}
   progressPanel: {fileID: 326760039}
   progressText: {fileID: 159983966}
@@ -10898,7 +11040,7 @@ GameObject:
   - component: {fileID: 964711153}
   - component: {fileID: 964711152}
   m_Layer: 0
-  m_Name: ThreadIcon
+  m_Name: DollIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10958,7 +11100,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4279557776402022635, guid: 390f9b0a80f005e4e989e235cab508a0, type: 3}
+  m_Sprite: {fileID: 1780922917589292398, guid: f3a84596ad8ce5b4f8c22d880824ae13, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -11003,7 +11145,7 @@ Transform:
   m_GameObject: {fileID: 978256512}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 44.689144, y: -21.358498, z: 0}
+  m_LocalPosition: {x: 45.613262, y: -21.358498, z: 0}
   m_LocalScale: {x: 0.38399217, y: 0.68481684, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12447,7 +12589,7 @@ Transform:
   m_GameObject: {fileID: 1101662558}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.76111, y: -0.25055218, z: 0}
+  m_LocalPosition: {x: 50.191376, y: -0.27042294, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12951,7 +13093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCheckpoint: {fileID: 963019930}
+  defaultCheckpoint: {fileID: 1381006144}
   showCheckpointDebugInfo: 1
   currentState: 0
   player: {fileID: 459519741}
@@ -13365,10 +13507,12 @@ MonoBehaviour:
   craftingTime: 2.5
   trashId: trash_pile_01
   trashName: Trash Pile
-  boxItem:
-    itemName: Box
+  craftableItems:
+  - itemName: Box
     prefab: {fileID: 7899959792572343891, guid: 827dacadc5514b742944f95cd505e986, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 0
     canBePossessed: 0
@@ -13377,10 +13521,11 @@ MonoBehaviour:
     destroyEffect: {fileID: 0}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
-  dollItem:
-    itemName: Doll
+  - itemName: Doll
     prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 1
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 1
@@ -13391,8 +13536,9 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 923961353}
   iconHolder: {fileID: 1697102871}
-  glueIcon: {fileID: 1983529822}
-  threadIcon: {fileID: 964711150}
+  itemIcons:
+  - {fileID: 1983529822}
+  - {fileID: 964711150}
   interactPrompt: {fileID: 78495006}
   progressPanel: {fileID: 1356979023}
   progressText: {fileID: 265749484}
@@ -15082,7 +15228,7 @@ Transform:
   m_GameObject: {fileID: 1326113813}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 49.47628, y: -21.337223, z: 0}
+  m_LocalPosition: {x: 50.163445, y: -21.337223, z: 0}
   m_LocalScale: {x: 0.38399217, y: 0.68481684, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15202,7 +15348,7 @@ GameObject:
   - component: {fileID: 1327512239}
   - component: {fileID: 1327512238}
   m_Layer: 0
-  m_Name: ThreadIcon
+  m_Name: DollIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15262,7 +15408,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4279557776402022635, guid: 390f9b0a80f005e4e989e235cab508a0, type: 3}
+  m_Sprite: {fileID: 1780922917589292398, guid: f3a84596ad8ce5b4f8c22d880824ae13, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15405,13 +15551,13 @@ MonoBehaviour:
   enemyName: 
   maxHealth: 100
   moveSpeed: 2
-  detectionRange: 6.45
+  detectionRange: 4.45
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
   obstacleLayers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 1152
   chaseCooldown: 2
   usePatrolRange: 0
   patrolLeftOffset: -2
@@ -16510,7 +16656,7 @@ GameObject:
   - component: {fileID: 1430977191}
   - component: {fileID: 1430977190}
   m_Layer: 0
-  m_Name: GlueIcon
+  m_Name: BoxIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16570,7 +16716,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 42b21fdbe084b5647a6174a681c8552e, type: 3}
+  m_Sprite: {fileID: -8445210560121782024, guid: ed074d8658b8c16488e8628a94ba310f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16774,6 +16920,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 978256513}
+  - {fileID: 1650746405}
   - {fileID: 807161554}
   - {fileID: 589103240}
   - {fileID: 444148734}
@@ -17623,6 +17770,140 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 14
   m_TargetDisplay: 0
+--- !u!1 &1650746404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1650746405}
+  - component: {fileID: 1650746407}
+  - component: {fileID: 1650746406}
+  m_Layer: 13
+  m_Name: Rope (8)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1650746405
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650746404}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 41.656578, y: -21.334803, z: 0}
+  m_LocalScale: {x: 0.38399217, y: 0.68481684, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1437374158}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1650746406
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650746404}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!212 &1650746407
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650746404}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 13
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Color: {r: 0, g: 0.4743452, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &1673800695
 GameObject:
   m_ObjectHideFlags: 0
@@ -17936,6 +18217,7 @@ Transform:
   - {fileID: 1209180996}
   - {fileID: 2066487919}
   - {fileID: 135779247}
+  - {fileID: 347406084}
   - {fileID: 468257714}
   - {fileID: 354662993}
   - {fileID: 667586627}
@@ -18907,10 +19189,12 @@ MonoBehaviour:
   craftingTime: 2.5
   trashId: trash_pile_01
   trashName: Trash Pile
-  boxItem:
-    itemName: Box
+  craftableItems:
+  - itemName: Box
     prefab: {fileID: 7899959792572343891, guid: 827dacadc5514b742944f95cd505e986, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 0
     canBePossessed: 0
@@ -18919,10 +19203,11 @@ MonoBehaviour:
     destroyEffect: {fileID: 0}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
-  dollItem:
-    itemName: Doll
+  - itemName: Doll
     prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 1
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 1
@@ -18933,8 +19218,9 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 379190219}
   iconHolder: {fileID: 1712171138}
-  glueIcon: {fileID: 730643624}
-  threadIcon: {fileID: 690159385}
+  itemIcons:
+  - {fileID: 730643624}
+  - {fileID: 690159385}
   interactPrompt: {fileID: 1035582384}
   progressPanel: {fileID: 1956275806}
   progressText: {fileID: 881231950}
@@ -19125,10 +19411,12 @@ MonoBehaviour:
   craftingTime: 2.5
   trashId: trash_pile_01
   trashName: Trash Pile
-  boxItem:
-    itemName: Box
+  craftableItems:
+  - itemName: Box
     prefab: {fileID: 7899959792572343891, guid: 827dacadc5514b742944f95cd505e986, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 0
     canBePossessed: 0
@@ -19137,10 +19425,11 @@ MonoBehaviour:
     destroyEffect: {fileID: 0}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
-  dollItem:
-    itemName: Doll
+  - itemName: Doll
     prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 1
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 1
@@ -19151,8 +19440,9 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 410678420}
   iconHolder: {fileID: 662542650}
-  glueIcon: {fileID: 762939486}
-  threadIcon: {fileID: 692566999}
+  itemIcons:
+  - {fileID: 762939486}
+  - {fileID: 692566999}
   interactPrompt: {fileID: 1030772995}
   progressPanel: {fileID: 1583963346}
   progressText: {fileID: 1833388450}
@@ -20233,7 +20523,7 @@ Transform:
   m_GameObject: {fileID: 1874049265}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 162.19, y: -18.1312, z: 0}
+  m_LocalPosition: {x: 162.17567, y: -18.124037, z: 0}
   m_LocalScale: {x: 5.598855, y: 0.51799935, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20735,7 +21025,7 @@ GameObject:
   - component: {fileID: 1983529825}
   - component: {fileID: 1983529824}
   m_Layer: 0
-  m_Name: GlueIcon
+  m_Name: BoxIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20795,7 +21085,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 42b21fdbe084b5647a6174a681c8552e, type: 3}
+  m_Sprite: {fileID: -8445210560121782024, guid: ed074d8658b8c16488e8628a94ba310f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -21406,7 +21696,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2134150922}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Fire Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}

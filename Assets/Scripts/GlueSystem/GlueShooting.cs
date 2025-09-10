@@ -92,25 +92,33 @@ public class GlueShooting : MonoBehaviour
     /// </summary>
     private void HandleItemSwitching()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        //if (Input.GetKeyDown(KeyCode.Tab))
+        //{
+        //    SwitchItem();
+        //}
+
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll != 0)
         {
-            SwitchItem();
+            // scroll > 0 หมุนขึ้น , scroll < 0 หมุนลง
+            SwitchItem(scroll > 0);
         }
     }
 
     /// <summary>
     /// สลับระหว่างกาวและด้าย
     /// </summary>
-    private void SwitchItem()
+    private void SwitchItem(bool forward)
     {
-        if (selectedItem == ItemManager.ItemType.Glue)
-        {
-            selectedItem = ItemManager.ItemType.Thread;
-        }
-        else
-        {
-            selectedItem = ItemManager.ItemType.Glue;
-        }
+        // แปลง enum เป็น int เพื่อเลื่อนตำแหน่ง
+        int itemCount = System.Enum.GetValues(typeof(ItemManager.ItemType)).Length;
+        int currentIndex = (int)selectedItem;
+
+        // ถ้า scroll ขึ้น forward = true → บวก 1
+        // ถ้า scroll ลง forward = false → ลบ 1
+        currentIndex = (currentIndex + (forward ? 1 : -1) + itemCount) % itemCount;
+
+        selectedItem = (ItemManager.ItemType)currentIndex;
 
         Debug.Log($"Switched to: {selectedItem}");
 
@@ -436,12 +444,12 @@ public class GlueShooting : MonoBehaviour
         }
     }
 
-    // Debug Methods
-    [ContextMenu("Switch Item")]
-    public void Debug_SwitchItem()
-    {
-        SwitchItem();
-    }
+    //// Debug Methods
+    //[ContextMenu("Switch Item")]
+    //public void Debug_SwitchItem()
+    //{
+    //    SwitchItem();
+    //}
 
     [ContextMenu("Test Glue Shot")]
     public void Debug_TestGlueShot()

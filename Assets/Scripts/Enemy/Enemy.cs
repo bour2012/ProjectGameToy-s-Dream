@@ -80,50 +80,50 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
     protected GameObject DetectAndLockTarget()
     {
-        //// ถ้ามี target อยู่แล้ว → ตรวจสอบว่ายัง valid อยู่มั้ย
-        //if (currentTarget != null)
-        //{
-        //    float dist = Vector3.Distance(transform.position, currentTarget.transform.position);
+        // ถ้ามี target อยู่แล้ว → ตรวจสอบว่ายัง valid อยู่มั้ย
+        if (currentTarget != null)
+        {
+            float dist = Vector3.Distance(transform.position, currentTarget.transform.position);
 
-        //    // target ยังอยู่ใน layer ที่ตรวจจับและไม่ออกนอกระยะ
-        //    if (((1 << currentTarget.layer) & detectionLayers) != 0 && dist <= detectionRange)
-        //    {
-        //        return currentTarget; // ยัง lock เป้าเดิมไว้
-        //    }
-        //    else
-        //    {
-        //        currentTarget = null; // หลุดระยะ → reset
-        //    }
-        //}
+            // target ยังอยู่ใน layer ที่ตรวจจับและไม่ออกนอกระยะ
+            if (((1 << currentTarget.layer) & detectionLayers) != 0 && dist <= detectionRange)
+            {
+                return currentTarget; // ยัง lock เป้าเดิมไว้
+            }
+            else
+            {
+                currentTarget = null; // หลุดระยะ → reset
+            }
+        }
 
-        //// ถ้าไม่มี target → หาตัวใหม่
-        //Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
-        //if (hits.Length > 0)
-        //{
-        //    // หาเป้าที่ใกล้ที่สุด
-        //    Collider2D closest = null;
-        //    float closestDist = Mathf.Infinity;
+        // ถ้าไม่มี target → หาตัวใหม่
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
+        if (hits.Length > 0)
+        {
+            // หาเป้าที่ใกล้ที่สุด
+            Collider2D closest = null;
+            float closestDist = Mathf.Infinity;
 
-        //    foreach (var hit in hits)
-        //    {
-        //        float dist = Vector3.Distance(transform.position, hit.transform.position);
-        //        if (dist < closestDist)
-        //        {
-        //            closestDist = dist;
-        //            closest = hit;
-        //        }
-        //    }
+            foreach (var hit in hits)
+            {
+                float dist = Vector3.Distance(transform.position, hit.transform.position);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    closest = hit;
+                }
+            }
 
-        //    if (closest != null)
-        //    {
-        //        currentTarget = closest.gameObject;
-        //        return currentTarget;
-        //    }
-        //}
+            if (closest != null)
+            {
+                currentTarget = closest.gameObject;
+                return currentTarget;
+            }
+        }
 
-        //return null; // ไม่มีเป้าในระยะ
+        return null; // ไม่มีเป้าในระยะ
 
-        return currentTarget;
+        //return currentTarget;
     }
 
     public virtual void TakeDamage(float damage)

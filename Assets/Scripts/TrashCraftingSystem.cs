@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -15,14 +15,12 @@ public class TrashCraftingSystem : MonoBehaviour
     public string trashName = "Trash Pile";
 
     [Header("Craftable Items")]
-    public CraftableItem boxItem;
-    public CraftableItem dollItem;
+    public CraftableItem[] craftableItems = new CraftableItem[2];
 
     [Header("UI References")]
     public GameObject craftingUIContainer;
     public Transform iconHolder;
-    public GameObject glueIcon;
-    public GameObject threadIcon;
+    public GameObject[] itemIcons; // Icons for each craftable item
     public GameObject interactPrompt;
 
     [Header("Progress UI")]
@@ -40,7 +38,7 @@ public class TrashCraftingSystem : MonoBehaviour
     private Transform player;
     private bool isPlayerNear = false;
     private bool isCrafting = false;
-    private CraftTool currentTool = CraftTool.Glue;
+    private int currentItemIndex = 0;
     private Vector3 originalUIScale;
     private GameObject currentCraftedObject;
 
@@ -50,15 +48,19 @@ public class TrashCraftingSystem : MonoBehaviour
         [Header("Basic Info")]
         public string itemName;
         public GameObject prefab;
-        public float lifetime = 2f; // ���ҷ�������� (�Թҷ�)
+        public float lifetime = 2f; // เวลาที่อยู่ได้ (วินาที)
+
+        [Header("Required Item")]
+        public ItemManager.ItemType requiredItemType = ItemManager.ItemType.Glue;
+        public int requiredAmount = 1;
 
         [Header("Properties")]
         public bool canBePushed = true;
         public bool canDistractEnemies = false;
-        public bool canBePossessed = false; // ����Ѻ��꡵�
+        public bool canBePossessed = false; // สำหรับตุ๊กตา
 
         [Header("Combat (for possessed dolls)")]
-        public int maxHitPoints = 3; // �ӹǹ���駷���ͧ�������ͷ����
+        public int maxHitPoints = 3; // จำนวนครั้งที่ต้องโจมตีเพื่อทำลาย
 
         [Header("Visual Effects")]
         public ParticleSystem spawnEffect;
@@ -67,23 +69,17 @@ public class TrashCraftingSystem : MonoBehaviour
         public AudioClip destroySound;
     }
 
-    public enum CraftTool
-    {
-        Glue,   // ���ҧ���ͧ
-        Thread  // ���ҧ��꡵�
-    }
-
     void Start()
     {
-        // �Ҽ�������� GameManager
+        // หาผู้เล่นและ GameManager
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         gameManager = GameManager.Instance;
 
-        // ����� UI
+        // เตรียม UI
         SetupUI();
-        UpdateToolSelection();
+        UpdateItemSelection();
 
-        // ��Ѥ��Ѻ�������͹�ҡ GameManager
+        // สมัครรับการแจ้งเตือนจาก GameManager
         if (gameManager != null)
         {
             GameManager.OnGameStateChanged += OnGameStateChanged;
@@ -97,6 +93,12 @@ public class TrashCraftingSystem : MonoBehaviour
         if (progressPanel != null) progressPanel.SetActive(false);
 
         originalUIScale = craftingUIContainer.transform.localScale;
+
+        // Make sure we have enough icons for all craftable items
+        if (itemIcons.Length < craftableItems.Length)
+        {
+            Debug.LogWarning($"Not enough icons ({itemIcons.Length}) for craftable items ({craftableItems.Length})");
+        }
     }
 
     void OnDestroy()
@@ -112,9 +114,9 @@ public class TrashCraftingSystem : MonoBehaviour
         if (gameManager == null) return;
 
         CheckPlayerDistance();
-        UpdateProgressUI(); // ������÷Ѵ���
+        UpdateProgressUI();
 
-        // �Ѻ Input ੾������������ʶҹл���
+        // รับ Input เฉพาะเมื่ออยู่ในสถานะปกติ
         if (gameManager.currentState == GameState.Normal)
         {
             HandleNormalStateInput();
@@ -183,7 +185,7 @@ public class TrashCraftingSystem : MonoBehaviour
                 progressPanel.SetActive(false);
             }
 
-            // �ʴ� progress bar �����ҧ��ä�ҿ
+            // แสดง progress bar ระหว่างการคราฟ
             if (progressBar != null)
             {
                 progressBar.value = isCrafting ? progressBar.value : 0f;
@@ -245,14 +247,13 @@ public class TrashCraftingSystem : MonoBehaviour
     {
         if (!isPlayerNear) return;
 
-        // ��Ѻ����ͧ��ʹ��� Mouse Scroll
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll != 0)
+        // สลับไอเทมด้วย Q
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            SwitchTool(scroll > 0);
+            SwitchItem();
         }
 
-        // �������û�д�ɰ���¡�á� E
+        // เริ่มการประดิษฐ์ด้วยการกด E
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryStartCrafting();
@@ -273,25 +274,24 @@ public class TrashCraftingSystem : MonoBehaviour
 
     void TryStartCrafting()
     {
-        if (isCrafting || gameManager == null) return;
+        if (isCrafting || gameManager == null || currentItemIndex >= craftableItems.Length) return;
 
-        // ��Ǩ�ͺ����������
+        CraftableItem currentItem = craftableItems[currentItemIndex];
+
+        // ตรวจสอบไอเทมที่จำเป็น
         if (ItemManager.Instance != null)
         {
-            ItemManager.ItemType requiredItem = currentTool == CraftTool.Glue
-                ? ItemManager.ItemType.Glue
-                : ItemManager.ItemType.Thread;
-
-            int itemCount = ItemManager.Instance.GetItemCount(requiredItem);
-            if (itemCount <= 0)
+            int itemCount = ItemManager.Instance.GetItemCount(currentItem.requiredItemType);
+            if (itemCount < currentItem.requiredAmount)
             {
-                Debug.Log($"Cannot craft - no {requiredItem} available (remaining: {itemCount})");
+                Debug.Log($"Cannot craft - need {currentItem.requiredAmount} {currentItem.requiredItemType} (have: {itemCount})");
                 return;
             }
         }
 
-        // ���������û�д�ɰ��ҹ GameManager
-        if (gameManager.StartCrafting(trashId, currentTool))
+        // ขอเริ่มการประดิษฐ์ผ่าน GameManager (keeping the same interface)
+        CraftTool tool = currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
+        if (gameManager.StartCrafting(trashId, tool))
         {
             StartCrafting();
         }
@@ -309,12 +309,12 @@ public class TrashCraftingSystem : MonoBehaviour
 
         StartCoroutine(CraftingProcess());
 
-        Debug.Log($"Started crafting with {currentTool}");
+        Debug.Log($"Started crafting {craftableItems[currentItemIndex].itemName}");
     }
 
     IEnumerator CraftingProcess()
     {
-        // �ʴ� Progress UI
+        // แสดง Progress UI
         if (progressPanel != null)
         {
             progressPanel.SetActive(true);
@@ -322,17 +322,17 @@ public class TrashCraftingSystem : MonoBehaviour
             Debug.Log("Crafting....");
         }
 
-        // �Ϳ࿡���û�д�ɰ�
+        // เอฟเฟกต์การประดิษฐ์
         if (craftingEffect) craftingEffect.Play();
         if (craftingSound) craftingSound.Play();
 
-        // �����ҡ�û�д�ɰ�
+        // รอเวลาการประดิษฐ์
         float elapsedTime = 0f;
         while (elapsedTime < craftingTime)
         {
             elapsedTime += Time.deltaTime;
 
-            // �ѻവ progress bar
+            // อัปเดต progress bar
             if (progressBar != null)
             {
                 progressBar.value = elapsedTime / craftingTime;
@@ -341,7 +341,7 @@ public class TrashCraftingSystem : MonoBehaviour
             yield return null;
         }
 
-        // ��д�ɰ��������
+        // ประดิษฐ์เสร็จสิ้น
         CompleteCrafting();
     }
 
@@ -350,70 +350,71 @@ public class TrashCraftingSystem : MonoBehaviour
         UseItemForCrafting();
         CreateCraftedObject();
 
-        // ��͹��ǡͧ���
+        // ซ่อนตัวกองขยะ
         gameObject.SetActive(false);
 
         isCrafting = false;
 
         if (gameManager != null)
         {
-            gameManager.CompleteCrafting(trashId, currentTool);
+            CraftTool tool = currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
+            gameManager.CompleteCrafting(trashId, tool);
         }
 
-        Debug.Log($"Crafting completed with {currentTool}");
+        Debug.Log($"Crafting completed: {craftableItems[currentItemIndex].itemName}");
     }
+
     void StopCrafting()
     {
         if (!isCrafting) return;
 
         StopAllCoroutines();
 
-        // �Դ�Ϳ࿡��
+        // ปิดเอฟเฟกต์
         if (craftingEffect) craftingEffect.Stop();
         if (craftingSound) craftingSound.Stop();
 
-        // ����ʶҹ�
+        // รีเซ็ตสถานะ
         isCrafting = false;
 
-        // �� GameManager
+        // แจ้ง GameManager
         if (gameManager != null && IsInCraftingState())
         {
             gameManager.ChangeState(GameState.Normal, "Crafting cancelled");
         }
 
-        // �ʴ� UI ��Ѻ�Ҷ�Ҽ������ѧ�������
+        // แสดง UI กลับมาถ้าผู้เล่นยังอยู่ใกล้
         if (isPlayerNear)
         {
             ToggleCraftingUI(true);
         }
 
-        // Progress Panel �ж١�Ѵ����� UpdateProgressUI() ����
-
         Debug.Log("Crafting cancelled");
     }
+
     void CreateCraftedObject()
     {
-        CraftableItem itemToCreate = currentTool == CraftTool.Glue ? boxItem : dollItem;
+        CraftableItem itemToCreate = craftableItems[currentItemIndex];
 
         if (itemToCreate.prefab != null)
         {
-            // ���ҧ�ѵ��㹵��˹觢ͧ�ͧ���
+            // สร้างวัตถุในตำแหน่งของกองขยะ
             GameObject craftedObj = Instantiate(itemToCreate.prefab, transform.position, transform.rotation);
 
-            // ���� CraftedObject component
+            // เพิ่ม CraftedObject component
             CraftedObject craftedComponent = craftedObj.GetComponent<CraftedObject>();
             if (craftedComponent == null)
             {
                 craftedComponent = craftedObj.AddComponent<CraftedObject>();
             }
 
-            // ��駤�� CraftedObject
+            // ตั้งค่า CraftedObject
             craftedComponent.Initialize(itemToCreate, this);
 
-            // �� reference
+            // เก็บ reference
             currentCraftedObject = craftedObj;
 
-            // �Ϳ࿡�������ҧ
+            // เอฟเฟกต์การสร้าง
             if (itemToCreate.spawnEffect)
             {
                 Instantiate(itemToCreate.spawnEffect, transform.position, transform.rotation);
@@ -425,48 +426,54 @@ public class TrashCraftingSystem : MonoBehaviour
 
     void UseItemForCrafting()
     {
-        if (ItemManager.Instance != null)
+        if (ItemManager.Instance != null && currentItemIndex < craftableItems.Length)
         {
-            ItemManager.ItemType requiredItem = currentTool == CraftTool.Glue
-                ? ItemManager.ItemType.Glue
-                : ItemManager.ItemType.Thread;
+            CraftableItem currentItem = craftableItems[currentItemIndex];
 
-            if (!ItemManager.Instance.UseItem(requiredItem))
+            for (int i = 0; i < currentItem.requiredAmount; i++)
             {
-                Debug.LogWarning($"Warning: Failed to consume {requiredItem} after crafting");
+                if (!ItemManager.Instance.UseItem(currentItem.requiredItemType))
+                {
+                    Debug.LogWarning($"Warning: Failed to consume {currentItem.requiredItemType} after crafting (attempt {i + 1}/{currentItem.requiredAmount})");
+                }
             }
-            else
-            {
-                Debug.Log($"Consumed 1 {requiredItem} for crafting");
-            }
+
+            Debug.Log($"Consumed {currentItem.requiredAmount} {currentItem.requiredItemType} for crafting");
         }
     }
 
     #endregion
 
-    #region Tool Management
+    #region Item Management
 
-    void SwitchTool(bool forward)
+    void SwitchItem()
     {
-        if (IsInCraftingState()) return;
+        if (IsInCraftingState() || craftableItems.Length == 0) return;
 
-        currentTool = (CraftTool)(((int)currentTool + (forward ? 1 : -1) + 2) % 2);
-        UpdateToolSelection();
-        StartCoroutine(ToolSwitchAnimation());
+        currentItemIndex = (currentItemIndex + 1) % craftableItems.Length;
+        UpdateItemSelection();
+        StartCoroutine(ItemSwitchAnimation());
     }
 
-    void UpdateToolSelection()
+    void UpdateItemSelection()
     {
-        if (glueIcon != null) glueIcon.SetActive(currentTool == CraftTool.Glue);
-        if (threadIcon != null) threadIcon.SetActive(currentTool == CraftTool.Thread);
-
-        // �Ϳ࿡�� Highlight
-        Transform activeIcon = currentTool == CraftTool.Glue ?
-            glueIcon?.transform : threadIcon?.transform;
-
-        if (activeIcon != null)
+        // อัปเดต UI Icons
+        for (int i = 0; i < itemIcons.Length && i < craftableItems.Length; i++)
         {
-            activeIcon.localScale = Vector3.one * 1.2f;
+            if (itemIcons[i] != null)
+            {
+                itemIcons[i].SetActive(i == currentItemIndex);
+
+                // เอฟเฟกต์ Highlight
+                if (i == currentItemIndex)
+                {
+                    itemIcons[i].transform.localScale = Vector3.one * 1.2f;
+                }
+                else
+                {
+                    itemIcons[i].transform.localScale = Vector3.one;
+                }
+            }
         }
 
         UpdateInteractPrompt();
@@ -474,39 +481,34 @@ public class TrashCraftingSystem : MonoBehaviour
 
     void UpdateInteractPrompt()
     {
-        if (isPlayerNear && !isCrafting && gameManager.currentState == GameState.Normal)
+        if (isPlayerNear && !isCrafting && gameManager.currentState == GameState.Normal && currentItemIndex < craftableItems.Length)
         {
             interactPrompt.SetActive(true);
 
-            string toolName = currentTool == CraftTool.Glue ? "Glue" : "Thread";
-            string itemName = currentTool == CraftTool.Glue ? boxItem.itemName : dollItem.itemName;
-
+            CraftableItem currentItem = craftableItems[currentItemIndex];
             var promptText = interactPrompt.GetComponent<TextMeshProUGUI>();
+
             if (promptText != null)
             {
-                // ��Ǩ�ͺ����
+                // ตรวจสอบไอเทม
                 if (ItemManager.Instance != null)
                 {
-                    ItemManager.ItemType requiredItem = currentTool == CraftTool.Glue
-                        ? ItemManager.ItemType.Glue
-                        : ItemManager.ItemType.Thread;
+                    int itemCount = ItemManager.Instance.GetItemCount(currentItem.requiredItemType);
 
-                    int itemCount = ItemManager.Instance.GetItemCount(requiredItem);
-
-                    if (itemCount > 0)
+                    if (itemCount >= currentItem.requiredAmount)
                     {
-                        promptText.text = $"Press E to craft {itemName} with {toolName} [{itemCount}]";
+                        promptText.text = $"Press E to craft {currentItem.itemName} (Need: {currentItem.requiredAmount} {currentItem.requiredItemType}) [{itemCount}]";
                         promptText.color = Color.black;
                     }
                     else
                     {
-                        promptText.text = $"Need {toolName} to craft {itemName} [{itemCount}]";
+                        promptText.text = $"Need {currentItem.requiredAmount} {currentItem.requiredItemType} to craft {currentItem.itemName} [{itemCount}]";
                         promptText.color = Color.red;
                     }
                 }
                 else
                 {
-                    promptText.text = $"Press E to craft {itemName} with {toolName}";
+                    promptText.text = $"Press E to craft {currentItem.itemName}";
                 }
             }
         }
@@ -557,7 +559,7 @@ public class TrashCraftingSystem : MonoBehaviour
         }
     }
 
-    IEnumerator ToolSwitchAnimation()
+    IEnumerator ItemSwitchAnimation()
     {
         if (iconHolder == null) yield break;
 
@@ -582,7 +584,8 @@ public class TrashCraftingSystem : MonoBehaviour
 
     public CraftTool GetCurrentTool()
     {
-        return currentTool;
+        // Keep backward compatibility - return appropriate tool based on current item
+        return currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
     }
 
     public bool IsPlayerInRange()
@@ -595,15 +598,20 @@ public class TrashCraftingSystem : MonoBehaviour
         return isCrafting;
     }
 
+    public CraftableItem GetCurrentItem()
+    {
+        return currentItemIndex < craftableItems.Length ? craftableItems[currentItemIndex] : null;
+    }
+
     /// <summary>
-    /// ���¡�ҡ CraftedObject ������ѵ�ض١�������е�ͧ��Ѻ���繡ͧ���
+    /// เรียกจาก CraftedObject เมื่อวัตถุถูกทำลายและต้องกลับมาเป็นกองขยะ
     /// </summary>
     public void OnCraftedObjectDestroyed(Vector3 position)
     {
         transform.position = position;
         currentCraftedObject = null;
 
-        // �Դ�ͧ��С�Ѻ������ҿ���ա
+        // เปิดกองขยะกลับมาให้คราฟได้อีก
         gameObject.SetActive(true);
 
         Debug.Log($"Trash pile returned to position: {position}");
@@ -626,4 +634,11 @@ public class TrashCraftingSystem : MonoBehaviour
     }
 
     #endregion
+
+    // Keep the CraftTool enum for backward compatibility
+    public enum CraftTool
+    {
+        Glue,   // สร้างกล่อง
+        Thread  // สร้างตุ๊กตา
+    }
 }

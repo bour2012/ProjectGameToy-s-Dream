@@ -156,10 +156,12 @@ MonoBehaviour:
   craftingTime: 2.5
   trashId: trash_pile_01
   trashName: Trash Pile
-  boxItem:
-    itemName: Box
+  craftableItems:
+  - itemName: Box
     prefab: {fileID: 7899959792572343891, guid: 827dacadc5514b742944f95cd505e986, type: 3}
-    lifetime: 15
+    lifetime: 10
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 0
     canBePossessed: 0
@@ -168,10 +170,11 @@ MonoBehaviour:
     destroyEffect: {fileID: 0}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
-  dollItem:
-    itemName: Doll
+  - itemName: Doll
     prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
     lifetime: 15
+    requiredItemType: 1
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 1
@@ -182,8 +185,9 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 635114369}
   iconHolder: {fileID: 417916564}
-  glueIcon: {fileID: 728836607}
-  threadIcon: {fileID: 1533972293}
+  itemIcons:
+  - {fileID: 728836607}
+  - {fileID: 1533972293}
   interactPrompt: {fileID: 1460490343}
   progressPanel: {fileID: 2091507826}
   progressText: {fileID: 1320402529}
@@ -255,7 +259,7 @@ Transform:
   m_GameObject: {fileID: 3324450}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.03, y: 2.43, z: 0}
+  m_LocalPosition: {x: -7.371481, y: 2.5403621, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4747,12 +4751,12 @@ MonoBehaviour:
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
-  fakeDollLayer:
-    serializedVersion: 2
-    m_Bits: 512
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 128
+  fakeDollLayer:
+    serializedVersion: 2
+    m_Bits: 512
   possessRange: 1
   wallCheckDistance: 0.5
   groundCheckDistance: 1
@@ -6019,7 +6023,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 42b21fdbe084b5647a6174a681c8552e, type: 3}
+  m_Sprite: {fileID: -8445210560121782024, guid: ed074d8658b8c16488e8628a94ba310f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8682,6 +8686,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultCheckpoint: {fileID: 0}
+  showCheckpointDebugInfo: 1
   currentState: 0
   player: {fileID: 459519741}
   playerController: {fileID: 0}
@@ -8901,10 +8907,12 @@ MonoBehaviour:
   craftingTime: 2.5
   trashId: trash_pile_01
   trashName: Trash Pile
-  boxItem:
-    itemName: Box
-    prefab: {fileID: 7899959792572343891, guid: 827dacadc5514b742944f95cd505e986, type: 3}
-    lifetime: 15
+  craftableItems:
+  - itemName: 
+    prefab: {fileID: 0}
+    lifetime: 2
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 0
     canBePossessed: 0
@@ -8913,13 +8921,14 @@ MonoBehaviour:
     destroyEffect: {fileID: 0}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
-  dollItem:
-    itemName: Doll
-    prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
-    lifetime: 15
+  - itemName: 
+    prefab: {fileID: 0}
+    lifetime: 2
+    requiredItemType: 0
+    requiredAmount: 1
     canBePushed: 1
-    canDistractEnemies: 1
-    canBePossessed: 1
+    canDistractEnemies: 0
+    canBePossessed: 0
     maxHitPoints: 3
     spawnEffect: {fileID: 0}
     destroyEffect: {fileID: 0}
@@ -8927,8 +8936,7 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 923961353}
   iconHolder: {fileID: 1697102871}
-  glueIcon: {fileID: 1983529822}
-  threadIcon: {fileID: 964711150}
+  itemIcons: []
   interactPrompt: {fileID: 78495006}
   progressPanel: {fileID: 1356979023}
   progressText: {fileID: 265749484}
@@ -11158,6 +11166,9 @@ MonoBehaviour:
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
   chaseCooldown: 1
   usePatrolRange: 0
   patrolLeftOffset: -3
@@ -11320,10 +11331,10 @@ MonoBehaviour:
   detectionLayers:
     serializedVersion: 2
     m_Bits: 0
-  fakeDollLayer:
+  obstacleLayers:
     serializedVersion: 2
     m_Bits: 0
-  obstacleLayers:
+  fakeDollLayer:
     serializedVersion: 2
     m_Bits: 0
   possessRange: 1
@@ -11730,7 +11741,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4279557776402022635, guid: 390f9b0a80f005e4e989e235cab508a0, type: 3}
+  m_Sprite: {fileID: 1780922917589292398, guid: f3a84596ad8ce5b4f8c22d880824ae13, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

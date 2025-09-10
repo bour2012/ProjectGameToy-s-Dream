@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3149609764986300899}
   - component: {fileID: 6760489363640272181}
   - component: {fileID: 832451096869208223}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: GlueProjectile
   m_TagString: Pushable
   m_Icon: {fileID: 0}
@@ -177,17 +177,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 20
   timeStickToTarget: 5
-  groundDestroyDelay: 3
+  groundDestroyDelay: 5
   stickForce: 30
+  timeGlueStick: 2
   targetLayers:
     serializedVersion: 2
-    m_Bits: 3136
+    m_Bits: 3072
   groundLayers:
     serializedVersion: 2
     m_Bits: 128
   excludedTargetLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2369
   impactEffect: {fileID: 0}
   splatEffect: {fileID: 0}
   shootSound: {fileID: 0}
