@@ -163,7 +163,7 @@ public class GlueProjectile : MonoBehaviour
         CreateImpactEffects();
         PlaySound(impactSound);
 
-        transform.SetParent(ground.transform);
+        //transform.SetParent(ground.transform);
         isOnGround = true;
 
         Debug.Log($"Glue stuck on ground: {ground.name}");

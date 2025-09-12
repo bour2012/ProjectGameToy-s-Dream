@@ -108,18 +108,46 @@ public class PatrollingEnemy : Enemy
         }
         else
         {
-            // พฤติกรรมเดิม
-            Vector3 direction = (initialPosition - transform.position).normalized;
             float step = moveSpeed * Time.deltaTime;
             transform.position += Vector3.right * (step * (movingRight ? 1 : -1));
 
+            // ✅ ทิศทางที่กำลังเดิน
             Vector2 dir = movingRight ? Vector2.right : Vector2.left;
-            RaycastHit2D wallHit = Physics2D.Raycast(transform.position, dir, wallCheckDistance, groundLayer);
 
+            // ✅ จุดเริ่มยิง Raycast (ขยับออกไปข้างหน้าเล็กน้อย)
+            Vector2 wallCheckOrigin = new Vector2(
+                transform.position.x + (movingRight ? 0.5f : -0.5f),
+                transform.position.y
+            );
+
+            // ✅ ตรวจจับสิ่งกีดขวางด้วยระยะที่กำหนด (wallCheckDistance)
+            RaycastHit2D wallHit = Physics2D.Raycast(
+                wallCheckOrigin,
+                dir,
+                wallCheckDistance,
+                obstacleLayers
+            );
+
+            // วาดเส้น Raycast ให้เห็นใน Scene View (สีแดงถ้าเจอ, เขียวถ้าไม่เจอ)
+            Debug.DrawRay(wallCheckOrigin, dir * wallCheckDistance, wallHit.collider ? Color.red : Color.green);
+
+            // ✅ ตรวจจับพื้น (จากด้านหน้าเล็กน้อย แล้วยิงลงล่าง)
             Vector2 downDir = Vector2.down;
-            Vector2 frontPos = new Vector2(transform.position.x + (movingRight ? 0.5f : -0.5f), transform.position.y);
-            RaycastHit2D groundHit = Physics2D.Raycast(frontPos, downDir, groundCheckDistance, groundLayer);
+            Vector2 frontPos = new Vector2(
+                transform.position.x + (movingRight ? 0.5f : -0.5f),
+                transform.position.y
+            );
 
+            RaycastHit2D groundHit = Physics2D.Raycast(
+                frontPos,
+                downDir,
+                groundCheckDistance,
+                groundLayer
+            );
+
+            Debug.DrawRay(frontPos, downDir * groundCheckDistance, groundHit.collider ? Color.blue : Color.yellow);
+
+            // ✅ ถ้ามีสิ่งกีดขวาง หรือ ไม่มีพื้น → กลับทิศ
             if (wallHit.collider != null || groundHit.collider == null)
             {
                 movingRight = !movingRight;

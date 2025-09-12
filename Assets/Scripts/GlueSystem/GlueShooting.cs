@@ -308,8 +308,8 @@ public class GlueShooting : MonoBehaviour
         }
 
         // ตั้งค่าการหมุน
-        float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-        glueProjectile.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        //float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        //glueProjectile.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         // เริ่มคูลดาวน์
         StartCoroutine(ShootCooldown());

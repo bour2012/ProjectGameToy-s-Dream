@@ -109,28 +109,56 @@ public class StationaryEnemy : Enemy
         Vector3 direction = (initialPosition - transform.position).normalized;
         float step = moveSpeed * Time.deltaTime;
 
-        // ตรวจจับสิ่งกีดขวางข้างหน้า
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, wallCheckDistance, obstacleLayers);
+        Vector2[] origins = {
+    transform.position + Vector3.up * 0.5f,
+    transform.position,
+    transform.position + Vector3.down * 0.5f
+};
 
-        if (hit.collider == null)
+        bool blocked = false;
+        foreach (var origin in origins)
         {
-            // ไม่มีสิ่งกีดขวาง เดินกลับไปที่เดิม
+            RaycastHit2D hit = Physics2D.Raycast(origin, direction, Vector2.Distance(transform.position, initialPosition), obstacleLayers);
+            if (hit.collider != null)
+            {
+                blocked = true;
+                break;
+            }
+        }
+
+        if (!blocked)
+        {
             transform.position = Vector3.MoveTowards(transform.position, initialPosition, step);
             isReturningBlocked = false;
         }
         else
         {
-            // เจอกำแพงหรือสิ่งกีดขวาง ให้หยุดอยู่กับที่
             isReturningBlocked = true;
-            return;
         }
 
-        // ถึงตำแหน่งเดิมแล้ว ให้ยืนนิ่ง
-        if (Vector3.Distance(transform.position, initialPosition) <= 0.01f)
-        {
-            transform.position = initialPosition;
-            isReturningBlocked = false;
-        }
+
+        //// ตรวจจับสิ่งกีดขวางข้างหน้า
+        //RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, wallCheckDistance, obstacleLayers);
+
+        //if (hit.collider == null)
+        //{
+        //    // ไม่มีสิ่งกีดขวาง เดินกลับไปที่เดิม
+        //    transform.position = Vector3.MoveTowards(transform.position, initialPosition, step);
+        //    isReturningBlocked = false;
+        //}
+        //else
+        //{
+        //    // เจอกำแพงหรือสิ่งกีดขวาง ให้หยุดอยู่กับที่
+        //    isReturningBlocked = true;
+        //    return;
+        //}
+
+        //// ถึงตำแหน่งเดิมแล้ว ให้ยืนนิ่ง
+        //if (Vector3.Distance(transform.position, initialPosition) <= 0.01f)
+        //{
+        //    transform.position = initialPosition;
+        //    isReturningBlocked = false;
+        //}
     }
 
     //private void MergeWithFakeDoll(GameObject fakeDoll)

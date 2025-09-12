@@ -81,7 +81,7 @@ public class CraftedObject : MonoBehaviour
             if (itemData.canBePushed)
             {
                 rb.bodyType = RigidbodyType2D.Dynamic;
-                rb.freezeRotation = true;
+                //rb.freezeRotation = true;
 
                 // กล่อง = หนักกว่า, ตุ๊กตา = เบากว่า
                 rb.mass = itemData.itemName.ToLower().Contains("box") ? 2f : 0.5f;

@@ -44,8 +44,9 @@ public class PlayerMovement : MonoBehaviour
     private bool groundCheck;
     private bool hitWallLeft;    // ชนกำแพงซ้าย
     private bool hitWallRight;   // ชนกำแพงขวา
+    private bool facingRight = true;
 
-     void Awake()
+    void Awake()
     {
         playerSprite = GetComponent<SpriteRenderer>();
         rBody = GetComponent<Rigidbody2D>();
@@ -56,8 +57,27 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // รับ Input
-        jumpInput = Input.GetAxisRaw("Jump");
+        bool jumpPressed = Input.GetButtonDown("Jump");
+        // กระโดด
+        if (jumpPressed && groundCheck)
+        {
+            rBody.linearVelocity = new Vector2(rBody.linearVelocity.x, jumpSpeed);
+        }
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
+
+        // กดขวา → หันขวา (ถ้ายังไม่หัน)
+        if (horizontalInput > 0f && !facingRight)
+        {
+            facingRight = true;
+            playerSprite.flipX = false;
+        }
+        // กดซ้าย → หันซ้าย (ถ้ายังไม่หัน)
+        else if (horizontalInput < 0f && facingRight)
+        {
+            facingRight = false;
+            playerSprite.flipX = true;
+        }
 
         // ตรวจพื้นด้วย Raycast 3 จุด (ซ้าย, กลาง, ขวา)
         CheckGround();
@@ -96,40 +116,58 @@ public class PlayerMovement : MonoBehaviour
 
     void CheckGround()
     {
-        float halfHeight = playerSprite.bounds.extents.y;
-        float halfWidth = playerSprite.bounds.extents.x;
+            // ใช้ Bounds ของ Collider ของ Player
+            Bounds bounds = playerCollider.bounds;
 
-        Vector2 leftFoot = new Vector2(transform.position.x - halfWidth * 0.8f, transform.position.y - halfHeight);
-        Vector2 midFoot = new Vector2(transform.position.x, transform.position.y - halfHeight);
-        Vector2 rightFoot = new Vector2(transform.position.x + halfWidth * 0.8f, transform.position.y - halfHeight);
+            // กำหนดตำแหน่งใต้เท้า
+            Vector2 footPosition = new Vector2(bounds.center.x, bounds.min.y); // 0.05f เป็น offset เล็กน้อย
 
-        bool leftHit = Physics2D.Raycast(leftFoot, Vector2.down, rayLength, groundLayer);
-        bool midHit = Physics2D.Raycast(midFoot, Vector2.down, rayLength, groundLayer);
-        bool rightHit = Physics2D.Raycast(rightFoot, Vector2.down, rayLength, groundLayer);
+            // ตรวจ Raycast ลงไปจากเท้า
+            RaycastHit2D hit = Physics2D.Raycast(footPosition, Vector2.down, 0.1f, groundLayer);
 
-        groundCheck = leftHit || midHit || rightHit;
+            groundCheck = hit.collider != null;
+
+            // Debug
+            Color debugColor = groundCheck ? Color.green : Color.red;
+            Debug.DrawRay(footPosition, Vector2.down * 0.1f, debugColor);
+        
+
+        //float halfHeight = playerSprite.bounds.extents.y;
+        //float halfWidth = playerSprite.bounds.extents.x;
+
+        //Vector2 leftFoot = new Vector2(transform.position.x - halfWidth * 0.8f, transform.position.y - halfHeight);
+        //Vector2 midFoot = new Vector2(transform.position.x, transform.position.y - halfHeight);
+        //Vector2 rightFoot = new Vector2(transform.position.x + halfWidth * 0.8f, transform.position.y - halfHeight);
+
+        //bool leftHit = Physics2D.Raycast(leftFoot, Vector2.down, rayLength, groundLayer);
+        //bool midHit = Physics2D.Raycast(midFoot, Vector2.down, rayLength, groundLayer);
+        //bool rightHit = Physics2D.Raycast(rightFoot, Vector2.down, rayLength, groundLayer);
+
+        //groundCheck = leftHit || midHit || rightHit;
     }
 
     void DrawGroundCheckDebug()
     {
-        float halfHeight = playerSprite.bounds.extents.y;
-        float halfWidth = playerSprite.bounds.extents.x;
+        //float halfHeight = playerSprite.bounds.extents.y;
+        //float halfWidth = playerSprite.bounds.extents.x;
 
-        Vector2 leftFoot = new Vector2(transform.position.x - halfWidth * 0.8f, transform.position.y - halfHeight);
-        Vector2 midFoot = new Vector2(transform.position.x, transform.position.y - halfHeight);
-        Vector2 rightFoot = new Vector2(transform.position.x + halfWidth * 0.8f, transform.position.y - halfHeight);
+        //Vector2 leftFoot = new Vector2(transform.position.x - halfWidth * 0.8f, transform.position.y - halfHeight);
+        //Vector2 midFoot = new Vector2(transform.position.x, transform.position.y - halfHeight);
+        //Vector2 rightFoot = new Vector2(transform.position.x + halfWidth * 0.8f, transform.position.y - halfHeight);
 
-        Debug.DrawRay(leftFoot, Vector2.down * rayLength, Color.red);
-        Debug.DrawRay(midFoot, Vector2.down * rayLength, Color.green);
-        Debug.DrawRay(rightFoot, Vector2.down * rayLength, Color.blue);
+        //Debug.DrawRay(leftFoot, Vector2.down * rayLength, Color.red);
+        //Debug.DrawRay(midFoot, Vector2.down * rayLength, Color.green);
+        //Debug.DrawRay(rightFoot, Vector2.down * rayLength, Color.blue);
     }
+
+
 
     void UpdateAnimations()
     {
         animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
         //animator.SetBool("IsGrounded", groundCheck);
         animator.SetBool("IsSwinging", isSwinging);
-        playerSprite.flipX = horizontalInput < 0f;
+        //playerSprite.flipX = horizontalInput < 0f;
 
         // เพิ่ม Animation สำหรับปีนบันได (ถ้ามี)
         if (animator.parameters.Length > 0)
@@ -449,10 +487,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // กระโดด
-        if (groundCheck && jumpInput > 0f)
-        {
-            rBody.linearVelocity = new Vector2(rBody.linearVelocity.x, jumpSpeed);
-        }
+        //if (groundCheck && jumpInput > 0f)
+        //{
+        //    rBody.linearVelocity = new Vector2(rBody.linearVelocity.x, jumpSpeed);
+        //}
     }
 
     void HandleAirMovement()

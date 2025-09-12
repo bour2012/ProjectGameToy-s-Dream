@@ -28,6 +28,8 @@ public class Rope : MonoBehaviour
     private List<Vector2> ropePositions = new List<Vector2>();
     private bool distanceSet;
     private bool wasSwingingLastFrame = false;
+    private Transform attachedTarget; // เก็บวัตถุที่เชือกเกี่ยว
+    private Vector2 localHitOffset;   // เก็บ offset จากตำแหน่ง anchor ของวัตถุ
 
     // Integration with GlueShooting
     private GlueShooting glueShootingScript;
@@ -194,6 +196,12 @@ public class Rope : MonoBehaviour
 
             if (hit.collider != null)
             {
+                ropeAttached = true;
+
+                // ถ้าวัตถุสามารถเคลื่อนที่ได้
+                attachedTarget = hit.collider.transform;
+                localHitOffset = (Vector2)hit.point - (Vector2)attachedTarget.position;
+
                 // ใช้ Thread
                 if (ItemManager.Instance != null)
                 {
@@ -205,18 +213,16 @@ public class Rope : MonoBehaviour
                     }
                 }
 
-                ropeAttached = true;
-
                 if (!ropePositions.Contains(hit.point))
                 {
-                    // เพิ่มแรงกระตุ้นเล็กน้อย
                     transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 1f), ForceMode2D.Impulse);
                     var playerRb = transform.GetComponent<Rigidbody2D>();
                     Vector2 preSwingVelocity = playerRb.linearVelocity;
+
                     // เพิ่มตำแหน่งปลายเชือก
                     ropePositions.Add(hit.point);
 
-                    // ตั้งค่าเชือกให้สั้นลงเล็กน้อยทันที
+                    // ทำให้เชือกสั้นลงเล็กน้อย
                     float actualDistance = Vector2.Distance(playerPosition, hit.point);
                     StartCoroutine(SmoothShortenRope(actualDistance, actualDistance * 0.75f, 0.5f));
 
@@ -227,10 +233,9 @@ public class Rope : MonoBehaviour
                     if (preSwingVelocity.magnitude < 1f)
                     {
                         Vector2 swingDirection = Vector2.Perpendicular((hit.point - (Vector2)transform.position).normalized);
-                        if (aimDirection.x > 0) swingDirection *= -1; // ถ้าเล็งขวา ให้แกว่งซ้าย
+                        if (aimDirection.x > 0) swingDirection *= -1;
                         playerRb.AddForce(swingDirection * 2f, ForceMode2D.Impulse);
                     }
-
 
                     Debug.Log("Rope attached successfully - Thread consumed");
                 }
@@ -346,40 +351,75 @@ public class Rope : MonoBehaviour
 
     private void UpdateRopePositions()
     {
+
         if (!ropeAttached) return;
 
         ropeRenderer.positionCount = ropePositions.Count + 1;
 
-        for (var i = ropeRenderer.positionCount - 1; i >= 0; i--)
+        for (int i = 0; i < ropePositions.Count; i++)
         {
-            if (i != ropeRenderer.positionCount - 1) // ถ้าไม่ใช่จุดสุดท้าย
+            Vector2 ropePoint = ropePositions[i];
+
+            // ถ้าเป็น anchor ที่ปลายสุด และมี target ให้ติดตามวัตถุเคลื่อนที่
+            if (i == ropePositions.Count - 1 && attachedTarget != null)
             {
-                ropeRenderer.SetPosition(i, ropePositions[i]);
-
-                // ตั้งค่าตำแหน่ง anchor
-                if (i == ropePositions.Count - 1 || ropePositions.Count == 1)
-                {
-                    var ropePosition = ropePositions[ropePositions.Count - 1];
-                    ropeHingeAnchorRb.transform.position = ropePosition;
-                }
-                else if (i - 1 == ropePositions.IndexOf(ropePositions.Last()))
-                {
-                    var ropePosition = ropePositions.Last();
-                    ropeHingeAnchorRb.transform.position = ropePosition;
-
-                    if (!distanceSet)
-                    {
-                        ropeJoint.distance = Vector2.Distance(transform.position, ropePosition);
-                        distanceSet = true;
-                    }
-                }
+                ropePoint = (Vector2)attachedTarget.position + localHitOffset;
+                ropePositions[i] = ropePoint; // อัปเดตตำแหน่ง anchor
             }
-            else
+
+            ropeRenderer.SetPosition(i, ropePoint);
+        }
+
+        // จุดสุดท้ายของ LineRenderer = player
+        ropeRenderer.SetPosition(ropeRenderer.positionCount - 1, transform.position);
+
+        // ตั้ง anchor ของ DistanceJoint ให้ตรงกับ anchor ปลายสุด
+        if (ropePositions.Count > 0)
+        {
+            ropeHingeAnchorRb.transform.position = ropePositions.Last();
+
+            // ตั้งค่า distance ของ Joint ถ้ายังไม่ตั้ง
+            if (!distanceSet)
             {
-                // จุดสุดท้าย = ตำแหน่งผู้เล่น
-                ropeRenderer.SetPosition(i, transform.position);
+                ropeJoint.distance = Vector2.Distance(transform.position, ropePositions.Last());
+                distanceSet = true;
             }
         }
+
+        //if (!ropeAttached) return;
+
+        //ropeRenderer.positionCount = ropePositions.Count + 1;
+
+        //for (var i = ropeRenderer.positionCount - 1; i >= 0; i--)
+        //{
+        //    if (i != ropeRenderer.positionCount - 1) // ถ้าไม่ใช่จุดสุดท้าย
+        //    {
+        //        ropeRenderer.SetPosition(i, ropePositions[i]);
+
+        //        // ตั้งค่าตำแหน่ง anchor
+        //        if (i == ropePositions.Count - 1 || ropePositions.Count == 1)
+        //        {
+        //            var ropePosition = ropePositions[ropePositions.Count - 1];
+        //            ropeHingeAnchorRb.transform.position = ropePosition;
+        //        }
+        //        else if (i - 1 == ropePositions.IndexOf(ropePositions.Last()))
+        //        {
+        //            var ropePosition = ropePositions.Last();
+        //            ropeHingeAnchorRb.transform.position = ropePosition;
+
+        //            if (!distanceSet)
+        //            {
+        //                ropeJoint.distance = Vector2.Distance(transform.position, ropePosition);
+        //                distanceSet = true;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // จุดสุดท้าย = ตำแหน่งผู้เล่น
+        //        ropeRenderer.SetPosition(i, transform.position);
+        //    }
+        //}
     }
 
     #endregion
