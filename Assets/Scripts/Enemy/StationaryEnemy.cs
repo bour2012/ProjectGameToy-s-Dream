@@ -5,6 +5,7 @@ public class StationaryEnemy : Enemy
     public LayerMask fakeDollLayer;
     public float possessRange = 0.5f;
 
+    [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private float groundCheckDistance = 1f;
     public float chaseCooldown = 2f;
@@ -173,6 +174,8 @@ public class StationaryEnemy : Enemy
     //    return (layerMask.value & (1 << obj.layer)) > 0;
     //}
 
+
+
     public void Possess(CraftedObject doll)
     {
         if (currentPossessedDoll != null) return;
@@ -228,5 +231,43 @@ public class StationaryEnemy : Enemy
         currentPossessedDoll = null;
         originalDoll = null;
         originalEnemy = null;
+    }
+
+    protected override void Chase(GameObject target)
+    {
+        if (target == null) return;
+
+        // หาทิศทางไปยังเป้า
+        float directionX = target.transform.position.x - transform.position.x;
+        directionX = Mathf.Sign(directionX); // +1 = ขวา, -1 = ซ้าย
+        Vector3 moveDir = Vector3.right * directionX;
+
+        // ตรวจกำแพงข้างหน้า
+        Vector2 wallCheckOrigin = new Vector2(transform.position.x + directionX * 0.5f, transform.position.y);
+        RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, Vector2.right * directionX, wallCheckDistance, obstacleLayers);
+        Debug.DrawRay(wallCheckOrigin, Vector2.right * directionX * wallCheckDistance, wallHit.collider ? Color.red : Color.green);
+
+        if (wallHit.collider != null)
+        {
+            // เจอกำแพง → ไม่เดิน
+            // สามารถกลับทิศได้ถ้าอยากให้เดินกลับ
+            return;
+        }
+
+        // ตรวจพื้นด้านหน้า
+        Vector2 groundCheckOrigin = new Vector2(transform.position.x + directionX * 0.5f, transform.position.y);
+        RaycastHit2D groundHit = Physics2D.Raycast(groundCheckOrigin, Vector2.down, groundCheckDistance, groundLayer);
+        Debug.DrawRay(groundCheckOrigin, Vector2.down * groundCheckDistance, groundHit.collider ? Color.blue : Color.yellow);
+
+        if (groundHit.collider == null)
+        {
+            // ไม่มีพื้น → ไม่เดิน
+            return;
+        }
+
+        // เดินได้ → อัปเดตตำแหน่ง
+        transform.position += moveDir * moveSpeed * Time.deltaTime;
+
+
     }
 }

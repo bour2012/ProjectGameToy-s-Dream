@@ -16,6 +16,7 @@ public class Rope : MonoBehaviour
     public LineRenderer ropeRenderer;
     public LayerMask ropeLayerMask;
     public float ropeMaxCastDistance = 20f;
+    public float ropeStandardDistance = 5f; // ระยะมาตรฐานของเชือก
 
     [Header("Game Manager Integration")]
     public bool respectGameManagerState = true; // เปิด/ปิดการใช้ GameManager
@@ -222,9 +223,33 @@ public class Rope : MonoBehaviour
                     // เพิ่มตำแหน่งปลายเชือก
                     ropePositions.Add(hit.point);
 
-                    // ทำให้เชือกสั้นลงเล็กน้อย
+                    // คำนวณระยะจริงและระยะที่ต้องการ
                     float actualDistance = Vector2.Distance(playerPosition, hit.point);
-                    StartCoroutine(SmoothShortenRope(actualDistance, actualDistance * 0.75f, 0.5f));
+                    float targetDistance;
+
+                    // ตรวจสอบว่าระยะอยู่ในช่วงมาตรฐานหรือไม่
+                    if (actualDistance < ropeStandardDistance)
+                    {
+                        // ถ้าระยะสั้นกว่ามาตรฐาน ให้ใช้ระยะมาตรฐาน
+                        targetDistance = ropeStandardDistance;
+                        Debug.Log($"Rope distance extended from {actualDistance:F2} to standard distance {ropeStandardDistance}");
+                    }
+                    else if (actualDistance == ropeStandardDistance)
+                    {
+                        // ถ้าระยะเท่ากับมาตรฐานพอดี ให้ยาว 75%
+                        targetDistance = actualDistance * 0.75f;
+                    }
+                    else
+                    {
+                        // ถ้าระยะเกินมาตรฐาน ให้ใช้ระยะมาตรฐานแทน
+                        targetDistance = ropeStandardDistance;
+                        Debug.Log($"Rope distance clamped from {actualDistance:F2} to standard distance {ropeStandardDistance}");
+                    }
+
+                    // ทำให้เชือกสั้นลงตามที่คำนวณ
+                    StartCoroutine(SmoothShortenRope(actualDistance, targetDistance, 0.5f));
+
+
 
                     // เปิดใช้งานเชือกและ anchor
                     ropeJoint.enabled = true;

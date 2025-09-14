@@ -65,6 +65,7 @@ public class GlueProjectile : MonoBehaviour
 
     private void Update()
     {
+        //Debug.Log(RemainingLifetime);
         //if (currentTarget != null)
         //{
         //    float dist = Vector2.Distance(transform.position, currentTarget.transform.position);
@@ -125,6 +126,8 @@ public class GlueProjectile : MonoBehaviour
         {
             targetInside = true;
             currentTarget = other;
+            ExtendDestroyTime(other);
+
             Debug.Log($"[Frame {Time.frameCount}] Target still inside glue: {other.name}");
         }
         else
@@ -149,7 +152,6 @@ public class GlueProjectile : MonoBehaviour
         //lastSlowTime = timeNow;
 
         // ยืดเวลาแค่ครั้งเดียว
-        ExtendDestroyTime(other);
        
         //ApplySlow(other);
         AttachJoint(other);
@@ -163,7 +165,7 @@ public class GlueProjectile : MonoBehaviour
         CreateImpactEffects();
         PlaySound(impactSound);
 
-        //transform.SetParent(ground.transform);
+        transform.SetParent(ground.transform);
         isOnGround = true;
 
         Debug.Log($"Glue stuck on ground: {ground.name}");
@@ -190,7 +192,12 @@ public class GlueProjectile : MonoBehaviour
 
         transform.SetParent(target.transform);
         Debug.Log($"Glue stuck directly to target: {target.name}");
+        //Vector3 stickPoint = target.ClosestPoint(transform.position);
 
+        //// เรียก Coroutine ให้ค่อย ๆ ชะลอ + ดูดเข้าจุด stickPoint
+        //StartCoroutine(SlowDownAndStick(stickPoint));
+
+        // เมื่อจบ coroutine แล้วค่อยเริ่มนับเวลา
         StartDestroyCountdown(destroyDelay);
 
     }
@@ -335,15 +342,20 @@ public class GlueProjectile : MonoBehaviour
         //float timer = currentDestroyDelay; // เวลาเริ่มต้น
         while (RemainingLifetime > 0f)
         {
+
+            //Debug.Log("Target Slow IS :" + target);
             // ทุก ๆ frame จะเช็คว่าเหลือเวลาเท่าไหร่
 
-            if (targetInside && currentTarget != null)
-            {
+            //if (targetInside /*&& currentTarget != null*/)
+            //{
                 if (RemainingLifetime > timeGlueStick)
                     ApplySlow(target);
-                else
+                else if (RemainingLifetime <= timeGlueStick)
                     ApplySlowHard(target);
-            }
+            //else
+            //    ApplySlowHard(target);
+
+            //}
 
             //currentDestroyDelay -= Time.deltaTime; // ลดเวลาไปเรื่อย ๆ
             yield return null; // รอ 1 frame
