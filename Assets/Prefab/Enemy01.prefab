@@ -132,7 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: 
   maxHealth: 100
-  moveSpeed: 2
+  moveSpeed: 3
   detectionRange: 3
   detectionLayers:
     serializedVersion: 2

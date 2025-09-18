@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: 
   maxHealth: 100
-  moveSpeed: 2
+  moveSpeed: 3
   detectionRange: 5.56
   detectionLayers:
     serializedVersion: 2
@@ -143,6 +143,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   possessRange: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
   wallCheckDistance: 0.5
   groundCheckDistance: 1
   chaseCooldown: 2
