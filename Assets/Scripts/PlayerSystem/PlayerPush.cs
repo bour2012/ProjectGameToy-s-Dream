@@ -3,14 +3,19 @@
 public class PlayerPush : MonoBehaviour
 {
     [Header("Push Settings")]
-    public float distanceToPush = 1.0f;
+    public float detectionDistance = 1.5f;
     public LayerMask boxMask;
     public KeyCode pushKey = KeyCode.E;
 
+    [Header("Detection Settings")]
+    public float detectionWidth = 0.8f;
+    public float detectionHeight = 1.2f;
+    public float minDistanceToBox = 0.3f; // ระยะห่างขั้นต่ำที่ต้องอยู่ใกล้กล่อง
+
     [Header("Visual Feedback")]
-    public GameObject pushIndicator; // UI หรือ Icon บอกว่าสามารถดันได้
-    public Color raycastColor = Color.red;
-    public bool showDebugRay = true;
+    public GameObject pushIndicator;
+    public Color gizmoColor = Color.red;
+    public bool showDebugGizmos = true;
 
     [Header("Audio (Optional)")]
     public AudioSource audioSource;
@@ -18,18 +23,19 @@ public class PlayerPush : MonoBehaviour
     public AudioClip releaseSound;
 
     [Header("Direction Settings")]
-    public bool maintainLastDirection = true; // คงทิศทางสุดท้ายไว้
+    public bool maintainLastDirection = true;
 
     // Private Variables
-    private GameObject targetBox; // กล่องที่กำลังจับ
-    private GameObject availableBox; // กล่องที่สามารถจับได้
+    private GameObject targetBox;
+    private GameObject availableBox;
     private bool isHolding = false;
     private Rigidbody2D playerRb;
     private SpriteRenderer playerSprite;
     private PlayerController playerController;
 
-    private float lastFacingDirection = 1f; // 1 = right, -1 = left
-    private float lastHorizontalInput = 0f;
+    private float lastFacingDirection = 1f;
+    private float detectionCooldown = 0f;
+    private const float DETECTION_COOLDOWN_TIME = 0.1f; // ช่วงเวลาที่รอก่อนตรวจจับใหม่
 
     // การอ้างอิงระบบอื่นๆ
     private GameManager gameManager;
@@ -39,21 +45,23 @@ public class PlayerPush : MonoBehaviour
         InitializeComponents();
         SetupReferences();
 
-        //// ซ่อน Push Indicator ตอนเริ่มต้น
-        //if (pushIndicator != null)
-        //    pushIndicator.SetActive(false);
-
-        //// ป้องกัน raycast ชน collider ของตัวเอง
-        //Physics2D.queriesStartInColliders = false;
+        // ซ่อน Push Indicator ตอนเริ่มต้น
+        if (pushIndicator != null)
+            pushIndicator.SetActive(false);
     }
 
     void Update()
     {
-
         UpdateFacingDirection();
+
+        // อัพเดท cooldown
+        if (detectionCooldown > 0)
+            detectionCooldown -= Time.deltaTime;
+
         // ตรวจสอบว่าสามารถใช้งานได้หรือไม่
         if (!CanUsePushSystem()) return;
 
+        // ตรวจสอบว่ากล่องที่กำลังจับยังอยู่หรือไม่
         if (isHolding && (targetBox == null || !targetBox.activeInHierarchy))
         {
             StopPushing();
@@ -63,6 +71,15 @@ public class PlayerPush : MonoBehaviour
         CheckForPushableObjects();
         HandlePushInput();
         UpdateVisualFeedback();
+    }
+
+    void FixedUpdate()
+    {
+        // ใช้ FixedUpdate สำหรับการตรวจจับที่เสถียรกว่า
+        if (detectionCooldown <= 0 && !isHolding)
+        {
+            DetectNearbyBoxes();
+        }
     }
 
     #region Initialization
@@ -85,13 +102,12 @@ public class PlayerPush : MonoBehaviour
 
     void SetupReferences()
     {
-        // ค้นหา GameManager
         gameManager = GameManager.Instance;
         if (gameManager == null)
-            gameManager = Object.FindFirstObjectByType<GameManager>(); // Updated to use FindFirstObjectByType
+            gameManager = Object.FindFirstObjectByType<GameManager>();
 
         if (gameManager == null)
-            Debug.LogWarning("PlayerPush: GameManager not found! Push system may not work correctly.");
+            Debug.LogWarning("PlayerPush: GameManager not found!");
     }
 
     #endregion
@@ -100,20 +116,18 @@ public class PlayerPush : MonoBehaviour
 
     bool CanUsePushSystem()
     {
-        // ตรวจสอบว่า GameManager อนุญาตให้ใช้งานหรือไม่
         if (gameManager != null)
         {
             return gameManager.currentState == GameState.Normal ||
                    gameManager.currentState == GameState.PushingObject;
         }
 
-        // หาก GameManager ไม่มี ให้ตรวจสอบจาก PlayerController
         if (playerController != null)
         {
             return playerController.interactionEnabled;
         }
 
-        return true; // Default ให้ใช้งานได้
+        return true;
     }
 
     bool CanStartPushing()
@@ -136,46 +150,124 @@ public class PlayerPush : MonoBehaviour
 
     #endregion
 
-    #region Detection & Input
+    #region Improved Detection
+
+    void DetectNearbyBoxes()
+    {
+        float facingDir = GetFacingDirection();
+        Vector2 playerPos = transform.position;
+
+        // ใช้ OverlapBox แทน Raycast เพื่อความแม่นยำกว่า
+        Vector2 boxCenter = new Vector2(
+            playerPos.x + (detectionDistance * 0.5f * facingDir),
+            playerPos.y
+        );
+
+        Vector2 boxSize = new Vector2(detectionDistance, detectionHeight);
+
+        // หากล่องที่ใกล้ที่สุด
+        Collider2D[] nearbyBoxes = Physics2D.OverlapBoxAll(boxCenter, boxSize, 0f, boxMask);
+
+        GameObject closestBox = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (var box in nearbyBoxes)
+        {
+            if (box.CompareTag("Pushable"))
+            {
+                // ตรวจสอบระยะห่างจริง
+                float distance = Vector2.Distance(playerPos, box.transform.position);
+
+                // ตรวจสอบว่าอยู่ในทิศทางที่ถูกต้องหรือไม่
+                Vector2 directionToBox = (box.transform.position - transform.position).normalized;
+                float dot = Vector2.Dot(Vector2.right * facingDir, directionToBox);
+
+                if (distance < closestDistance && distance <= detectionDistance && dot > 0.3f)
+                {
+                    closestDistance = distance;
+                    closestBox = box.gameObject;
+                }
+            }
+        }
+
+        // อัพเดท availableBox
+        if (closestBox != availableBox)
+        {
+            if (availableBox != null)
+            {
+                Debug.Log($"[Push Debug] Lost box: {availableBox.name}");
+            }
+
+            availableBox = closestBox;
+
+            if (availableBox != null)
+            {
+                Debug.Log($"[Push Debug] Found box: {availableBox.name} at distance: {closestDistance:F2}");
+            }
+        }
+    }
 
     void CheckForPushableObjects()
     {
-        float facingDir = GetFacingDirection();
-
-        // จุดศูนย์กลางของโซนตรวจจับ (หน้า player)
-        Vector2 origin = new Vector2(
-            transform.position.x + 0.5f * facingDir,
-            transform.position.y
-        );
-
-        // ขนาดกล่องตรวจจับ (กว้าง x สูง)
-        Vector2 boxSize = new Vector2(1.2f, 1.0f);
-
-        // หาวัตถุในโซน
-        Collider2D hit = Physics2D.OverlapBox(origin, boxSize, 0f, boxMask);
-
-        if (hit != null && hit.CompareTag("Pushable"))
+        // เก็บการตรวจจับแบบเก่าไว้เป็น backup
+        if (availableBox == null || !availableBox.activeInHierarchy)
         {
-            availableBox = hit.gameObject;
+            DetectNearbyBoxes();
         }
-        else
+
+        // ตรวจสอบว่ากล่องที่มียังอยู่ในระยะหรือไม่
+        if (availableBox != null)
         {
-            availableBox = null;
+            float distance = Vector2.Distance(transform.position, availableBox.transform.position);
+            if (distance > detectionDistance * 1.2f) // ให้ buffer เล็กน้อย
+            {
+                Debug.Log("[Push Debug] Box too far away, removing from available");
+                availableBox = null;
+            }
         }
     }
+
+    #endregion
+
+    #region Input Handling
 
     void HandlePushInput()
     {
         if (Input.GetKeyDown(pushKey))
         {
-            if (!isHolding && availableBox != null)
+            Debug.Log($"[Push Debug] Key pressed - isHolding: {isHolding}, availableBox: {(availableBox?.name ?? "None")}");
+
+            // เพิ่มการตรวจจับอีกครั้งก่อนทำการกดเพื่อความแน่ใจ
+            if (!isHolding && availableBox == null)
             {
-                StartPushing();
+                DetectNearbyBoxes();
+                Debug.Log($"[Push Debug] Re-detected - availableBox: {(availableBox?.name ?? "None")}");
             }
-            else if (isHolding)
+
+            if (!isHolding && availableBox != null && CanStartPushing())
+            {
+                // ตรวจสอบระยะห่างอีกครั้งก่อนเริ่มจับ
+                float distance = Vector2.Distance(transform.position, availableBox.transform.position);
+                if (distance <= detectionDistance)
+                {
+                    StartPushing();
+                }
+                else
+                {
+                    Debug.Log($"[Push Debug] Box too far: {distance:F2} > {detectionDistance}");
+                }
+            }
+            else if (isHolding && CanStopPushing())
             {
                 StopPushing();
             }
+            else
+            {
+                Debug.Log("[Push Debug] Cannot perform push action - conditions not met");
+            }
+
+            // เซ็ต cooldown หลังกดปุ่ม
+            detectionCooldown = DETECTION_COOLDOWN_TIME;
         }
     }
 
@@ -185,7 +277,11 @@ public class PlayerPush : MonoBehaviour
 
     void StartPushing()
     {
-        if (!CanStartPushing() || availableBox == null) return;
+        if (!CanStartPushing() || availableBox == null)
+        {
+            Debug.Log("[Push Debug] Cannot start pushing - conditions not met");
+            return;
+        }
 
         // แจ้ง GameManager ว่าเริ่มดันของ
         bool stateChanged = true;
@@ -206,27 +302,33 @@ public class PlayerPush : MonoBehaviour
 
         if (joint == null)
         {
-            // สร้าง FixedJoint2D ใหม่ถ้าไม่มี
             joint = targetBox.AddComponent<FixedJoint2D>();
         }
 
+        // ตั้งค่า Joint
         joint.enabled = true;
         joint.connectedBody = playerRb;
-        joint.enableCollision = false; // ป้องกันการชนกัน
+        joint.enableCollision = false;
+        joint.breakForce = Mathf.Infinity; // ป้องกันการหลุด
+        joint.breakTorque = Mathf.Infinity;
 
         isHolding = true;
 
         // เล่นเสียง
         PlaySound(grabSound);
 
-        Debug.Log($"Started pushing: {targetBox.name}");
+        Debug.Log($"[Push Debug] Successfully started pushing: {targetBox.name}");
     }
 
     void StopPushing()
     {
-        if (!CanStopPushing()) return;
+        if (!CanStopPushing())
+        {
+            Debug.Log("[Push Debug] Cannot stop pushing - conditions not met");
+            return;
+        }
 
-        // ปล่อยกล่อง (ถ้ายังมีอยู่)
+        // ปล่อยกล่อง
         if (targetBox != null)
         {
             FixedJoint2D joint = targetBox.GetComponent<FixedJoint2D>();
@@ -234,16 +336,15 @@ public class PlayerPush : MonoBehaviour
             {
                 joint.enabled = false;
                 joint.connectedBody = null;
+                // ไม่ต้อง destroy joint ทิ้ง เพื่อให้สามารถใช้ใหม่ได้
             }
 
-            // เล่นเสียง
             PlaySound(releaseSound);
-
-            Debug.Log($"Stopped pushing: {targetBox.name}");
+            Debug.Log($"[Push Debug] Successfully stopped pushing: {targetBox.name}");
         }
         else
         {
-            Debug.Log("Stopped pushing: (box destroyed or missing)");
+            Debug.Log("[Push Debug] Stopped pushing: (box destroyed or missing)");
         }
 
         // แจ้ง GameManager ว่าหยุดดันของ
@@ -254,17 +355,17 @@ public class PlayerPush : MonoBehaviour
 
         targetBox = null;
         isHolding = false;
+
+        // เซ็ต cooldown หลังจากหยุดดัน
+        detectionCooldown = DETECTION_COOLDOWN_TIME;
     }
 
     #endregion
-
-
 
     #region Visual & Audio Feedback
 
     void UpdateVisualFeedback()
     {
-        // แสดง/ซ่อน Push Indicator
         if (pushIndicator != null)
         {
             bool shouldShow = availableBox != null && !isHolding && CanStartPushing();
@@ -273,11 +374,11 @@ public class PlayerPush : MonoBehaviour
             {
                 pushIndicator.SetActive(shouldShow);
 
-                // ตำแหน่ง Indicator ให้อยู่เหนือกล่อง
                 if (shouldShow && availableBox != null)
                 {
                     Vector3 indicatorPos = availableBox.transform.position;
-                    indicatorPos.y += availableBox.GetComponent<Collider2D>().bounds.size.y / 2 + 0.5f;
+                    Bounds bounds = availableBox.GetComponent<Collider2D>().bounds;
+                    indicatorPos.y += bounds.size.y / 2 + 0.5f;
                     pushIndicator.transform.position = indicatorPos;
                 }
             }
@@ -308,16 +409,7 @@ public class PlayerPush : MonoBehaviour
         }
     }
 
-    Vector2 GetRaycastOrigin(float facingDir)
-    {
-        return new Vector2(
-            transform.position.x + 0.2f * facingDir,
-            transform.position.y
-        );
-    }
-
     #endregion
-
 
     #region Direction Management
 
@@ -325,28 +417,33 @@ public class PlayerPush : MonoBehaviour
     {
         float currentHorizontalInput = Input.GetAxis("Horizontal");
 
-        // อัพเดททิศทางเฉพาะเมื่อมีการกดปุ่ม
         if (Mathf.Abs(currentHorizontalInput) > 0.01f)
         {
             float newDirection = currentHorizontalInput > 0 ? 1f : -1f;
-            lastFacingDirection = newDirection;
 
-            // อัพเดท Sprite flip ทุกครั้งที่กดเดิน
-            if (playerSprite != null)
+            // เปลี่ยนทิศทางเฉพาะเมื่อทิศทางเปลี่ยนจริงๆ
+            if (newDirection != lastFacingDirection)
             {
-                playerSprite.flipX = lastFacingDirection < 0;
+                lastFacingDirection = newDirection;
+
+                if (playerSprite != null)
+                {
+                    playerSprite.flipX = lastFacingDirection < 0;
+                }
+
+                // เมื่อเปลี่ยนทิศทาง ให้ตรวจจับกล่องใหม่
+                if (!isHolding)
+                {
+                    availableBox = null; // ล้างการตรวจจับเก่า
+                    DetectNearbyBoxes(); // ตรวจจับใหม่
+                }
             }
         }
-
-        lastHorizontalInput = currentHorizontalInput;
     }
-
- 
 
     #endregion
 
-
-    #region Public Methods (สำหรับระบบอื่นเรียกใช้)
+    #region Public Methods
 
     public bool IsCurrentlyPushing()
     {
@@ -391,25 +488,21 @@ public class PlayerPush : MonoBehaviour
 
     void OnEnable()
     {
-        // สมัครรับ Event จาก GameManager
-        if (GameManager.OnGameStateChanged == null)
+        if (GameManager.OnGameStateChanged != null)
             GameManager.OnGameStateChanged += OnGameStateChanged;
     }
 
     void OnDisable()
     {
-        // ยกเลิกการสมัครรับ Event
         if (GameManager.OnGameStateChanged != null)
             GameManager.OnGameStateChanged -= OnGameStateChanged;
     }
 
     void OnGameStateChanged(GameState newState)
     {
-        // จัดการเมื่อ GameState เปลี่ยน
         switch (newState)
         {
             case GameState.Normal:
-                // ถ้ากำลังดันอยู่และกลับมาเป็น Normal แปลว่าถูกยกเลิกจากภายนอก
                 if (isHolding)
                 {
                     ForceStopPushing();
@@ -418,7 +511,6 @@ public class PlayerPush : MonoBehaviour
 
             case GameState.Menu:
             case GameState.Cutscene:
-                // ซ่อน Visual Feedback
                 if (pushIndicator != null)
                     pushIndicator.SetActive(false);
                 break;
@@ -427,55 +519,67 @@ public class PlayerPush : MonoBehaviour
 
     #endregion
 
-    //#region Debug & Gizmos
+    #region Debug & Gizmos
 
-    //void OnDrawGizmos()
-    //{
-    //    if (!showDebugRay) return;
+    void OnDrawGizmos()
+    {
+        if (!showDebugGizmos) return;
 
-    //    if (playerSprite == null)
-    //        playerSprite = GetComponent<SpriteRenderer>();
+        if (playerSprite == null)
+            playerSprite = GetComponent<SpriteRenderer>();
 
-    //    float facingDir = GetFacingDirection();
-    //    Vector2 origin = GetRaycastOrigin(facingDir);
-    //    Vector2 direction = Vector2.right * facingDir;
+        float facingDir = GetFacingDirection();
+        Vector2 playerPos = transform.position;
 
-    //    // วาด Ray
-    //    Gizmos.color = raycastColor;
-    //    Gizmos.DrawLine(origin, origin + direction * distanceToPush);
+        // วาดพื้นที่ตรวจจับ
+        Vector2 boxCenter = new Vector2(
+            playerPos.x + (detectionDistance * 0.5f * facingDir),
+            playerPos.y
+        );
 
-    //    // วาด Sphere ที่จุดเริ่มต้นของ Ray
-    //    Gizmos.color = Color.green;
-    //    Gizmos.DrawWireSphere(origin, 0.1f);
+        Vector2 boxSize = new Vector2(detectionDistance, detectionHeight);
 
-    //    // แสดงสถานะปัจจุบัน
-    //    if (isHolding)
-    //    {
-    //        Gizmos.color = Color.blue;
-    //        if (targetBox != null)
-    //        {
-    //            Gizmos.DrawWireCube(targetBox.transform.position, targetBox.GetComponent<Collider2D>().bounds.size);
-    //        }
-    //    }
-    //    else if (availableBox != null)
-    //    {
-    //        Gizmos.color = Color.yellow;
-    //        Gizmos.DrawWireCube(availableBox.transform.position, availableBox.GetComponent<Collider2D>().bounds.size);
-    //    }
-    //}
+        Gizmos.color = gizmoColor;
+        Gizmos.DrawWireCube(boxCenter, boxSize);
 
-    //void OnGUI()
-    //{
-    //    if (!showDebugRay) return;
+        // แสดงสถานะปัจจุบัน
+        if (isHolding && targetBox != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(targetBox.transform.position, targetBox.GetComponent<Collider2D>().bounds.size);
+        }
+        else if (availableBox != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(availableBox.transform.position, availableBox.GetComponent<Collider2D>().bounds.size);
+        }
 
-    //    GUILayout.BeginArea(new Rect(Screen.width - 200, 10, 190, 100));
-    //    GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
-    //    GUILayout.Label($"Is Holding: {isHolding}");
-    //    GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
-    //    GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
-    //    GUILayout.Label($"Can Use: {CanUsePushSystem()}");
-    //    GUILayout.EndArea();
-    //}
+        // วาดทิศทางที่กำลังหน้า
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(playerPos, playerPos + Vector2.right * facingDir * 0.5f);
+    }
 
-    //#endregion
+    void OnGUI()
+    {
+        if (!showDebugGizmos) return;
+
+        GUILayout.BeginArea(new Rect(Screen.width - 250, 10, 240, 150));
+        GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
+        GUILayout.Label($"Is Holding: {isHolding}");
+        GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
+        GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
+        GUILayout.Label($"Can Use: {CanUsePushSystem()}");
+        GUILayout.Label($"Facing: {(lastFacingDirection > 0 ? "Right" : "Left")}");
+        GUILayout.Label($"Cooldown: {detectionCooldown:F2}");
+
+        if (availableBox != null)
+        {
+            float distance = Vector2.Distance(transform.position, availableBox.transform.position);
+            GUILayout.Label($"Distance: {distance:F2}");
+        }
+
+        GUILayout.EndArea();
+    }
+
+    #endregion
 }
