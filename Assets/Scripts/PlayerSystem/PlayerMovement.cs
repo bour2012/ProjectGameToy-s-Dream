@@ -496,10 +496,15 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleGroundMovement()
     {
-        if (groundCheckWalk)
+        if (groundCheck)
         {
             // บนพื้น: เดินได้เต็มที่
             rBody.linearVelocity = new Vector2(horizontalInput * speed, rBody.linearVelocity.y);
+        }
+        else if (groundCheck && !groundCheckWalk)
+        {
+            // บนพื้นแต่ไม่ใช่พื้นเดินได้ (เช่น ขอบผา): ลดความเร็วลง
+            rBody.linearVelocity = new Vector2(horizontalInput * speed * 0.5f, rBody.linearVelocity.y);
         }
         else
         {
