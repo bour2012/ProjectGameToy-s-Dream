@@ -41,6 +41,21 @@ public class TriggerController : MonoBehaviour
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+
+
+        if (other.CompareTag("Player"))
+        {
+            if (repeatSpawn)
+            {
+                StopAllCoroutines();
+                spawning = false;
+            }
+         
+        }
+    }
+
 
     private void SpawnObject()
     {

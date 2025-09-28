@@ -152,7 +152,7 @@ Rigidbody2D:
   m_Mass: 5
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -182,7 +182,7 @@ MonoBehaviour:
   modeSwing: 0
   modeJumped: 0
   modeDestroyed: 1
-  timeDelay: 2
+  timeDelay: 0.5
   swingSpeed: 2
   swingAngle: 30
   offset: 0

@@ -126,8 +126,8 @@ public class GlueProjectile : MonoBehaviour
 
         else
         {
-            StopOnGround(other); // กรณีอื่นถือว่าเหมือนพื้น
-            hasStuck = true;
+            //StopOnGround(other); // กรณีอื่นถือว่าเหมือนพื้น
+            //hasStuck = true;
 
         }
 
@@ -246,8 +246,8 @@ public class GlueProjectile : MonoBehaviour
 
     private void StickToTarget(Collider2D target, float destroyDelay)
     {
-        StopMovement();
-        CreateImpactEffects();
+        //StopMovement();
+        //CreateImpactEffects();
         PlaySound(impactSound);
 
         int targetLayerMask = 1 << target.gameObject.layer;
@@ -313,28 +313,51 @@ public class GlueProjectile : MonoBehaviour
         Rigidbody2D targetRb = target.GetComponent<Rigidbody2D>();
         if (targetRb == null) return;
 
-        FixedJoint2D existingFixed = GetComponent<FixedJoint2D>();
-        SpringJoint2D existingSpring = GetComponent<SpringJoint2D>();
-        if (existingFixed != null || existingSpring != null) return;
+        // ป้องกันการสร้าง joint ซ้ำ
+        if (GetComponent<SpringJoint2D>() != null) return;
 
-        // FixedJoint
-        FixedJoint2D jointF = gameObject.AddComponent<FixedJoint2D>();
-        jointF.connectedBody = targetRb;
-        jointF.breakForce = stickForce;
-
-        // SpringJoint
+        // สร้าง SpringJoint2D
         SpringJoint2D joint = gameObject.AddComponent<SpringJoint2D>();
         joint.connectedBody = targetRb;
 
-        // ตั้งค่า anchor ให้ตรงจุดชน
-        Vector2 hitPoint = target.transform.InverseTransformPoint(transform.position);
+        // anchor ของตัวกาว (วางที่ศูนย์กลางของมัน)
         joint.anchor = Vector2.zero;
+
+        // anchor ของ target (คำนวณตำแหน่งจุดชน)
+        Vector2 hitPoint = target.transform.InverseTransformPoint(transform.position);
         joint.connectedAnchor = hitPoint;
 
-        joint.dampingRatio = 0.8f;
-        joint.frequency = 1f;
-        joint.breakForce = stickForce * 1.2f;
+        // ปรับค่าการยึด/ความหนืด
+        joint.dampingRatio = 1f;     // หนืด (0 = ไม่มีหนืด, 1 = หนืดสุด)
+        joint.frequency = 5f;        // ความถี่การสั่น (ค่าต่ำ = นุ่ม, ค่าสูง = แข็ง)
+        joint.breakForce = stickForce; // กำหนดแรงที่ joint จะขาด
+
         Debug.Log($"Glue joint attached to {target.name} with force {stickForce}");
+        //Rigidbody2D targetRb = target.GetComponent<Rigidbody2D>();
+        //if (targetRb == null) return;
+
+        //FixedJoint2D existingFixed = GetComponent<FixedJoint2D>();
+        //SpringJoint2D existingSpring = GetComponent<SpringJoint2D>();
+        //if (existingFixed != null || existingSpring != null) return;
+
+        //// FixedJoint
+        //FixedJoint2D jointF = gameObject.AddComponent<FixedJoint2D>();
+        //jointF.connectedBody = targetRb;
+        //jointF.breakForce = stickForce;
+
+        //// SpringJoint
+        //SpringJoint2D joint = gameObject.AddComponent<SpringJoint2D>();
+        //joint.connectedBody = targetRb;
+
+        //// ตั้งค่า anchor ให้ตรงจุดชน
+        //Vector2 hitPoint = target.transform.InverseTransformPoint(transform.position);
+        //joint.anchor = Vector2.zero;
+        //joint.connectedAnchor = hitPoint;
+
+        //joint.dampingRatio = 0.8f;
+        //joint.frequency = 1f;
+        //joint.breakForce = stickForce * 1.2f;
+        //Debug.Log($"Glue joint attached to {target.name} with force {stickForce}");
     }
 
     private void ApplySlow(Collider2D target)

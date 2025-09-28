@@ -286,10 +286,10 @@ MonoBehaviour:
   detectionRange: 5.56
   detectionLayers:
     serializedVersion: 2
-    m_Bits: 576
+    m_Bits: 512
   obstacleLayers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 1152
   fakeDollLayer:
     serializedVersion: 2
     m_Bits: 512

@@ -65,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
         // รับ Input
         bool jumpPressed = Input.GetButtonDown("Jump");
         // กระโดด
-        if (jumpPressed && (groundCheck || groundCheckWalk))
+        if (jumpPressed && (groundCheck /*|| groundCheckWalk*/) && !isOnLadder)
         {
             rBody.linearVelocity = new Vector2(rBody.linearVelocity.x, jumpSpeed);
         }
@@ -137,20 +137,23 @@ public class PlayerMovement : MonoBehaviour
 
     void CheckGround()
     {
-            // ใช้ Bounds ของ Collider ของ Player
-            Bounds bounds = playerCollider.bounds;
+        Bounds bounds = playerCollider.bounds;
 
-            // กำหนดตำแหน่งใต้เท้า
-            Vector2 footPosition = new Vector2(bounds.center.x, bounds.min.y); // 0.05f เป็น offset เล็กน้อย
+        // กำหนดขนาดกล่องตรวจสอบ (ความกว้าง = collider ของ player)
+        Vector2 boxSize = new Vector2(bounds.size.x * 0.9f, 0.1f);
 
-            // ตรวจ Raycast ลงไปจากเท้า
-            RaycastHit2D hit = Physics2D.Raycast(footPosition, Vector2.down, 0.1f, groundLayer);
+        // จุดเริ่มยิง (ใต้เท้าเล็กน้อย)
+        Vector2 boxOrigin = new Vector2(bounds.center.x, bounds.min.y - 0.05f);
 
-            groundCheck = hit.collider != null;
+        // ตรวจด้วย BoxCast ลงไป
+        RaycastHit2D hit = Physics2D.BoxCast(boxOrigin, boxSize, 0f, Vector2.down, 0.05f, groundLayer);
+
+
+        groundCheck = hit.collider != null;
 
             // Debug
             Color debugColor = groundCheck ? Color.green : Color.red;
-            Debug.DrawRay(footPosition, Vector2.down * 0.1f, debugColor);
+            Debug.DrawRay(boxOrigin, Vector2.down * 0.1f, debugColor);
 
 
         float halfHeight = playerSprite.bounds.extents.y;
@@ -501,7 +504,7 @@ public class PlayerMovement : MonoBehaviour
             // บนพื้น: เดินได้เต็มที่
             rBody.linearVelocity = new Vector2(horizontalInput * speed, rBody.linearVelocity.y);
         }
-        else if (groundCheck && !groundCheckWalk)
+        else if (!groundCheck && !groundCheckWalk)
         {
             // บนพื้นแต่ไม่ใช่พื้นเดินได้ (เช่น ขอบผา): ลดความเร็วลง
             rBody.linearVelocity = new Vector2(horizontalInput * speed * 0.5f, rBody.linearVelocity.y);
@@ -509,7 +512,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             // ในอากาศ: ใช้ Air Control
-            HandleAirMovement();
+            //HandleAirMovement();
         }
 
         // กระโดด
