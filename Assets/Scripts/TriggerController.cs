@@ -15,6 +15,9 @@ public class TriggerController : MonoBehaviour
 
     private bool spawning = false;
     private bool trigger = true;
+
+    public float destroyDelay = 5f;
+    private bool isDestroying = false; // ตรวจสอบว่ากำลังรอทำลายหรือไม่
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -32,19 +35,23 @@ public class TriggerController : MonoBehaviour
                 {
                     SpawnObject(); // spawn ครั้งเดียว
                     trigger = false;
+ 
                 }
             }
         }
     }
 
+
     private void SpawnObject()
     {
      
         
-            Instantiate(prefabToSpawn, spawnPoint.position, spawnPoint.rotation);
-            Debug.Log("Spawned prefab once.");
-            
-        
+            //Instantiate(prefabToSpawn, spawnPoint.position, spawnPoint.rotation);
+             GameObject spawnedInstance = Instantiate(prefabToSpawn, spawnPoint.position, spawnPoint.rotation);
+             Debug.Log("Spawned prefab once.");
+             //Destroy(spawnedInstance, destroyDelay);
+
+
     }
 
     private System.Collections.IEnumerator SpawnRoutine()
@@ -57,4 +64,6 @@ public class TriggerController : MonoBehaviour
         }
         spawning = false;
     }
+
+
 }

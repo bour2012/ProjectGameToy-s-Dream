@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5159488270781496814}
   - component: {fileID: 982898457096398382}
   - component: {fileID: 9184985846924577595}
+  - component: {fileID: -1691168997855635869}
   m_Layer: 10
   m_Name: Square (78)
   m_TagString: Pushable
@@ -148,10 +149,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 5
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0.5
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -163,6 +164,29 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &-1691168997855635869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3469051024466254926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f6db29436d593d479fc150ac4b43bfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points: []
+  moveSpeed: 0
+  modeLoop: 0
+  modeSwing: 0
+  modeJumped: 0
+  modeDestroyed: 1
+  timeDelay: 2
+  swingSpeed: 2
+  swingAngle: 30
+  offset: 0
+  bounceForce: 15
 --- !u!1001 &7233814152861799692
 PrefabInstance:
   m_ObjectHideFlags: 0
