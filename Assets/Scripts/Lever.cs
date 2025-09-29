@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Lever : MonoBehaviour
 {
@@ -46,8 +47,20 @@ public class Lever : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E) && playerInRange)
         {
-            ToggleLever();
+            // ตรวจสอบสถานะก่อนทำงาน
+            if (GameManager.Instance.currentState == GameState.Normal)
+            {
+                GameManager.Instance.ChangeState(GameState.UsingLever, "Using Lever");
+                ToggleLever();
+            }
         }
+
+        //CheckPlayerDistance();
+
+        //if (Input.GetKeyDown(KeyCode.E) && playerInRange)
+        //{
+        //    ToggleLever();
+        //}
     }
 
     void CheckPlayerDistance()
@@ -83,17 +96,39 @@ public class Lever : MonoBehaviour
     {
         isActive = !isActive;
 
-        // หมุนคันโยกแบบ Smooth (ถ้าต้องการ)
+        // หมุน Lever แบบ Smooth
         float targetRot = isActive ? activeRotation : inactiveRotation;
         handle.localRotation = Quaternion.Euler(0, 0, targetRot);
 
-        // เรียกให้ Platform ทำงาน
+        // สั่งงาน Platform
         if (platform != null)
         {
             platform.Toggle(isActive);
         }
 
         Debug.Log($"Lever {(isActive ? "เปิด" : "ปิด")}");
+
+        // รีเซ็ตสถานะกลับไปเป็น Normal หลังจากทำงานเสร็จ
+        StartCoroutine(ResetStateAfterDelay(0.5f)); // ตัวอย่าง: ใช้เวลา 0.5 วินาที
+        //isActive = !isActive;
+
+        //// หมุนคันโยกแบบ Smooth (ถ้าต้องการ)
+        //float targetRot = isActive ? activeRotation : inactiveRotation;
+        //handle.localRotation = Quaternion.Euler(0, 0, targetRot);
+
+        //// เรียกให้ Platform ทำงาน
+        //if (platform != null)
+        //{
+        //    platform.Toggle(isActive);
+        //}
+
+        //Debug.Log($"Lever {(isActive ? "เปิด" : "ปิด")}");
+    }
+
+    private IEnumerator ResetStateAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        GameManager.Instance.ChangeState(GameState.Normal, "Finished using Lever");
     }
 
     // วิธีทางเลือก: ใช้ Trigger แทนการตรวจระยะ

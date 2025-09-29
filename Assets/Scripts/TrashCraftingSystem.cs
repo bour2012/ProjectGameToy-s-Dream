@@ -276,6 +276,13 @@ public class TrashCraftingSystem : MonoBehaviour
     {
         if (isCrafting || gameManager == null || currentItemIndex >= craftableItems.Length) return;
 
+        // ตรวจสอบสถานะเกม
+        if (gameManager.currentState != GameState.Normal)
+        {
+            Debug.LogWarning("Cannot start crafting - Game is not in Normal state.");
+            return;
+        }
+
         CraftableItem currentItem = craftableItems[currentItemIndex];
 
         // ตรวจสอบไอเทมที่จำเป็น
@@ -289,7 +296,7 @@ public class TrashCraftingSystem : MonoBehaviour
             }
         }
 
-        // ขอเริ่มการประดิษฐ์ผ่าน GameManager (keeping the same interface)
+        // ขอเริ่มการประดิษฐ์ผ่าน GameManager
         CraftTool tool = currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
         if (gameManager.StartCrafting(trashId, tool))
         {
@@ -311,7 +318,6 @@ public class TrashCraftingSystem : MonoBehaviour
 
         Debug.Log($"Started crafting {craftableItems[currentItemIndex].itemName}");
     }
-
     IEnumerator CraftingProcess()
     {
         // แสดง Progress UI

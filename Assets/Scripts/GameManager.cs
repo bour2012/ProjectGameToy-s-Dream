@@ -14,7 +14,8 @@ public enum GameState
     PushingObject,    // กำลังดันของ
     Menu,             // เมนู/หยุดชั่วคราว
     Cutscene,           // ดูฉาก
-    Dead
+    Dead,
+    UsingLever        // กำลังใช้งาน Lever
 }
 
 public class GameManager : MonoBehaviour
@@ -284,14 +285,19 @@ public class GameManager : MonoBehaviour
             case GameState.Normal:
                 return true; // สามารถเปลี่ยนไปสถานะใดก็ได้
 
+            case GameState.UsingLever:
+            case GameState.Crafting:
+                // ออกจากสถานะได้เฉพาะกลับไป Normal
+                return targetState == GameState.Normal;
+
             case GameState.RepairingGlue:
             case GameState.RepairingThread:
                 // ออกจากระบบซ่อมได้เฉพาะไป Normal หรือ Menu
                 return targetState == GameState.Normal || targetState == GameState.Menu;
 
-            case GameState.Crafting:
-                // ออกจากระบบประดิษฐ์ได้เฉพาะไป Normal หรือ Menu
-                return targetState == GameState.Normal || targetState == GameState.Menu;
+            //case GameState.Crafting:
+            //    // ออกจากระบบประดิษฐ์ได้เฉพาะไป Normal หรือ Menu
+            //    return targetState == GameState.Normal || targetState == GameState.Menu;
 
             case GameState.RopeSwinging:
                 // ระหว่างโหนสามารถหยุดได้
