@@ -142,7 +142,7 @@ Rigidbody2D:
   m_Mass: 100
   m_LinearDamping: 0
   m_AngularDamping: 1
-  m_GravityScale: 1
+  m_GravityScale: 1.2
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -172,11 +172,16 @@ MonoBehaviour:
   modeSwing: 0
   modeJumped: 0
   modeDestroyed: 1
+  modeShoot: 0
   timeDelay: 2
   swingSpeed: 2
   swingAngle: 30
   offset: 0
   bounceForce: 15
+  targetPoint: {fileID: 0}
+  travelTime: 10
+  spawnPoint: {fileID: 0}
+  platformPrefab: {fileID: 0}
 --- !u!1 &4208707210852069552
 GameObject:
   m_ObjectHideFlags: 0
