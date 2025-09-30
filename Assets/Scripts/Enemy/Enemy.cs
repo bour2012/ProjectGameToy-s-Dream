@@ -4,6 +4,10 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour, ISlowable
 {
+
+    [Header("Head Collider")]
+    public Collider2D headCollider; // Collider สำหรับหัวของศัตรู
+
     [Header("Basic Stats")]
     public string enemyName;
     public float maxHealth = 100f;
@@ -142,8 +146,8 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
         if (hit.collider != null)
         {
-            // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น
-            Debug.Log($"{enemyName} LOS blocked by {hit.collider.name}");
+            //// เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น
+            //Debug.Log($"{enemyName} LOS blocked by {hit.collider.name}");
             return false;
         }
 
@@ -198,7 +202,27 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         isChasing = false;
         // รีเซ็ตสถานะอื่น ๆ ตามต้องการ
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //if (collision.collider.CompareTag("Player"))
+        //{
+        //    // ตรวจสอบว่าผู้เล่นชน Head Collider หรือไม่
+        //    if (collision.otherCollider == headCollider)
+        //    {
+        //        OnStomped(collision.collider.GetComponent<PlayerMovement>());
+        //    }
+        //}
+    }
 
+    public void OnStomped(PlayerMovement player)
+    {
+        if (player != null)
+        {
+            Debug.Log($"{enemyName} was stomped!");
+            player.BounceAfterStomp(); // ให้ผู้เล่นกระโดดใหม่
+            Die(); // ทำลายศัตรู
+        }
+    }
     protected virtual void OnDrawGizmosSelected()
     {
         // วาดวงกลมแสดงระยะตรวจจับใน Scene View
