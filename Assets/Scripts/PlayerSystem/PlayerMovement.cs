@@ -45,7 +45,6 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rBody;
     private Animator animator;
     private Collider2D playerCollider;
-    private float jumpInput;
     private float horizontalInput;
     private bool groundCheck;
     private bool groundCheckWalk;
@@ -136,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
             firePoint.localPosition = firePointOffsetLeft;
     }
 
-
+    #region Check Walls & Ground
     void CheckGround()
     {
         Bounds bounds = playerCollider.bounds;
@@ -204,6 +203,90 @@ public class PlayerMovement : MonoBehaviour
         groundCheckWalk = (horizontalInput < 0 && leftHit) || (horizontalInput > 0 && rightHit);
     }
 
+
+    void CheckWalls()
+    {
+
+
+        float halfHeight = playerSprite.bounds.extents.y;
+
+        // ปรับให้ต่ำลงมาก (ใกล้กับพื้นมากขึ้น)
+        Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * 0.1f);
+
+        // รีเซ็ตค่าก่อน
+        hitWallLeft = false;
+        hitWallRight = false;
+
+        // ลดขนาดรัศมีและระยะตรวจสอบ
+        float smallerRadius = wallCheckRadius * 0.7f;  // ลดรัศมีลง 30%
+        float smallerDistance = wallCheckDistance * 0.5f;  // ลดระยะลง 50%
+
+        // ตรวจสอบเฉพาะด้านที่กำลังเดิน
+        if (horizontalInput < 0) // กำลังเดินซ้าย
+        {
+            hitWallLeft = Physics2D.CircleCast(bodyCenter, smallerRadius, Vector2.left, smallerDistance, groundLayer);
+
+            // Debug ซ้าย
+            Color leftColor = hitWallLeft ? Color.red : Color.green;
+
+            // วาดเส้นแสดงระยะตรวจสอบ
+            Debug.DrawLine(bodyCenter, bodyCenter + Vector2.left * smallerDistance, leftColor);
+
+            // วาดวงกลมที่จุดเริ่มต้น
+            DrawCircleDebug(bodyCenter, smallerRadius, leftColor, 16);
+
+            // วาดวงกลมที่จุดสิ้นสุด
+            Vector2 endPoint = bodyCenter + Vector2.left * smallerDistance;
+            DrawCircleDebug(endPoint, smallerRadius, leftColor, 16);
+        }
+        else if (horizontalInput > 0) // กำลังเดินขวา
+        {
+            hitWallRight = Physics2D.CircleCast(bodyCenter, smallerRadius, Vector2.right, smallerDistance, groundLayer);
+
+            // Debug ขวา
+            Color rightColor = hitWallRight ? Color.red : Color.green;
+
+            // วาดเส้นแสดงระยะตรวจสอบ
+            Debug.DrawLine(bodyCenter, bodyCenter + Vector2.right * smallerDistance, rightColor);
+
+            // วาดวงกลมที่จุดเริ่มต้น
+            DrawCircleDebug(bodyCenter, smallerRadius, rightColor, 16);
+
+            // วาดวงกลมที่จุดสิ้นสุด
+            Vector2 endPoint = bodyCenter + Vector2.right * smallerDistance;
+            DrawCircleDebug(endPoint, smallerRadius, rightColor, 16);
+        }
+
+        //float halfHeight = playerSprite.bounds.extents.y;
+
+        //// ตำแหน่งกลางตัว (ยกเว้นเท้า) - ยกขึ้นมาจากพื้นเล็กน้อย
+        //Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * -0.2f);
+
+        //// ตรวจกำแพงซ้ายด้วย CircleCast
+        //RaycastHit2D leftHit = Physics2D.CircleCast(
+        //    bodyCenter,                    // ตำแหน่งเริ่มต้น
+        //    wallCheckRadius,               // รัศมีวงกลม
+        //    Vector2.left,                  // ทิศทาง
+        //    wallCheckDistance,             // ระยะทาง
+        //    groundLayer                    // Layer
+        //);
+
+        //// ตรวจกำแพงขวาด้วย CircleCast
+        //RaycastHit2D rightHit = Physics2D.CircleCast(
+        //    bodyCenter,                    // ตำแหน่งเริ่มต้น
+        //    wallCheckRadius,               // รัศมีวงกลม
+        //    Vector2.right,                 // ทิศทาง
+        //    wallCheckDistance,             // ระยะทาง
+        //    groundLayer                    // Layer
+        //);
+
+        //hitWallLeft = leftHit.collider != null;
+        //hitWallRight = rightHit.collider != null;
+
+        //// Debug CircleCast Visualization
+        //DrawCircleCastDebug(bodyCenter, Vector2.left, wallCheckDistance, wallCheckRadius, hitWallLeft);
+        //DrawCircleCastDebug(bodyCenter, Vector2.right, wallCheckDistance, wallCheckRadius, hitWallRight);
+    }
     void DrawGroundCheckDebug()
     {
         float halfHeight = playerSprite.bounds.extents.y;
@@ -270,6 +353,8 @@ public class PlayerMovement : MonoBehaviour
         //    playerCollider.isTrigger = false;
         //}
     }
+
+    #endregion
 
     #region EnemyStomp
     public void BounceAfterStomp()
@@ -644,89 +729,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void CheckWalls()
-    {
-
-        
-            float halfHeight = playerSprite.bounds.extents.y;
-
-            // ปรับให้ต่ำลงมาก (ใกล้กับพื้นมากขึ้น)
-            Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * 0.1f);
-
-            // รีเซ็ตค่าก่อน
-            hitWallLeft = false;
-            hitWallRight = false;
-
-            // ลดขนาดรัศมีและระยะตรวจสอบ
-            float smallerRadius = wallCheckRadius * 0.7f;  // ลดรัศมีลง 30%
-            float smallerDistance = wallCheckDistance * 0.5f;  // ลดระยะลง 50%
-
-            // ตรวจสอบเฉพาะด้านที่กำลังเดิน
-            if (horizontalInput < 0) // กำลังเดินซ้าย
-            {
-                hitWallLeft = Physics2D.CircleCast(bodyCenter, smallerRadius, Vector2.left, smallerDistance, groundLayer);
-
-                // Debug ซ้าย
-                Color leftColor = hitWallLeft ? Color.red : Color.green;
-
-                // วาดเส้นแสดงระยะตรวจสอบ
-                Debug.DrawLine(bodyCenter, bodyCenter + Vector2.left * smallerDistance, leftColor);
-
-                // วาดวงกลมที่จุดเริ่มต้น
-                DrawCircleDebug(bodyCenter, smallerRadius, leftColor, 16);
-
-                // วาดวงกลมที่จุดสิ้นสุด
-                Vector2 endPoint = bodyCenter + Vector2.left * smallerDistance;
-                DrawCircleDebug(endPoint, smallerRadius, leftColor, 16);
-            }
-            else if (horizontalInput > 0) // กำลังเดินขวา
-            {
-                hitWallRight = Physics2D.CircleCast(bodyCenter, smallerRadius, Vector2.right, smallerDistance, groundLayer);
-
-                // Debug ขวา
-                Color rightColor = hitWallRight ? Color.red : Color.green;
-
-                // วาดเส้นแสดงระยะตรวจสอบ
-                Debug.DrawLine(bodyCenter, bodyCenter + Vector2.right * smallerDistance, rightColor);
-
-                // วาดวงกลมที่จุดเริ่มต้น
-                DrawCircleDebug(bodyCenter, smallerRadius, rightColor, 16);
-
-                // วาดวงกลมที่จุดสิ้นสุด
-                Vector2 endPoint = bodyCenter + Vector2.right * smallerDistance;
-                DrawCircleDebug(endPoint, smallerRadius, rightColor, 16);
-            }
-        
-        //float halfHeight = playerSprite.bounds.extents.y;
-
-        //// ตำแหน่งกลางตัว (ยกเว้นเท้า) - ยกขึ้นมาจากพื้นเล็กน้อย
-        //Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * -0.2f);
-
-        //// ตรวจกำแพงซ้ายด้วย CircleCast
-        //RaycastHit2D leftHit = Physics2D.CircleCast(
-        //    bodyCenter,                    // ตำแหน่งเริ่มต้น
-        //    wallCheckRadius,               // รัศมีวงกลม
-        //    Vector2.left,                  // ทิศทาง
-        //    wallCheckDistance,             // ระยะทาง
-        //    groundLayer                    // Layer
-        //);
-
-        //// ตรวจกำแพงขวาด้วย CircleCast
-        //RaycastHit2D rightHit = Physics2D.CircleCast(
-        //    bodyCenter,                    // ตำแหน่งเริ่มต้น
-        //    wallCheckRadius,               // รัศมีวงกลม
-        //    Vector2.right,                 // ทิศทาง
-        //    wallCheckDistance,             // ระยะทาง
-        //    groundLayer                    // Layer
-        //);
-
-        //hitWallLeft = leftHit.collider != null;
-        //hitWallRight = rightHit.collider != null;
-
-        //// Debug CircleCast Visualization
-        //DrawCircleCastDebug(bodyCenter, Vector2.left, wallCheckDistance, wallCheckRadius, hitWallLeft);
-        //DrawCircleCastDebug(bodyCenter, Vector2.right, wallCheckDistance, wallCheckRadius, hitWallRight);
-    }
+   
 
     void DrawCircleCastDebug(Vector2 origin, Vector2 direction, float distance, float radius, bool hit)
     {
