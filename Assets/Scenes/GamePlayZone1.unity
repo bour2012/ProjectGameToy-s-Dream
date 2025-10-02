@@ -2790,6 +2790,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 147364327}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 7.63, y: 9, z: 0}
@@ -2799,6 +2804,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!4 &147364327
 Transform:
   m_ObjectHideFlags: 0
@@ -3209,6 +3215,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 158860090}
   pivotPosition: {x: -13.61824, y: -4, z: 0}
   upPosition: {x: 0, y: 0, z: 0}
@@ -3218,6 +3229,7 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 1
+  isAnimMode: 0
 --- !u!61 &158860089
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8464,7 +8476,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &327929759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9243,6 +9255,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 340665057}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 12.5344, y: 9, z: 0}
@@ -9252,6 +9269,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!4 &340665057
 Transform:
   m_ObjectHideFlags: 0
@@ -10279,7 +10297,7 @@ Transform:
   m_GameObject: {fileID: 365757837}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -180.5633, y: -2.178324, z: 0}
+  m_LocalPosition: {x: -179.9, y: -1.47, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10887,6 +10905,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 395634901}
   pivotPosition: {x: -2.1709, y: 3.3043, z: 0}
   upPosition: {x: -3.95, y: 4, z: 0}
@@ -10896,6 +10919,7 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 90
   isRotationMode: 1
+  isAnimMode: 0
 --- !u!61 &395634900
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12381,6 +12405,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 469817177}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 171.9, y: 51.98, z: 0}
@@ -12390,6 +12419,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &469817180
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13981,7 +14011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &538237065
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14771,6 +14801,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 564200903}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 203.79, y: 52.47, z: 0}
@@ -14780,6 +14815,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &564200906
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -21502,6 +21538,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 915898521}
   pivotPosition: {x: 179.28, y: 49.3487, z: 0}
   upPosition: {x: 183.6907, y: 46.18312, z: 0}
@@ -21511,6 +21552,7 @@ MonoBehaviour:
   rotationSpeed: 35
   startRotation: 0
   isRotationMode: 1
+  isAnimMode: 0
 --- !u!61 &915898520
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -23020,6 +23062,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 978180412}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 179.47, y: 51.98, z: 0}
@@ -23029,6 +23076,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &978180415
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -26231,6 +26279,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1109814697}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: -43.45597, y: -5.59, z: 0}
@@ -26240,6 +26293,7 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 90
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &1109814700
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -27856,6 +27910,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1176754976}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: -31.50543, y: 0.76, z: 0}
@@ -27865,6 +27924,7 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 90
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &1176754979
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -31854,6 +31914,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1372229691}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: -6.030258, y: 15.66743, z: 0}
@@ -31863,6 +31928,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &1372229694
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -32353,6 +32419,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1375817932}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 205.64, y: 52.47, z: 0}
@@ -32362,6 +32433,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &1375817935
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -32509,6 +32581,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1376469123}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: -20.19042, y: 2.68, z: 0}
@@ -32518,6 +32595,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &1376469126
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -37076,6 +37154,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1606132077}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: -65.33289, y: -25.41046, z: 0}
@@ -37085,6 +37168,7 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &1606132080
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -43309,7 +43393,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1848036214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43955,6 +44039,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1861404738}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 1.76, y: 5, z: 0}
@@ -43964,6 +44053,7 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
 --- !u!61 &1861404737
 BoxCollider2D:
   m_ObjectHideFlags: 0

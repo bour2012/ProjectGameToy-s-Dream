@@ -2,6 +2,15 @@ using UnityEngine;
 
 public class PlatformController : MonoBehaviour
 {
+
+    public Animator platformAnimator; // ตัวควบคุมอนิเมชันของแพลตฟอร์ม
+    public string openAnimationName = "PlatformOpen"; // ชื่ออนิเมชันเมื่อเปิด
+    public string closeAnimationName = "PlatformClose"; // ชื่ออนิเมชันเมื่อปิด
+    public string idleCloseAnimationName = "PlatformIdleClose";
+    public string idleOpenAnimationName = "PlatformIdleOpen";
+    private bool isActive = false; // สถานะของแพลตฟอร์ม (เปิด/ปิด)
+
+
     public Transform platform; // ตัวแพลตฟอร์มที่ต้องการควบคุม
     public Vector3 pivotPosition; // ตำแหน่งของจุดศูนย์กลางสำหรับการหมุน
     public Vector3 upPosition; // ตำแหน่งเมื่อเปิด
@@ -11,8 +20,9 @@ public class PlatformController : MonoBehaviour
     public float rotationSpeed = 50f; // ความเร็วในการหมุน (องศาต่อวินาที)
     public float startRotation = 0f; // องศาปัจจุบันของแพลตฟอร์ม
     public bool isRotationMode = false; // ตัวเลือก: true = หมุน, false = ย้ายตำแหน่ง
+    public bool isAnimMode = false; // ตัวเลือก: true = หมุน, false = ย้ายตำแหน่ง
 
-    private bool isActive = false;
+    //private bool isActive = false;
     private float currentRotation = 0f; // องศาปัจจุบันของแพลตฟอร์ม
 
     void Start()
@@ -31,11 +41,57 @@ public class PlatformController : MonoBehaviour
             }
         }
     }
-
     public void Toggle(bool state)
     {
+        //if (isActive == state) return; // ถ้าสถานะไม่เปลี่ยนแปลง ไม่ต้องทำอะไร
+
         isActive = state;
+
+        if (isAnimMode)
+        {
+            if (platformAnimator != null)
+            {
+                if (isActive)
+                {
+                    // เล่นอนิเมชันเปิด
+                    platformAnimator.Play(openAnimationName);
+                }
+                else
+                {
+                    // เล่นอนิเมชันปิด
+                    platformAnimator.Play(closeAnimationName);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Platform Animator is not assigned!");
+            }
+        }
     }
+
+    //    }
+
+
+    public void PlayIdleOpenAnimation()
+    {
+        if (platformAnimator != null)
+        {
+            platformAnimator.Play(idleOpenAnimationName);
+        }
+    }
+
+    public void PlayIdleCloseAnimation()
+    {
+        if (platformAnimator != null)
+        {
+            platformAnimator.Play(idleCloseAnimationName);
+        }
+    }
+
+    //public void Toggle(bool state)
+    //{
+    //    isActive = state;
+    //}
 
     void Update()
     {
@@ -44,7 +100,7 @@ public class PlatformController : MonoBehaviour
             // หมุนแพลตฟอร์ม
             RotatePlatform();
         }
-        else
+        else if(!isAnimMode)
         {
             // ย้ายตำแหน่งแพลตฟอร์ม
             MovePlatform();
@@ -70,3 +126,4 @@ public class PlatformController : MonoBehaviour
         platform.RotateAround(pivotPosition, Vector3.forward, currentRotation - platform.eulerAngles.z);
     }
 }
+

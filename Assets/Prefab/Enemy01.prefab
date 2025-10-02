@@ -141,7 +141,7 @@ MonoBehaviour:
     m_Bits: 576
   obstacleLayers:
     serializedVersion: 2
-    m_Bits: 3200
+    m_Bits: 1152
   chaseCooldown: 2
   usePatrolRange: 0
   patrolLeftOffset: -3

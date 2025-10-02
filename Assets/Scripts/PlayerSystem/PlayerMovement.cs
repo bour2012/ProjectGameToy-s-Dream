@@ -633,16 +633,16 @@ public class PlayerMovement : MonoBehaviour
             // บนพื้น: ตรวจสอบว่าชนกำแพงหรือไม่
             bool blockedByWall = (horizontalInput < 0 && hitWallLeft) || (horizontalInput > 0 && hitWallRight);
 
-            if (!blockedByWall)
-            {
-                // เดินได้เต็มที่ถ้าไม่ชนกำแพง
-                rBody.linearVelocity = new Vector2(horizontalInput * speed, rBody.linearVelocity.y);
-            }
-            else
-            {
-                // ชนกำแพง: หยุดการเคลื่อนที่แนวนอน
-                rBody.linearVelocity = new Vector2(0, rBody.linearVelocity.y);
-            }
+            //if (!blockedByWall)
+            //{
+            //    เดินได้เต็มที่ถ้าไม่ชนกำแพง
+            rBody.linearVelocity = new Vector2(horizontalInput * speed, rBody.linearVelocity.y);
+            //}
+            //else
+            //{
+            //    // ชนกำแพง: หยุดการเคลื่อนที่แนวนอน
+            //    rBody.linearVelocity = new Vector2(0, rBody.linearVelocity.y);
+            //}
         }
         else
         {
