@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - DistractableDoll
   - FakeDoll
+  - EnemyHead
   layers:
   - Default
   - TransparentFX
@@ -25,8 +26,8 @@ TagManager:
   - System
   - Rope
   - DeadZone
-  - 
-  - 
+  - GlueZone
+  - FakeDoll
   - 
   - 
   - 

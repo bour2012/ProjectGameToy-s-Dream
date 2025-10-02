@@ -24,6 +24,8 @@ public class DeathZoneComponent : MonoBehaviour
                 Debug.LogWarning("Player ไม่มี PlayerDeathSystem component!");
             }
         }
+   
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

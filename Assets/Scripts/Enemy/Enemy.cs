@@ -4,6 +4,10 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour, ISlowable
 {
+
+    [Header("Head Collider")]
+    public Collider2D headCollider; // Collider สำหรับหัวของศัตรู
+
     [Header("Basic Stats")]
     public string enemyName;
     public float maxHealth = 100f;
@@ -80,50 +84,40 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
     protected GameObject DetectAndLockTarget()
     {
-        // ถ้ามี target อยู่แล้ว → ตรวจสอบว่ายัง valid อยู่มั้ย
+        // ถ้ามี target เดิมแล้ว → ตรวจสอบว่ายัง valid อยู่มั้ย
         if (currentTarget != null)
         {
-            float dist = Vector3.Distance(transform.position, currentTarget.transform.position);
+            float dist = Vector2.Distance(transform.position, currentTarget.transform.position);
 
-            // target ยังอยู่ใน layer ที่ตรวจจับและไม่ออกนอกระยะ
-            if (((1 << currentTarget.layer) & detectionLayers) != 0 && dist <= detectionRange)
+            // ยังอยู่ใน detection layer + ระยะ + มี LOS
+            if (((1 << currentTarget.layer) & detectionLayers) != 0 &&
+                dist <= detectionRange &&
+                HasLineOfSight(currentTarget))
             {
-                return currentTarget; // ยัง lock เป้าเดิมไว้
+                return currentTarget; // ล็อกเป้าเดิมไว้
             }
             else
             {
-                currentTarget = null; // หลุดระยะ → reset
+                currentTarget = null; // ไม่ valid แล้ว → ปล่อย
             }
         }
 
         // ถ้าไม่มี target → หาตัวใหม่
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
-        if (hits.Length > 0)
+
+        foreach (var hit in hits)
         {
-            // หาเป้าที่ใกล้ที่สุด
-            Collider2D closest = null;
-            float closestDist = Mathf.Infinity;
+            GameObject candidate = hit.gameObject;
 
-            foreach (var hit in hits)
+            // ตรวจสอบ LOS ก่อนล็อกเป้า
+            if (HasLineOfSight(candidate))
             {
-                float dist = Vector3.Distance(transform.position, hit.transform.position);
-                if (dist < closestDist)
-                {
-                    closestDist = dist;
-                    closest = hit;
-                }
-            }
-
-            if (closest != null)
-            {
-                currentTarget = closest.gameObject;
+                currentTarget = candidate; // ล็อกเป้าใหม่
                 return currentTarget;
             }
         }
 
-        return null; // ไม่มีเป้าในระยะ
-
-        //return currentTarget;
+        return null; // ไม่มีเป้า
     }
 
     public virtual void TakeDamage(float damage)
@@ -152,12 +146,12 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
         if (hit.collider != null)
         {
-            // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น
-            // Debug.Log($"{enemyName} LOS blocked by {hit.collider.name}");
+            //// เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น
+            //Debug.Log($"{enemyName} LOS blocked by {hit.collider.name}");
             return false;
         }
 
-        return true;
+        return true; // ไม่มีสิ่งกีดขวาง → มองเห็น
     }
 
     protected virtual void Chase(GameObject target)
@@ -208,7 +202,27 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         isChasing = false;
         // รีเซ็ตสถานะอื่น ๆ ตามต้องการ
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        //if (collision.collider.CompareTag("Player"))
+        //{
+        //    // ตรวจสอบว่าผู้เล่นชน Head Collider หรือไม่
+        //    if (collision.otherCollider == headCollider)
+        //    {
+        //        OnStomped(collision.collider.GetComponent<PlayerMovement>());
+        //    }
+        //}
+    }
 
+    public void OnStomped(PlayerMovement player)
+    {
+        if (player != null)
+        {
+            Debug.Log($"{enemyName} was stomped!");
+            player.BounceAfterStomp(); // ให้ผู้เล่นกระโดดใหม่
+            Die(); // ทำลายศัตรู
+        }
+    }
     protected virtual void OnDrawGizmosSelected()
     {
         // วาดวงกลมแสดงระยะตรวจจับใน Scene View

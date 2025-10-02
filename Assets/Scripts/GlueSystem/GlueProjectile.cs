@@ -55,7 +55,7 @@ public class GlueProjectile : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
 
         // ทำลายตัวเองหลังเวลาที่กำหนด
-        Destroy(gameObject, lifetime);
+        //Destroy(gameObject, lifetime);
     }
 
     private void Start()
@@ -65,34 +65,47 @@ public class GlueProjectile : MonoBehaviour
 
     private void Update()
     {
-        //Debug.Log(RemainingLifetime);
-        //if (currentTarget != null)
-        //{
-        //    float dist = Vector2.Distance(transform.position, currentTarget.transform.position);
 
-        //    if (dist < 1.0f) // ระยะที่ถือว่ายังโดนกาว
-        //    {
-        //        targetInside = true;
-        //        Debug.Log($"Update Target Trigger glue: {currentTarget.name}");
-        //    }
-        //    else
-        //    {
-        //        targetInside = false;
-        //        Debug.Log($"UpdateTarget EXIT glue (by distance): {currentTarget.name}");
-        //        currentTarget = null;
-        //    }
-        //}
+    }
+    private void FixedUpdate()
+    {
+        if (currentTarget != null)
+        {
+            bool stillInside = IsTargetStillInside(currentTarget);
+            if (!stillInside)
+            {
+                targetInside = false;
+                currentTarget = null;
+                Debug.Log("Target exited glue (detected in FixedUpdate).");
+            }
+        }
     }
 
+    private bool IsTargetStillInside(Collider2D target)
+    {
+        // ตรวจสอบว่ามี Collider ของ target อยู่ในพื้นที่หรือไม่
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f, targetLayers);
+        foreach (var col in colliders)
+        {
+            if (col == target)
+            {
+                return true; // target ยังอยู่ในพื้นที่
+            }
+        }
+        return false; // target ออกจากพื้นที่แล้ว
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (hasStuck) return;
 
         int layerMask = 1 << other.gameObject.layer;
 
+
+
         if ((layerMask & groundLayers) != 0)
         {
             StopOnGround(other);
+            Debug.Log($"Enter Ground: {other.name} at {other.transform.position}");
             hasStuck = true;
         }
         else if ((layerMask & excludedTargetLayers) != 0)
@@ -104,12 +117,17 @@ public class GlueProjectile : MonoBehaviour
             StickToTarget(other, timeStickToTarget);
             targetInside = true;
             currentTarget = other;
+            Debug.Log($"Enter: {other.name} at {other.transform.position}");
+            if (RemainingLifetime > timeGlueStick)
+            {
+                ApplySlow(other);
+            }
         }
 
         else
         {
-            StopOnGround(other); // กรณีอื่นถือว่าเหมือนพื้น
-            hasStuck = true;
+            //StopOnGround(other); // กรณีอื่นถือว่าเหมือนพื้น
+            //hasStuck = true;
 
         }
 
@@ -118,43 +136,94 @@ public class GlueProjectile : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
+       int layerMask = 1 << other.gameObject.layer;
 
-        int layerMask = 1 << other.gameObject.layer;
-
-        // ถ้า collider ไม่ใช่ targetLayer ให้ targetInside = true (ยังถือว่าติดกาว)
-        if ((layerMask & targetLayers) != 0)
+    if ((layerMask & targetLayers) != 0 && other == currentTarget)
+    {
+        if (!IsTargetStillInside(other))
         {
-            targetInside = true;
-            currentTarget = other;
-            ExtendDestroyTime(other);
-
-            Debug.Log($"[Frame {Time.frameCount}] Target still inside glue: {other.name}");
+            targetInside = false; // ตั้งค่า targetInside เป็น false
+            currentTarget = null;
+            Debug.Log($"Target {other.name} exited glue.");
         }
         else
         {
-            // collider เป็น targetLayer ที่เราต้องการ → ออกนอกกาว
-            targetInside = false;
-            currentTarget = null;
-            Debug.Log($"[Frame {Time.frameCount}] Target EXIT glue: {other.name}");
+            Debug.Log($"False exit detected for {other.name}, still colliding.");
         }
     }
 
+        //int layerMask = 1 << other.gameObject.layer;
+
+        // ถ้า collider ไม่ใช่ targetLayer ให้ targetInside = true (ยังถือว่าติดกาว)
+        //if ((layerMask & targetLayers) != 0)
+        //{
+        //    targetInside = true;
+        //    currentTarget = other;
+        //    //ExtendDestroyTime(other);
+        //    Debug.Log($"[Frame {Time.frameCount}] Target still inside glue: {other.name}");
+        //}
+        //else
+        //{
+        //    // collider เป็น targetLayer ที่เราต้องการ → ออกนอกกาว
+        //    targetInside = false;
+        //    currentTarget = null;
+        //    Debug.Log($"[Frame {Time.frameCount}] Target EXIT glue: {other.name}");
+        //}
+    }
+ 
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            Gizmos.DrawWireCube(col.bounds.center, col.bounds.size);
+
+        if (currentTarget != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(currentTarget.bounds.center, currentTarget.bounds.size);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(transform.position, currentTarget.transform.position);
+        }
+    }
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (!isOnGround) return;
+        //if (!isOnGround) return;
 
-        targetInside = true;
-        currentTarget = other;
 
-    
-        //float timeNow = Time.time;
-        //if (timeNow - lastSlowTime < slowCooldown) return;
-        //lastSlowTime = timeNow;
+        //    Debug.Log($"Stay: {other.name} at {other.transform.position}");
+        //    targetInside = true;
+        //    currentTarget = other;
+        //    ExtendDestroyTime(other);
+        //    AttachJoint(other);
 
-        // ยืดเวลาแค่ครั้งเดียว
-       
-        //ApplySlow(other);
-        AttachJoint(other);
+        int layerMask = 1 << other.gameObject.layer;
+
+        if ((layerMask & targetLayers) != 0)
+        {
+            Debug.Log($"Stay: {other.name} at {other.transform.position}");
+            targetInside = true;
+            currentTarget = other;
+            ExtendDestroyTime(other);
+            AttachJoint(other);
+        }
+
+        //if (!isOnGround) return;
+
+        //targetInside = true;
+        //currentTarget = other;
+        //ExtendDestroyTime(other);
+
+        ////float timeNow = Time.time;
+        ////if (timeNow - lastSlowTime < slowCooldown) return;
+        ////lastSlowTime = timeNow;
+
+        //// ยืดเวลาแค่ครั้งเดียว
+
+        ////ApplySlow(other);
+        //AttachJoint(other);
     }
     #endregion
 
@@ -177,8 +246,8 @@ public class GlueProjectile : MonoBehaviour
 
     private void StickToTarget(Collider2D target, float destroyDelay)
     {
-        StopMovement();
-        CreateImpactEffects();
+        //StopMovement();
+        //CreateImpactEffects();
         PlaySound(impactSound);
 
         int targetLayerMask = 1 << target.gameObject.layer;
@@ -244,28 +313,51 @@ public class GlueProjectile : MonoBehaviour
         Rigidbody2D targetRb = target.GetComponent<Rigidbody2D>();
         if (targetRb == null) return;
 
-        FixedJoint2D existingFixed = GetComponent<FixedJoint2D>();
-        SpringJoint2D existingSpring = GetComponent<SpringJoint2D>();
-        if (existingFixed != null || existingSpring != null) return;
+        // ป้องกันการสร้าง joint ซ้ำ
+        if (GetComponent<SpringJoint2D>() != null) return;
 
-        // FixedJoint
-        FixedJoint2D jointF = gameObject.AddComponent<FixedJoint2D>();
-        jointF.connectedBody = targetRb;
-        jointF.breakForce = stickForce;
-
-        // SpringJoint
+        // สร้าง SpringJoint2D
         SpringJoint2D joint = gameObject.AddComponent<SpringJoint2D>();
         joint.connectedBody = targetRb;
 
-        // ตั้งค่า anchor ให้ตรงจุดชน
-        Vector2 hitPoint = target.transform.InverseTransformPoint(transform.position);
+        // anchor ของตัวกาว (วางที่ศูนย์กลางของมัน)
         joint.anchor = Vector2.zero;
+
+        // anchor ของ target (คำนวณตำแหน่งจุดชน)
+        Vector2 hitPoint = target.transform.InverseTransformPoint(transform.position);
         joint.connectedAnchor = hitPoint;
 
-        joint.dampingRatio = 0.8f;
-        joint.frequency = 1f;
-        joint.breakForce = stickForce * 1.2f;
+        // ปรับค่าการยึด/ความหนืด
+        joint.dampingRatio = 1f;     // หนืด (0 = ไม่มีหนืด, 1 = หนืดสุด)
+        joint.frequency = 5f;        // ความถี่การสั่น (ค่าต่ำ = นุ่ม, ค่าสูง = แข็ง)
+        joint.breakForce = stickForce; // กำหนดแรงที่ joint จะขาด
+
         Debug.Log($"Glue joint attached to {target.name} with force {stickForce}");
+        //Rigidbody2D targetRb = target.GetComponent<Rigidbody2D>();
+        //if (targetRb == null) return;
+
+        //FixedJoint2D existingFixed = GetComponent<FixedJoint2D>();
+        //SpringJoint2D existingSpring = GetComponent<SpringJoint2D>();
+        //if (existingFixed != null || existingSpring != null) return;
+
+        //// FixedJoint
+        //FixedJoint2D jointF = gameObject.AddComponent<FixedJoint2D>();
+        //jointF.connectedBody = targetRb;
+        //jointF.breakForce = stickForce;
+
+        //// SpringJoint
+        //SpringJoint2D joint = gameObject.AddComponent<SpringJoint2D>();
+        //joint.connectedBody = targetRb;
+
+        //// ตั้งค่า anchor ให้ตรงจุดชน
+        //Vector2 hitPoint = target.transform.InverseTransformPoint(transform.position);
+        //joint.anchor = Vector2.zero;
+        //joint.connectedAnchor = hitPoint;
+
+        //joint.dampingRatio = 0.8f;
+        //joint.frequency = 1f;
+        //joint.breakForce = stickForce * 1.2f;
+        //Debug.Log($"Glue joint attached to {target.name} with force {stickForce}");
     }
 
     private void ApplySlow(Collider2D target)
@@ -295,6 +387,7 @@ public class GlueProjectile : MonoBehaviour
             // ค่อยๆ ลดความเร็วลงเหลือ 0.05 ภายใน 1 วินาที และ slow ค้างไว้ 5 วินาที
             slowable.ApplyGradualSlow(0.05f, 5f, 0.35f);
             hasSlowedHard = true;
+
             Debug.Log("Applied hard slow to target");
         }
     }
@@ -302,8 +395,8 @@ public class GlueProjectile : MonoBehaviour
 
     private void ExtendDestroyTime(Collider2D target)
     {
-        if (destroyCoroutine != null)
-            StopCoroutine(destroyCoroutine);
+        //if (destroyCoroutine != null)
+        //    StopCoroutine(destroyCoroutine);
             destroyCoroutine = StartCoroutine(DestroyCountdownRoutine(target));
 
         //currentDestroyDelay += 2f; // เพิ่มเวลายืด (ปรับได้)
@@ -337,33 +430,58 @@ public class GlueProjectile : MonoBehaviour
     #endregion
 
     #region Destroy Logic
+
     private IEnumerator DestroyCountdownRoutine(Collider2D target)
     {
-        //float timer = currentDestroyDelay; // เวลาเริ่มต้น
         while (RemainingLifetime > 0f)
         {
-
-            //Debug.Log("Target Slow IS :" + target);
-            // ทุก ๆ frame จะเช็คว่าเหลือเวลาเท่าไหร่
-
-            //if (targetInside /*&& currentTarget != null*/)
-            //{
+            // เช็คเงื่อนไขเรียลไทม์ทุกเฟรม
+            if (targetInside && currentTarget != null)
+            {
                 if (RemainingLifetime > timeGlueStick)
+                {
+                    // ถ้ายังมีเวลาเยอะ ใช้สโลว์ธรรมดา
                     ApplySlow(target);
+                }
                 else if (RemainingLifetime <= timeGlueStick)
+                {
+                    // ถ้าเวลาเหลือน้อยและ target ยังอยู่ข้างใน ใช้สโลว์หนัก
                     ApplySlowHard(target);
-            //else
-            //    ApplySlowHard(target);
+                }
+            }
+            // ถ้า targetInside == false จะไม่เรียก ApplySlowHard อีก
 
-            //}
-
-            //currentDestroyDelay -= Time.deltaTime; // ลดเวลาไปเรื่อย ๆ
             yield return null; // รอ 1 frame
         }
 
-        // เมื่อหมดเวลา -> ทำลาย object
-        Destroy(gameObject);
     }
+    //private IEnumerator DestroyCountdownRoutine(Collider2D target)
+    //{
+    //    //float timer = currentDestroyDelay; // เวลาเริ่มต้น
+    //    while (RemainingLifetime > 0f)
+    //    {
+
+    //        //Debug.Log("Target Slow IS :" + target);
+    //        // ทุก ๆ frame จะเช็คว่าเหลือเวลาเท่าไหร่
+
+    //        //if (targetInside /*&& currentTarget != null*/)
+    //        //{
+    //            if (RemainingLifetime > timeGlueStick)
+    //                ApplySlow(target);
+    //            else if (RemainingLifetime <= timeGlueStick && targetInside )
+    //                ApplySlowHard(target);
+    //        //else
+    //        //    ApplySlowHard(target);
+
+    //        //}
+
+    //        //currentDestroyDelay -= Time.deltaTime; // ลดเวลาไปเรื่อย ๆ
+    //        yield return null; // รอ 1 frame
+    //    }
+
+    //    // เมื่อหมดเวลา -> ทำลาย object
+    //    Destroy(gameObject);
+    //}
 
 
     private void StartDestroyCountdown(float delay)
@@ -381,14 +499,18 @@ public class GlueProjectile : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        // ซ่อน Renderer และ Collider ก่อนทำลาย
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null) spriteRenderer.enabled = false;
+        //// ซ่อน Renderer และ Collider ก่อนทำลาย
+
+        //SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        //if (spriteRenderer != null) spriteRenderer.enabled = false;
 
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        Destroy(gameObject);
+        if (hasSlowedHard)
+            Destroy(gameObject, 2.5f);
+        else
+            Destroy(gameObject);
     }
     #endregion
 

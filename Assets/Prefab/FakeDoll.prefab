@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -7805177033095083671}
   - component: {fileID: 4562814059708111619}
   - component: {fileID: 5942258076921357322}
-  m_Layer: 9
+  m_Layer: 16
   m_Name: FakeDoll
   m_TagString: Pushable
   m_Icon: {fileID: 0}
@@ -167,5 +167,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPossessed: 1
   currentHitPoints: 3
-  maxHitPoints: 3
+  maxHitPoints: 100
   showDebugInfo: 1

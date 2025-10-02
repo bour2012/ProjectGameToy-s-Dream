@@ -12,6 +12,11 @@ public class Rope : MonoBehaviour
     public SpriteRenderer crosshairSprite;
     public PlayerMovement playerMovement;
 
+    [Header("Rope Length Settings")]
+    public float maxRopeLength = 20f; // ความยาวสูงสุดของเชือก
+    public float minRopeLength = 2f;  // ความยาวต่ำสุดของเชือก
+    public float ropeAdjustSpeed = 5f; // ความเร็วในการยืด/หดเชือก
+
     [Header("Rope Settings")]
     public LineRenderer ropeRenderer;
     public LayerMask ropeLayerMask;
@@ -49,6 +54,8 @@ public class Rope : MonoBehaviour
 
     void Update()
     {
+        AdjustRopeLength();
+
         // ตรวจสอบว่าสามารถใช้เชือกได้หรือไม่
         if (!CanUseRope())
         {
@@ -312,6 +319,23 @@ public class Rope : MonoBehaviour
 
     #region Rope Management
 
+
+    private void AdjustRopeLength()
+    {
+        if (!ropeAttached) return; // ถ้าเชือกไม่ได้เกี่ยวอยู่ ให้ข้ามไป
+
+        // ตรวจจับการกดปุ่ม W (หดเชือก) และ S (ยืดเชือก)
+        if (Input.GetKey(KeyCode.W))
+        {
+            // ลดระยะเชือก (หด)
+            ropeJoint.distance = Mathf.Max(ropeJoint.distance - ropeAdjustSpeed * Time.deltaTime, minRopeLength);
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            // เพิ่มระยะเชือก (ยืด)
+            ropeJoint.distance = Mathf.Min(ropeJoint.distance + ropeAdjustSpeed * Time.deltaTime, maxRopeLength);
+        }
+    }
     private IEnumerator SmoothShortenRope(float fromDistance, float toDistance, float duration)
     {
         float elapsed = 0f;

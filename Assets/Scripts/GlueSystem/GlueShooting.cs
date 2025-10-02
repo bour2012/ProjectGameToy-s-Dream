@@ -52,12 +52,29 @@ public class GlueShooting : MonoBehaviour
     // Components
     private Rope ropeScript;
 
+    private float scrollAccumulator = 0f; // ตัวแปรสะสมการเลื่อนเมาส์
+    private float scrollThreshold = 0.2f; // เกณฑ์ที่ต้องถึงเพื่อเปลี่ยนไอเทม
+
+
     void Awake()
     {
-        // หา Rope script
+        //// หา Rope script
+        //ropeScript = GetComponent<Rope>();
+
+        //// ตั้งค่าเริ่มต้น
+        //if (trajectoryLine != null)
+        //{
+        //    trajectoryLine.enabled = false;
+        //    trajectoryLine.positionCount = trajectoryPoints;
+        //}
+
+        //if (aimingCrosshair != null)
+        //    aimingCrosshair.SetActive(false);
+
+        //if (glueAimIndicator != null)
+        //    glueAimIndicator.SetActive(false);
         ropeScript = GetComponent<Rope>();
 
-        // ตั้งค่าเริ่มต้น
         if (trajectoryLine != null)
         {
             trajectoryLine.enabled = false;
@@ -69,6 +86,11 @@ public class GlueShooting : MonoBehaviour
 
         if (glueAimIndicator != null)
             glueAimIndicator.SetActive(false);
+
+        // โหลดไอเทมที่เลือกไว้
+        int savedItemIndex = PlayerPrefs.GetInt("SelectedItem", 0); // ค่าเริ่มต้นคือ 0
+        selectedItem = (ItemManager.ItemType)savedItemIndex;
+
     }
 
     void Update()
@@ -90,39 +112,60 @@ public class GlueShooting : MonoBehaviour
     /// <summary>
     /// จัดการการสลับไอเทม
     /// </summary>
+    /// 
     private void HandleItemSwitching()
     {
-        //if (Input.GetKeyDown(KeyCode.Tab))
-        //{
-        //    SwitchItem();
-        //}
-
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll != 0)
+
+        if (Mathf.Abs(scroll) > 0.01f) // ตรวจสอบว่ามีการเลื่อนเมาส์
         {
-            // scroll > 0 หมุนขึ้น , scroll < 0 หมุนลง
-            SwitchItem(scroll > 0);
+            scrollAccumulator += scroll; // สะสมค่าการเลื่อน
+
+            if (scrollAccumulator >= scrollThreshold) // ถ้าสะสมถึงเกณฑ์
+            {
+                SwitchItem(true); // เลื่อนไปข้างหน้า
+                scrollAccumulator = 0f; // รีเซ็ตตัวสะสม
+            }
+            else if (scrollAccumulator <= -scrollThreshold) // ถ้าสะสมถึงเกณฑ์ในทิศทางตรงข้าม
+            {
+                SwitchItem(false); // เลื่อนไปข้างหลัง
+                scrollAccumulator = 0f; // รีเซ็ตตัวสะสม
+            }
         }
     }
+    //private void HandleItemSwitching()
+    //{
+    //    //if (Input.GetKeyDown(KeyCode.Tab))
+    //    //{
+    //    //    SwitchItem();
+    //    //}
+
+    //    float scroll = Input.GetAxis("Mouse ScrollWheel");
+    //    if (scroll != 0)
+    //    {
+    //        // scroll > 0 หมุนขึ้น , scroll < 0 หมุนลง
+    //        SwitchItem(scroll > 0);
+    //    }
+    //}
 
     /// <summary>
     /// สลับระหว่างกาวและด้าย
     /// </summary>
     private void SwitchItem(bool forward)
     {
-        // แปลง enum เป็น int เพื่อเลื่อนตำแหน่ง
         int itemCount = System.Enum.GetValues(typeof(ItemManager.ItemType)).Length;
         int currentIndex = (int)selectedItem;
 
-        // ถ้า scroll ขึ้น forward = true → บวก 1
-        // ถ้า scroll ลง forward = false → ลบ 1
         currentIndex = (currentIndex + (forward ? 1 : -1) + itemCount) % itemCount;
 
         selectedItem = (ItemManager.ItemType)currentIndex;
 
+        // บันทึกไอเทมที่เลือกไว้
+        PlayerPrefs.SetInt("SelectedItem", currentIndex);
+        PlayerPrefs.Save();
+
         Debug.Log($"Switched to: {selectedItem}");
 
-        // ซ่อนการเล็งเมื่อสลับไอเทม
         if (isAiming)
         {
             HideAiming();
