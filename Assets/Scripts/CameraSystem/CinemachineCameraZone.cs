@@ -53,12 +53,6 @@ public class CinemachineCameraZone : MonoBehaviour
             // เปิดใช้กล้องของ Zone
             zoneCam.Priority.Value = activePriority;
 
-            // ลด Priority ของกล้องหลัก (ถ้ามี)
-            if (resetDefaultCamPriority && defaultCam != null)
-            {
-                defaultCam.Priority.Value = defaultCamInactivePriority;
-            }
-
             Debug.Log($"[Camera Zone] เข้า Zone: {gameObject.name} | Camera: {zoneCam.name}");
         }
     }
@@ -72,12 +66,7 @@ public class CinemachineCameraZone : MonoBehaviour
             // ปิดใช้กล้องของ Zone
             zoneCam.Priority.Value = inactivePriority;
 
-            // คืน Priority ให้กล้องหลัก (ถ้ามี)
-            if (resetDefaultCamPriority && defaultCam != null)
-            {
-                defaultCam.Priority.Value = activePriority;
-            }
-
+       
             Debug.Log($"[Camera Zone] ออกจาก Zone: {gameObject.name}");
         }
     }

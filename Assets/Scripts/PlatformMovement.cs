@@ -14,6 +14,7 @@ public class PlatformMovement : MonoBehaviour
     public bool modeJumped = false;
     public bool modeDestroyed = false;
     public bool modeShoot = false;
+    public bool modeAnim = false;
     [Header("Destroy Settings")]
     public float timeDelay = 2f; // กำหนดแรงกระเด้ง
 
@@ -35,7 +36,8 @@ public class PlatformMovement : MonoBehaviour
     private float startRotationZ;
 
     private Vector3 startPosition; // เก็บตำแหน่งเริ่มต้นของ platform
-   
+    [Header("Animation Settings")]
+    public Animator anim;   
 
     private void Start()
     {
@@ -98,6 +100,11 @@ public class PlatformMovement : MonoBehaviour
         {
             if(!hasShot)
             StartCoroutine(ShootPlatformRoutine());
+        }
+        if (modeAnim)
+        {
+            Rigidbody2D rb = GetComponent<Rigidbody2D>(); // ต้องมีบรรทัดนี้ก่อนใช้ rb
+            anim.SetFloat("Speed", rb.linearVelocity.y); // ทำอะไรสักอย่างกับ Animator
         }
         // ถ้า canMove = true ถึงจะเริ่มเคลื่อนที่
 

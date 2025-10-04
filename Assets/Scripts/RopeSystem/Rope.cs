@@ -282,7 +282,7 @@ public class Rope : MonoBehaviour
         }
 
         // คลิกขวา - รีเซ็ตเชือก (แต่เฉพาะเมื่อไม่ได้เล็งกาว)
-        if (/*Input.GetMouseButton(1)|| */Input.GetKeyDown(KeyCode.Space))
+        if (/*Input.GetMouseButton(1)|| */Input.GetKeyDown(KeyCode.Space) && ropeAttached)
         {
             bool isAimingGlue = (glueShootingScript != null &&
                                 glueShootingScript.IsAiming() &&

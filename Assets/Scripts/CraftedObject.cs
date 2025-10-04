@@ -31,6 +31,9 @@ public class CraftedObject : MonoBehaviour
     private Color originalColor;
     private bool isBlinking = false;
 
+    private Vector3 initialPosition; // ตำแหน่งเริ่มต้น
+    private Quaternion initialRotation; // การหมุนเริ่มต้น
+
     void Awake()
     {
         // Get components
@@ -43,6 +46,9 @@ public class CraftedObject : MonoBehaviour
         {
             originalColor = spriteRenderer.color;
         }
+        // บันทึกตำแหน่งและการหมุนเริ่มต้น
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
     }
 
     public void Initialize(TrashCraftingSystem.CraftableItem data, TrashCraftingSystem craftingSystem)
@@ -349,7 +355,7 @@ public class CraftedObject : MonoBehaviour
         }
         if (parentCraftingSystem != null)
         {
-            parentCraftingSystem.OnCraftedObjectDestroyed(transform.position);
+            parentCraftingSystem.OnCraftedObjectDestroyed(initialPosition);
         }
         if (showDebugInfo)
         {

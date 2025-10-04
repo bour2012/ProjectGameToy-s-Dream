@@ -246,7 +246,7 @@ public class GlueProjectile : MonoBehaviour
 
     private void StickToTarget(Collider2D target, float destroyDelay)
     {
-        //StopMovement();
+        StopMovement();
         //CreateImpactEffects();
         PlaySound(impactSound);
 

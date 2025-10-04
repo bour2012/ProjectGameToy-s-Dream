@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5729555311308345203}
   - component: {fileID: 4559673197678763875}
   - component: {fileID: 2564161486080290655}
-  m_Layer: 14
+  m_Layer: 11
   m_Name: DeadEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +258,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -1.40634, y: 0.21170521, z: 0}
-  m_LocalScale: {x: 0.19, y: 0.19, z: 0.19}
+  m_LocalScale: {x: 0.23, y: 0.23, z: 0.23}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7833194993175826980}

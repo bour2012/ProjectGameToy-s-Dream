@@ -9,8 +9,8 @@ public class LadderTrigger : MonoBehaviour
 
     private bool isPlayerOnLadder = false; // ตรวจสอบว่าผู้เล่นอยู่ใกล้บันไดหรือไม่
     private Rigidbody2D playerRb;         // Reference ไปยัง Rigidbody2D ของผู้เล่น
-    private PlayerController playerController; // ตัวควบคุมผู้เล่น (ถ้ามี)
 
+    public PlayerMovement playerMovement;
     private void Start()
     {
         // ตั้งค่า Trigger ให้กับ Collider
@@ -28,20 +28,23 @@ public class LadderTrigger : MonoBehaviour
     {
         if (isPlayerOnLadder && playerRb != null)
         {
-            // ตรวจสอบว่าผู้เล่นกด W หรือ S
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
+            if (playerMovement.isClimbing)
             {
-                // ปิดแรงโน้มถ่วงเพื่อให้ผู้เล่นปีนบันไดได้
-                playerRb.gravityScale = 0f;
+                // ตรวจสอบว่าผู้เล่นกด W หรือ S
+                if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
+                {
+                    //ปิดแรงโน้มถ่วงเพื่อให้ผู้เล่นปีนบันไดได้
+                    playerRb.gravityScale = 0f;
 
-                // ควบคุมการเคลื่อนที่ขึ้น-ลงบันได
-                float verticalInput = Input.GetAxis("Vertical");
-                playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, verticalInput * 5f); // ความเร็วปีนบันได
-            }
-            else
-            {
-                // ถ้าไม่ได้กด W หรือ S ให้หยุดการเคลื่อนที่
-                playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
+                    // ควบคุมการเคลื่อนที่ขึ้น-ลงบันได
+                    float verticalInput = Input.GetAxis("Vertical");
+                    playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, verticalInput * 5f); // ความเร็วปีนบันได
+                }
+                else
+                {
+                    // ถ้าไม่ได้กด W หรือ S ให้หยุดการเคลื่อนที่
+                    playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
+                }
             }
         }
     }
@@ -54,7 +57,7 @@ public class LadderTrigger : MonoBehaviour
 
             // เก็บ Reference ไปยัง Rigidbody2D ของผู้เล่น
             playerRb = other.GetComponent<Rigidbody2D>();
-            playerController = other.GetComponent<PlayerController>();
+            //playerController = other.GetComponent<PlayerController>();
 
             if (playerRb != null)
             {

@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 168.68365, y: 51.31599, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 0.37, y: 0.37, z: 0.37}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7629574360754285018}
@@ -135,7 +135,7 @@ MonoBehaviour:
   enemyName: 
   maxHealth: 100
   moveSpeed: 3
-  detectionRange: 3
+  detectionRange: 2.5
   detectionLayers:
     serializedVersion: 2
     m_Bits: 576
@@ -287,7 +287,7 @@ GameObject:
   - component: {fileID: 4119553446205140183}
   - component: {fileID: 1640807742591671241}
   - component: {fileID: 3813759594483387899}
-  m_Layer: 14
+  m_Layer: 11
   m_Name: DeadEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
