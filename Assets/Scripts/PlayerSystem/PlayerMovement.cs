@@ -67,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
         // รับ Input
         bool jumpPressed = Input.GetButtonDown("Jump");
         // กระโดด
-        if (jumpPressed && (groundCheck || groundCheckWalk) && !isOnLadder)
+        if (jumpPressed && (groundCheck) && !isOnLadder)
         {
             rBody.linearVelocity = new Vector2(rBody.linearVelocity.x, jumpSpeed);
         }
