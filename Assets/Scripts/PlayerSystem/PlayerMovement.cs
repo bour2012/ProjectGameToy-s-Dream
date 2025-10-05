@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Wall Check")]
     public float wallCheckDistance = 0.2f; // ระยะตรวจกำแพง
     public float wallCheckRadius = 0.3f;   // รัศมีของ CircleCast สำหรับตรวจกำแพง
+    public LayerMask wallLayer;
 
     [Header("Ladder Settings")]
     public LayerMask ladderLayer = 8;     // Layer สำหรับบันได
@@ -67,9 +68,10 @@ public class PlayerMovement : MonoBehaviour
         // รับ Input
         bool jumpPressed = Input.GetButtonDown("Jump");
         // กระโดด
-        if (jumpPressed && (groundCheck) && !isOnLadder)
+        if (jumpPressed && groundCheck  && (!hitWallLeft || !hitWallRight) && !isOnLadder)
         {
-            rBody.linearVelocity = new Vector2(rBody.linearVelocity.x, jumpSpeed);
+            float xSpeed = true ? rBody.linearVelocity.x : 0f;
+            rBody.linearVelocity = new Vector2(xSpeed, jumpSpeed);
         }
 
         horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -203,91 +205,176 @@ public class PlayerMovement : MonoBehaviour
 
         groundCheckWalk = (horizontalInput < 0 && leftHit) || (horizontalInput > 0 && rightHit);
     }
+    void DrawCapsuleDebug(Vector2 center, Vector2 size, Color color)
+    {
+        float halfWidth = size.x / 2f;
+        float halfHeight = size.y / 2f;
+        Vector3 top = new Vector3(center.x, center.y + halfHeight - halfWidth);
+        Vector3 bottom = new Vector3(center.x, center.y - halfHeight + halfWidth);
 
+        // เส้นตรงกลาง
+        Debug.DrawLine(top + Vector3.left * halfWidth, bottom + Vector3.left * halfWidth, color);
+        Debug.DrawLine(top + Vector3.right * halfWidth, bottom + Vector3.right * halfWidth, color);
+
+        // ส่วนโค้ง (ครึ่งวงกลมบน-ล่าง)
+        int segments = 12;
+        for (int i = 0; i <= segments; i++)
+        {
+            float angle = Mathf.PI * i / segments;
+            Vector3 topArc = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * halfWidth + top;
+            Vector3 topArcNext = new Vector3(Mathf.Cos(angle + Mathf.PI / segments), Mathf.Sin(angle + Mathf.PI / segments)) * halfWidth + top;
+            Debug.DrawLine(topArc, topArcNext, color);
+
+            Vector3 bottomArc = new Vector3(Mathf.Cos(angle), -Mathf.Sin(angle)) * halfWidth + bottom;
+            Vector3 bottomArcNext = new Vector3(Mathf.Cos(angle + Mathf.PI / segments), -Mathf.Sin(angle + Mathf.PI / segments)) * halfWidth + bottom;
+            Debug.DrawLine(bottomArc, bottomArcNext, color);
+        }
+    }
 
     void CheckWalls()
     {
-
-
         float halfHeight = playerSprite.bounds.extents.y;
 
-        // ปรับให้ต่ำลงมาก (ใกล้กับพื้นมากขึ้น)
-        Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * 0.1f);
+        // ปรับให้ต่ำลงมาก (ใกล้พื้น)
+        Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * 0.2f);
 
         // รีเซ็ตค่าก่อน
         hitWallLeft = false;
         hitWallRight = false;
 
         // ลดขนาดรัศมีและระยะตรวจสอบ
-        float smallerRadius = wallCheckRadius * 0.7f;  // ลดรัศมีลง 30%
-        float smallerDistance = wallCheckDistance * 0.5f;  // ลดระยะลง 50%
+        float smallerRadius = wallCheckRadius * 0.7f;
+        float smallerDistance = wallCheckDistance * 0.5f;
 
-        // ตรวจสอบเฉพาะด้านที่กำลังเดิน
-        if (horizontalInput < 0) // กำลังเดินซ้าย
+        // ขนาดของแคปซูล (กว้าง, สูง)
+        Vector2 capsuleSize = new Vector2(smallerRadius * 2f, halfHeight * 1.2f);
+
+        // ✅ ตรวจสอบทั้ง 2 ด้านเสมอ (ไม่ว่ากำลังเดินไปทางไหน)
+
+        // ตรวจสอบด้านซ้าย
+        hitWallLeft = Physics2D.CapsuleCast(
+            bodyCenter,
+            capsuleSize,
+            CapsuleDirection2D.Vertical,
+            0f,
+            Vector2.left,
+            smallerDistance,
+            wallLayer
+        );
+
+        // ตรวจสอบด้านขวา
+        hitWallRight = Physics2D.CapsuleCast(
+            bodyCenter,
+            capsuleSize,
+            CapsuleDirection2D.Vertical,
+            0f,
+            Vector2.right,
+            smallerDistance,
+            wallLayer
+        );
+
+        // Debug draw (แสดงเฉพาะด้านที่กำลังเดิน)
+        if (horizontalInput < 0)
         {
-            hitWallLeft = Physics2D.CircleCast(bodyCenter, smallerRadius, Vector2.left, smallerDistance, groundLayer);
-
-            // Debug ซ้าย
             Color leftColor = hitWallLeft ? Color.red : Color.green;
-
-            // วาดเส้นแสดงระยะตรวจสอบ
             Debug.DrawLine(bodyCenter, bodyCenter + Vector2.left * smallerDistance, leftColor);
-
-            // วาดวงกลมที่จุดเริ่มต้น
-            DrawCircleDebug(bodyCenter, smallerRadius, leftColor, 16);
-
-            // วาดวงกลมที่จุดสิ้นสุด
-            Vector2 endPoint = bodyCenter + Vector2.left * smallerDistance;
-            DrawCircleDebug(endPoint, smallerRadius, leftColor, 16);
+            DrawCapsuleDebug(bodyCenter, capsuleSize, leftColor);
         }
-        else if (horizontalInput > 0) // กำลังเดินขวา
+        else if (horizontalInput > 0)
         {
-            hitWallRight = Physics2D.CircleCast(bodyCenter, smallerRadius, Vector2.right, smallerDistance, groundLayer);
-
-            // Debug ขวา
             Color rightColor = hitWallRight ? Color.red : Color.green;
-
-            // วาดเส้นแสดงระยะตรวจสอบ
             Debug.DrawLine(bodyCenter, bodyCenter + Vector2.right * smallerDistance, rightColor);
-
-            // วาดวงกลมที่จุดเริ่มต้น
-            DrawCircleDebug(bodyCenter, smallerRadius, rightColor, 16);
-
-            // วาดวงกลมที่จุดสิ้นสุด
-            Vector2 endPoint = bodyCenter + Vector2.right * smallerDistance;
-            DrawCircleDebug(endPoint, smallerRadius, rightColor, 16);
+            DrawCapsuleDebug(bodyCenter, capsuleSize, rightColor);
         }
-
-        //float halfHeight = playerSprite.bounds.extents.y;
-
-        //// ตำแหน่งกลางตัว (ยกเว้นเท้า) - ยกขึ้นมาจากพื้นเล็กน้อย
-        //Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * -0.2f);
-
-        //// ตรวจกำแพงซ้ายด้วย CircleCast
-        //RaycastHit2D leftHit = Physics2D.CircleCast(
-        //    bodyCenter,                    // ตำแหน่งเริ่มต้น
-        //    wallCheckRadius,               // รัศมีวงกลม
-        //    Vector2.left,                  // ทิศทาง
-        //    wallCheckDistance,             // ระยะทาง
-        //    groundLayer                    // Layer
-        //);
-
-        //// ตรวจกำแพงขวาด้วย CircleCast
-        //RaycastHit2D rightHit = Physics2D.CircleCast(
-        //    bodyCenter,                    // ตำแหน่งเริ่มต้น
-        //    wallCheckRadius,               // รัศมีวงกลม
-        //    Vector2.right,                 // ทิศทาง
-        //    wallCheckDistance,             // ระยะทาง
-        //    groundLayer                    // Layer
-        //);
-
-        //hitWallLeft = leftHit.collider != null;
-        //hitWallRight = rightHit.collider != null;
-
-        //// Debug CircleCast Visualization
-        //DrawCircleCastDebug(bodyCenter, Vector2.left, wallCheckDistance, wallCheckRadius, hitWallLeft);
-        //DrawCircleCastDebug(bodyCenter, Vector2.right, wallCheckDistance, wallCheckRadius, hitWallRight);
     }
+
+    //void CheckWalls()
+    //{
+    //    float halfHeight = playerSprite.bounds.extents.y;
+
+    //    // ปรับให้ต่ำลงมาก (ใกล้พื้น)
+    //    Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * 0.2f);
+
+    //    // รีเซ็ตค่าก่อน
+    //    hitWallLeft = false;
+    //    hitWallRight = false;
+
+    //    // ลดขนาดรัศมีและระยะตรวจสอบ
+    //    float smallerRadius = wallCheckRadius * 0.7f;
+    //    float smallerDistance = wallCheckDistance * 0.5f;
+
+    //    // ขนาดของแคปซูล (กว้าง, สูง)
+    //    Vector2 capsuleSize = new Vector2(smallerRadius * 2f, halfHeight * 1.2f);
+
+    //    // ตรวจสอบด้านซ้าย
+    //    if (horizontalInput < 0)
+    //    {
+    //        hitWallLeft = Physics2D.CapsuleCast(
+    //            bodyCenter,
+    //            capsuleSize,
+    //            CapsuleDirection2D.Vertical,
+    //            0f,                 // หมุน 0 องศา
+    //            Vector2.left,
+    //            smallerDistance,
+    //            groundLayer
+    //        );
+
+    //        Color leftColor = hitWallLeft ? Color.red : Color.green;
+
+    //        // Debug draw
+    //        Debug.DrawLine(bodyCenter, bodyCenter + Vector2.left * smallerDistance, leftColor);
+    //        DrawCapsuleDebug(bodyCenter, capsuleSize, leftColor);
+    //    }
+
+    //    // ตรวจสอบด้านขวา
+    //    else if (horizontalInput > 0)
+    //    {
+    //        hitWallRight = Physics2D.CapsuleCast(
+    //            bodyCenter,
+    //            capsuleSize,
+    //            CapsuleDirection2D.Vertical,
+    //            0f,
+    //            Vector2.right,
+    //            smallerDistance,
+    //            groundLayer
+    //        );
+
+    //        Color rightColor = hitWallRight ? Color.red : Color.green;
+
+    //        Debug.DrawLine(bodyCenter, bodyCenter + Vector2.right * smallerDistance, rightColor);
+    //        DrawCapsuleDebug(bodyCenter, capsuleSize, rightColor);
+    //    }
+
+    //    //float halfHeight = playerSprite.bounds.extents.y;
+
+    //    //// ตำแหน่งกลางตัว (ยกเว้นเท้า) - ยกขึ้นมาจากพื้นเล็กน้อย
+    //    //Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * -0.2f);
+
+    //    //// ตรวจกำแพงซ้ายด้วย CircleCast
+    //    //RaycastHit2D leftHit = Physics2D.CircleCast(
+    //    //    bodyCenter,                    // ตำแหน่งเริ่มต้น
+    //    //    wallCheckRadius,               // รัศมีวงกลม
+    //    //    Vector2.left,                  // ทิศทาง
+    //    //    wallCheckDistance,             // ระยะทาง
+    //    //    groundLayer                    // Layer
+    //    //);
+
+    //    //// ตรวจกำแพงขวาด้วย CircleCast
+    //    //RaycastHit2D rightHit = Physics2D.CircleCast(
+    //    //    bodyCenter,                    // ตำแหน่งเริ่มต้น
+    //    //    wallCheckRadius,               // รัศมีวงกลม
+    //    //    Vector2.right,                 // ทิศทาง
+    //    //    wallCheckDistance,             // ระยะทาง
+    //    //    groundLayer                    // Layer
+    //    //);
+
+    //    //hitWallLeft = leftHit.collider != null;
+    //    //hitWallRight = rightHit.collider != null;
+
+    //    //// Debug CircleCast Visualization
+    //    //DrawCircleCastDebug(bodyCenter, Vector2.left, wallCheckDistance, wallCheckRadius, hitWallLeft);
+    //    //DrawCircleCastDebug(bodyCenter, Vector2.right, wallCheckDistance, wallCheckRadius, hitWallRight);
+    //}
     void DrawGroundCheckDebug()
     {
         float halfHeight = playerSprite.bounds.extents.y;
@@ -438,7 +525,7 @@ public class PlayerMovement : MonoBehaviour
 
             // การเคลื่อนที่แนวตั้ง
             float verticalInput = 0f;
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.Space))
                 verticalInput = 1f;
             else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
                 verticalInput = -1f;
@@ -558,6 +645,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (((1 << other.gameObject.layer) & ladderLayer) != 0)
+        {
+            isOnLadder = true;
+            currentLadder = other.gameObject;
+        }
+    }
+
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject == currentLadder)
@@ -632,35 +728,33 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleGroundMovement()
     {
+        bool blockedByWall = (horizontalInput < 0 && hitWallLeft) || (horizontalInput > 0 && hitWallRight);
+
         if (groundCheck)
         {
-            // บนพื้น: ตรวจสอบว่าชนกำแพงหรือไม่
-            bool blockedByWall = (horizontalInput < 0 && hitWallLeft) || (horizontalInput > 0 && hitWallRight);
-
-            //if (!blockedByWall)
-            //{
-            //    เดินได้เต็มที่ถ้าไม่ชนกำแพง
-            rBody.linearVelocity = new Vector2(horizontalInput * speed, rBody.linearVelocity.y);
-            //}
-            //else
-            //{
-            //    // ชนกำแพง: หยุดการเคลื่อนที่แนวนอน
-            //    rBody.linearVelocity = new Vector2(0, rBody.linearVelocity.y);
-            //}
+            // บนพื้น
+            if (!blockedByWall)
+            {
+                // ทางโล่ง ✅ เดินได้เต็มที่
+                rBody.linearVelocity = new Vector2(horizontalInput * speed, rBody.linearVelocity.y);
+            }
+            else
+            {
+                // ชนกำแพง ❌ หยุด
+                rBody.linearVelocity = new Vector2(0, rBody.linearVelocity.y);
+            }
         }
         else
         {
-            // กลางอากาศ: ตรวจสอบว่าชนกำแพงหรือไม่
-            bool blockedByWall = (horizontalInput < 0 && hitWallLeft) || (horizontalInput > 0 && hitWallRight);
-
+            // กลางอากาศ
             if (!blockedByWall)
             {
-                // เดินได้ถ้าไม่ชนกำแพง
+                // ทางโล่ง ✅ เดินได้ (ลดความเร็ว 20%)
                 rBody.linearVelocity = new Vector2(horizontalInput * speed * 0.8f, rBody.linearVelocity.y);
             }
             else
             {
-                // ชนกำแพง: หยุดการเคลื่อนที่แนวนอน
+                // ชนกำแพง ❌ หยุดการเคลื่อนที่แนวนอน
                 rBody.linearVelocity = new Vector2(0, rBody.linearVelocity.y);
             }
         }

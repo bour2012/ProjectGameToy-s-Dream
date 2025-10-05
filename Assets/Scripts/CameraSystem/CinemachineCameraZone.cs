@@ -24,6 +24,8 @@ public class CinemachineCameraZone : MonoBehaviour
 
     private void Start()
     {
+        zoneCam.enabled = false;
+
         if (zoneCam == null)
         {
             Debug.LogError($"Zone Camera ไม่ได้ถูก assign ใน {gameObject.name}!", this);
@@ -51,6 +53,7 @@ public class CinemachineCameraZone : MonoBehaviour
         if (zoneCam != null)
         {
             // เปิดใช้กล้องของ Zone
+            zoneCam.enabled = true;
             zoneCam.Priority.Value = activePriority;
 
             Debug.Log($"[Camera Zone] เข้า Zone: {gameObject.name} | Camera: {zoneCam.name}");
@@ -64,9 +67,10 @@ public class CinemachineCameraZone : MonoBehaviour
         if (zoneCam != null)
         {
             // ปิดใช้กล้องของ Zone
+            zoneCam.enabled = false;
             zoneCam.Priority.Value = inactivePriority;
 
-       
+
             Debug.Log($"[Camera Zone] ออกจาก Zone: {gameObject.name}");
         }
     }
@@ -76,6 +80,7 @@ public class CinemachineCameraZone : MonoBehaviour
     {
         if (zoneCam != null)
         {
+            zoneCam.enabled = true;
             zoneCam.Priority.Value = activePriority;
         }
     }
@@ -84,6 +89,7 @@ public class CinemachineCameraZone : MonoBehaviour
     {
         if (zoneCam != null)
         {
+            zoneCam.enabled = false;
             zoneCam.Priority.Value = inactivePriority;
         }
     }
