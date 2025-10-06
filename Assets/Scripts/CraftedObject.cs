@@ -381,7 +381,7 @@ public class CraftedObject : MonoBehaviour
     // ใน OnTriggerEnter2D ของ CraftedObject.cs
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (itemData.canBePossessed && !isPossessed && other.CompareTag("Enemy"))
+        if (itemData != null && itemData.canBePossessed && !isPossessed && other.CompareTag("Enemy"))
         {
             var enemyPossession = other.GetComponent<StationaryEnemy>();
             if (enemyPossession != null)

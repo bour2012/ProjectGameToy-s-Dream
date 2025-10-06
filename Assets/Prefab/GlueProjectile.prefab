@@ -176,10 +176,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 20
-  timeStickToTarget: 5
+  timeStickToTarget: 7
   groundDestroyDelay: 6
   stickForce: 30
-  timeGlueStick: 2
+  timeGlueStick: 3
   targetLayers:
     serializedVersion: 2
     m_Bits: 3072

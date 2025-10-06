@@ -236,7 +236,7 @@ public class PlayerMovement : MonoBehaviour
         float halfHeight = playerSprite.bounds.extents.y;
 
         // ปรับให้ต่ำลงมาก (ใกล้พื้น)
-        Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * 0.2f);
+        Vector2 bodyCenter = new Vector2(transform.position.x, transform.position.y - halfHeight * 0.1f);
 
         // รีเซ็ตค่าก่อน
         hitWallLeft = false;
