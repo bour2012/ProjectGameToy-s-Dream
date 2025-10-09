@@ -389,7 +389,10 @@ public class Rope : MonoBehaviour
 
         // รีเซ็ตสถานะ PlayerMovement
         if (playerMovement != null)
+        {
             playerMovement.isSwinging = false;
+            playerMovement.ropeHook = Vector2.zero;
+        }
 
         Debug.Log("Rope reset completed");
     }

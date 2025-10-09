@@ -559,27 +559,27 @@ public class PlayerPush : MonoBehaviour
         Gizmos.DrawLine(playerPos, playerPos + Vector2.right * facingDir * 0.5f);
     }
 
-    void OnGUI()
-    {
-        if (!showDebugGizmos) return;
+    //void OnGUI()
+    //{
+    //    if (!showDebugGizmos) return;
 
-        GUILayout.BeginArea(new Rect(Screen.width - 250, 10, 240, 150));
-        GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
-        GUILayout.Label($"Is Holding: {isHolding}");
-        GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
-        GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
-        GUILayout.Label($"Can Use: {CanUsePushSystem()}");
-        GUILayout.Label($"Facing: {(lastFacingDirection > 0 ? "Right" : "Left")}");
-        GUILayout.Label($"Cooldown: {detectionCooldown:F2}");
+    //    GUILayout.BeginArea(new Rect(Screen.width - 250, 10, 240, 150));
+    //    GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
+    //    GUILayout.Label($"Is Holding: {isHolding}");
+    //    GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
+    //    GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
+    //    GUILayout.Label($"Can Use: {CanUsePushSystem()}");
+    //    GUILayout.Label($"Facing: {(lastFacingDirection > 0 ? "Right" : "Left")}");
+    //    GUILayout.Label($"Cooldown: {detectionCooldown:F2}");
 
-        if (availableBox != null)
-        {
-            float distance = Vector2.Distance(transform.position, availableBox.transform.position);
-            GUILayout.Label($"Distance: {distance:F2}");
-        }
+    //    if (availableBox != null)
+    //    {
+    //        float distance = Vector2.Distance(transform.position, availableBox.transform.position);
+    //        GUILayout.Label($"Distance: {distance:F2}");
+    //    }
 
-        GUILayout.EndArea();
-    }
+    //    GUILayout.EndArea();
+    //}
 
     #endregion
 }

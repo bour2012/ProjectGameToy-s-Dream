@@ -913,28 +913,28 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void OnGUI()
-    {
-        if (!showDebugInfo) return;
+    //void OnGUI()
+    //{
+    //    if (!showDebugInfo) return;
 
-        GUILayout.BeginArea(new Rect(10, 10, 300, 250));
-        GUILayout.Label($"Game State: {currentState}", GUI.skin.box);
-        GUILayout.Label($"Repairs: {GetCompletedRepairs().Count}/{repairProgresses.Count}", GUI.skin.box);
+    //    GUILayout.BeginArea(new Rect(10, 10, 300, 250));
+    //    GUILayout.Label($"Game State: {currentState}", GUI.skin.box);
+    //    GUILayout.Label($"Repairs: {GetCompletedRepairs().Count}/{repairProgresses.Count}", GUI.skin.box);
 
-        int totalCrafted = 0;
-        foreach (var progress in craftingProgresses)
-        {
-            totalCrafted += progress.totalCrafted;
-        }
-        GUILayout.Label($"Items Crafted: {totalCrafted}", GUI.skin.box);
+    //    int totalCrafted = 0;
+    //    foreach (var progress in craftingProgresses)
+    //    {
+    //        totalCrafted += progress.totalCrafted;
+    //    }
+    //    GUILayout.Label($"Items Crafted: {totalCrafted}", GUI.skin.box);
 
-        if (GUILayout.Button("Toggle Debug"))
-        {
-            showDebugInfo = !showDebugInfo;
-        }
+    //    if (GUILayout.Button("Toggle Debug"))
+    //    {
+    //        showDebugInfo = !showDebugInfo;
+    //    }
 
-        GUILayout.EndArea();
-    }
+    //    GUILayout.EndArea();
+    //}
 
     #endregion
 
