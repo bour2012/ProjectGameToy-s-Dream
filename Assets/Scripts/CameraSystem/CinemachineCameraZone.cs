@@ -1,41 +1,51 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Cinemachine;
 
+[RequireComponent(typeof(Collider2D))]
 public class CinemachineCameraZone : MonoBehaviour
 {
     [Header("Zone Camera Settings")]
-    [Tooltip("���ͧ�ͧ Zone ������ Active ����� Player �����")]
+    [Tooltip("กล้องของ Zone นี้ที่จะ Active เมื่อ Player เข้ามา")]
     [SerializeField] private CinemachineCamera zoneCam;
 
     [Header("Priority Settings")]
-    [Tooltip("Priority ����� Player ����� Zone (����٧���ҡ��ͧ��ѡ)")]
+    [Tooltip("Priority เมื่อ Player อยู่ใน Zone (ควรสูงกว่ากล้องหลัก)")]
     [SerializeField] private int activePriority = 15;
 
-    [Tooltip("Priority ����� Player �͡�ҡ Zone")]
+    [Tooltip("Priority เมื่อ Player ออกจาก Zone")]
     [SerializeField] private int inactivePriority = 5;
 
     [Header("Default Camera")]
-    [Tooltip("���ͧ��ѡ (���ԵԴ����Ѻ Player) - ���������������ͧ��èѴ��� Priority")]
+    [Tooltip("กล้องหลัก (ติดกับ Player)")]
     [SerializeField] private CinemachineCamera defaultCam;
 
-    [Header("Optional Settings")]
-    [SerializeField] private bool resetDefaultCamPriority = true;
-    [SerializeField] private int defaultCamInactivePriority = 10;
+    [Header("Perspective Settings")]
+    [Tooltip("มุมมองของกล้องเมื่อเข้า Zone (เฉพาะ Perspective Mode)")]
+    [Range(20f, 100f)]
+    [SerializeField] private float zoneFieldOfView = 60f;
+
+    [Tooltip("มุมมองเดิมของกล้องเมื่อออกจาก Zone")]
+    private float defaultFieldOfView = 60f;
 
     private void Start()
     {
-        zoneCam.enabled = false;
-
         if (zoneCam == null)
         {
-            Debug.LogError($"Zone Camera �����١ assign � {gameObject.name}!", this);
+            Debug.LogError($"❌ Zone Camera ไม่ได้ถูก assign ใน {gameObject.name}!", this);
             return;
         }
 
-        // ��駤�� Priority ���������� Zone Camera ���
+        //// ตรวจสอบว่าเป็น Perspective หรือ Orthographic
+        //if (zoneCam.Lens.Orthographic)
+        //{
+        //    zoneCam.Lens.Orthographic = false; // บังคับเป็น Perspective
+        //    Debug.Log($"[Camera Zone] เปลี่ยน {zoneCam.name} เป็น Perspective Mode");
+        //}
+
+        // ตั้งค่า Priority เริ่มต้นให้ Zone Camera ต่ำ
         zoneCam.Priority.Value = inactivePriority;
 
-        // ���������к� defaultCam ����ͧ�Ҩҡ Player
+        // หา DefaultCam ถ้ายังไม่ได้ใส่
         if (defaultCam == null)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -44,6 +54,14 @@ public class CinemachineCameraZone : MonoBehaviour
                 defaultCam = player.GetComponentInChildren<CinemachineCamera>();
             }
         }
+
+        if (defaultCam != null)
+        {
+            defaultFieldOfView = defaultCam.Lens.FieldOfView;
+        }
+
+        // ปิด ZoneCam ตอนเริ่มต้น
+        zoneCam.enabled = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -52,11 +70,13 @@ public class CinemachineCameraZone : MonoBehaviour
 
         if (zoneCam != null)
         {
-            // �Դ����ͧ�ͧ Zone
             zoneCam.enabled = true;
             zoneCam.Priority.Value = activePriority;
 
-            Debug.Log($"[Camera Zone] ��� Zone: {gameObject.name} | Camera: {zoneCam.name}");
+            // ปรับ Field of View สำหรับ Perspective
+            zoneCam.Lens.FieldOfView = zoneFieldOfView;
+
+            Debug.Log($"[Camera Zone] ▶ เข้า Zone: {gameObject.name} | Camera: {zoneCam.name} | FOV: {zoneFieldOfView}");
         }
     }
 
@@ -66,31 +86,34 @@ public class CinemachineCameraZone : MonoBehaviour
 
         if (zoneCam != null)
         {
-            // �Դ����ͧ�ͧ Zone
             zoneCam.enabled = false;
             zoneCam.Priority.Value = inactivePriority;
-
-
-            Debug.Log($"[Camera Zone] �͡�ҡ Zone: {gameObject.name}");
         }
+
+        if (defaultCam != null)
+        {
+            // คืนค่า Field of View ของกล้องหลัก
+            defaultCam.Lens.FieldOfView = defaultFieldOfView;
+        }
+
+        Debug.Log($"[Camera Zone] ◀ ออกจาก Zone: {gameObject.name}");
     }
 
-    // Helper method ����Ѻ����¹���ͧ�ҡ script ���
+    // --- Helper Methods ---
     public void ActivateZoneCamera()
     {
-        if (zoneCam != null)
-        {
-            zoneCam.enabled = true;
-            zoneCam.Priority.Value = activePriority;
-        }
+        if (zoneCam == null) return;
+
+        zoneCam.enabled = true;
+        zoneCam.Priority.Value = activePriority;
+        zoneCam.Lens.FieldOfView = zoneFieldOfView;
     }
 
     public void DeactivateZoneCamera()
     {
-        if (zoneCam != null)
-        {
-            zoneCam.enabled = false;
-            zoneCam.Priority.Value = inactivePriority;
-        }
+        if (zoneCam == null) return;
+
+        zoneCam.enabled = false;
+        zoneCam.Priority.Value = inactivePriority;
     }
 }

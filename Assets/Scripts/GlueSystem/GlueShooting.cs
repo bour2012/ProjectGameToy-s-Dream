@@ -6,29 +6,29 @@ using TMPro;
 
 // ========================================
 // Glue Shooting System - ระบบยิงกาว
+// รองรับกล้องแบบ Orthographic และ Perspective
 // ========================================
 
 public class GlueShooting : MonoBehaviour
 {
     [Header("Glue Projectile")]
-    public GameObject glueProjectilePrefab; // Prefab ของกาวที่ยิงออกไป
-    public Transform firePoint; // จุดยิง (ถ้าไม่ใส่จะใช้ตำแหน่งผู้เล่น)
+    public GameObject glueProjectilePrefab;
+    public Transform firePoint;
 
     [Header("Shooting Settings")]
     public float projectileSpeed = 15f;
     public float maxShootingRange = 20f;
-    public float shootCooldown = 1f; // คูลดาวน์การยิง
+    public float shootCooldown = 1f;
 
     [Header("Trajectory Preview")]
     public LineRenderer trajectoryLine;
     public int trajectoryPoints = 30;
     public float trajectoryTimeStep = 0.1f;
-
     public LayerMask colliderLayers;
 
     [Header("UI")]
     public GameObject aimingCrosshair;
-    public GameObject glueAimIndicator; // UI แสดงว่ากำลังเล็งกาว
+    public GameObject glueAimIndicator;
 
     [SerializeField] private Image glueIcon;
     [SerializeField] private Image threadIcon;
@@ -44,36 +44,22 @@ public class GlueShooting : MonoBehaviour
     private bool isAiming = false;
     private bool canShoot = true;
     private Vector2 aimDirection;
-    private Vector2 mouseWorldPos;
+    private Vector3 mouseWorldPos;
 
     // Item Selection
     private ItemManager.ItemType selectedItem = ItemManager.ItemType.Glue;
 
     // Components
     private Rope ropeScript;
+    private Camera mainCamera;
 
-    private float scrollAccumulator = 0f; // ตัวแปรสะสมการเลื่อนเมาส์
-    private float scrollThreshold = 0.2f; // เกณฑ์ที่ต้องถึงเพื่อเปลี่ยนไอเทม
-
+    private float scrollAccumulator = 0f;
+    private float scrollThreshold = 0.2f;
 
     void Awake()
     {
-        //// หา Rope script
-        //ropeScript = GetComponent<Rope>();
-
-        //// ตั้งค่าเริ่มต้น
-        //if (trajectoryLine != null)
-        //{
-        //    trajectoryLine.enabled = false;
-        //    trajectoryLine.positionCount = trajectoryPoints;
-        //}
-
-        //if (aimingCrosshair != null)
-        //    aimingCrosshair.SetActive(false);
-
-        //if (glueAimIndicator != null)
-        //    glueAimIndicator.SetActive(false);
         ropeScript = GetComponent<Rope>();
+        mainCamera = Camera.main;
 
         if (trajectoryLine != null)
         {
@@ -87,15 +73,12 @@ public class GlueShooting : MonoBehaviour
         if (glueAimIndicator != null)
             glueAimIndicator.SetActive(false);
 
-        // โหลดไอเทมที่เลือกไว้
-        int savedItemIndex = PlayerPrefs.GetInt("SelectedItem", 0); // ค่าเริ่มต้นคือ 0
+        int savedItemIndex = PlayerPrefs.GetInt("SelectedItem", 0);
         selectedItem = (ItemManager.ItemType)savedItemIndex;
-
     }
 
     void Update()
     {
-        // ตรวจสอบว่าสามารถใช้ระบบได้หรือไม่
         if (!CanUseSystem())
         {
             HideAiming();
@@ -107,60 +90,100 @@ public class GlueShooting : MonoBehaviour
         UpdateUI();
     }
 
-    #region Item Switching System
+    #region Mouse Position Calculation
 
     /// <summary>
-    /// จัดการการสลับไอเทม
+    /// คำนวณตำแหน่งเมาส์ใน World Space รองรับทั้ง Orthographic และ Perspective
     /// </summary>
-    /// 
+    private Vector3 GetMouseWorldPosition()
+    {
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
+        Vector3 mouseScreenPos = Input.mousePosition;
+
+        if (mainCamera.orthographic)
+        {
+            // Orthographic Camera
+            mouseScreenPos.z = mainCamera.nearClipPlane;
+            Vector3 worldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
+            worldPos.z = transform.position.z; // ใช้ Z ของ Player
+            return worldPos;
+        }
+        else
+        {
+            // Perspective Camera
+            // สร้าง Plane ที่อยู่ที่ตำแหน่ง Z ของ Player
+            Plane playerPlane = new Plane(Vector3.forward, transform.position);
+            Ray ray = mainCamera.ScreenPointToRay(mouseScreenPos);
+
+            if (playerPlane.Raycast(ray, out float distance))
+            {
+                return ray.GetPoint(distance);
+            }
+            else
+            {
+                // Fallback: ใช้ระยะห่างจากกล้อง
+                float distanceFromCamera = Mathf.Abs(mainCamera.transform.position.z - transform.position.z);
+                mouseScreenPos.z = distanceFromCamera;
+                return mainCamera.ScreenToWorldPoint(mouseScreenPos);
+            }
+        }
+    }
+
+    /// <summary>
+    /// คำนวณตำแหน่งเมาส์สำหรับ UI (World Space หรือ Screen Space)
+    /// </summary>
+    private Vector3 GetMouseUIPosition()
+    {
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
+        Vector3 mouseScreenPos = Input.mousePosition;
+
+        // สำหรับ UI ที่เป็น World Space
+        if (aimingCrosshair != null && aimingCrosshair.GetComponent<RectTransform>() == null)
+        {
+            return GetMouseWorldPosition();
+        }
+
+        // สำหรับ UI ที่เป็น Screen Space
+        return mouseScreenPos;
+    }
+
+    #endregion
+
+    #region Item Switching System
+
     private void HandleItemSwitching()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
-        if (Mathf.Abs(scroll) > 0.01f) // ตรวจสอบว่ามีการเลื่อนเมาส์
+        if (Mathf.Abs(scroll) > 0.01f)
         {
-            scrollAccumulator += scroll; // สะสมค่าการเลื่อน
+            scrollAccumulator += scroll;
 
-            if (scrollAccumulator >= scrollThreshold) // ถ้าสะสมถึงเกณฑ์
+            if (scrollAccumulator >= scrollThreshold)
             {
-                SwitchItem(true); // เลื่อนไปข้างหน้า
-                scrollAccumulator = 0f; // รีเซ็ตตัวสะสม
+                SwitchItem(true);
+                scrollAccumulator = 0f;
             }
-            else if (scrollAccumulator <= -scrollThreshold) // ถ้าสะสมถึงเกณฑ์ในทิศทางตรงข้าม
+            else if (scrollAccumulator <= -scrollThreshold)
             {
-                SwitchItem(false); // เลื่อนไปข้างหลัง
-                scrollAccumulator = 0f; // รีเซ็ตตัวสะสม
+                SwitchItem(false);
+                scrollAccumulator = 0f;
             }
         }
     }
-    //private void HandleItemSwitching()
-    //{
-    //    //if (Input.GetKeyDown(KeyCode.Tab))
-    //    //{
-    //    //    SwitchItem();
-    //    //}
 
-    //    float scroll = Input.GetAxis("Mouse ScrollWheel");
-    //    if (scroll != 0)
-    //    {
-    //        // scroll > 0 หมุนขึ้น , scroll < 0 หมุนลง
-    //        SwitchItem(scroll > 0);
-    //    }
-    //}
-
-    /// <summary>
-    /// สลับระหว่างกาวและด้าย
-    /// </summary>
     private void SwitchItem(bool forward)
     {
         int itemCount = System.Enum.GetValues(typeof(ItemManager.ItemType)).Length;
         int currentIndex = (int)selectedItem;
 
         currentIndex = (currentIndex + (forward ? 1 : -1) + itemCount) % itemCount;
-
         selectedItem = (ItemManager.ItemType)currentIndex;
 
-        // บันทึกไอเทมที่เลือกไว้
         PlayerPrefs.SetInt("SelectedItem", currentIndex);
         PlayerPrefs.Save();
 
@@ -172,9 +195,6 @@ public class GlueShooting : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ดูไอเทมที่เลือกอยู่
-    /// </summary>
     public ItemManager.ItemType GetSelectedItem()
     {
         return selectedItem;
@@ -184,26 +204,20 @@ public class GlueShooting : MonoBehaviour
 
     #region Glue Aiming and Shooting
 
-    /// <summary>
-    /// จัดการการเล็งและยิงกาว
-    /// </summary>
     private void HandleGlueAiming()
     {
-        // เฉพาะเมื่อเลือกกาว
         if (selectedItem != ItemManager.ItemType.Glue)
         {
             HideAiming();
             return;
         }
 
-        // ตรวจสอบว่ามีกาวหรือไม่
         if (ItemManager.Instance != null && !ItemManager.Instance.HasItem(ItemManager.ItemType.Glue))
         {
             HideAiming();
             return;
         }
 
-        // คลิกขวา - เริ่มเล็ง
         if (Input.GetMouseButton(1))
         {
             StartAiming();
@@ -213,43 +227,47 @@ public class GlueShooting : MonoBehaviour
             HideAiming();
         }
 
-        // คลิกซ้าย - ยิงกาว (ขณะที่เล็งอยู่)
         if (Input.GetMouseButtonDown(0) && isAiming && canShoot)
         {
             ShootGlue();
         }
     }
 
-    /// <summary>
-    /// เริ่มการเล็ง
-    /// </summary>
     private void StartAiming()
     {
         isAiming = true;
 
-        // ดึงตำแหน่งเมาส์ใน World (2D → Z = 0)
-        Vector3 mouseWorldPos3D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mouseWorldPos = new Vector2(mouseWorldPos3D.x, mouseWorldPos3D.y);
+        // ใช้ฟังก์ชันใหม่ที่รองรับทั้ง Orthographic และ Perspective
+        mouseWorldPos = GetMouseWorldPosition();
+        Vector2 mouseWorldPos2D = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
 
         // คำนวณทิศทางการเล็ง
-        aimDirection = (mouseWorldPos - (Vector2)transform.position).normalized;
+        Vector2 playerPos2D = new Vector2(transform.position.x, transform.position.y);
+        aimDirection = (mouseWorldPos2D - playerPos2D).normalized;
 
         // แสดง UI การเล็ง
         if (aimingCrosshair != null)
         {
             aimingCrosshair.SetActive(true);
-            aimingCrosshair.transform.position = mouseWorldPos3D; // ใช้ Vector3 สำหรับตำแหน่ง GameObject
+
+            // ถ้าเป็น World Space UI
+            if (aimingCrosshair.GetComponent<RectTransform>() == null)
+            {
+                aimingCrosshair.transform.position = mouseWorldPos;
+            }
+            else
+            {
+                // ถ้าเป็น Screen Space UI
+                aimingCrosshair.transform.position = Input.mousePosition;
+            }
         }
 
         if (glueAimIndicator != null)
             glueAimIndicator.SetActive(true);
 
-        // แสดงเส้นทางการยิง
         ShowTrajectoryPreview();
     }
-    /// <summary>
-    /// ซ่อนการเล็ง
-    /// </summary>
+
     private void HideAiming()
     {
         isAiming = false;
@@ -264,9 +282,6 @@ public class GlueShooting : MonoBehaviour
             glueAimIndicator.SetActive(false);
     }
 
-    /// <summary>
-    /// แสดงเส้นทางการยิงกาว
-    /// </summary>
     private void ShowTrajectoryPreview()
     {
         if (trajectoryLine == null) return;
@@ -286,27 +301,25 @@ public class GlueShooting : MonoBehaviour
         {
             float dt = trajectoryTimeStep;
 
-            // คำนวณตำแหน่งถัดไป
             Vector2 nextPos = currentPos + currentVel * dt + 0.5f * Physics2D.gravity * dt * dt;
 
-            // ตรวจสอบการชน
             RaycastHit2D hit = Physics2D.Linecast(currentPos, nextPos, colliderLayers);
             if (hit.collider != null)
             {
-                // ถ้าโดน collider ให้หยุด trajectory
                 points.Add(hit.point);
                 break;
             }
             else
             {
-                points.Add(nextPos);
+                // เก็บค่า Z เดิมไว้สำหรับ Perspective Camera
+                Vector3 point3D = nextPos;
+                point3D.z = startPos.z;
+                points.Add(point3D);
             }
 
-            // อัปเดตตำแหน่งและความเร็ว
             currentVel += Physics2D.gravity * dt;
             currentPos = nextPos;
 
-            // ถ้าเกิน max range ให้หยุด
             if (Vector2.Distance(startPos, currentPos) > maxShootingRange)
             {
                 break;
@@ -317,12 +330,8 @@ public class GlueShooting : MonoBehaviour
         trajectoryLine.SetPositions(points.ToArray());
     }
 
-    /// <summary>
-    /// ยิงกาว
-    /// </summary>
     private void ShootGlue()
     {
-        // ตรวจสอบว่ามีกาวหรือไม่
         if (ItemManager.Instance != null)
         {
             if (!ItemManager.Instance.HasItem(ItemManager.ItemType.Glue))
@@ -331,7 +340,6 @@ public class GlueShooting : MonoBehaviour
                 return;
             }
 
-            // ใช้กาว
             if (!ItemManager.Instance.UseItem(ItemManager.ItemType.Glue))
             {
                 Debug.LogWarning("Failed to use glue");
@@ -339,33 +347,21 @@ public class GlueShooting : MonoBehaviour
             }
         }
 
-        // สร้างกระสุนกาว
         Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
         GameObject glueProjectile = Instantiate(glueProjectilePrefab, spawnPos, Quaternion.identity);
 
-        // ตั้งค่าความเร็วให้กระสุน
         Rigidbody2D projectileRb = glueProjectile.GetComponent<Rigidbody2D>();
         if (projectileRb != null)
         {
             projectileRb.linearVelocity = aimDirection * projectileSpeed;
         }
 
-        // ตั้งค่าการหมุน
-        //float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-        //glueProjectile.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-        // เริ่มคูลดาวน์
         StartCoroutine(ShootCooldown());
-
-        // ซ่อนการเล็งหลังยิง
         HideAiming();
 
         Debug.Log($"Glue shot! Direction: {aimDirection}, Speed: {projectileSpeed}");
     }
 
-    /// <summary>
-    /// คูลดาวน์การยิง
-    /// </summary>
     private IEnumerator ShootCooldown()
     {
         canShoot = false;
@@ -377,22 +373,15 @@ public class GlueShooting : MonoBehaviour
 
     #region System State Checks
 
-    /// <summary>
-    /// ตรวจสอบว่าสามารถใช้ระบบได้หรือไม่
-    /// </summary>
     private bool CanUseSystem()
     {
         if (!respectGameManagerState) return true;
-
         if (GameManager.Instance == null) return true;
 
         GameState currentState = GameManager.Instance.currentState;
         return currentState == GameState.Normal || currentState == GameState.RopeSwinging;
     }
 
-    /// <summary>
-    /// ตรวจสอบว่ามีไอเทมที่เลือกหรือไม่
-    /// </summary>
     private bool HasSelectedItem()
     {
         if (ItemManager.Instance == null) return true;
@@ -403,13 +392,8 @@ public class GlueShooting : MonoBehaviour
 
     #region UI Management
 
-    /// <summary>
-    /// อัปเดต UI
-    /// </summary>
     private void UpdateUI()
     {
-        
-
         if (glueIcon != null)
         {
             bool hasGlue = ItemManager.Instance != null && ItemManager.Instance.HasItem(ItemManager.ItemType.Glue);
@@ -429,26 +413,17 @@ public class GlueShooting : MonoBehaviour
 
     #region Public Methods
 
-    /// <summary>
-    /// เซ็ตไอเทมที่เลือก (เรียกจากภายนอก)
-    /// </summary>
     public void SetSelectedItem(ItemManager.ItemType itemType)
     {
         selectedItem = itemType;
         HideAiming();
     }
 
-    /// <summary>
-    /// ตรวจสอบว่ากำลังเล็งอยู่หรือไม่
-    /// </summary>
     public bool IsAiming()
     {
         return isAiming;
     }
 
-    /// <summary>
-    /// ตรวจสอบว่ายิงได้หรือไม่
-    /// </summary>
     public bool CanShoot()
     {
         return canShoot && HasSelectedItem();
@@ -458,9 +433,6 @@ public class GlueShooting : MonoBehaviour
 
     #region Integration with Rope System
 
-    /// <summary>
-    /// ตรวจสอบว่า Rope กำลังใช้งานอยู่หรือไม่
-    /// </summary>
     private bool IsRopeActive()
     {
         return ropeScript != null && ropeScript.IsRopeAttached();
@@ -474,25 +446,16 @@ public class GlueShooting : MonoBehaviour
     {
         if (isAiming && selectedItem == ItemManager.ItemType.Glue)
         {
-            // วาดทิศทางการเล็ง
             Vector3 startPos = firePoint != null ? firePoint.position : transform.position;
             Vector3 endPos = startPos + (Vector3)aimDirection * maxShootingRange;
 
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(startPos, endPos);
 
-            // วาดจุดเล็ง
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(mouseWorldPos, 0.3f);
         }
     }
-
-    //// Debug Methods
-    //[ContextMenu("Switch Item")]
-    //public void Debug_SwitchItem()
-    //{
-    //    SwitchItem();
-    //}
 
     [ContextMenu("Test Glue Shot")]
     public void Debug_TestGlueShot()

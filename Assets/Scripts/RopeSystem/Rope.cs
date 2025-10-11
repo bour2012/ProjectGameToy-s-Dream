@@ -82,7 +82,10 @@ public class Rope : MonoBehaviour
         }
 
         // คำนวณทิศทางการเล็ง
-        var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
+        float distanceFromCamera = Mathf.Abs(Camera.main.transform.position.z - transform.position.z);
+        var worldMousePosition = Camera.main.ScreenToWorldPoint(
+            new Vector3(Input.mousePosition.x, Input.mousePosition.y, distanceFromCamera)
+        );
         var facingDirection = worldMousePosition - transform.position;
         var aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
         if (aimAngle < 0f)

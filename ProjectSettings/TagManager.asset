@@ -47,5 +47,44 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background1
+    uniqueID: 3132713499
+    locked: 0
+  - name: Background2
+    uniqueID: 3401623587
+    locked: 0
+  - name: Background3
+    uniqueID: 485900539
+    locked: 0
+  - name: Background4
+    uniqueID: 2574821251
+    locked: 0
+  - name: Background5
+    uniqueID: 2187647001
+    locked: 0
+  - name: Background6
+    uniqueID: 922651323
+    locked: 0
+  - name: Background7
+    uniqueID: 2493553053
+    locked: 0
+  - name: Background8
+    uniqueID: 2560520295
+    locked: 0
+  - name: Background9
+    uniqueID: 4284041423
+    locked: 0
+  - name: Background10
+    uniqueID: 3084692619
+    locked: 0
+  - name: Background11
+    uniqueID: 1346740041
+    locked: 0
+  - name: Background12
+    uniqueID: 51941929
+    locked: 0
+  - name: Game
+    uniqueID: 130639307
+    locked: 0
   m_RenderingLayers:
   - Default
