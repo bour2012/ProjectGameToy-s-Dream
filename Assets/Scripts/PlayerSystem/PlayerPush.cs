@@ -36,6 +36,7 @@ public class PlayerPush : MonoBehaviour
     private float lastFacingDirection = 1f;
     private float detectionCooldown = 0f;
     private const float DETECTION_COOLDOWN_TIME = 0.1f; // ช่วงเวลาที่รอก่อนตรวจจับใหม่
+    public Animator anim;
 
     // การอ้างอิงระบบอื่นๆ
     private GameManager gameManager;
@@ -44,7 +45,7 @@ public class PlayerPush : MonoBehaviour
     {
         InitializeComponents();
         SetupReferences();
-
+        anim = GetComponent<Animator>();
         // ซ่อน Push Indicator ตอนเริ่มต้น
         if (pushIndicator != null)
             pushIndicator.SetActive(false);
@@ -54,14 +55,11 @@ public class PlayerPush : MonoBehaviour
     {
         UpdateFacingDirection();
 
-        // อัพเดท cooldown
         if (detectionCooldown > 0)
             detectionCooldown -= Time.deltaTime;
 
-        // ตรวจสอบว่าสามารถใช้งานได้หรือไม่
         if (!CanUsePushSystem()) return;
 
-        // ตรวจสอบว่ากล่องที่กำลังจับยังอยู่หรือไม่
         if (isHolding && (targetBox == null || !targetBox.activeInHierarchy))
         {
             StopPushing();
@@ -71,6 +69,12 @@ public class PlayerPush : MonoBehaviour
         CheckForPushableObjects();
         HandlePushInput();
         UpdateVisualFeedback();
+
+        // อัปเดต Animation แบบ Real-time ตามความเร็วของกล่อง
+        if (isHolding)
+        {
+            UpdatePushAnimationByVelocity();
+        }
     }
 
     void FixedUpdate()
@@ -84,6 +88,68 @@ public class PlayerPush : MonoBehaviour
 
     #region Initialization
 
+    void UpdatePushAnimationByVelocity()
+    {
+        if (!isHolding || targetBox == null || anim == null) return;
+
+        Rigidbody2D boxRb = targetBox.GetComponent<Rigidbody2D>();
+        if (boxRb == null) return;
+
+        // ตรวจสอบทิศทางที่ตัวละครหัน
+        bool facingRight = !playerSprite.flipX;
+
+        // ดึงความเร็วของกล่อง
+        float boxVelocityX = boxRb.linearVelocity.x;
+
+        // กำหนดเกณฑ์ความเร็วขั้นต่ำ
+        float velocityThreshold = 0.1f;
+
+        // ตรวจสอบว่ากล่องกำลังเคลื่อนที่หรือไม่
+        bool isMoving = Mathf.Abs(boxVelocityX) >= velocityThreshold;
+
+        if (!isMoving)
+        {
+            // กล่องไม่เคลื่อนที่ -> เล่น Idle Animation
+            anim.SetBool("IsPush", false);
+            anim.SetBool("IsPull", false);
+            anim.SetBool("IsIdlePush", true);
+            return;
+        }
+
+        // กล่องกำลังเคลื่อนที่ -> ปิด Idle และเล่น Push/Pull
+        anim.SetBool("IsIdlePush", false);
+
+        // คำนวณว่ากล่องเคลื่อนที่ไปทางเดียวกับที่ตัวละครหันหรือไม่
+        bool boxMovingRight = boxVelocityX > 0;
+
+        bool isPushing = false;
+        bool isPulling = false;
+
+        if (facingRight)
+        {
+            // หันขวา: กล่องเคลื่อนที่ขวา = Push, ซ้าย = Pull
+            isPushing = boxMovingRight;
+            isPulling = !boxMovingRight;
+        }
+        else
+        {
+            // หันซ้าย: กล่องเคลื่อนที่ซ้าย = Push, ขวา = Pull
+            isPushing = !boxMovingRight;
+            isPulling = boxMovingRight;
+        }
+
+        anim.SetBool("IsPush", isPushing);
+        anim.SetBool("IsPull", isPulling);
+
+        // Debug Log (สามารถลบออกได้)
+        if (showDebugGizmos)
+        {
+            string state = isMoving ? (isPushing ? "PUSH" : "PULL") : "IDLE";
+            Debug.Log($"[Anim] Facing: {(facingRight ? "Right" : "Left")}, " +
+                      $"BoxVel: {boxVelocityX:F2}, State: {state}");
+        }
+    }
+
     void InitializeComponents()
     {
         playerRb = GetComponent<Rigidbody2D>();
@@ -93,11 +159,11 @@ public class PlayerPush : MonoBehaviour
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
-        // กำหนดทิศทางเริ่มต้นจาก Sprite
-        if (playerSprite != null)
-        {
-            lastFacingDirection = playerSprite.flipX ? -1f : 1f;
-        }
+        //// กำหนดทิศทางเริ่มต้นจาก Sprite
+        //if (playerSprite != null)
+        //{
+        //    lastFacingDirection = playerSprite.flipX ? -1f : 1f;
+        //}
     }
 
     void SetupReferences()
@@ -250,6 +316,7 @@ public class PlayerPush : MonoBehaviour
                 float distance = Vector2.Distance(transform.position, availableBox.transform.position);
                 if (distance <= detectionDistance)
                 {
+
                     StartPushing();
                 }
                 else
@@ -259,6 +326,7 @@ public class PlayerPush : MonoBehaviour
             }
             else if (isHolding && CanStopPushing())
             {
+            
                 StopPushing();
             }
             else
@@ -270,6 +338,64 @@ public class PlayerPush : MonoBehaviour
             detectionCooldown = DETECTION_COOLDOWN_TIME;
         }
     }
+
+    void UpdatePushAnimation()
+    {
+       
+        // ดึงค่า Input
+        float horizontal = Input.GetAxisRaw("Horizontal");
+
+        // ตรวจสอบทิศทางที่ตัวละครหัน
+        bool facingRight = !playerSprite.flipX;
+
+        //// ถ้าไม่กดปุ่มใดๆ -> ไม่เล่น Animation
+        //if (Mathf.Abs(horizontal) < 0.01f)
+        //{
+        //    anim.SetBool("IsPush", false);
+        //    anim.SetBool("IsPull", false);
+        //    return;
+        //}
+
+        // Logic: ถ้าทิศทางการกดตรงกับทิศทางการหัน = Push
+        //        ถ้าทิศทางการกดตรงข้ามกับทิศทางการหัน = Pull
+
+        bool isPushing = false;
+        bool isPulling = false;
+
+        if (facingRight) // หันขวา
+        {
+            if (horizontal > 0) // กดขวา
+            {
+                isPushing = true; // ดันไปข้างหน้า
+                isPulling = false;
+            }
+            else if (horizontal < 0) // กดซ้าย
+            {
+                isPushing = false;
+                isPulling = true; // ดึงกลับมา
+            }
+        }
+        else // หันซ้าย
+        {
+            if (horizontal < 0) // กดซ้าย
+            {
+                isPushing = true; // ดันไปข้างหน้า
+                isPulling = false;
+            }
+            else if (horizontal > 0) // กดขวา
+            {
+                isPushing = false;
+                isPulling = true; // ดึงกลับมา
+            }
+        }
+
+        // อัปเดต Animator
+        anim.SetBool("IsPush", isPushing);
+        anim.SetBool("IsPull", isPulling);
+
+        Debug.Log($"[Anim] Facing: {(facingRight ? "Right" : "Left")}, Input: {horizontal:F1}, Push: {isPushing}, Pull: {isPulling}");
+    }
+
 
     #endregion
 
@@ -305,6 +431,7 @@ public class PlayerPush : MonoBehaviour
             joint = targetBox.AddComponent<FixedJoint2D>();
         }
 
+
         // ตั้งค่า Joint
         joint.enabled = true;
         joint.connectedBody = playerRb;
@@ -313,7 +440,13 @@ public class PlayerPush : MonoBehaviour
         joint.breakTorque = Mathf.Infinity;
 
         isHolding = true;
-
+        // ตั้งค่า Animation เริ่มต้นเป็น Idle
+        if (anim != null)
+        {
+            anim.SetBool("IsIdlePush", true);
+            anim.SetBool("IsPush", false);
+            anim.SetBool("IsPull", false);
+        }
         // เล่นเสียง
         PlaySound(grabSound);
 
@@ -326,6 +459,12 @@ public class PlayerPush : MonoBehaviour
         {
             Debug.Log("[Push Debug] Cannot stop pushing - conditions not met");
             return;
+        }
+        if (anim != null)
+        {
+            anim.SetBool("IsIdlePush", false);
+            anim.SetBool("IsPull", false);
+            anim.SetBool("IsIdle", false);
         }
 
         // ปล่อยกล่อง
@@ -426,10 +565,10 @@ public class PlayerPush : MonoBehaviour
             {
                 lastFacingDirection = newDirection;
 
-                if (playerSprite != null)
-                {
-                    playerSprite.flipX = lastFacingDirection < 0;
-                }
+                //if (playerSprite != null)
+                //{
+                //    playerSprite.flipX = lastFacingDirection < 0;
+                //}
 
                 // เมื่อเปลี่ยนทิศทาง ให้ตรวจจับกล่องใหม่
                 if (!isHolding)

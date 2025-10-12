@@ -28,11 +28,14 @@ public class GameManager : MonoBehaviour
 
     [Header("Checkpoint Debug")]
     public bool showCheckpointDebugInfo = true;
+    public bool enableCheckpointNavigation = true; // เปิด/ปิดการใช้ลูกศรสลับ Checkpoint
 
     private Checkpoint currentActiveCheckpoint;
     private Vector3 defaultSpawnPosition;
     private PlayerDeathSystem playerDeath;
 
+    private Checkpoint[] allCheckpoints;
+    private int currentCheckpointIndex = 0;
 
     [Header("Game State")]
     public GameState currentState = GameState.Normal;
@@ -436,6 +439,8 @@ public class GameManager : MonoBehaviour
     // เรียกใน Start() ของ GameManager
     private void SetupCheckpointSystem()
     {
+        CollectAllCheckpoints();
+
         // ตั้งค่า Default Checkpoint
         if (defaultCheckpoint != null)
         {
@@ -448,6 +453,98 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void CollectAllCheckpoints()
+    {
+        allCheckpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
+
+        // เรียงตามตำแหน่ง X (จากซ้ายไปขวา)
+        System.Array.Sort(allCheckpoints, (a, b) =>
+            a.transform.position.x.CompareTo(b.transform.position.x));
+
+        if (showCheckpointDebugInfo)
+        {
+            Debug.Log($"พบ Checkpoint ทั้งหมด {allCheckpoints.Length} จุด:");
+            for (int i = 0; i < allCheckpoints.Length; i++)
+            {
+                Debug.Log($"  [{i}] {allCheckpoints[i].GetCheckpointID()} - Pos: {allCheckpoints[i].transform.position}");
+            }
+        }
+
+        // หา Index ของ Checkpoint ปัจจุบัน
+        UpdateCurrentCheckpointIndex();
+    }
+
+    private void NavigateToPreviousCheckpoint()
+    {
+        if (allCheckpoints == null || allCheckpoints.Length == 0)
+        {
+            Debug.LogWarning("ไม่มี Checkpoint ใน Scene!");
+            return;
+        }
+
+        currentCheckpointIndex--;
+        if (currentCheckpointIndex < 0)
+            currentCheckpointIndex = allCheckpoints.Length - 1;
+
+        TeleportToCheckpoint(currentCheckpointIndex);
+    }
+
+    private void NavigateToNextCheckpoint()
+    {
+        if (allCheckpoints == null || allCheckpoints.Length == 0)
+        {
+            Debug.LogWarning("ไม่มี Checkpoint ใน Scene!");
+            return;
+        }
+
+        currentCheckpointIndex++;
+        if (currentCheckpointIndex >= allCheckpoints.Length)
+            currentCheckpointIndex = 0;
+
+        TeleportToCheckpoint(currentCheckpointIndex);
+    }
+
+    private void TeleportToCheckpoint(int index)
+    {
+        if (allCheckpoints == null || index < 0 || index >= allCheckpoints.Length)
+            return;
+
+        Checkpoint targetCheckpoint = allCheckpoints[index];
+
+        // เปลี่ยน Checkpoint
+        SetActiveCheckpoint(targetCheckpoint);
+        targetCheckpoint.ActivateCheckpoint();
+
+        // ย้าย Player
+        if (player != null)
+        {
+            player.position = targetCheckpoint.GetSpawnPosition();
+
+            if (playerDeath != null)
+                playerDeath.Respawn(targetCheckpoint.GetSpawnPosition());
+        }
+
+        if (showCheckpointDebugInfo)
+        {
+            Debug.Log($"🚩 Teleport to Checkpoint [{index}]: {targetCheckpoint.GetCheckpointID()}");
+        }
+    }
+
+    private void UpdateCurrentCheckpointIndex()
+    {
+        if (allCheckpoints == null || currentActiveCheckpoint == null)
+            return;
+
+        for (int i = 0; i < allCheckpoints.Length; i++)
+        {
+            if (allCheckpoints[i] == currentActiveCheckpoint)
+            {
+                currentCheckpointIndex = i;
+                break;
+            }
+        }
+    }
+
     // เรียกใน Update() ของ GameManager
     private void HandleCheckpointInput()
     {
@@ -457,6 +554,18 @@ public class GameManager : MonoBehaviour
             ManualReset();
         }
 
+        // Debug Navigation (ลูกศรซ้าย-ขวา) - เพิ่มใหม่
+        if (enableCheckpointNavigation)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                NavigateToPreviousCheckpoint();
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                NavigateToNextCheckpoint();
+            }
+        }
         // Debug Info
         if (showCheckpointDebugInfo && Input.GetKeyDown(KeyCode.F1))
         {
@@ -478,7 +587,8 @@ public class GameManager : MonoBehaviour
         {
             checkpoint.ApplyItemDefaults();
         }
-
+        // อัปเดต Index - เพิ่มใหม่
+        UpdateCurrentCheckpointIndex();
         // บันทึกลงใน PlayerPrefs (สำหรับการเซฟข้ามเกม)
         if (checkpoint != null)
         {
@@ -598,16 +708,28 @@ public class GameManager : MonoBehaviour
         if (currentActiveCheckpoint != null)
         {
             Debug.Log($"=== Checkpoint Debug Info ===");
-            Debug.Log($"Active Checkpoint: {currentActiveCheckpoint.GetCheckpointID()}");
+            Debug.Log($"Active Checkpoint [{currentCheckpointIndex}/{allCheckpoints.Length - 1}]: {currentActiveCheckpoint.GetCheckpointID()}");
             Debug.Log($"Position: {currentActiveCheckpoint.transform.position}");
             Debug.Log($"Spawn Position: {GetCurrentSpawnPosition()}");
+            Debug.Log($"");
+            Debug.Log($"All Checkpoints:");
+            for (int i = 0; i < allCheckpoints.Length; i++)
+            {
+                string marker = (i == currentCheckpointIndex) ? "→ " : "  ";
+                Debug.Log($"{marker}[{i}] {allCheckpoints[i].GetCheckpointID()}");
+            }
         }
         else
         {
             Debug.Log("ไม่มี Active Checkpoint");
         }
 
-        Debug.Log($"Controls: R = Manual Reset, F1 = Debug Info");
+        Debug.Log($"");
+        Debug.Log($"Controls:");
+        Debug.Log($"  R = Manual Reset");
+        Debug.Log($"  F1 = Debug Info");
+        Debug.Log($"  ← = Previous Checkpoint");
+        Debug.Log($"  → = Next Checkpoint");
     }
 
     // สำหรับเรียกจาก UI หรือ External Script

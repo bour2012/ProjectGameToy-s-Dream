@@ -71,32 +71,9 @@ public class PlayerMovement : MonoBehaviour
     {
         // รับ Input
 
-        //// กระโดด
-        //if (jumpPressed && groundCheck)
-        //{
-        //    float xSpeed = true ? rBody.linearVelocity.x : 0f;
-        //    rBody.linearVelocity = new Vector2(xSpeed, jumpSpeed);
-        //}
-
-
         ProcessInput();
 
-        // กดขวา → หันขวา (ถ้ายังไม่หัน)
-        if (horizontalInput > 0f && !facingRight)
-        {
-            facingRight = true;
-            playerSprite.flipX = false;
-            UpdateFirePointPosition();
-
-        }
-        // กดซ้าย → หันซ้าย (ถ้ายังไม่หัน)
-        else if (horizontalInput < 0f && facingRight)
-        {
-            facingRight = false;
-            playerSprite.flipX = true;
-            UpdateFirePointPosition();
-
-        }
+        FlipCharacter();
 
         //// ตรวจพื้นด้วย Raycast 3 จุด (ซ้าย, กลาง, ขวา)
         CheckGround();
@@ -140,6 +117,32 @@ public class PlayerMovement : MonoBehaviour
             //HandleGroundMovement();
         }
     }
+
+    public void FlipCharacter()
+    {
+        bool canFlip = true;
+        if (GameManager.Instance != null)
+        {
+            canFlip = GameManager.Instance.currentState != GameState.PushingObject;
+        }
+        // กดขวา → หันขวา (ถ้ายังไม่หัน)
+        if (horizontalInput > 0f && !facingRight && canFlip)
+        {
+            facingRight = true;
+            playerSprite.flipX = false;
+            UpdateFirePointPosition();
+
+        }
+        // กดซ้าย → หันซ้าย (ถ้ายังไม่หัน)
+        else if (horizontalInput < 0f && facingRight && canFlip)
+        {
+            facingRight = false;
+            playerSprite.flipX = true;
+            UpdateFirePointPosition();
+
+        }
+    }
+   
     void DrawDebugCircle(Vector2 position, float radius, bool hit)
     {
         Color color = hit ? Color.green : Color.red;
@@ -211,39 +214,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-
-        //// วาดสี่เหลี่ยมให้เห็นตำแหน่ง BoxCast
-        //Debug.DrawLine(new Vector3(boxOrigin.x - boxSize.x / 2, boxOrigin.y, 0),
-        //               new Vector3(boxOrigin.x + boxSize.x / 2, boxOrigin.y, 0), debugColor);
-
-        //Debug.DrawLine(new Vector3(boxOrigin.x - boxSize.x / 2, boxOrigin.y - boxSize.y, 0),
-        //               new Vector3(boxOrigin.x + boxSize.x / 2, boxOrigin.y - boxSize.y, 0), debugColor);
-
-        //Debug.DrawLine(new Vector3(boxOrigin.x - boxSize.x / 2, boxOrigin.y, 0),
-        //               new Vector3(boxOrigin.x - boxSize.x / 2, boxOrigin.y - boxSize.y, 0), debugColor);
-
-        //Debug.DrawLine(new Vector3(boxOrigin.x + boxSize.x / 2, boxOrigin.y, 0),
-        //               new Vector3(boxOrigin.x + boxSize.x / 2, boxOrigin.y - boxSize.y, 0), debugColor);
-
-        //// ถ้ามี hit จริง ๆ จะวาดเส้นลงไปหา Collider ที่ชน
-        //if (hit.collider != null)
-        //{
-        //    Debug.DrawRay(boxOrigin, Vector2.down * 0.05f, Color.yellow);
-        //}
-
-
-        //float halfHeight = playerSprite.bounds.extents.y;
-        //float halfWidth = playerSprite.bounds.extents.x - 0.2f;
-
-        //Vector2 leftFoot = new Vector2(transform.position.x - halfWidth * 0.8f, transform.position.y - halfHeight);
-        ////Vector2 midFoot = new Vector2(transform.position.x, transform.position.y - halfHeight);
-        //Vector2 rightFoot = new Vector2(transform.position.x + halfWidth * 0.8f, transform.position.y - halfHeight);
-
-        //bool leftHit = Physics2D.Raycast(leftFoot, Vector2.down, rayLength, groundLayer);
-        ////bool midHit = Physics2D.Raycast(midFoot, Vector2.down, rayLength, groundLayer);
-        //bool rightHit = Physics2D.Raycast(rightFoot, Vector2.down, rayLength, groundLayer);
-
-        //groundCheckWalk = (horizontalInput < 0 && leftHit) || (horizontalInput > 0 && rightHit);
     }
     void DrawCapsuleDebug(Vector2 center, Vector2 size, Color color)
     {
@@ -460,26 +430,6 @@ public class PlayerMovement : MonoBehaviour
         currentLadder = null;
         ropeHook = Vector2.zero;
 
-        //// คืนค่า Physics
-        //if (rBody != null)
-        //{
-        //    //rBody.gravityScale = 1f;
-        //    rBody.linearVelocity = Vector2.zero;
-        //    rBody.angularVelocity = 0f;
-        //}
-
-        //// คืนค่า Collision
-        //Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
-        //if (wallLayerNumber > 0)
-        //{
-        //    Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
-        //}
-
-        //// คืนค่า Collider
-        //if (playerCollider != null)
-        //{
-        //    playerCollider.isTrigger = false;
-        //}
     }
 
     #endregion
@@ -801,48 +751,6 @@ public class PlayerMovement : MonoBehaviour
         //}
     }
 
-    void HandleAirMovement()
-    {
-       // if (!groundCheck)
-       // {
-            // ไม่อนุญาตให้เดินในอากาศ
-            rBody.linearVelocity = new Vector2(0, rBody.linearVelocity.y);
-       // }
-        //if (horizontalInput != 0)
-        //{
-        //    bool blockedByWall = (horizontalInput < 0 && hitWallLeft) || (horizontalInput > 0 && hitWallRight);
-        //    if (blockedByWall) return;
-
-        //    float targetVelocityX = horizontalInput * maxAirSpeed;
-        //    float currentVelocityX = rBody.linearVelocity.x;
-        //    float velocityDifference = targetVelocityX - currentVelocityX;
-
-        //    // ปรับ Air Control แบบ Progressive (ยิ่งใกล้ target ยิ่งนุ่ม)
-        //    float progressiveControl = airControl * (1f - Mathf.Abs(currentVelocityX) / (maxAirSpeed * 2f));
-        //    progressiveControl = Mathf.Clamp(progressiveControl, airControl * 0.2f, airControl);
-
-        //    float changeAmount = velocityDifference * progressiveControl;
-        //    float newVelocityX = currentVelocityX + changeAmount;
-        //    newVelocityX = Mathf.Clamp(newVelocityX, -maxAirSpeed, maxAirSpeed);
-
-        //    // Smooth direction change (การเปลี่ยนทิศทางนุ่มขึ้น)
-        //    if (Mathf.Sign(horizontalInput) != Mathf.Sign(currentVelocityX) && Mathf.Abs(currentVelocityX) > maxAirSpeed * 0.3f)
-        //    {
-        //        float smoothFactor = 1f - (Mathf.Abs(currentVelocityX) / maxAirSpeed) * 0.3f;
-        //        newVelocityX = Mathf.Lerp(currentVelocityX, targetVelocityX, progressiveControl * smoothFactor);
-        //    }
-
-        //    rBody.linearVelocity = new Vector2(newVelocityX, rBody.linearVelocity.y);
-        //}
-        //else
-        //{
-        //    // ไม่กดปุ่มใดๆ: Air Drag ที่นุ่มนวล
-        //    float currentVelocityX = rBody.linearVelocity.x;
-        //    float dragFactor = 1f - (airControl * 0.15f); // ลด drag ลงเล็กน้อย
-        //    float newVelocityX = currentVelocityX * dragFactor;
-        //    rBody.linearVelocity = new Vector2(newVelocityX, rBody.linearVelocity.y);
-        //}
-    }
     void RestoreAirControl()
     {
         // คืนค่า airControl เป็นค่าเริ่มต้น
