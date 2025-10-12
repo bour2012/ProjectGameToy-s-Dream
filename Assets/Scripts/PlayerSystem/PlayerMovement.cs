@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -37,6 +38,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector2 firePointOffsetRight = new Vector2(0.5f, 0f);
     [SerializeField] private Vector2 firePointOffsetLeft = new Vector2(-0.5f, 0f);
 
+    [Header("Dialog Settings")]
+    [Tooltip("หน่วงเวลากี่วินาทีก่อนแสดง Dialog หลังเกิดใหม่")]
+    public float respawnDialogDelay = 1f; 
+
     [Header("Rope Hook")]
     public bool isSwinging;
     public Vector2 ropeHook;
@@ -65,6 +70,12 @@ public class PlayerMovement : MonoBehaviour
         rBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         playerCollider = GetComponent<Collider2D>();
+    }
+
+    void Start()
+    {
+
+        StartCoroutine(CheckAndPlayRespawnDialogCoroutine());
     }
 
     void Update()
@@ -115,6 +126,50 @@ public class PlayerMovement : MonoBehaviour
         {
             Move();
             //HandleGroundMovement();
+        }
+    }
+
+    private IEnumerator CheckAndPlayRespawnDialogCoroutine()
+    {
+        // 1. หน่วงเวลา (เหมือนเดิม)
+        yield return new WaitForSeconds(respawnDialogDelay);
+
+        if (GameManager.Instance == null) yield break;
+
+        string targetDialogID = GameManager.Instance.dialogIDToPlayOnRespawn;
+
+        if (!string.IsNullOrEmpty(targetDialogID))
+        {
+            // 2. เช็ค "สมุดจด" ก่อน!
+            if (GameManager.Instance.playedDialogIDs.Contains(targetDialogID))
+            {
+                // ถ้าเคยเล่น ID นี้ไปแล้ว...
+                Debug.Log($"Dialog ID '{targetDialogID}' has already been played. Skipping.");
+                GameManager.Instance.dialogIDToPlayOnRespawn = ""; // เคลียร์ ID ทิ้ง
+                yield break; // ...ก็จบการทำงานไปเลย
+            }
+
+            // 3. ถ้ายังไม่เคยเล่น ก็ค้นหาและสั่งให้เล่น (เหมือนเดิม)
+            DialogTrigger[] allTriggers = FindObjectsByType<DialogTrigger>(FindObjectsSortMode.None);
+            bool foundAndTriggered = false;
+            foreach (DialogTrigger trigger in allTriggers)
+            {
+                if (trigger.dialogID == targetDialogID)
+                {
+                    trigger.TriggerDialog();
+                    foundAndTriggered = true;
+                    break;
+                }
+            }
+
+            // 4. ถ้าเล่นสำเร็จ ให้ "จด" ลงสมุด!
+            if (foundAndTriggered)
+            {
+                GameManager.Instance.playedDialogIDs.Add(targetDialogID);
+            }
+
+            // 5. เคลียร์ ID ที่รอเล่นทิ้งไป (เหมือนเดิม)
+            GameManager.Instance.dialogIDToPlayOnRespawn = "";
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events; 
 
 /// <summary>
 /// ระบบการตายของผู้เล่นแบบรวมทุกอย่างไว้ในที่เดียว
@@ -46,6 +47,9 @@ public class PlayerDeathSystem : MonoBehaviour
 
     [Tooltip("หยุดระบบต่างๆ ระหว่างตาย")]
     public bool pauseSystemsDuringDeath = true;
+
+    public DeathDialogManager deathDialogManager;
+    public UnityEvent onPlayerDies; // UnityEvent สำหรับเหตุการณ์อื่นๆ
 
     [Header("Debug")]
     public bool showDeathStateDebug = true;
@@ -217,25 +221,44 @@ public class PlayerDeathSystem : MonoBehaviour
 
         isDead = true;
 
-        enabled = false;
+        //enabled = false;
 
         // แจ้ง GameManager เปลี่ยน state
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ChangeState(GameState.Dead, "Player died");
+            onPlayerDies.Invoke();
+
+            if (deathDialogManager != null && GameManager.Instance != null)
+            {
+                DialogTrigger dialogToPlay = deathDialogManager.GetCurrentDeathDialog();
+                if (dialogToPlay != null)
+                {
+                   
+                    GameManager.Instance.dialogIDToPlayOnRespawn = dialogToPlay.dialogID;
+                    Debug.Log("<color=orange>DIALOG ID SENT TO GAMEMANAGER: </color>" + dialogToPlay.dialogID); // <-- เพิ่ม
+                }
+                else
+                {
+                    Debug.Log("<color=red>FAILED TO GET DIALOG! dialogToPlay is null or has no ID.</color>"); // <-- เพิ่ม
+                }
+            }
+
+            GameManager.Instance.ManualReset();
+
         }
 
 
-        // ปิดการควบคุม
-        if (playerMovement != null)
-        {
-            playerMovement.enabled = false;
-        }
+        //// ปิดการควบคุม
+        //if (playerMovement != null)
+        //{
+        //    playerMovement.enabled = false;
+        //}
 
-        if (playerController != null)
-        {
-            playerController.SetControlEnabled(false);
-        }
+        //if (playerController != null)
+        //{
+        //    playerController.SetControlEnabled(false);
+        //}
 
         // หยุดการเคลื่อนไหว
         if (playerRigidbody != null)
@@ -259,8 +282,8 @@ public class PlayerDeathSystem : MonoBehaviour
 
         Debug.Log($"Player ตายจาก: {deathType}");
 
-        // เริ่มกระบวนการ Respawn
-        StartCoroutine(DeathSequence());
+        //// เริ่มกระบวนการ Respawn
+        //StartCoroutine(DeathSequence());
     }
 
     private IEnumerator DeathSequence()

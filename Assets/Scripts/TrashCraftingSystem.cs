@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine;
 using TMPro;
 
@@ -31,6 +32,8 @@ public class TrashCraftingSystem : MonoBehaviour
     [Header("Visual Effects")]
     public ParticleSystem craftingEffect;
     public AudioSource craftingSound;
+
+    public UnityEvent onPickup;
 
     // GameManager reference
     [HideInInspector] public GameManager gameManager;
@@ -300,6 +303,7 @@ public class TrashCraftingSystem : MonoBehaviour
         CraftTool tool = currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
         if (gameManager.StartCrafting(trashId, tool))
         {
+            onPickup.Invoke();
             StartCrafting();
         }
         else

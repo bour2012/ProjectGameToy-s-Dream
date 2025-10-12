@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerPush : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class PlayerPush : MonoBehaviour
 
     [Header("Direction Settings")]
     public bool maintainLastDirection = true;
+
+    [Header("Unity Event")]
+    public UnityEvent onPickup;
 
     // Private Variables
     private GameObject targetBox;
@@ -318,6 +322,7 @@ public class PlayerPush : MonoBehaviour
                 {
 
                     StartPushing();
+                    onPickup.Invoke();
                 }
                 else
                 {

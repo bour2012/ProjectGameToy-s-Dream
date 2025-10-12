@@ -77,7 +77,7 @@ public class DialogManager : MonoBehaviour
         if (!isDialogActive) return;
 
         // คลิกซ้ายเพื่อข้าม
-        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetMouseButtonDown(0))
         {
             if (isTyping)
             {

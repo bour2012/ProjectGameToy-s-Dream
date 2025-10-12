@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
@@ -49,6 +50,11 @@ public class GameManager : MonoBehaviour
 
     [Header("Crafting Progress Tracking")]
     public List<CraftingProgress> craftingProgresses = new List<CraftingProgress>();
+
+    [Header("Dialog System")]
+    [Tooltip("ตัวแปรสำหรับเก็บ Dialog ที่จะเล่นหลังจาก Respawn")]
+    public string dialogIDToPlayOnRespawn = "";
+    public HashSet<string> playedDialogIDs = new HashSet<string>();
 
     [Header("Debug")]
     public bool showDebugInfo = true;
