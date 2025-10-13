@@ -1,9 +1,12 @@
 ﻿// MovementBase.cs
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class Enemy : MonoBehaviour, ISlowable
 {
+    [Header("Events")]
+    public UnityEvent onSlowApplied;
 
     [Header("Head Collider")]
     public Collider2D headCollider; // Collider สำหรับหัวของศัตรู
@@ -43,12 +46,14 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     #region Slowing Glue Effect
     public void ApplySlow(float slowAmount, float duration)
     {
+        onSlowApplied.Invoke();
         if (slowRoutine != null) StopCoroutine(slowRoutine);
         slowRoutine = StartCoroutine(SlowRoutine(slowAmount, duration));
     }
 
     public void ApplyGradualSlow(float targetSlowAmount, float duration, float lerpTime)
     {
+        onSlowApplied.Invoke();
         if (slowRoutine != null) StopCoroutine(slowRoutine);
         slowRoutine = StartCoroutine(GradualSlowRoutine(targetSlowAmount, duration, lerpTime));
     }

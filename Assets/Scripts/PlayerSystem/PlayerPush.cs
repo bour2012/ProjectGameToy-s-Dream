@@ -414,6 +414,12 @@ public class PlayerPush : MonoBehaviour
             return;
         }
 
+        PushableBox specialBox = availableBox.GetComponent<PushableBox>();
+        if (specialBox != null)
+        {
+            // ถ้ามี, ให้ไปเรียกฟังก์ชันเพื่อ Trigger Event ของกล่องนั้น
+            specialBox.NotifyPlayerIsPushing();
+        }
         // แจ้ง GameManager ว่าเริ่มดันของ
         bool stateChanged = true;
         if (gameManager != null)
@@ -469,7 +475,7 @@ public class PlayerPush : MonoBehaviour
         {
             anim.SetBool("IsIdlePush", false);
             anim.SetBool("IsPull", false);
-            anim.SetBool("IsIdle", false);
+            anim.SetBool("IsPush", false);
         }
 
         // ปล่อยกล่อง

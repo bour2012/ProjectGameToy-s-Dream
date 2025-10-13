@@ -16,24 +16,22 @@ public class DialogManager : MonoBehaviour
     public AudioSource audioSource;
 
     [Header("Camera")]
-    public CinemachineCamera mainCamera;
-    [SerializeField] private int activePriority = 15;
-    private Transform originalFollow;
-    private Transform originalLookAt;
-    [SerializeField]  private int originalCameraSize; // เก็บค่า Lens OriginalNearClipPlane เดิม
-    //[Header("Camera Shake")]
-    //public GameObject impulseSource;
-    //public float shakeForce = 1f;
+    [Tooltip("ลาก VCam พิเศษสำหรับ Dialog (VCam_DialogFocus) มาใส่ที่นี่")]
+    public CinemachineCamera dialogCamera;
+    [Tooltip("Priority ที่จะใช้เมื่อกล้อง Dialog ทำงาน")]
+    [SerializeField] private int dialogCameraPriority = 100;
 
-
+    private DialogTrigger currentOriginator;
 
     [Header("Text Animation")]
     public bool useTypewriterEffect = false;
     public float typewriterSpeed = 0.05f;
+    private Coroutine typewriterCoroutine;
 
     private DialogData[] currentSequence;
     private int currentIndex = 0;
     private bool isDialogActive = false;
+    private bool isShowingHint = false;
     private bool isTyping = false;
     private bool autoAdvance = false;
     private float autoAdvanceDelay = 2f;
@@ -46,12 +44,14 @@ public class DialogManager : MonoBehaviour
     private void Start()
     {
         FindDialogComponents();
-            //impulseSource.SetActive(false);
-        
-        // ปิด dialogBox ตั้งแต่เริ่มต้น
         if (dialogBox != null)
         {
             dialogBox.SetActive(false);
+        }
+        // ทำให้แน่ใจว่ากล้อง Dialog ไม่ทำงานตอนเริ่มเกม
+        if (dialogCamera != null)
+        {
+            dialogCamera.Priority = 0;
         }
     }
 
@@ -74,127 +74,153 @@ public class DialogManager : MonoBehaviour
 
     private void Update()
     {
+        if (isShowingHint) return;
         if (!isDialogActive) return;
 
-        // คลิกซ้ายเพื่อข้าม
         if (Input.GetMouseButtonDown(0))
         {
             if (isTyping)
             {
-                // ข้าม animation พิมพ์ข้อความ
-                StopAllCoroutines();
-                dialogText.text = currentSequence[currentIndex].dialogText;
+                if (typewriterCoroutine != null)
+                {
+                    StopCoroutine(typewriterCoroutine);
+                    typewriterCoroutine = null;
+                }
+                if (currentSequence != null && currentIndex < currentSequence.Length)
+                {
+                    dialogText.text = currentSequence[currentIndex].dialogText;
+                }
                 isTyping = false;
             }
             else
             {
-                // ไปข้อความถัดไป
                 NextDialog();
             }
         }
-
-        // กด ESC ข้ามทั้งหมด
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             EndDialog();
         }
     }
 
-    // ฟังก์ชันใหม่: รับ DialogData array
-    public void StartDialogSequence(DialogData[] sequence, bool autoNext = false, float delay = 2f)
+    public void StartDialogSequence(DialogData[] sequence, DialogTrigger originator, bool autoNext = false, float delay = 2f)
     {
-        if (sequence == null || sequence.Length == 0)
-        {
-            Debug.LogWarning("Dialog sequence is empty!");
-            return;
-        }
+        if (sequence == null || sequence.Length == 0 || isDialogActive) return;
 
-        if (isDialogActive) return;
-
+        currentOriginator = originator;
         currentSequence = sequence;
         currentIndex = 0;
         autoAdvance = autoNext;
         autoAdvanceDelay = delay;
         isDialogActive = true;
 
-        // บันทึกค่ากล้องเดิม
-        originalFollow = mainCamera.Follow;
-        originalLookAt = mainCamera.LookAt;
-
-
-        // ตั้งค่ากล้องเป็น 50
-        mainCamera.Priority.Value = 50;
-
         ShowCurrentDialog();
     }
 
     private void ShowCurrentDialog()
     {
-        if (currentIndex >= currentSequence.Length)
+        if (currentSequence == null || currentIndex >= currentSequence.Length)
         {
             EndDialog();
             return;
         }
 
         DialogData currentData = currentSequence[currentIndex];
+        if (currentData == null)
+        {
+            Debug.LogError($"Found a NULL DialogData at index {currentIndex}. Skipping.");
+            NextDialog();
+            return;
+        }
 
-        // เปิด dialogBox เมื่อเริ่มแสดงข้อความ
+        if (currentData.isHint)
+        {
+            StartCoroutine(ShowHintCoroutine(currentData));
+        }
+        else
+        {
+            ShowNormalDialog(currentData);
+        }
+    }
+
+    private void ShowNormalDialog(DialogData currentData)
+    {
+        // --- ส่วนจัดการกล้อง ---
+        if (dialogCamera != null)
+        {
+            if (currentData.focusTarget != null)
+            {
+                // ถ้ามี Target: ให้กล้อง Dialog ทำงาน
+                dialogCamera.Follow = currentData.focusTarget;
+                dialogCamera.LookAt = currentData.focusTarget;
+                dialogCamera.Priority = dialogCameraPriority;
+            }
+            else
+            {
+                // ถ้าไม่มี Target: ปล่อยให้กล้อง Gameplay ปกติทำงาน
+                dialogCamera.Priority = 0;
+            }
+        }
+
+        // --- ส่วนจัดการ UI และ Text ---
         if (!dialogBox.activeSelf)
         {
             dialogBox.SetActive(true);
         }
 
-        // แสดงข้อความ
         if (useTypewriterEffect)
         {
-            StartCoroutine(TypewriterEffect(currentData.dialogText));
+            if (typewriterCoroutine != null)
+            {
+                StopCoroutine(typewriterCoroutine);
+            }
+            typewriterCoroutine = StartCoroutine(TypewriterEffect(currentData.dialogText));
         }
         else
         {
             dialogText.text = currentData.dialogText;
         }
 
-        // เล่นเสียง
+        // --- ส่วนจัดการเสียงและอื่นๆ ---
         if (currentData.dialogVoice != null && audioSource != null)
         {
             audioSource.clip = currentData.dialogVoice;
             audioSource.Play();
         }
 
-        // จัดการกล้อง
-        Transform focusTarget = currentData.focusTarget;
-
-        // ถ้าไม่มี focusTarget ให้หา Player
-        if (focusTarget == null)
-        {
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
-            {
-                focusTarget = player.transform;
-            }
-        }
-
-        // ตั้งค่ากล้องให้ติดตามเป้าหมาย
-        if (focusTarget != null)
-        {
-            mainCamera.Follow = focusTarget;
-            mainCamera.LookAt = focusTarget;
-            //// ✅ ให้ impulseSource หันไปทางหรืออยู่ตำแหน่งเดียวกับเป้าหมาย
-            //impulseSource.transform.position = focusTarget.position;
-            //impulseSource.transform.LookAt(focusTarget);
-        }
-
-        //// สั่นกล้อง
-        //if (currentData.shakeCamera)
-        //{
-        //    StartCoroutine(CameraShake(shakeForce));
-        //}
-
-        // Auto advance
         if (autoAdvance)
         {
             StartCoroutine(AutoAdvanceCoroutine());
         }
+    }
+
+    private IEnumerator ShowHintCoroutine(DialogData hintData)
+    {
+        isShowingHint = true;
+
+        if (hintData.hintUIElement == null)
+        {
+            Debug.LogError("Hint UI Element is not assigned in DialogData!");
+            isShowingHint = false;
+            NextDialog();
+            yield break;
+        }
+
+        if (dialogBox.activeSelf) { dialogBox.SetActive(false); }
+
+        TextMeshProUGUI hintText = hintData.hintUIElement.GetComponent<TextMeshProUGUI>();
+        if (hintText != null) { hintText.text = hintData.dialogText; }
+
+        hintData.hintUIElement.SetActive(true);
+
+        if (hintData.displayDuration > 0)
+        {
+            yield return new WaitForSeconds(hintData.displayDuration);
+            if (hintData.hintUIElement != null) { hintData.hintUIElement.SetActive(false); }
+        }
+
+        isShowingHint = false;
+        NextDialog();
     }
 
     private void NextDialog()
@@ -205,22 +231,32 @@ public class DialogManager : MonoBehaviour
 
     public void EndDialog()
     {
+        if (!isDialogActive) return;
+
         isDialogActive = false;
-        dialogBox.SetActive(false);
+        if (dialogBox != null) dialogBox.SetActive(false);
+        if (audioSource != null) audioSource.Stop();
 
-        if (audioSource != null)
-            audioSource.Stop();
-
-        // คืนค่ากล้อง
-        if (mainCamera != null)
+        // เมื่อจบ Dialog ต้องลด Priority ของกล้อง Dialog ลงเสมอ
+        if (dialogCamera != null)
         {
-            mainCamera.Follow = originalFollow;
-            mainCamera.LookAt = originalLookAt;
-            mainCamera.Priority.Value = originalCameraSize; // คืนค่า Orthographic Size เดิม
+            dialogCamera.Priority = 0;
+        }
+
+        if (typewriterCoroutine != null)
+        {
+            StopCoroutine(typewriterCoroutine);
+            typewriterCoroutine = null;
+        }
+
+        if (currentOriginator != null)
+        {
+            currentOriginator.InvokeCompletionEvent();
         }
 
         currentSequence = null;
         currentIndex = 0;
+        currentOriginator = null;
     }
 
     private IEnumerator TypewriterEffect(string text)
@@ -235,42 +271,15 @@ public class DialogManager : MonoBehaviour
         }
 
         isTyping = false;
+        typewriterCoroutine = null;
     }
-
-    //private IEnumerator CameraShake(float duration)
-    //{
-    //    impulseSource.SetActive(true);
-    //    yield return new WaitForSeconds(duration);
-    //    impulseSource.SetActive(false);
-    //}
 
     private IEnumerator AutoAdvanceCoroutine()
     {
         yield return new WaitForSeconds(autoAdvanceDelay);
-
         if (isDialogActive && !isTyping)
         {
             NextDialog();
         }
-    }
-
-    // ฟังก์ชันเก่าเพื่อ backward compatibility (ถ้ามีโค้ดเดิมใช้อยู่)
-    [System.Obsolete("Use StartDialogSequence instead")]
-    public void StartDialog(string[] dialogLines, AudioClip voice, Transform focusTarget = null, bool shakeCamera = false)
-    {
-        // แปลงเป็น DialogData array
-        DialogData[] sequence = new DialogData[dialogLines.Length];
-        for (int i = 0; i < dialogLines.Length; i++)
-        {
-            sequence[i] = new DialogData
-            {
-                dialogText = dialogLines[i],
-                dialogVoice = (i == 0) ? voice : null, // เล่นเสียงแค่ครั้งแรก
-                focusTarget = focusTarget,
-                shakeCamera = (i == 0) ? shakeCamera : false // สั่นแค่ครั้งแรก
-            };
-        }
-
-        StartDialogSequence(sequence);
     }
 }

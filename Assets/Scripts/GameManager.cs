@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour
     public string dialogIDToPlayOnRespawn = "";
     public HashSet<string> playedDialogIDs = new HashSet<string>();
 
+    private const string PLAYED_DIALOGS_KEY = "PlayedDialogIDs"; // กุญแจสำหรับ PlayerPrefs
+
     [Header("Debug")]
     public bool showDebugInfo = true;
 
@@ -79,6 +81,7 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            LoadPlayedDialogs();
             InitializeManager();
             InitializeCheckpointSystem();
             SetupCheckpointSystem();
@@ -123,6 +126,71 @@ public class GameManager : MonoBehaviour
         HandleDebugResetInput();
         if (showDebugInfo) DisplayDebugInfo();
     }
+
+    #region Played Dialogs Persistence
+
+    /// <summary>
+    /// โหลดรายชื่อ Dialog ID ที่เคยเล่นแล้วจาก PlayerPrefs
+    /// </summary>
+    private void LoadPlayedDialogs()
+    {
+        if (PlayerPrefs.HasKey(PLAYED_DIALOGS_KEY))
+        {
+            string savedData = PlayerPrefs.GetString(PLAYED_DIALOGS_KEY);
+            // แยก string กลับมาเป็น Array แล้วสร้าง HashSet ใหม่
+            string[] ids = savedData.Split(',');
+            playedDialogIDs = new HashSet<string>(ids);
+            Debug.Log($"[GameManager] Loaded {playedDialogIDs.Count} played dialog IDs.");
+        }
+    }
+
+    /// <summary>
+    /// บันทึกรายชื่อ Dialog ID ทั้งหมดลง PlayerPrefs
+    /// </summary>
+    private void SavePlayedDialogs()
+    {
+        // รวม HashSet เป็น string เดียวโดยใช้ ',' คั่นกลาง
+        string dataToSave = string.Join(",", playedDialogIDs);
+        PlayerPrefs.SetString(PLAYED_DIALOGS_KEY, dataToSave);
+        PlayerPrefs.Save(); // สั่งให้บันทึกข้อมูลลงเครื่องจริงๆ
+        Debug.Log($"[GameManager] Saved played dialog IDs: {dataToSave}");
+    }
+
+    /// <summary>
+    /// ตรวจสอบว่า Dialog ID นี้เคยเล่นไปแล้วหรือยัง
+    /// </summary>
+    public bool HasAlreadyPlayed(string dialogID)
+    {
+        if (string.IsNullOrEmpty(dialogID)) return false;
+        return playedDialogIDs.Contains(dialogID);
+    }
+
+    /// <summary>
+    /// บันทึกว่า Dialog ID นี้ถูกเล่นไปแล้ว และสั่งเซฟลง PlayerPrefs
+    /// </summary>
+    public void MarkAsPlayed(string dialogID)
+    {
+        if (string.IsNullOrEmpty(dialogID) || playedDialogIDs.Contains(dialogID))
+        {
+            return;
+        }
+
+        playedDialogIDs.Add(dialogID);
+        SavePlayedDialogs();
+    }
+
+    /// <summary>
+    /// (สำหรับ Debug) ล้างความจำ Dialog ทั้งหมดที่เคยบันทึกไว้
+    /// </summary>
+    [ContextMenu("Clear All Played Dialogs History")]
+    public void ClearPlayedDialogsHistory()
+    {
+        PlayerPrefs.DeleteKey(PLAYED_DIALOGS_KEY);
+        playedDialogIDs.Clear();
+        Debug.LogWarning("[GameManager] All played dialogs history has been cleared!");
+    }
+
+    #endregion
 
     #region Initialization
 
