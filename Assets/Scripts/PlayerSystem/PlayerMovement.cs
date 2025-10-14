@@ -122,12 +122,14 @@ public class PlayerMovement : MonoBehaviour
             if (state == GameState.InDialog)
             {
                
-                if (rBody.linearVelocity != Vector2.zero)
+                if (rBody.linearVelocity != Vector2.zero && GameManager.Instance.previousState == GameState.ClimbingLadder)
                 {
                     rBody.linearVelocity = Vector2.zero;
                 }
-
-              
+                else
+                {
+                    rBody.linearVelocity = new Vector2(0f, rBody.linearVelocity.y);
+                }
                 horizontalInput = 0f;
                 UpdateAnimations();
 

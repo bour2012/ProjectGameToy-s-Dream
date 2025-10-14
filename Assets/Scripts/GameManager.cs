@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
     // Singleton
     public static GameManager Instance { get; private set; }
 
-    private GameState previousState = GameState.Normal;
+    public GameState previousState = GameState.Normal;
     private Dictionary<string, RepairProgress> repairDict = new Dictionary<string, RepairProgress>();
     private Dictionary<string, CraftingProgress> craftingDict = new Dictionary<string, CraftingProgress>();
 
@@ -391,7 +391,7 @@ public class GameManager : MonoBehaviour
 
             case GameState.ClimbingLadder:
                 // ระหว่างปีนบันได สามารถกลับไปสถานะ Normal (เมื่อออก) หรือเปิดเมนูได้
-                return targetState == GameState.Normal || targetState == GameState.Menu;
+                return targetState == GameState.Normal || targetState == GameState.Menu || targetState == GameState.InDialog;
            
             case GameState.Menu:
                 // จากเมนูสามารถกลับไปสถานะเดิมได้

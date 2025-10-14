@@ -984,7 +984,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog04
   dialogSequence:
   - dialogText: 'Son : The special power of this hero was the ability to use glue
       and thread to create awesome thing !'
@@ -1003,11 +1003,11 @@ MonoBehaviour:
     displayDuration: 5
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.8
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -6396,7 +6396,7 @@ Transform:
   m_GameObject: {fileID: 474019262}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 119.96, y: -3.16, z: 0}
+  m_LocalPosition: {x: 116.5, y: -2.73, z: 0}
   m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6470,12 +6470,12 @@ MonoBehaviour:
     hintUIElement: {fileID: 0}
     displayDuration: 5
   triggerOnce: 1
-  freezePlayerOnStart: 1
+  freezePlayerOnStart: 0
   rememberAcrossScenes: 0
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -6570,6 +6570,7 @@ Transform:
   - {fileID: 2026953643}
   - {fileID: 277079445}
   - {fileID: 1925195610}
+  - {fileID: 996167994}
   - {fileID: 944537159}
   - {fileID: 950490707}
   - {fileID: 448136145}
@@ -6818,8 +6819,8 @@ Transform:
   m_GameObject: {fileID: 489933827}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 57.56, y: 11.3, z: 0}
-  m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
+  m_LocalPosition: {x: 57.8302, y: 10.2896, z: 0}
+  m_LocalScale: {x: 1.0428486, y: 2.2541866, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944537159}
@@ -6908,11 +6909,11 @@ MonoBehaviour:
     displayDuration: 5
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls:
@@ -7606,8 +7607,8 @@ Transform:
   m_GameObject: {fileID: 529236833}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 97.79, y: -3.16, z: 0}
-  m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
+  m_LocalPosition: {x: 97.8119, y: -2.95, z: 0}
+  m_LocalScale: {x: 0.7927454, y: 4.606285, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944537159}
@@ -7703,11 +7704,11 @@ MonoBehaviour:
     displayDuration: 5
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -14193,8 +14194,8 @@ Transform:
   m_GameObject: {fileID: 971433696}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 68.49373, y: 5.6390104, z: 0}
-  m_LocalScale: {x: 0.5997448, y: 0.5997448, z: 0.5997448}
+  m_LocalPosition: {x: 68.383, y: 5.6390104, z: 0}
+  m_LocalScale: {x: 0.53593194, y: 0.5997448, z: 0.5997448}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 934010434}
@@ -14292,7 +14293,7 @@ MonoBehaviour:
   useDelay: 1
   delay: 0.8
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -14503,6 +14504,71 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &996167993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 996167994}
+  - component: {fileID: 996167995}
+  m_Layer: 0
+  m_Name: Dialog_HelpShowUseDollHint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &996167994
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996167993}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 10.77236, y: 0.70294, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 474844123}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &996167995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996167993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogID: 
+  dialogSequence:
+  - dialogText: 'Press [Q] to select Doll
+
+'
+    dialogVoice: {fileID: 0}
+    focusTarget: {fileID: 0}
+    shakeCamera: 0
+    isHint: 1
+    hintUIElement: {fileID: 1868010266}
+    displayDuration: 7
+  triggerOnce: 1
+  freezePlayerOnStart: 0
+  rememberAcrossScenes: 0
+  useDelay: 0
+  delay: 1
+  autoAdvance: 0
+  autoAdvanceDelay: 2
+  onDialogComplete:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1009306607
 GameObject:
   m_ObjectHideFlags: 0
@@ -14776,8 +14842,8 @@ Transform:
   m_GameObject: {fileID: 1028583887}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 52.46, y: 11.3, z: 0}
-  m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
+  m_LocalPosition: {x: 52.46, y: 6.81, z: 0}
+  m_LocalScale: {x: 1.3011687, y: 0.63511056, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944537159}
@@ -14855,7 +14921,7 @@ MonoBehaviour:
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -16713,6 +16779,7 @@ MonoBehaviour:
     lastToolUsed: 0
   dialogIDToPlayOnRespawn: 
   showDebugInfo: 1
+  previousState: 0
 --- !u!4 &1143092532
 Transform:
   m_ObjectHideFlags: 0
@@ -18077,8 +18144,8 @@ Transform:
   m_GameObject: {fileID: 1272527600}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.77, y: 1.51, z: 0}
-  m_LocalScale: {x: 0.5875, y: 3.9360743, z: 1}
+  m_LocalPosition: {x: -12.8921, y: 1.3818, z: 0}
+  m_LocalScale: {x: 0.14883095, y: 3.8363335, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 951242823}
@@ -18616,8 +18683,8 @@ Transform:
   m_GameObject: {fileID: 1293760925}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 29.4394, y: -9.6115, z: 0}
-  m_LocalScale: {x: 0.7823737, y: 2.6116912, z: 1}
+  m_LocalPosition: {x: 29.4787, y: -9.6115, z: 0}
+  m_LocalScale: {x: 0.2292374, y: 2.6116912, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 951242823}
@@ -18855,7 +18922,7 @@ MonoBehaviour:
   useDelay: 1
   delay: 0.21
   autoAdvance: 0
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -21586,11 +21653,11 @@ MonoBehaviour:
     displayDuration: 5
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -22477,8 +22544,8 @@ Transform:
   m_GameObject: {fileID: 1613792484}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 50.77, y: 2.2431, z: 0}
-  m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
+  m_LocalPosition: {x: 52.1161, y: 0.8485, z: 0}
+  m_LocalScale: {x: 4.2752852, y: 2.2371995, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944537159}
@@ -22563,9 +22630,9 @@ MonoBehaviour:
   freezePlayerOnStart: 1
   rememberAcrossScenes: 0
   useDelay: 1
-  delay: 0.21
+  delay: 0.8
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -23300,8 +23367,8 @@ Transform:
   m_GameObject: {fileID: 1676820694}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 126.79, y: -7, z: 0}
-  m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
+  m_LocalPosition: {x: 127.0485, y: -7, z: 0}
+  m_LocalScale: {x: 0.8312655, y: 5.0265, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944537159}
@@ -23384,11 +23451,11 @@ MonoBehaviour:
     displayDuration: 5
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -25055,7 +25122,7 @@ MonoBehaviour:
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -26844,8 +26911,8 @@ Transform:
   m_GameObject: {fileID: 1910169713}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 71.67, y: 3.7, z: 0}
-  m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
+  m_LocalPosition: {x: 71.67, y: 3.4415, z: 0}
+  m_LocalScale: {x: 1.5831921, y: 4.509776, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944537159}
@@ -26919,12 +26986,12 @@ MonoBehaviour:
     hintUIElement: {fileID: 0}
     displayDuration: 5
   triggerOnce: 1
-  freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  freezePlayerOnStart: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -29333,8 +29400,8 @@ Transform:
   m_GameObject: {fileID: 2080726121}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 88.01, y: -3.16, z: 0}
-  m_LocalScale: {x: 1.5831921, y: 5.0265, z: 1}
+  m_LocalPosition: {x: 88.3943, y: -3.16, z: 0}
+  m_LocalScale: {x: 0.81455237, y: 5.0265, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 944537159}
@@ -29415,11 +29482,11 @@ MonoBehaviour:
     displayDuration: 5
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -29711,7 +29778,7 @@ MonoBehaviour:
   useDelay: 1
   delay: 0.21
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -29863,7 +29930,7 @@ MonoBehaviour:
   useDelay: 0
   delay: 1
   autoAdvance: 1
-  autoAdvanceDelay: 2
+  autoAdvanceDelay: 2.5
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
