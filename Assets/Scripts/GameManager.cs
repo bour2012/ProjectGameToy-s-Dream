@@ -16,7 +16,9 @@ public enum GameState
     Menu,             // เมนู/หยุดชั่วคราว
     Cutscene,           // ดูฉาก
     Dead,
-    UsingLever        // กำลังใช้งาน Lever
+    UsingLever,        // กำลังใช้งาน Lever
+    ClimbingLadder,
+    InDialog
 }
 
 public class GameManager : MonoBehaviour
@@ -379,11 +381,18 @@ public class GameManager : MonoBehaviour
             case GameState.RopeSwinging:
                 // ระหว่างโหนสามารถหยุดได้
                 return targetState == GameState.Normal || targetState == GameState.Menu;
+            case GameState.InDialog:
+                // เมื่ออยู่ใน Dialog สามารถกลับไปสถานะ Normal ได้เท่านั้น (เมื่อจบ)
+                return targetState == previousState || targetState == GameState.Normal;
 
             case GameState.PushingObject:
                 // ระหว่างดันของสามารถหยุดได้
-                return targetState == GameState.Normal || targetState == GameState.Menu;
+                return targetState == GameState.Normal || targetState == GameState.Menu || targetState == GameState.InDialog;
 
+            case GameState.ClimbingLadder:
+                // ระหว่างปีนบันได สามารถกลับไปสถานะ Normal (เมื่อออก) หรือเปิดเมนูได้
+                return targetState == GameState.Normal || targetState == GameState.Menu;
+           
             case GameState.Menu:
                 // จากเมนูสามารถกลับไปสถานะเดิมได้
                 return targetState == previousState || targetState == GameState.Normal;
@@ -422,6 +431,10 @@ public class GameManager : MonoBehaviour
                 EnablePlayerMovement(false);
                 EnablePlayerInteraction(false);
                 break;
+            case GameState.InDialog:
+                // ปิดการควบคุมทั้งหมดของผู้เล่น
+                EnablePlayerControl(false);
+                break;
 
             case GameState.PushingObject:
                 EnablePlayerMovement(true, 0.5f); // ลดความเร็ว
@@ -438,6 +451,12 @@ public class GameManager : MonoBehaviour
                 EnablePlayerMovement(false);
                 EnablePlayerInteraction(false);
                 break;
+            case GameState.ClimbingLadder:
+                // ปิดการควบคุมปกติ แต่ PlayerMovement จะยังจัดการการเคลื่อนที่บนบันไดเอง
+                EnablePlayerInteraction(false);
+                break;
+          
+
         }
     }
 
@@ -540,7 +559,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"พบ Checkpoint ทั้งหมด {allCheckpoints.Length} จุด:");
             for (int i = 0; i < allCheckpoints.Length; i++)
             {
-                Debug.Log($"  [{i}] {allCheckpoints[i].GetCheckpointID()} - Pos: {allCheckpoints[i].transform.position}");
+                //Debug.Log($"  [{i}] {allCheckpoints[i].GetCheckpointID()} - Pos: {allCheckpoints[i].transform.position}");
             }
         }
 
@@ -1065,6 +1084,35 @@ public class GameManager : MonoBehaviour
     {
         ChangeState(GameState.Normal, "Cutscene ended");
     }
+
+    public bool StartClimbing()
+    {
+        return ChangeState(GameState.ClimbingLadder, "Player started climbing");
+    }
+
+    public void EndClimbing()
+    {
+        // กลับสู่สถานะ Normal เท่านั้น ถ้าหากสถานะปัจจุบันคือ ClimbingLadder
+        if (currentState == GameState.ClimbingLadder)
+        {
+            ChangeState(GameState.Normal, "Player ended climbing");
+        }
+    }
+
+    public bool StartDialogState()
+    {
+        return ChangeState(GameState.InDialog, "Player is in dialog");
+    }
+
+    public void EndDialogState()
+    {
+        // กลับสู่สถานะ Normal เท่านั้น ถ้าหากสถานะปัจจุบันคือ InDialog
+        if (currentState == GameState.InDialog)
+        {
+            ChangeState(previousState, "Player finished dialog, returning to previous state");
+        }
+    }
+    
 
     #endregion
 

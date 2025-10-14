@@ -246,7 +246,12 @@ public class GlueProjectile : MonoBehaviour
 
     private void StickToTarget(Collider2D target, float destroyDelay)
     {
-        StopMovement();
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        if (target.gameObject.layer != enemyLayer)
+        { 
+           StopMovement();
+        }
+      
         //CreateImpactEffects();
         PlaySound(impactSound);
 

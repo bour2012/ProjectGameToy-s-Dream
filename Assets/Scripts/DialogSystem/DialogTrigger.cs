@@ -33,6 +33,8 @@ public class DialogTrigger : MonoBehaviour
 
     [Header("Settings")]
     public bool triggerOnce = true;
+    [Tooltip("ติ๊กช่องนี้เพื่อหยุดการเคลื่อนไหวของผู้เล่นขณะที่ Dialog แสดง")]
+    public bool freezePlayerOnStart = true;
     [Tooltip("ติ๊กช่องนี้เพื่อให้จำว่าเคยเล่นแล้ว แม้จะรีสตาร์ทเกมหรือโหลดซีนใหม่")]
     public bool rememberAcrossScenes = false;
     [Tooltip("ติ๊กเพื่อเปิดใช้งานการหน่วงเวลาก่อนแสดง Dialog")]
@@ -104,7 +106,10 @@ public class DialogTrigger : MonoBehaviour
             hasTriggered = true;
         }
 
-        DialogManager.Instance.StartDialogSequence(dialogSequence, this, autoAdvance, autoAdvanceDelay);
+        bool shouldAutoAdvance = autoAdvance || !freezePlayerOnStart;
+
+        DialogManager.Instance.StartDialogSequence(dialogSequence, this, freezePlayerOnStart, shouldAutoAdvance, autoAdvanceDelay);
+
 
         if (rememberAcrossScenes && GameManager.Instance != null)
         {

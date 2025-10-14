@@ -303,8 +303,8 @@ public class Rope : MonoBehaviour
                     Vector2 forwardForce = releaseVelocity.normalized * Mathf.Min(releaseVelocity.magnitude * 0.3f, 3f);
                     playerRb.linearVelocity = releaseVelocity + forwardForce;
 
-                    NotifySwingingEnd();
-                    wasSwingingLastFrame = false;
+                    //NotifySwingingEnd();
+                    //wasSwingingLastFrame = false;
                 }
                 ResetRope();
             }
@@ -360,15 +360,22 @@ public class Rope : MonoBehaviour
 
     private void ResetRope()
     {
-
+        if (!ropeAttached) return;
         // เก็บ velocity ก่อนรีเซ็ต (สำหรับกรณีอื่นๆ ที่เรียก ResetRope)
         var playerRb = GetComponent<Rigidbody2D>();
-        Vector2 currentVelocity = Vector2.zero;
 
-        if (ropeAttached && playerRb != null)
+        if (wasSwingingLastFrame)
         {
-            currentVelocity = playerRb.linearVelocity;
+            NotifySwingingEnd();
+            wasSwingingLastFrame = false;
         }
+
+        //Vector2 currentVelocity = Vector2.zero;
+
+        //if (ropeAttached && playerRb != null)
+        //{
+        //    currentVelocity = playerRb.linearVelocity;
+        //}
         // รีเซ็ตสถานะเชือก
         ropeJoint.enabled = false;
         ropeAttached = false;
@@ -383,11 +390,6 @@ public class Rope : MonoBehaviour
         {
             playerRb.gravityScale = 1f;
 
-            // รักษา momentum ไว้บางส่วน (ถ้ามี)
-            if (currentVelocity.magnitude > 1f)
-            {
-                playerRb.linearVelocity = currentVelocity * 0.8f; // ลดลง 20%
-            }
         }
 
         // รีเซ็ตสถานะ PlayerMovement

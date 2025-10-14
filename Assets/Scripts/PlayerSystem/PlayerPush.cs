@@ -57,28 +57,34 @@ public class PlayerPush : MonoBehaviour
 
     void Update()
     {
+    
         UpdateFacingDirection();
 
         if (detectionCooldown > 0)
             detectionCooldown -= Time.deltaTime;
 
-        if (!CanUsePushSystem()) return;
 
-        if (isHolding && (targetBox == null || !targetBox.activeInHierarchy))
+        if (isHolding)
         {
-            StopPushing();
+            // ถ้ากล่องหายไประหว่างผลัก ให้หยุดผลัก
+            if (targetBox == null || !targetBox.activeInHierarchy)
+            {
+                StopPushing();
+                return;
+            }
+            // อัปเดต Animation ตามความเร็วกล่อง
+            UpdatePushAnimationByVelocity();
+        }
+
+   
+        if (!CanUsePushSystem())
+        {
             return;
         }
 
         CheckForPushableObjects();
         HandlePushInput();
         UpdateVisualFeedback();
-
-        // อัปเดต Animation แบบ Real-time ตามความเร็วของกล่อง
-        if (isHolding)
-        {
-            UpdatePushAnimationByVelocity();
-        }
     }
 
     void FixedUpdate()
@@ -98,60 +104,48 @@ public class PlayerPush : MonoBehaviour
 
         Rigidbody2D boxRb = targetBox.GetComponent<Rigidbody2D>();
         if (boxRb == null) return;
-
-        // ตรวจสอบทิศทางที่ตัวละครหัน
-        bool facingRight = !playerSprite.flipX;
-
-        // ดึงความเร็วของกล่อง
-        float boxVelocityX = boxRb.linearVelocity.x;
-
-        // กำหนดเกณฑ์ความเร็วขั้นต่ำ
-        float velocityThreshold = 0.1f;
-
-        // ตรวจสอบว่ากล่องกำลังเคลื่อนที่หรือไม่
-        bool isMoving = Mathf.Abs(boxVelocityX) >= velocityThreshold;
-
-        if (!isMoving)
+        if (GameManager.Instance != null && GameManager.Instance.currentState == GameState.InDialog)
         {
-            // กล่องไม่เคลื่อนที่ -> เล่น Idle Animation
             anim.SetBool("IsPush", false);
             anim.SetBool("IsPull", false);
             anim.SetBool("IsIdlePush", true);
             return;
         }
 
-        // กล่องกำลังเคลื่อนที่ -> ปิด Idle และเล่น Push/Pull
-        anim.SetBool("IsIdlePush", false);
+        float boxVelocityX = boxRb.linearVelocity.x;
+        float velocityThreshold = 0.1f;
+        bool isBoxMoving = Mathf.Abs(boxVelocityX) >= velocityThreshold;
 
-        // คำนวณว่ากล่องเคลื่อนที่ไปทางเดียวกับที่ตัวละครหันหรือไม่
-        bool boxMovingRight = boxVelocityX > 0;
-
-        bool isPushing = false;
-        bool isPulling = false;
-
-        if (facingRight)
+        // --- Logic การตัดสินใจ Animation ใหม่ ---
+        if (!isBoxMoving)
         {
-            // หันขวา: กล่องเคลื่อนที่ขวา = Push, ซ้าย = Pull
-            isPushing = boxMovingRight;
-            isPulling = !boxMovingRight;
+            // กรณีที่ 1: กล่องหยุดนิ่ง -> ต้องเป็นท่า Idle Push
+            anim.SetBool("IsIdlePush", true);
+            anim.SetBool("IsPush", false);
+            anim.SetBool("IsPull", false);
         }
         else
         {
-            // หันซ้าย: กล่องเคลื่อนที่ซ้าย = Push, ขวา = Pull
-            isPushing = !boxMovingRight;
-            isPulling = boxMovingRight;
-        }
+            // กรณีที่ 2: กล่องกำลังเคลื่อนที่ -> ต้องเป็นท่า Push หรือ Pull
+            anim.SetBool("IsIdlePush", false);
 
-        anim.SetBool("IsPush", isPushing);
-        anim.SetBool("IsPull", isPulling);
+            bool facingRight = !playerSprite.flipX;
+            bool boxMovingRight = boxVelocityX > 0;
 
-        // Debug Log (สามารถลบออกได้)
-        if (showDebugGizmos)
-        {
-            string state = isMoving ? (isPushing ? "PUSH" : "PULL") : "IDLE";
-            Debug.Log($"[Anim] Facing: {(facingRight ? "Right" : "Left")}, " +
-                      $"BoxVel: {boxVelocityX:F2}, State: {state}");
+            // ตรวจสอบทิศทางเพื่อกำหนดว่าเป็น Push หรือ Pull
+            bool isPushing = (facingRight && boxMovingRight) || (!facingRight && !boxMovingRight);
+            bool isPulling = !isPushing;
+
+            anim.SetBool("IsPush", isPushing);
+            anim.SetBool("IsPull", isPulling);
         }
+        //// Debug Log (สามารถลบออกได้)
+        //if (showDebugGizmos)
+        //{
+        //    string state = isMoving ? (isPushing ? "PUSH" : "PULL") : "IDLE";
+        //    //Debug.Log($"[Anim] Facing: {(facingRight ? "Right" : "Left")}, " +
+        //    //          $"BoxVel: {boxVelocityX:F2}, State: {state}");
+        //}
     }
 
     void InitializeComponents()

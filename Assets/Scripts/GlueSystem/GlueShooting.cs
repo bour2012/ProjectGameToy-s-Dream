@@ -4,11 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-// ========================================
-// Glue Shooting System - ระบบยิงกาว
-// รองรับกล้องแบบ Orthographic และ Perspective
-// ========================================
-
 public class GlueShooting : MonoBehaviour
 {
     [Header("Glue Projectile")]
@@ -22,6 +17,9 @@ public class GlueShooting : MonoBehaviour
 
     [Header("Trajectory Preview")]
     public LineRenderer trajectoryLine;
+    [Tooltip("ปรับความโค้งของเส้นเล็ง ยิ่งน้อยยิ่งโค้งสูง, ยิ่งมากยิ่งพุ่งตรง")]
+    [Range(0.1f, 2f)]
+    public float trajectoryAimFactor = 1f;
     public int trajectoryPoints = 30;
     public float trajectoryTimeStep = 0.1f;
     public LayerMask colliderLayers;
@@ -29,7 +27,6 @@ public class GlueShooting : MonoBehaviour
     [Header("UI")]
     public GameObject aimingCrosshair;
     public GameObject glueAimIndicator;
-
     [SerializeField] private Image glueIcon;
     [SerializeField] private Image threadIcon;
     [SerializeField] private float selectedScale = 1.2f;
@@ -45,14 +42,9 @@ public class GlueShooting : MonoBehaviour
     private bool canShoot = true;
     private Vector2 aimDirection;
     private Vector3 mouseWorldPos;
-
-    // Item Selection
     private ItemManager.ItemType selectedItem = ItemManager.ItemType.Glue;
-
-    // Components
     private Rope ropeScript;
     private Camera mainCamera;
-
     private float scrollAccumulator = 0f;
     private float scrollThreshold = 0.2f;
 
@@ -60,19 +52,13 @@ public class GlueShooting : MonoBehaviour
     {
         ropeScript = GetComponent<Rope>();
         mainCamera = Camera.main;
-
         if (trajectoryLine != null)
         {
             trajectoryLine.enabled = false;
             trajectoryLine.positionCount = trajectoryPoints;
         }
-
-        if (aimingCrosshair != null)
-            aimingCrosshair.SetActive(false);
-
-        if (glueAimIndicator != null)
-            glueAimIndicator.SetActive(false);
-
+        if (aimingCrosshair != null) aimingCrosshair.SetActive(false);
+        if (glueAimIndicator != null) glueAimIndicator.SetActive(false);
         int savedItemIndex = PlayerPrefs.GetInt("SelectedItem", 0);
         selectedItem = (ItemManager.ItemType)savedItemIndex;
     }
@@ -84,85 +70,48 @@ public class GlueShooting : MonoBehaviour
             HideAiming();
             return;
         }
-
         HandleItemSwitching();
         HandleGlueAiming();
         UpdateUI();
     }
 
     #region Mouse Position Calculation
-
-    /// <summary>
-    /// คำนวณตำแหน่งเมาส์ใน World Space รองรับทั้ง Orthographic และ Perspective
-    /// </summary>
     private Vector3 GetMouseWorldPosition()
     {
-        if (mainCamera == null)
-            mainCamera = Camera.main;
-
+        if (mainCamera == null) mainCamera = Camera.main;
         Vector3 mouseScreenPos = Input.mousePosition;
-
         if (mainCamera.orthographic)
         {
-            // Orthographic Camera
             mouseScreenPos.z = mainCamera.nearClipPlane;
             Vector3 worldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
-            worldPos.z = transform.position.z; // ใช้ Z ของ Player
+            worldPos.z = transform.position.z;
             return worldPos;
         }
         else
         {
-            // Perspective Camera
-            // สร้าง Plane ที่อยู่ที่ตำแหน่ง Z ของ Player
             Plane playerPlane = new Plane(Vector3.forward, transform.position);
             Ray ray = mainCamera.ScreenPointToRay(mouseScreenPos);
-
             if (playerPlane.Raycast(ray, out float distance))
             {
                 return ray.GetPoint(distance);
             }
             else
             {
-                // Fallback: ใช้ระยะห่างจากกล้อง
-                float distanceFromCamera = Mathf.Abs(mainCamera.transform.position.z - transform.position.z);
-                mouseScreenPos.z = distanceFromCamera;
+                float fallbackDistance = Mathf.Abs(mainCamera.transform.position.z - transform.position.z);
+                mouseScreenPos.z = fallbackDistance;
                 return mainCamera.ScreenToWorldPoint(mouseScreenPos);
             }
         }
     }
-
-    /// <summary>
-    /// คำนวณตำแหน่งเมาส์สำหรับ UI (World Space หรือ Screen Space)
-    /// </summary>
-    private Vector3 GetMouseUIPosition()
-    {
-        if (mainCamera == null)
-            mainCamera = Camera.main;
-
-        Vector3 mouseScreenPos = Input.mousePosition;
-
-        // สำหรับ UI ที่เป็น World Space
-        if (aimingCrosshair != null && aimingCrosshair.GetComponent<RectTransform>() == null)
-        {
-            return GetMouseWorldPosition();
-        }
-
-        // สำหรับ UI ที่เป็น Screen Space
-        return mouseScreenPos;
-    }
-
     #endregion
 
     #region Item Switching System
-
     private void HandleItemSwitching()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-
         if (Mathf.Abs(scroll) > 0.01f)
         {
             scrollAccumulator += scroll;
-
             if (scrollAccumulator >= scrollThreshold)
             {
                 SwitchItem(true);
@@ -180,15 +129,10 @@ public class GlueShooting : MonoBehaviour
     {
         int itemCount = System.Enum.GetValues(typeof(ItemManager.ItemType)).Length;
         int currentIndex = (int)selectedItem;
-
         currentIndex = (currentIndex + (forward ? 1 : -1) + itemCount) % itemCount;
         selectedItem = (ItemManager.ItemType)currentIndex;
-
         PlayerPrefs.SetInt("SelectedItem", currentIndex);
         PlayerPrefs.Save();
-
-        Debug.Log($"Switched to: {selectedItem}");
-
         if (isAiming)
         {
             HideAiming();
@@ -199,20 +143,52 @@ public class GlueShooting : MonoBehaviour
     {
         return selectedItem;
     }
-
     #endregion
 
     #region Glue Aiming and Shooting
 
-    private void HandleGlueAiming()
+    /// <summary>
+    /// ฟังก์ชันกลางสำหรับคำนวณความเร็วที่ต้องใช้เพื่อยิงไปยังเป้าหมาย
+    /// </summary>
+    private Vector2 CalculateLaunchVelocity()
     {
-        if (selectedItem != ItemManager.ItemType.Glue)
+        Vector2 startPoint = firePoint != null ? firePoint.position : transform.position;
+        Vector2 endPoint = mouseWorldPos;
+        Vector2 displacement = endPoint - startPoint;
+
+        // ... (จำกัดระยะทางเหมือนเดิม) ...
+
+        Vector2 gravity = Physics2D.gravity;
+
+
+        float timeX = Mathf.Abs(displacement.x) / (projectileSpeed * trajectoryAimFactor);
+
+
+        if (Mathf.Abs(displacement.x) < 0.1f)
         {
-            HideAiming();
-            return;
+            timeX = Vector2.Distance(startPoint, endPoint) / projectileSpeed;
+            if (Mathf.Approximately(timeX, 0f)) return Vector2.zero;
         }
 
-        if (ItemManager.Instance != null && !ItemManager.Instance.HasItem(ItemManager.ItemType.Glue))
+        float initialVelocityY = (displacement.y / timeX) - (0.5f * gravity.y * timeX);
+
+        // การคำนวณความเร็วแกน X แบบใหม่ จะได้ทิศทางที่ถูกต้องเองโดยอัตโนมัติ
+        float initialVelocityX = displacement.x / timeX;
+
+        Vector2 calculatedVelocity = new Vector2(initialVelocityX, initialVelocityY);
+
+       
+        if (calculatedVelocity.magnitude > projectileSpeed * 2f)
+        {
+            calculatedVelocity = calculatedVelocity.normalized * (projectileSpeed * 2f);
+        }
+
+        return calculatedVelocity;
+    }
+
+    private void HandleGlueAiming()
+    {
+        if (selectedItem != ItemManager.ItemType.Glue || (ItemManager.Instance != null && !ItemManager.Instance.HasItem(ItemManager.ItemType.Glue)))
         {
             HideAiming();
             return;
@@ -236,94 +212,66 @@ public class GlueShooting : MonoBehaviour
     private void StartAiming()
     {
         isAiming = true;
-
-        // ใช้ฟังก์ชันใหม่ที่รองรับทั้ง Orthographic และ Perspective
         mouseWorldPos = GetMouseWorldPosition();
-        Vector2 mouseWorldPos2D = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
 
-        // คำนวณทิศทางการเล็ง
-        Vector2 playerPos2D = new Vector2(transform.position.x, transform.position.y);
-        aimDirection = (mouseWorldPos2D - playerPos2D).normalized;
-
-        // แสดง UI การเล็ง
         if (aimingCrosshair != null)
         {
             aimingCrosshair.SetActive(true);
-
-            // ถ้าเป็น World Space UI
-            if (aimingCrosshair.GetComponent<RectTransform>() == null)
-            {
-                aimingCrosshair.transform.position = mouseWorldPos;
-            }
-            else
-            {
-                // ถ้าเป็น Screen Space UI
-                aimingCrosshair.transform.position = Input.mousePosition;
-            }
+            aimingCrosshair.transform.position = mouseWorldPos;
         }
-
-        if (glueAimIndicator != null)
-            glueAimIndicator.SetActive(true);
-
+        if (glueAimIndicator != null) glueAimIndicator.SetActive(true);
         ShowTrajectoryPreview();
     }
 
     private void HideAiming()
     {
         isAiming = false;
-
-        if (trajectoryLine != null)
-            trajectoryLine.enabled = false;
-
-        if (aimingCrosshair != null)
-            aimingCrosshair.SetActive(false);
-
-        if (glueAimIndicator != null)
-            glueAimIndicator.SetActive(false);
+        if (trajectoryLine != null) trajectoryLine.enabled = false;
+        if (aimingCrosshair != null) aimingCrosshair.SetActive(false);
+        if (glueAimIndicator != null) glueAimIndicator.SetActive(false);
     }
 
     private void ShowTrajectoryPreview()
     {
         if (trajectoryLine == null) return;
 
+        Vector2 launchVelocity = CalculateLaunchVelocity();
+        if (launchVelocity == Vector2.zero)
+        {
+            trajectoryLine.enabled = false;
+            return;
+        }
+
         trajectoryLine.enabled = true;
 
-        Vector3 startPos = firePoint != null ? firePoint.position : transform.position;
-        Vector2 velocity = aimDirection * projectileSpeed;
-
         List<Vector3> points = new List<Vector3>();
+        Vector3 startPos = firePoint != null ? firePoint.position : transform.position;
+        Vector3 targetPos = mouseWorldPos;
+        float distanceToTarget = Vector2.Distance(startPos, targetPos);
         points.Add(startPos);
 
-        Vector2 currentPos = startPos;
-        Vector2 currentVel = velocity;
-
-        for (int i = 0; i < trajectoryPoints; i++)
+        for (int i = 1; i < trajectoryPoints; i++)
         {
-            float dt = trajectoryTimeStep;
+            float t = i * trajectoryTimeStep;
+            Vector2 posAtTimeT = (Vector2)startPos + launchVelocity * t + 0.5f * Physics2D.gravity * t * t;
 
-            Vector2 nextPos = currentPos + currentVel * dt + 0.5f * Physics2D.gravity * dt * dt;
+            Vector3 lastPoint = points[points.Count - 1];
+            RaycastHit2D hit = Physics2D.Linecast(lastPoint, posAtTimeT, colliderLayers);
 
-            RaycastHit2D hit = Physics2D.Linecast(currentPos, nextPos, colliderLayers);
             if (hit.collider != null)
             {
                 points.Add(hit.point);
                 break;
             }
-            else
-            {
-                // เก็บค่า Z เดิมไว้สำหรับ Perspective Camera
-                Vector3 point3D = nextPos;
-                point3D.z = startPos.z;
-                points.Add(point3D);
-            }
 
-            currentVel += Physics2D.gravity * dt;
-            currentPos = nextPos;
-
-            if (Vector2.Distance(startPos, currentPos) > maxShootingRange)
+            float distanceTravelled = Vector2.Distance(startPos, posAtTimeT);
+            if (distanceTravelled > distanceToTarget || distanceTravelled > maxShootingRange)
             {
+                points.Add(targetPos);
                 break;
             }
+
+            points.Add(posAtTimeT);
         }
 
         trajectoryLine.positionCount = points.Count;
@@ -332,34 +280,31 @@ public class GlueShooting : MonoBehaviour
 
     private void ShootGlue()
     {
-        if (ItemManager.Instance != null)
+        if (ItemManager.Instance != null && !ItemManager.Instance.UseItem(ItemManager.ItemType.Glue))
         {
-            if (!ItemManager.Instance.HasItem(ItemManager.ItemType.Glue))
-            {
-                Debug.Log("Cannot shoot glue - no glue available");
-                return;
-            }
+            Debug.LogWarning("Failed to use glue");
+            return;
+        }
 
-            if (!ItemManager.Instance.UseItem(ItemManager.ItemType.Glue))
-            {
-                Debug.LogWarning("Failed to use glue");
-                return;
-            }
+        Vector2 launchVelocity = CalculateLaunchVelocity();
+
+        if (launchVelocity == Vector2.zero)
+        {
+            if (ItemManager.Instance != null) { ItemManager.Instance.CollectItem(ItemManager.ItemType.Glue, 1); }
+            return;
         }
 
         Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
         GameObject glueProjectile = Instantiate(glueProjectilePrefab, spawnPos, Quaternion.identity);
-
         Rigidbody2D projectileRb = glueProjectile.GetComponent<Rigidbody2D>();
+
         if (projectileRb != null)
         {
-            projectileRb.linearVelocity = aimDirection * projectileSpeed;
+            projectileRb.linearVelocity = launchVelocity;
         }
 
         StartCoroutine(ShootCooldown());
         HideAiming();
-
-        Debug.Log($"Glue shot! Direction: {aimDirection}, Speed: {projectileSpeed}");
     }
 
     private IEnumerator ShootCooldown()
@@ -368,16 +313,12 @@ public class GlueShooting : MonoBehaviour
         yield return new WaitForSeconds(shootCooldown);
         canShoot = true;
     }
-
     #endregion
 
     #region System State Checks
-
     private bool CanUseSystem()
     {
-        if (!respectGameManagerState) return true;
-        if (GameManager.Instance == null) return true;
-
+        if (!respectGameManagerState || GameManager.Instance == null) return true;
         GameState currentState = GameManager.Instance.currentState;
         return currentState == GameState.Normal || currentState == GameState.RopeSwinging;
     }
@@ -387,11 +328,9 @@ public class GlueShooting : MonoBehaviour
         if (ItemManager.Instance == null) return true;
         return ItemManager.Instance.HasItem(selectedItem);
     }
-
     #endregion
 
     #region UI Management
-
     private void UpdateUI()
     {
         if (glueIcon != null)
@@ -400,7 +339,6 @@ public class GlueShooting : MonoBehaviour
             glueIcon.color = hasGlue ? availableColor : unavailableColor;
             glueIcon.transform.localScale = selectedItem == ItemManager.ItemType.Glue ? Vector3.one * selectedScale : Vector3.one * normalScale;
         }
-
         if (threadIcon != null)
         {
             bool hasThread = ItemManager.Instance != null && ItemManager.Instance.HasItem(ItemManager.ItemType.Thread);
@@ -408,50 +346,28 @@ public class GlueShooting : MonoBehaviour
             threadIcon.transform.localScale = selectedItem == ItemManager.ItemType.Thread ? Vector3.one * selectedScale : Vector3.one * normalScale;
         }
     }
-
     #endregion
 
     #region Public Methods
-
     public void SetSelectedItem(ItemManager.ItemType itemType)
     {
         selectedItem = itemType;
         HideAiming();
     }
 
-    public bool IsAiming()
-    {
-        return isAiming;
-    }
-
-    public bool CanShoot()
-    {
-        return canShoot && HasSelectedItem();
-    }
-
+    public bool IsAiming() => isAiming;
+    public bool CanShoot() => canShoot && HasSelectedItem();
     #endregion
 
     #region Integration with Rope System
-
-    private bool IsRopeActive()
-    {
-        return ropeScript != null && ropeScript.IsRopeAttached();
-    }
-
+    private bool IsRopeActive() => ropeScript != null && ropeScript.IsRopeAttached();
     #endregion
 
     #region Debug
-
     void OnDrawGizmos()
     {
         if (isAiming && selectedItem == ItemManager.ItemType.Glue)
         {
-            Vector3 startPos = firePoint != null ? firePoint.position : transform.position;
-            Vector3 endPos = startPos + (Vector3)aimDirection * maxShootingRange;
-
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(startPos, endPos);
-
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(mouseWorldPos, 0.3f);
         }
@@ -466,6 +382,5 @@ public class GlueShooting : MonoBehaviour
             ShootGlue();
         }
     }
-
     #endregion
 }

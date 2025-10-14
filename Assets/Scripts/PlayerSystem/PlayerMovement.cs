@@ -81,6 +81,15 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // รับ Input
+        if (GameManager.Instance != null)
+        {
+            GameState state = GameManager.Instance.currentState;
+            if (state == GameState.InDialog)
+            {
+                // แค่ return ออกไปก็พอ เพราะ FixedUpdate จะจัดการเรื่องการหยุดเอง
+                return;
+            }
+        }
 
         ProcessInput();
 
@@ -107,7 +116,29 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GameManager.Instance != null)
+        {
+            GameState state = GameManager.Instance.currentState;
+            if (state == GameState.InDialog)
+            {
+               
+                if (rBody.linearVelocity != Vector2.zero)
+                {
+                    rBody.linearVelocity = Vector2.zero;
+                }
 
+              
+                horizontalInput = 0f;
+                UpdateAnimations();
+
+                return; // ออกจาก FixedUpdate ทันที
+            }
+        }
+
+        if (isClimbing && !IsOnLadderArea())
+        {
+            ExitLadder();
+        }
         groundCheck = Physics2D.OverlapCircle(stompCheck.position,rayLength,groundLayer);
         DrawDebugCircle(stompCheck.position, rayLength, groundCheck);
         //Move();
@@ -259,7 +290,7 @@ public class PlayerMovement : MonoBehaviour
 
 
         // ตรวจสอบว่าชนกับ Head Collider ของศัตรูหรือไม่
-        if (hit.collider != null && hit.collider.CompareTag("EnemyHead"))
+        if (!isClimbing && hit.collider != null && hit.collider.CompareTag("EnemyHead"))
         {
             Enemy enemy = hit.collider.GetComponentInParent<Enemy>();
             if (enemy != null)
@@ -566,43 +597,55 @@ public class PlayerMovement : MonoBehaviour
         else
         {
 
-            //// ปิด gravity ขณะปีน
-            //rBody.gravityScale = 0f;
-
-            // การเคลื่อนที่แนวตั้ง
+            // การเคลื่อนที่แนวตั้ง (โค้ดเดิม)
             float verticalInput = 0f;
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.Space))
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space))
                 verticalInput = 1f;
             else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
                 verticalInput = -1f;
 
-            // ถ้าไม่ได้กดอะไร ให้ vertical movement = 0 เพื่อหยุดนิ่ง
             float verticalVelocity = verticalInput * climbSpeed;
 
-            // การเคลื่อนที่แนวนอน (สำหรับออกจากบันได)
-            float horizontalVelocity = horizontalInput * speed;
+            // ▼▼▼ แก้ไข Logic การเคลื่อนที่แนวนอนตรงนี้ ▼▼▼
 
-            // รวมเป็น movement vector
+            // 1. ตั้งค่าเริ่มต้นให้ความเร็วแนวนอนเป็น 0
+            float horizontalVelocity = 0f;
+
+            // 2. "ให้สิทธิ์" ในการขยับซ้าย-ขวา เฉพาะตอนที่เท้าแตะพื้นเท่านั้น
+            if (groundCheck)
+            {
+                horizontalVelocity = horizontalInput * speed;
+            }
+
+            // ▲▲▲ สิ้นสุดส่วนที่แก้ไข ▲▲▲
+
+            // รวมเป็น movement vector (ตอนนี้จะทำงานถูกต้องแล้ว)
             Vector2 movement = new Vector2(horizontalVelocity, verticalVelocity);
 
-            // ใช้ MovePosition แทน velocity
+            // ใช้ MovePosition แทน velocity (โค้ดเดิม)
             Vector2 newPosition = rBody.position + movement * Time.fixedDeltaTime;
             rBody.MovePosition(newPosition);
 
-            // ออกจากบันไดเมื่อเดินไปข้าง
-            if (Mathf.Abs(horizontalInput) > 0.1f)
-            {
-                if (!IsOnLadderArea())
-                {
-                    ExitLadder();
-                }
-            }
+            //// ออกจากบันไดเมื่อเดินไปข้าง
+            //if (groundCheck)
+            //{
+                
+            //    if (!IsOnLadderArea())
+            //    {
+            //        ExitLadder();
+            //    }
+            //}
         }
     }
 
 
     void StartClimbing()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartClimbing();
+        }
+
         isClimbing = true;
         //rBody.gravityScale = 0f;
 
@@ -618,6 +661,11 @@ public class PlayerMovement : MonoBehaviour
 
     void StopClimbing()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.EndClimbing();
+        }
+
         isClimbing = false;
         rBody.gravityScale = 1f;
 
@@ -633,6 +681,13 @@ public class PlayerMovement : MonoBehaviour
 
     void ExitLadder()
     {
+        if (!isClimbing && !isOnLadder) return;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.EndClimbing();
+        }
+
         isOnLadder = false;
         isClimbing = false;
         currentLadder = null;

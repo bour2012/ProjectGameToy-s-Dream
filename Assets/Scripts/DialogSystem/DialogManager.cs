@@ -32,6 +32,7 @@ public class DialogManager : MonoBehaviour
     private int currentIndex = 0;
     private bool isDialogActive = false;
     private bool isShowingHint = false;
+    private bool shouldFreezePlayer;
     private bool isTyping = false;
     private bool autoAdvance = false;
     private float autoAdvanceDelay = 2f;
@@ -103,9 +104,12 @@ public class DialogManager : MonoBehaviour
         }
     }
 
-    public void StartDialogSequence(DialogData[] sequence, DialogTrigger originator, bool autoNext = false, float delay = 2f)
+    public void StartDialogSequence(DialogData[] sequence, DialogTrigger originator, bool freezePlayer, bool autoNext = false, float delay = 2f)
     {
+        
         if (sequence == null || sequence.Length == 0 || isDialogActive) return;
+
+        this.shouldFreezePlayer = freezePlayer;
 
         currentOriginator = originator;
         currentSequence = sequence;
@@ -166,6 +170,12 @@ public class DialogManager : MonoBehaviour
         if (!dialogBox.activeSelf)
         {
             dialogBox.SetActive(true);
+
+            // ถ้าถูกตั้งค่าให้หยุดผู้เล่น ให้สั่งหยุด "ตอนนี้"
+            if (shouldFreezePlayer && GameManager.Instance != null)
+            {
+                GameManager.Instance.StartDialogState();
+            }
         }
 
         if (useTypewriterEffect)
@@ -179,6 +189,10 @@ public class DialogManager : MonoBehaviour
         else
         {
             dialogText.text = currentData.dialogText;
+            if (autoAdvance)
+            {
+                StartCoroutine(AutoAdvanceCoroutine());
+            }
         }
 
         // --- ส่วนจัดการเสียงและอื่นๆ ---
@@ -188,10 +202,6 @@ public class DialogManager : MonoBehaviour
             audioSource.Play();
         }
 
-        if (autoAdvance)
-        {
-            StartCoroutine(AutoAdvanceCoroutine());
-        }
     }
 
     private IEnumerator ShowHintCoroutine(DialogData hintData)
@@ -232,7 +242,10 @@ public class DialogManager : MonoBehaviour
     public void EndDialog()
     {
         if (!isDialogActive) return;
-
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.EndDialogState();
+        }
         isDialogActive = false;
         if (dialogBox != null) dialogBox.SetActive(false);
         if (audioSource != null) audioSource.Stop();
@@ -272,6 +285,10 @@ public class DialogManager : MonoBehaviour
 
         isTyping = false;
         typewriterCoroutine = null;
+        if (autoAdvance)
+        {
+            StartCoroutine(AutoAdvanceCoroutine());
+        }
     }
 
     private IEnumerator AutoAdvanceCoroutine()
