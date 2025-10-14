@@ -207,7 +207,7 @@ public class PlayerPush : MonoBehaviour
     {
         if (gameManager != null)
         {
-            return gameManager.currentState == GameState.PushingObject;
+            return gameManager.currentState == GameState.PushingObject || gameManager.currentState == GameState.InDialog;
         }
         return isHolding;
     }
@@ -404,10 +404,14 @@ public class PlayerPush : MonoBehaviour
     {
         if (!CanStartPushing() || availableBox == null)
         {
-            Debug.Log("[Push Debug] Cannot start pushing - conditions not met");
+
             return;
         }
-
+        PushableBox boxScript = availableBox.GetComponent<PushableBox>();
+         if (boxScript != null)
+         {
+        boxScript.UnlockBox();
+         }
         PushableBox specialBox = availableBox.GetComponent<PushableBox>();
         if (specialBox != null)
         {
@@ -460,27 +464,26 @@ public class PlayerPush : MonoBehaviour
 
     void StopPushing()
     {
-        if (!CanStopPushing())
-        {
-            Debug.Log("[Push Debug] Cannot stop pushing - conditions not met");
-            return;
-        }
-        if (anim != null)
-        {
-            anim.SetBool("IsIdlePush", false);
-            anim.SetBool("IsPull", false);
-            anim.SetBool("IsPush", false);
-        }
+        // Safety check: ถ้าไม่ได้อยู่ในสถานะจับอยู่แล้ว ก็ไม่ต้องทำอะไร
+        if (!isHolding) return;
 
-        // ปล่อยกล่อง
+        // ตรวจสอบว่ากล่องที่เคยจับยังอยู่หรือไม่
         if (targetBox != null)
         {
+            // ถ้ากล่องยังอยู่: ให้ทำ Logic ปกติ
+            // 1. สั่งให้กล่อง "กลับไปใส่เบรกมือ"
+            PushableBox boxScript = targetBox.GetComponent<PushableBox>();
+            if (boxScript != null)
+            {
+                boxScript.LockBox();
+            }
+
+            // 2. ปลด Joint ออก
             FixedJoint2D joint = targetBox.GetComponent<FixedJoint2D>();
             if (joint != null)
             {
                 joint.enabled = false;
                 joint.connectedBody = null;
-                // ไม่ต้อง destroy joint ทิ้ง เพื่อให้สามารถใช้ใหม่ได้
             }
 
             PlaySound(releaseSound);
@@ -488,19 +491,34 @@ public class PlayerPush : MonoBehaviour
         }
         else
         {
-            Debug.Log("[Push Debug] Stopped pushing: (box destroyed or missing)");
+            // ถ้ากล่องหายไปแล้ว: แค่ Log บอกไว้ก็พอ
+            Debug.Log("[Push Debug] Stopped pushing because target box was already destroyed.");
         }
 
-        // แจ้ง GameManager ว่าหยุดดันของ
+        // --- ส่วนนี้จะทำงานเสมอ ไม่ว่ากล่องจะอยู่หรือไม่ ---
+        // เพื่อรีเซ็ตสถานะของ "ผู้เล่น" กลับสู่ปกติ
+
+        // 1. แจ้ง GameManager ว่าหยุดดันของ
         if (gameManager != null)
         {
-            gameManager.EndPushingObject();
+            // ใช้ CanStopPushing() เพื่อความปลอดภัย แม้ว่าสถานะอาจจะเป็น InDialog
+            if (CanStopPushing())
+            {
+                gameManager.EndPushingObject();
+            }
         }
 
+        // 2. รีเซ็ต Animation ของผู้เล่น
+        if (anim != null)
+        {
+            anim.SetBool("IsIdlePush", false);
+            anim.SetBool("IsPull", false);
+            anim.SetBool("IsPush", false);
+        }
+
+        // 3. รีเซ็ตสถานะภายในของ PlayerPush
         targetBox = null;
         isHolding = false;
-
-        // เซ็ต cooldown หลังจากหยุดดัน
         detectionCooldown = DETECTION_COOLDOWN_TIME;
     }
 

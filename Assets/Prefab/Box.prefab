@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3149609764986300899}
   - component: {fileID: 6760489363640272181}
   - component: {fileID: 4945594338080861516}
+  - component: {fileID: 3933540163839996230}
   m_Layer: 10
   m_Name: Box
   m_TagString: Pushable
@@ -179,3 +180,18 @@ MonoBehaviour:
   currentHitPoints: 3
   maxHitPoints: 3
   showDebugInfo: 1
+--- !u!114 &3933540163839996230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899959792572343891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 598501a175bc35445a683e670c5ac6d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPlayerStartPush:
+    m_PersistentCalls:
+      m_Calls: []
