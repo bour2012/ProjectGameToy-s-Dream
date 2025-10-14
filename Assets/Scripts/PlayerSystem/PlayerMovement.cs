@@ -145,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
         DrawDebugCircle(stompCheck.position, rayLength, groundCheck);
         //Move();
 
-        HandleLadderPhysics();
+        //HandleLadderPhysics();
 
         if (isClimbing)
         {
@@ -536,110 +536,109 @@ public class PlayerMovement : MonoBehaviour
     #region Ladder System
     void HandleLadderInput()
     {
-        // ตรวจสอบการกดปุ่ม W หรือ ลูกศรขึ้น
         bool climbInput = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
         bool downInput = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
 
-        if (isOnLadder)
+        if (isOnLadder && !isClimbing)
         {
-            // ต้องกด W หรือ S ก่อนถึงจะเริ่มปีน
-            if ((climbInput || downInput) && !isClimbing)
+            // ▼▼▼ เพิ่ม "ด่านตรวจ" สำหรับ Platform Effector ▼▼▼
+            // ตรวจสอบเงื่อนไขที่จะ "บล็อก" การปีนลง
+            if (downInput /*&& groundCheck && !isClimbing*/)
+            {
+                // "มองลงไปข้างล่าง" เพื่อดูว่าพื้นคืออะไร
+                // เราใช้ Logic เดียวกับ CheckGround() แต่เช็คหา PlatformEffector2D แทน
+                Bounds bounds = playerCollider.bounds;
+                Vector2 boxSize = new Vector2(bounds.size.x * 0.9f, 0.1f);
+                Vector2 boxOrigin = new Vector2(bounds.center.x, bounds.min.y - 0.05f);
+                RaycastHit2D hit = Physics2D.BoxCast(boxOrigin, boxSize, 0f, Vector2.down, 0.05f, groundLayer);
+
+                // ถ้าพื้นนั้นมี Platform Effector 2D ติดอยู่
+                if (hit.collider != null && hit.collider.GetComponent<PlatformEffector2D>() != null)
+                {
+                    // ไม่ต้องทำอะไรเลย และออกจากฟังก์ชันนี้ไป
+                    // เพื่อป้องกันการเรียก StartClimbing()
+                    return;
+                }
+            }
+
+        
+
+            // ถ้าไม่ติด "ด่านตรวจ" ด้านบน ก็ให้ทำงานตาม Logic เดิม
+            if (climbInput || downInput)
             {
                 StartClimbing();
             }
-            //// ถ้าปีนอยู่แล้ว แต่ไม่ได้กดปุ่มใดๆ ให้หยุดปีน
-            //else if (isClimbing && !climbInput && !downInput)
-            //{
-            //    StopClimbing();
-            //}
         }
     }
 
-    void HandleLadderPhysics()
-    {
-        // ตรวจสอบว่าผู้เล่นยังอยู่บนบันได
-        bool onLadderArea = IsOnLadderArea();
-
-        if (onLadderArea)
-        {
-            //// ถ้าอยู่บนบันได -> ปิด gravity
-            //rBody.gravityScale = 0f;
-
-            //// ถ้ายังปีนอยู่ -> สามารถผ่านพื้น/กำแพงชั้นบน
-            //if (isClimbing)
-            //{
-            //    Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, true);
-            //    if (playerCollider != null)
-            //        playerCollider.isTrigger = true;
-            //}
-        }
-        else
-        {
-            // ถ้าออกจากบันไดบางส่วนแล้ว -> เปิด collision
-           // rBody.gravityScale = 1f;
-           // Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
-           // if (playerCollider != null)
-           //     playerCollider.isTrigger = false;
-
-           // ออกจากบันได
-           //isOnLadder = false;
-           // isClimbing = false;
-           // currentLadder = null;
-        }
-    }
+    //void HandleLadderPhysics()
+    //{
+    //    // ฟังก์ชันนี้ไม่ได้ใช้งานในเวอร์ชันนี้
+    //}
 
     void HandleLadderMovement()
     {
-
         if (!isClimbing)
         {
             rBody.gravityScale = 1f;
-
         }
         else
         {
-
-            // การเคลื่อนที่แนวตั้ง (โค้ดเดิม)
+            // การเคลื่อนที่แนวตั้ง
             float verticalInput = 0f;
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space))
                 verticalInput = 1f;
             else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
                 verticalInput = -1f;
 
+            if (verticalInput == 0)
+            {
+                rBody.linearVelocity = new Vector2(rBody.linearVelocity.x, 0);
+            }
+
+            if (verticalInput < 0) // ถ้าผู้เล่นกด 'ลง'
+            {
+                // "มองลงไป" เพื่อหาว่าเท้ากำลังจะแตะพื้นอะไร
+                Bounds bounds = playerCollider.bounds;
+                Vector2 boxSize = new Vector2(bounds.size.x * 0.9f, 0.1f);
+                Vector2 boxOrigin = new Vector2(bounds.center.x, bounds.min.y - 0.05f);
+                RaycastHit2D hit = Physics2D.BoxCast(boxOrigin, boxSize, 0f, Vector2.down, 0.05f, groundLayer);
+
+                // ถ้าเจอบางอย่าง และสิ่งนั้น "เป็น" Platform Effector 2D
+                if (hit.collider != null && hit.collider.GetComponent<PlatformEffector2D>() != null)
+                {
+                    // สั่งให้ออกจากสถานะปีนทันที
+                    ExitLadder();
+                    return; // ออกจากฟังก์ชันนี้ไปเลย
+                }
+            }
+            else if (verticalInput > 0) // ถ้าผู้เล่นกด 'ขึ้น'
+            {
+                // "มองขึ้นไป" เพื่อหาว่ามีเพดานอะไรอยู่ข้างบน
+                Bounds bounds = playerCollider.bounds;
+                Vector2 boxSize = new Vector2(bounds.size.x * 0.9f, 0.1f);
+                Vector2 boxOrigin = new Vector2(bounds.center.x, bounds.max.y + 0.05f); // ใช้ขอบบนของ Collider
+                RaycastHit2D hit = Physics2D.BoxCast(boxOrigin, boxSize, 0f, Vector2.up, 0.1f, groundLayer); // ยิง Ray ขึ้น
+
+                // ถ้าเจอบางอย่าง และสิ่งนั้น "ไม่ใช่" Platform Effector 2D (เป็นพื้นทึบ)
+                if (hit.collider != null && hit.collider.GetComponent<PlatformEffector2D>() != null)
+                {
+                    // บล็อกการเคลื่อนที่ขึ้น โดยการตั้งค่า input ให้เป็น 0
+                    verticalInput = 0;
+                }
+            }
+
             float verticalVelocity = verticalInput * climbSpeed;
-
-            // ▼▼▼ แก้ไข Logic การเคลื่อนที่แนวนอนตรงนี้ ▼▼▼
-
-            // 1. ตั้งค่าเริ่มต้นให้ความเร็วแนวนอนเป็น 0
             float horizontalVelocity = 0f;
 
-            // 2. "ให้สิทธิ์" ในการขยับซ้าย-ขวา เฉพาะตอนที่เท้าแตะพื้นเท่านั้น
             if (groundCheck)
             {
                 horizontalVelocity = horizontalInput * speed;
             }
 
-            // ▲▲▲ สิ้นสุดส่วนที่แก้ไข ▲▲▲
-
-            // รวมเป็น movement vector (ตอนนี้จะทำงานถูกต้องแล้ว)
-            Vector2 movement = new Vector2(horizontalVelocity, verticalVelocity);
-
-            // ใช้ MovePosition แทน velocity (โค้ดเดิม)
-            Vector2 newPosition = rBody.position + movement * Time.fixedDeltaTime;
-            rBody.MovePosition(newPosition);
-
-            //// ออกจากบันไดเมื่อเดินไปข้าง
-            //if (groundCheck)
-            //{
-                
-            //    if (!IsOnLadderArea())
-            //    {
-            //        ExitLadder();
-            //    }
-            //}
+            rBody.linearVelocity = new Vector2(horizontalVelocity, verticalVelocity);
         }
     }
-
 
     void StartClimbing()
     {
@@ -649,37 +648,36 @@ public class PlayerMovement : MonoBehaviour
         }
 
         isClimbing = true;
-        //rBody.gravityScale = 0f;
 
         // ปิดการชนกับพื้นชั้นบนขณะปีนบันได
         Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, true);
 
-        // เปลี่ยน Collider เป็น Trigger ชั่วคราว
+        // เปลี่ยน Collider เป็น Trigger ชั่วคราว (ทำให้ทะลุกำแพงได้)
         if (playerCollider != null)
         {
             playerCollider.isTrigger = true;
         }
     }
 
-    void StopClimbing()
-    {
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.EndClimbing();
-        }
+    //void StopClimbing() // ฟังก์ชันนี้อาจไม่ได้ถูกเรียกใช้เสมอไปในเวอร์ชันเก่า
+    //{
+    //    if (GameManager.Instance != null)
+    //    {
+    //        GameManager.Instance.EndClimbing();
+    //    }
 
-        isClimbing = false;
-        rBody.gravityScale = 1f;
+    //    isClimbing = false;
+    //    rBody.gravityScale = 1f;
 
-        // เปิดการชนกับพื้นกลับมา
-        Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
+    //    // เปิดการชนกับพื้นกลับมา
+    //    Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
 
-        // เปลี่ยน Collider กลับเป็นปกติ
-        if (playerCollider != null)
-        {
-            playerCollider.isTrigger = false;
-        }
-    }
+    //    // เปลี่ยน Collider กลับเป็นปกติ
+    //    if (playerCollider != null)
+    //    {
+    //        playerCollider.isTrigger = false;
+    //    }
+    //}
 
     void ExitLadder()
     {
@@ -695,19 +693,11 @@ public class PlayerMovement : MonoBehaviour
         currentLadder = null;
         rBody.gravityScale = 1f;
 
-        // เปิดการชนกับพื้นกลับมาเมื่ออยู่บนพื้น
-        if (groundCheck)
+        // เปิดการชนกับพื้นกลับมา
+        Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
+        if (wallLayerNumber > 0)
         {
-            Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
-            if (wallLayerNumber > 0)
-            {
-                Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
-            }
-        }
-        else
-        {
-            // รอจนกว่าจะแตะพื้นก่อนเปิด collision กลับมา
-            Invoke("EnableGroundCollision", 0.1f);
+            Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
         }
 
         // เปลี่ยน Collider กลับเป็นปกติ
@@ -717,14 +707,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void EnableGroundCollision()
-    {
-        Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
-        if (wallLayerNumber > 0)
-        {
-            Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
-        }
-    }
+    //void EnableGroundCollision()
+    //{
+    //    Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);
+    //    if (wallLayerNumber > 0)
+    //    {
+    //        Physics2D.IgnoreLayerCollision(playerLayerNumber, wallLayerNumber, false);
+    //    }
+    //}
 
     bool IsOnLadderArea()
     {
@@ -735,7 +725,6 @@ public class PlayerMovement : MonoBehaviour
             0f,
             ladderLayer
         );
-
         return ladderCollider != null;
     }
 

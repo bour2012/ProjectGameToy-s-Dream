@@ -1841,6 +1841,7 @@ GameObject:
   - component: {fileID: 117776809}
   - component: {fileID: 117776811}
   - component: {fileID: 117776810}
+  - component: {fileID: 117776812}
   m_Layer: 7
   m_Name: Square (17)
   m_TagString: Untagged
@@ -1894,7 +1895,7 @@ BoxCollider2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
+  m_UsedByEffector: 1
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
@@ -1964,6 +1965,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!251 &117776812
+PlatformEffector2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 117776808}
+  m_Enabled: 1
+  m_UseColliderMask: 1
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RotationalOffset: 0
+  m_UseOneWay: 1
+  m_UseOneWayGrouping: 0
+  m_SurfaceArc: 180
+  m_UseSideFriction: 0
+  m_UseSideBounce: 0
+  m_SideArc: 1
 --- !u!1 &118965513
 GameObject:
   m_ObjectHideFlags: 0
@@ -6149,7 +6169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 448136145}
   - component: {fileID: 448136148}
-  - component: {fileID: 448136147}
+  - component: {fileID: 448136149}
   - component: {fileID: 448136146}
   m_Layer: 0
   m_Name: VCam_DialogFocus
@@ -6207,37 +6227,6 @@ MonoBehaviour:
       Wait: 1
       Time: 2
     Restrictions: 0
---- !u!114 &448136147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 448136144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CameraDistance: 10
-  DeadZoneDepth: 0
-  Composition:
-    ScreenPosition: {x: 0, y: 0}
-    DeadZone:
-      Enabled: 0
-      Size: {x: 0.2, y: 0.2}
-    HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
-      Offset: {x: 0, y: 0}
-  CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 1, y: 1, z: 1}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
 --- !u!114 &448136148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6281,6 +6270,25 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!114 &448136149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 448136144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackerSettings:
+    BindingMode: 4
+    PositionDamping: {x: 1, y: 1, z: 1}
+    AngularDampingMode: 0
+    RotationDamping: {x: 1, y: 1, z: 1}
+    QuaternionDamping: 1
+  FollowOffset: {x: 0, y: 0, z: -10}
 --- !u!1 &462137229
 GameObject:
   m_ObjectHideFlags: 0
@@ -18159,7 +18167,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1272527600}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e763478ce4c33646933766aa7b54418, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
@@ -18567,7 +18575,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1293760925}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e763478ce4c33646933766aa7b54418, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
@@ -20307,6 +20315,7 @@ GameObject:
   - component: {fileID: 1442679363}
   - component: {fileID: 1442679365}
   - component: {fileID: 1442679364}
+  - component: {fileID: 1442679366}
   m_Layer: 7
   m_Name: Square (33)
   m_TagString: Untagged
@@ -20323,8 +20332,8 @@ Transform:
   m_GameObject: {fileID: 1442679362}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.004936822, w: 0.99998784}
-  m_LocalPosition: {x: 88.69, y: -23.85, z: 0}
-  m_LocalScale: {x: 18.27485, y: 0.9670191, z: 1}
+  m_LocalPosition: {x: 88.6898, y: -23.8343, z: 0}
+  m_LocalScale: {x: 18.27485, y: 0.9983505, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1694092555}
@@ -20360,7 +20369,7 @@ BoxCollider2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
+  m_UsedByEffector: 1
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
@@ -20430,6 +20439,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!251 &1442679366
+PlatformEffector2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442679362}
+  m_Enabled: 1
+  m_UseColliderMask: 1
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RotationalOffset: 0
+  m_UseOneWay: 1
+  m_UseOneWayGrouping: 0
+  m_SurfaceArc: 180
+  m_UseSideFriction: 0
+  m_UseSideBounce: 0
+  m_SideArc: 1
 --- !u!1 &1443687143
 GameObject:
   m_ObjectHideFlags: 0
