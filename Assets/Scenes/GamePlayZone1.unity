@@ -5810,11 +5810,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowClimbFromBottom: 1
-  allowClimbFromTop: 1
-  isPlayerOnLadder: 0
-  playerRb: {fileID: 0}
-  playerMovement: {fileID: 0}
 --- !u!61 &200159892
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14944,11 +14939,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowClimbFromBottom: 1
-  allowClimbFromTop: 1
-  isPlayerOnLadder: 0
-  playerRb: {fileID: 0}
-  playerMovement: {fileID: 0}
 --- !u!61 &525739964
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -25584,11 +25574,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowClimbFromBottom: 1
-  allowClimbFromTop: 1
-  isPlayerOnLadder: 0
-  playerRb: {fileID: 0}
-  playerMovement: {fileID: 0}
 --- !u!61 &930167143
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -32231,11 +32216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowClimbFromBottom: 1
-  allowClimbFromTop: 1
-  isPlayerOnLadder: 0
-  playerRb: {fileID: 0}
-  playerMovement: {fileID: 0}
 --- !u!61 &1272527604
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -36626,11 +36606,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowClimbFromBottom: 1
-  allowClimbFromTop: 1
-  isPlayerOnLadder: 0
-  playerRb: {fileID: 0}
-  playerMovement: {fileID: 0}
 --- !u!61 &1443794037
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -51402,11 +51377,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38f07c285b985014fae49929844948b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowClimbFromBottom: 1
-  allowClimbFromTop: 1
-  isPlayerOnLadder: 0
-  playerRb: {fileID: 0}
-  playerMovement: {fileID: 0}
 --- !u!61 &1953514259
 BoxCollider2D:
   m_ObjectHideFlags: 0

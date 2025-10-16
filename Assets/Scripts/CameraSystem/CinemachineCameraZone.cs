@@ -35,15 +35,6 @@ public class CinemachineCameraZone : MonoBehaviour
             return;
         }
 
-        //// ตรวจสอบว่าเป็น Perspective หรือ Orthographic
-        //if (zoneCam.Lens.Orthographic)
-        //{
-        //    zoneCam.Lens.Orthographic = false; // บังคับเป็น Perspective
-        //    Debug.Log($"[Camera Zone] เปลี่ยน {zoneCam.name} เป็น Perspective Mode");
-        //}
-
-        // ตั้งค่า Priority เริ่มต้นให้ Zone Camera ต่ำ
-        zoneCam.Priority.Value = inactivePriority;
 
         // หา DefaultCam ถ้ายังไม่ได้ใส่
         if (defaultCam == null)
@@ -61,6 +52,7 @@ public class CinemachineCameraZone : MonoBehaviour
         }
 
         // ปิด ZoneCam ตอนเริ่มต้น
+        zoneCam.Priority.Value = inactivePriority;
         zoneCam.enabled = false;
     }
 
