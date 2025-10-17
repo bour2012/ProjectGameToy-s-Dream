@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
 using TMPro;
-using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 public class PlayerInteractor : MonoBehaviour
@@ -29,6 +30,7 @@ public class PlayerInteractor : MonoBehaviour
     private Collider2D currentTargetCollider;
     private Coroutine animationCoroutine;
     private Vector3 originalPromptScale;
+    private bool working = true;
 
     void Awake()
     {
@@ -42,7 +44,7 @@ public class PlayerInteractor : MonoBehaviour
 
     void Update()
     {
-        if (currentInteractable != null && Input.GetKeyDown(interactKey))
+        if (currentInteractable != null && Input.GetKeyDown(interactKey) && working)
         {
             currentInteractable.Interact();
             //HidePrompt();
@@ -59,6 +61,7 @@ public class PlayerInteractor : MonoBehaviour
         IInteractable interactable = other.GetComponent<IInteractable>();
         if (interactable != null)
         {
+            working = true;
             currentInteractable = interactable;
             currentTargetCollider = other;
             ShowPrompt(interactable);
@@ -70,6 +73,7 @@ public class PlayerInteractor : MonoBehaviour
         var interactable = other.GetComponent<IInteractable>();
         if (interactable != null && interactable == currentInteractable)
         {
+            working = false;
             HidePrompt();
         }
     }

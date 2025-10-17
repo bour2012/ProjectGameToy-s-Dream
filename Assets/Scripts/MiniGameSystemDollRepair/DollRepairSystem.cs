@@ -429,8 +429,8 @@ public class DollRepairSystem : MonoBehaviour
             repairUIContainer.SetActive(false);
             interactPrompt.SetActive(false);
 
-            var tutorialManager = FindFirstObjectByType<TutorialManager>();
-            tutorialManager?.OnRepairSystemOpened(currentTool);
+            ////var tutorialManager = FindFirstObjectByType<TutorialManager>();
+            //tutorialManager?.OnRepairSystemOpened(currentTool);
 
             Debug.Log($"Opened repair system: {systemConfig.systemName} with {currentTool}");
         }

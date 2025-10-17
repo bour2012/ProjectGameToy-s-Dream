@@ -31,7 +31,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Checkpoint Debug")]
     public bool showCheckpointDebugInfo = true;
-    public bool enableCheckpointNavigation = true; // เปิด/ปิดการใช้ลูกศรสลับ Checkpoint
+    //public bool enableCheckpointNavigation = true; // เปิด/ปิดการใช้ลูกศรสลับ Checkpoint
+    [Tooltip("โหมดดีบัก: TRUE = เกิดที่จุดล่าสุด & ใช้ลูกศรซ้าย-ขวาได้ | FALSE = เกิดที่จุดเริ่มต้น & ปิดการใช้ลูกศร")]
+    public bool resetToLastCheckpoint = true;
+
+    private HashSet<string> collectedItemIDs = new HashSet<string>();
+    private HashSet<string> triggeredBonusCheckpointIDs = new HashSet<string>();
+    private Dictionary<ItemManager.ItemType, int> checkpointItemSnapshot;
 
     private Checkpoint currentActiveCheckpoint;
     private Vector3 defaultSpawnPosition;
@@ -93,6 +99,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
 
     void Start()
     {
@@ -462,6 +469,60 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+
+    #region Persistence Public Methods
+
+    public void MarkItemAsCollected(string itemID)
+    {
+        if (!string.IsNullOrEmpty(itemID) && !collectedItemIDs.Contains(itemID))
+        {
+            collectedItemIDs.Add(itemID);
+        }
+    }
+
+    public bool HasItemBeenCollected(string itemID)
+    {
+        return !string.IsNullOrEmpty(itemID) && collectedItemIDs.Contains(itemID);
+    }
+
+    public void MarkBonusCheckpointTriggered(string checkpointID)
+    {
+        if (!string.IsNullOrEmpty(checkpointID) && !triggeredBonusCheckpointIDs.Contains(checkpointID))
+        {
+            triggeredBonusCheckpointIDs.Add(checkpointID);
+        }
+    }
+
+    public bool HasBonusCheckpointBeenTriggered(string checkpointID)
+    {
+        return !string.IsNullOrEmpty(checkpointID) && triggeredBonusCheckpointIDs.Contains(checkpointID);
+    }
+
+    public void SaveItemSnapshot()
+    {
+        if (ItemManager.Instance == null) return;
+
+        checkpointItemSnapshot = new Dictionary<ItemManager.ItemType, int>();
+        foreach (ItemManager.ItemType itemType in System.Enum.GetValues(typeof(ItemManager.ItemType)))
+        {
+            checkpointItemSnapshot[itemType] = ItemManager.Instance.GetItemCount(itemType);
+        }
+        Debug.Log($"<color=cyan>[GameManager] Item snapshot saved.</color>");
+    }
+
+    private void RestoreItemsFromSnapshot()
+    {
+        if (ItemManager.Instance == null || checkpointItemSnapshot == null) return;
+
+        foreach (var item in checkpointItemSnapshot)
+        {
+            ItemManager.Instance.SetItemCount(item.Key, item.Value);
+        }
+        Debug.Log($"<color=cyan>[GameManager] Items restored from snapshot.</color>");
+    }
+
+    #endregion
+
     #region Checkpoint Management
 
 
@@ -470,9 +531,10 @@ public class GameManager : MonoBehaviour
         InitializeCheckpointSystem();
         CollectAllCheckpoints();
 
-        // --- ส่วนโหลดข้อมูล ---
-        bool foundSavedCheckpoint = false;
-        if (PlayerPrefs.HasKey("LastCheckpoint"))
+        bool checkpointIsSet = false;
+
+        // 1. ถ้าอยู่ในโหมดดีบัก -> พยายามโหลด Checkpoint ที่บันทึกไว้
+        if (resetToLastCheckpoint && PlayerPrefs.HasKey("LastCheckpoint"))
         {
             string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
             foreach (Checkpoint checkpoint in allCheckpoints)
@@ -481,26 +543,33 @@ public class GameManager : MonoBehaviour
                 {
                     SetActiveCheckpoint(checkpoint);
                     checkpoint.ActivateCheckpoint();
-                    foundSavedCheckpoint = true;
-                    Debug.Log($"<color=lime>Checkpoint loaded from save: {checkpointID}</color>");
+                    checkpointIsSet = true;
+                    Debug.Log($"<color=lime>[Debug Mode] Checkpoint loaded from save: {checkpointID}</color>");
                     break;
                 }
             }
         }
 
-        // --- ส่วน Fallback ---
-        // ถ้าไม่เจอ Checkpoint ที่บันทึกไว้ (เช่น เล่นครั้งแรก หรือ ID ไม่ตรง) ให้ใช้ค่า Default แทน
-        if (!foundSavedCheckpoint && defaultCheckpoint != null)
+        // 2. ถ้าไม่ได้ตั้งค่า Checkpoint (เพราะอยู่นอกโหมดดีบัก หรือไม่มีเซฟ) -> ให้ใช้ Default
+        if (!checkpointIsSet)
         {
-            SetActiveCheckpoint(defaultCheckpoint);
-            defaultCheckpoint.ActivateCheckpoint();
-            Debug.Log("<color=yellow>No saved checkpoint found. Using default checkpoint.</color>");
+            if (!resetToLastCheckpoint)
+            {
+                // ถ้าอยู่ในโหมดปกติ ให้ล้างเซฟเก่าทิ้งเพื่อความแน่นอน
+                ClearCheckpointSaveData();
+                Debug.Log("<color=yellow>[Normal Mode] Cleared saved checkpoint data.</color>");
+            }
+
+            if (defaultCheckpoint != null)
+            {
+                SetActiveCheckpoint(defaultCheckpoint);
+                defaultCheckpoint.ActivateCheckpoint();
+                Debug.Log("<color=yellow>Using default checkpoint.</color>");
+            }
         }
 
-        // --- ส่วนย้ายผู้เล่นและโหลดไอเทม (เหมือนเดิม) ---
-        if (player == null)
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
-
+        // --- ส่วนย้ายผู้เล่นและโหลดไอเทม (ทำงานเหมือนเดิม) ---
+        if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
         if (player != null && currentActiveCheckpoint != null)
         {
             player.position = currentActiveCheckpoint.GetSpawnPosition();
@@ -509,16 +578,15 @@ public class GameManager : MonoBehaviour
         }
         else if (player != null)
         {
-            // กรณีไม่มี Checkpoint เลย ให้ไปที่จุดเกิดเริ่มต้น
             player.position = defaultSpawnPosition;
         }
 
         if (ItemManager.Instance != null)
         {
-            // ... โค้ดโหลดไอเทมเหมือนเดิม ...
+            ItemManager.Instance.UpdateUI();
         }
 
-        // รีเซ็ตสถานะเกม
+        RestoreItemsFromSnapshot();
         ChangeState(GameState.Normal, "Reset state after reload scene");
     }
 
@@ -658,7 +726,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Debug Navigation (ลูกศรซ้าย-ขวา) - เพิ่มใหม่
-        if (enableCheckpointNavigation)
+        if (resetToLastCheckpoint)
         {
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
@@ -678,33 +746,19 @@ public class GameManager : MonoBehaviour
 
     public void SetActiveCheckpoint(Checkpoint checkpoint)
     {
-        // ปิด Checkpoint เก่า 
         if (currentActiveCheckpoint != null && currentActiveCheckpoint != checkpoint)
         {
             currentActiveCheckpoint.DeactivateCheckpoint();
         }
-
         currentActiveCheckpoint = checkpoint;
+        SaveItemSnapshot();
 
-        if (checkpoint != null)
-        {
-            checkpoint.ApplyItemDefaults();
-        }
-        // อัปเดต Index - เพิ่มใหม่
-        UpdateCurrentCheckpointIndex();
-        // บันทึกลงใน PlayerPrefs (สำหรับการเซฟข้ามเกม)
+        // บันทึก ID สำหรับการ Respawn ครั้งต่อไป
         if (checkpoint != null)
         {
             PlayerPrefs.SetString("LastCheckpoint", checkpoint.GetCheckpointID());
-            PlayerPrefs.SetFloat("CheckpointX", checkpoint.transform.position.x);
-            PlayerPrefs.SetFloat("CheckpointY", checkpoint.transform.position.y);
-            PlayerPrefs.SetFloat("CheckpointZ", checkpoint.transform.position.z);
             PlayerPrefs.Save();
-
-            if (showCheckpointDebugInfo)
-            {
-                Debug.Log($"บันทึก Checkpoint: {checkpoint.GetCheckpointID()} ที่ตำแหน่ง {checkpoint.transform.position}");
-            }
+            Debug.Log($"Active checkpoint set to: {checkpoint.GetCheckpointID()}");
         }
     }
 

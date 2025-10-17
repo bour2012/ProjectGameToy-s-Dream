@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public class SceneTransition : MonoBehaviour
+public class SceneTransition : MonoBehaviour, IInteractable
 {
     [Header("Transition Settings")]
     public Animator transition;
@@ -22,6 +22,12 @@ public class SceneTransition : MonoBehaviour
     public float animationSpeed = 2f;
     [Tooltip("ระยะทางในการลอยขึ้น-ลง")]
     public float animationAmplitude = 10f;
+
+    // ▼▼▼ เพิ่มตัวแปรนี้เข้ามา เพื่อให้ PlayerInteractor รู้ว่าจะแสดงข้อความอะไร ▼▼▼
+    [Header("UI Settings")]
+    [Tooltip("ข้อความที่จะแสดงบน UI Prompt (จะทำงานเมื่อ requireButtonPress เป็น true)")]
+    [TextArea] public string interactionPromptText = "[E] to Enter";
+    // ▲▲▲ สิ้นสุดส่วนที่เพิ่ม ▲▲▲
 
     private bool isPlayerInRange = false;
     private Coroutine uiAnimationCoroutine;
@@ -54,11 +60,46 @@ public class SceneTransition : MonoBehaviour
             {
                 isTransitioning = true;
                 if (interactUIPanel != null) interactUIPanel.SetActive(false); // ซ่อน UI ทันทีที่กด
-                StartCoroutine(LoadScene());
+                Interact();
             }
         }
     }
+    #region IInteractable Implementation
 
+    /// <summary>
+    /// PlayerInteractor จะเรียกฟังก์ชันนี้เพื่อขอข้อความไปแสดงบน UI
+    /// </summary>
+    public string GetInteractText()
+    {
+        // จะแสดงข้อความก็ต่อเมื่อตั้งค่าให้ต้องกดปุ่มเท่านั้น
+        return requireButtonPress ? interactionPromptText : "";
+    }
+
+    /// <summary>
+    /// PlayerInteractor จะเรียกฟังก์ชันนี้เมื่อผู้เล่นกดปุ่ม E
+    /// </summary>
+    public void Interact()
+    {
+       
+            StartCoroutine(LoadScene());
+        
+    }
+
+    public void QuitGame()
+    {
+        StartCoroutine(ExitGame());
+    }
+
+    IEnumerator ExitGame()
+    {
+
+        transition.SetTrigger("End");
+        yield return new WaitForSeconds(1.5f);
+        Application.Quit();
+
+    }
+
+    #endregion
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -78,7 +119,7 @@ public class SceneTransition : MonoBehaviour
             {
                 // โหมดเดินผ่านแล้วเปลี่ยนซีน (ไม่ต้องกดปุ่ม)
                 isTransitioning = true;
-                StartCoroutine(LoadScene());
+                Interact();
             }
         }
     }

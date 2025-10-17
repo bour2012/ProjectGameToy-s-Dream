@@ -2,9 +2,25 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
+    public enum CheckpointMode
+    {
+        OverrideInventory, // ตั้งค่าไอเทมใหม่ทั้งหมด
+        AddToInventory     // บวกเพิ่มจากของที่มีอยู่
+    }
+
     [Header("Checkpoint Settings")]
-    [Tooltip("ID ของ Checkpoint นี้ (ไม่ซ้ำกัน)")]
     public string checkpointID;
+    public CheckpointMode mode = CheckpointMode.OverrideInventory;
+
+    [Header("Item Settings")]
+    [Tooltip("สำหรับโหมด Override: จะ 'ตั้งค่า' จำนวนไอเทมเป็นค่านี้")]
+    public int overrideGlueCount = 3;
+    [Tooltip("สำหรับโหมด Override: จะ 'ตั้งค่า' จำนวนไอเทมเป็นค่านี้")]
+    public int overrideThreadCount = 2;
+    [Tooltip("สำหรับโหมด Add: จะ 'บวกเพิ่ม' ไอเทมตามจำนวนนี้ (ให้ครั้งเดียว)")]
+    public int bonusGlueAmount = 0;
+    [Tooltip("สำหรับโหมด Add: จะ 'บวกเพิ่ม' ไอเทมตามจำนวนนี้ (ให้ครั้งเดียว)")]
+    public int bonusThreadAmount = 0;
 
     [Header("Visual Settings")]
     public bool showGizmo = true;
@@ -12,106 +28,97 @@ public class Checkpoint : MonoBehaviour
     public Color activeColor = Color.green;
 
     [Header("Optional Components")]
-    [Tooltip("Animator สำหรับ Animation (ถ้ามี)")]
     public Animator checkpointAnimator;
-
-    [Tooltip("SpriteRenderer สำหรับเปลี่ยนสี (ถ้ามี)")]
     public SpriteRenderer checkpointSprite;
-
-    [Tooltip("ParticleSystem สำหรับ Effect (ถ้ามี)")]
     public ParticleSystem activationEffect;
-
-    [Tooltip("AudioSource สำหรับเสียง (ถ้ามี)")]
     public AudioSource audioSource;
     public AudioClip activationSound;
 
-    [Header("Item Defaults")]
-    public int glueCount = 3;
-    public int threadCount = 2;
+    // เราไม่ต้องการ Header("Item Defaults") ที่ซ้ำซ้อนอีกต่อไป
+    // public int glueCount = 3;
+    // public int threadCount = 2;
 
     private bool isActivated = false;
-    private GameManager checkpointManager;
 
     private void Start()
     {
-        // หา CheckpointManager ใน Scene
-        checkpointManager = FindFirstObjectByType<GameManager>();
-        if (checkpointManager == null)
-        {
-            Debug.LogError("ไม่พบ CheckpointManager ใน Scene!");
-        }
-
-        // ตั้งค่า ID อัตโนมัติถ้าไม่ได้กำหนด
         if (string.IsNullOrEmpty(checkpointID))
         {
-            checkpointID = gameObject.name + "_" + transform.GetSiblingIndex();
+            checkpointID = $"{gameObject.scene.name}_{gameObject.name}_{transform.GetSiblingIndex()}";
         }
-
         UpdateVisual();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && !isActivated)
+        // เราจะเรียก ActivateCheckpoint() ที่นี่ที่เดียว
+        if (other.CompareTag("Player"))
         {
             ActivateCheckpoint();
         }
     }
-    public void ApplyItemDefaults()
-    {
-        if (ItemManager.Instance != null)
-        {
-            ItemManager.Instance.SetItemCount(ItemManager.ItemType.Glue, glueCount);
-            ItemManager.Instance.SetItemCount(ItemManager.ItemType.Thread, threadCount);
-            ItemManager.Instance.UpdateUI();
-        }
-    }
+
     public void ActivateCheckpoint()
     {
-        if (isActivated) return;
+        if (GameManager.Instance == null) return;
 
+        // 1. "ด่านตรวจ" อยู่ตรงนี้: ถ้าเคยเปิดใช้งานแล้ว หรือหา GameManager ไม่เจอ ก็ไม่ต้องทำอะไรต่อ
+        if (isActivated || GameManager.Instance == null) return;
+
+        // 2. ตั้งค่าสถานะทันที เพื่อป้องกันการเรียกซ้ำ
+
+        //Debug.Log($"Checkpoint '{checkpointID}' activated!");
+
+        // 3. บอก GameManager ให้ตั้งค่า Checkpoint นี้เป็นตัวล่าสุด
+        // การทำแบบนี้จะทำให้ GameManager "ถ่ายรูป" จำนวนไอเทมปัจจุบันไว้โดยอัตโนมัติ
+        GameManager.Instance.SetActiveCheckpoint(this);
+
+        // 4. แจกไอเทมตามโหมดที่เลือก
+        switch (mode)
+        {
+            case CheckpointMode.OverrideInventory:
+                ApplyOverrideItems();
+                break;
+            case CheckpointMode.AddToInventory:
+                ApplyBonusItems();
+                break;
+        }
+        GameManager.Instance.SaveItemSnapshot();
+        // 5. เล่นเอฟเฟกต์ทั้งหมด
+        if (checkpointAnimator != null) checkpointAnimator.SetTrigger("Activate");
+        if (activationEffect != null) activationEffect.Play();
+        if (audioSource != null && activationSound != null) audioSource.PlayOneShot(activationSound);
         isActivated = true;
-
-        // บันทึก Checkpoint
-        if (checkpointManager != null)
-        {
-            checkpointManager.SetActiveCheckpoint(this);
-            Debug.Log($"Checkpoint '{checkpointID}' ถูกเปิดใช้งาน!");
-        }
-
-        // เล่น Animation
-        if (checkpointAnimator != null)
-        {
-            checkpointAnimator.SetBool("IsActivated", true);
-            checkpointAnimator.SetTrigger("Activate");
-        }
-
-        // เล่น Effect
-        if (activationEffect != null)
-        {
-            activationEffect.Play();
-        }
-
-        // เล่นเสียง
-        if (audioSource != null && activationSound != null)
-        {
-            audioSource.PlayOneShot(activationSound);
-        }
-
         UpdateVisual();
+    }
 
-       
+    private void ApplyOverrideItems()
+    {
+        if (ItemManager.Instance == null) return;
+        Debug.Log($"Overriding inventory: Glue -> {overrideGlueCount}, Thread -> {overrideThreadCount}");
+        ItemManager.Instance.SetItemCount(ItemManager.ItemType.Glue, overrideGlueCount);
+        ItemManager.Instance.SetItemCount(ItemManager.ItemType.Thread, overrideThreadCount);
+    }
+
+    private void ApplyBonusItems()
+    {
+        if (ItemManager.Instance == null || GameManager.Instance == null) return;
+
+        if (GameManager.Instance.HasBonusCheckpointBeenTriggered(checkpointID))
+        {
+            Debug.Log($"Checkpoint '{checkpointID}' bonus already claimed.");
+            return;
+        }
+
+        ItemManager.Instance.CollectItem(ItemManager.ItemType.Glue, bonusGlueAmount);
+        ItemManager.Instance.CollectItem(ItemManager.ItemType.Thread, bonusThreadAmount);
+        GameManager.Instance.MarkBonusCheckpointTriggered(checkpointID);
+        Debug.Log($"Checkpoint '{checkpointID}' granted bonus items.");
     }
 
     public void DeactivateCheckpoint()
     {
         isActivated = false;
-
-        if (checkpointAnimator != null)
-        {
-            checkpointAnimator.SetBool("IsActivated", false);
-        }
-
         UpdateVisual();
     }
 
@@ -123,23 +130,14 @@ public class Checkpoint : MonoBehaviour
         }
     }
 
-    public Vector3 GetSpawnPosition()
-    {
-        return transform.position;
-    }
+    public Vector3 GetSpawnPosition() => transform.position;
+    public bool IsActivated() => isActivated;
+    public string GetCheckpointID() => checkpointID;
 
-    public bool IsActivated()
-    {
-        return isActivated;
-    }
+    // ... (ส่วน OnDrawGizmos เหมือนเดิม) ...
 
-    public string GetCheckpointID()
-    {
-        return checkpointID;
-    }
-
-    // แสดง Gizmo ใน Scene View
-    private void OnDrawGizmos()
+// แสดง Gizmo ใน Scene View
+private void OnDrawGizmos()
     {
         if (showGizmo)
         {

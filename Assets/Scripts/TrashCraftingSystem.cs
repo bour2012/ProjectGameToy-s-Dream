@@ -134,6 +134,11 @@ public class TrashCraftingSystem : MonoBehaviour
 
     void OnGameStateChanged(GameState newState)
     {
+        if (this == null || !gameObject.activeInHierarchy)
+        {
+            return; // ถ้าไม่มีชีวิตแล้ว ก็ไม่ต้องทำอะไรต่อ
+        }
+
         switch (newState)
         {
             case GameState.Normal:
@@ -363,6 +368,8 @@ public class TrashCraftingSystem : MonoBehaviour
         // ซ่อนตัวกองขยะ
         gameObject.SetActive(false);
 
+
+
         isCrafting = false;
 
         if (gameManager != null)
@@ -372,6 +379,7 @@ public class TrashCraftingSystem : MonoBehaviour
         }
 
         Debug.Log($"Crafting completed: {craftableItems[currentItemIndex].itemName}");
+        gameObject.SetActive(false);
     }
 
     void StopCrafting()
@@ -388,7 +396,7 @@ public class TrashCraftingSystem : MonoBehaviour
         isCrafting = false;
 
         // แจ้ง GameManager
-        if (gameManager != null && IsInCraftingState())
+        if (gameManager != null && gameManager.currentState == GameState.Crafting)
         {
             gameManager.ChangeState(GameState.Normal, "Crafting cancelled");
         }

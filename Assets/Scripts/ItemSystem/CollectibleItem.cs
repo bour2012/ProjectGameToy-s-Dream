@@ -1,92 +1,72 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class CollectibleItem : MonoBehaviour
 {
     [Header("Item Settings")]
     public ItemManager.ItemType itemType = ItemManager.ItemType.Glue;
     public int itemAmount = 1;
-    public float interactionDistance = 2f;
+    [Tooltip("ID เฉพาะสำหรับไอเทมชิ้นนี้ (ถ้าเว้นว่างจะสร้างให้อัตโนมัติ)")]
+    public string itemID;
 
     [Header("Visual Settings")]
     public GameObject itemVisual;
     public ParticleSystem collectEffect;
     public AudioSource collectSound;
 
-    [Header("UI")]
-    public GameObject interactPrompt;
-
-    private Transform player;
-    private bool isPlayerNear = false;
     private bool isCollected = false;
 
-    void Start()
+    void Awake()
     {
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        // สร้าง ID อัตโนมัติถ้าไม่ได้กำหนด
+        if (string.IsNullOrEmpty(itemID))
+        {
+            itemID = $"{gameObject.scene.name}_{gameObject.name}_{transform.position.sqrMagnitude}";
+        }
 
-        if (interactPrompt != null)
-            interactPrompt.SetActive(false);
+        // ตรวจสอบกับ GameManager ว่าเคยถูกเก็บไปแล้วหรือยัง
+        if (GameManager.Instance != null && GameManager.Instance.HasItemBeenCollected(itemID))
+        {
+            // ถ้าเคยเก็บแล้ว -> ทำลายตัวเองทิ้งไปเงียบๆ
+            Destroy(gameObject);
+            return;
+        }
+
+        // ทำให้แน่ใจว่า Collider เป็น Trigger
+        GetComponent<Collider2D>().isTrigger = true;
     }
 
-    void Update()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isCollected || player == null) return;
-
-        CheckPlayerDistance();
-
-        if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
+        // ถ้าผู้เล่นเดินมาชน และยังไม่เคยถูกเก็บ
+        if (!isCollected && other.CompareTag("Player"))
         {
-            CollectItem();
+            Collect();
         }
     }
 
-    void CheckPlayerDistance()
-    {
-        if (player == null) return;
-
-        float distance = Vector2.Distance(transform.position, player.position);
-        bool shouldShowPrompt = distance <= interactionDistance;
-
-        if (shouldShowPrompt != isPlayerNear)
-        {
-            isPlayerNear = shouldShowPrompt;
-
-            if (interactPrompt != null)
-                interactPrompt.SetActive(isPlayerNear);
-        }
-    }
-
-    void CollectItem()
+    void Collect()
     {
         if (isCollected || ItemManager.Instance == null) return;
+        isCollected = true;
 
-        // เก็บไอเทม
+        // 1. บอก GameManager ให้ "จำไว้" ว่าไอเทมชิ้นนี้ถูกเก็บแล้ว
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.MarkItemAsCollected(itemID);
+        }
+
+        // 2. เพิ่มไอเทมให้ผู้เล่น
         ItemManager.Instance.CollectItem(itemType, itemAmount);
 
-        // เอฟเฟกต์
+        // 3. เล่นเอฟเฟกต์
         if (collectEffect != null)
-            collectEffect.Play();
+            Instantiate(collectEffect, transform.position, Quaternion.identity); // สร้าง Effect แยกออกมา
 
         if (collectSound != null)
-            collectSound.Play();
+            AudioSource.PlayClipAtPoint(collectSound.clip, transform.position); // เล่นเสียง ณ ตำแหน่งที่เก็บ
 
-        // ซ่อนไอเทม
-        isCollected = true;
-        if (itemVisual != null)
-            itemVisual.SetActive(false);
-
-        if (interactPrompt != null)
-            interactPrompt.SetActive(false);
-
-        // ทำลายหลังจากเอฟเฟกต์เสร็จ
-        Destroy(gameObject, 0.2f);
-
-        Debug.Log($"Collected {itemAmount} {itemType}");
+        // 4. ทำลายตัวเองทันที
+        Destroy(gameObject);
     }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, interactionDistance);
-    }
-
 }
