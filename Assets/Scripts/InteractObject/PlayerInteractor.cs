@@ -81,6 +81,13 @@ public class PlayerInteractor : MonoBehaviour
     private void ShowPrompt(IInteractable interactable)
     {
         if (interactPromptUI == null || currentTargetCollider == null) return;
+        string promptString = interactable.GetInteractText();
+
+        if (string.IsNullOrEmpty(promptString))
+        {
+           
+            return;
+        }
 
         if (promptText != null)
         {

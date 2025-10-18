@@ -8,62 +8,27 @@ public class SceneTransition : MonoBehaviour, IInteractable
     [Header("Transition Settings")]
     public Animator transition;
     public string nextSceneName;
-    private bool isTransitioning = false; // กันไม่ให้ซ้ำหลายรอบ
+    private bool isTransitioning = false;
 
     [Header("Mode Settings")]
-    public bool requireButtonPress = false;  // ถ้า true ต้องกดปุ่มถึงจะย้าย scene
-    public KeyCode interactKey = KeyCode.E;  // ปุ่มที่ใช้กด (เช่น E)
+    [Tooltip("ถ้าติ๊ก, ผู้เล่นต้องกดปุ่มเพื่อเปลี่ยนซีน. ถ้าไม่ติ๊ก, ผู้เล่นจะเปลี่ยนซีนทันทีที่เดินเข้ามา")]
+    public bool requireButtonPress = true;
 
-    [Header("UI Settings")]
-    public GameObject interactUIPanel;    // UI panel ที่บอกให้กดปุ่ม
-    public TextMeshProUGUI interactText;  // ข้อความใน UI (ใช้ TMP)
-    [Header("UI Animation")]
-    [Tooltip("ความเร็วในการลอยขึ้น-ลง")]
-    public float animationSpeed = 2f;
-    [Tooltip("ระยะทางในการลอยขึ้น-ลง")]
-    public float animationAmplitude = 10f;
-
-    // ▼▼▼ เพิ่มตัวแปรนี้เข้ามา เพื่อให้ PlayerInteractor รู้ว่าจะแสดงข้อความอะไร ▼▼▼
-    [Header("UI Settings")]
+    [Header("UI Settings (Optional)")]
     [Tooltip("ข้อความที่จะแสดงบน UI Prompt (จะทำงานเมื่อ requireButtonPress เป็น true)")]
     [TextArea] public string interactionPromptText = "[E] to Enter";
-    // ▲▲▲ สิ้นสุดส่วนที่เพิ่ม ▲▲▲
 
-    private bool isPlayerInRange = false;
-    private Coroutine uiAnimationCoroutine;
-    private Vector2 initialUIPosition;
+    // เราไม่ต้องการตัวแปร UI และการตรวจจับผู้เล่นในนี้อีกต่อไป
 
-
-
-    // Update is called once per frame
-    private void Awake()
+    void Awake()
     {
-
+        // ทำให้แน่ใจว่า Animator พร้อมใช้งาน
         if (transition != null && transition.gameObject != null)
         {
             transition.gameObject.SetActive(true);
         }
-        if (interactUIPanel != null)
-        {
-            // บันทึกตำแหน่งเริ่มต้นของ UI
-            initialUIPosition = interactUIPanel.GetComponent<RectTransform>().anchoredPosition;
-            interactUIPanel.SetActive(false);
-        }
     }
 
-    private void Update()
-    {
-        // ย้าย Logic การกดปุ่มมาไว้ที่นี่
-        if (isPlayerInRange && requireButtonPress && !isTransitioning)
-        {
-            if (Input.GetKeyDown(interactKey))
-            {
-                isTransitioning = true;
-                if (interactUIPanel != null) interactUIPanel.SetActive(false); // ซ่อน UI ทันทีที่กด
-                Interact();
-            }
-        }
-    }
     #region IInteractable Implementation
 
     /// <summary>
@@ -72,6 +37,7 @@ public class SceneTransition : MonoBehaviour, IInteractable
     public string GetInteractText()
     {
         // จะแสดงข้อความก็ต่อเมื่อตั้งค่าให้ต้องกดปุ่มเท่านั้น
+        // ถ้า requireButtonPress เป็น false, PlayerInteractor จะไม่แสดง UI
         return requireButtonPress ? interactionPromptText : "";
     }
 
@@ -80,9 +46,35 @@ public class SceneTransition : MonoBehaviour, IInteractable
     /// </summary>
     public void Interact()
     {
-       
+        // จะทำงานก็ต่อเมื่อตั้งค่าให้ต้องกดปุ่ม และยังไม่ได้กำลังเปลี่ยนซีน
+        if (requireButtonPress && !isTransitioning)
+        {
+            isTransitioning = true;
             StartCoroutine(LoadScene());
-        
+        }
+    }
+
+    #endregion
+
+    /// <summary>
+    /// ฟังก์ชันนี้สำหรับโหมด "เดินผ่านแล้วเปลี่ยนซีน" โดยอัตโนมัติ
+    /// </summary>
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // ถ้า "ไม่ต้อง" กดปุ่ม, เป็น Player, และยังไม่ได้กำลังเปลี่ยนซีน -> เริ่มเปลี่ยนซีนทันที
+        if (!requireButtonPress && other.CompareTag("Player") && !isTransitioning)
+        {
+            isTransitioning = true;
+            StartCoroutine(LoadScene());
+        }
+    }
+
+    // Coroutine หลักสำหรับจัดการ Animation และการโหลดซีน (เหมือนเดิม)
+    IEnumerator LoadScene()
+    {
+        transition.SetTrigger("End");
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene(nextSceneName);
     }
 
     public void QuitGame()
@@ -99,69 +91,6 @@ public class SceneTransition : MonoBehaviour, IInteractable
 
     }
 
-    #endregion
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInRange = true; // ตั้งค่าว่าผู้เล่นอยู่ในระยะ
-
-            if (requireButtonPress)
-            {
-                // แสดง UI และเริ่ม Animation
-                if (interactUIPanel != null)
-                {
-                    interactUIPanel.SetActive(true);
-                    uiAnimationCoroutine = StartCoroutine(AnimateUIPanel());
-                }
-            }
-            else if (!isTransitioning)
-            {
-                // โหมดเดินผ่านแล้วเปลี่ยนซีน (ไม่ต้องกดปุ่ม)
-                isTransitioning = true;
-                Interact();
-            }
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInRange = false; // ตั้งค่าว่าผู้เล่นออกจากระยะ
-
-            // ซ่อน UI และหยุด Animation
-            if (requireButtonPress && interactUIPanel != null)
-            {
-                if (uiAnimationCoroutine != null)
-                {
-                    StopCoroutine(uiAnimationCoroutine);
-                }
-                interactUIPanel.SetActive(false);
-                // รีเซ็ตตำแหน่ง UI กลับไปที่เดิม
-                interactUIPanel.GetComponent<RectTransform>().anchoredPosition = initialUIPosition;
-            }
-        }
-    }
-
-    IEnumerator LoadScene()
-    {
-        transition.SetTrigger("End");
-        yield return new WaitForSeconds(1.5f);
-        SceneManager.LoadScene(nextSceneName);
-    }
-
-    private IEnumerator AnimateUIPanel()
-    {
-        RectTransform uiRect = interactUIPanel.GetComponent<RectTransform>();
-
-        while (true)
-        {
-            // ใช้ฟังก์ชัน Sin เพื่อสร้างการเคลื่อนที่แบบคลื่น (ขึ้น-ลง)
-            float yOffset = Mathf.Sin(Time.time * animationSpeed) * animationAmplitude;
-            uiRect.anchoredPosition = new Vector2(initialUIPosition.x, initialUIPosition.y + yOffset);
-
-            yield return null; // รอเฟรมถัดไป
-        }
-    }
+   
+  
 }

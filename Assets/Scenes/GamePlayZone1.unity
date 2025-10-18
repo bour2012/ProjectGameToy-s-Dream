@@ -5926,7 +5926,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
   allowClimbFromTop: 1
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1611603505}
 --- !u!1 &207124507
 GameObject:
   m_ObjectHideFlags: 0
@@ -8014,11 +8014,6 @@ MonoBehaviour:
   transition: {fileID: 1054159680}
   nextSceneName: GamePlayTown
   requireButtonPress: 1
-  interactKey: 101
-  interactUIPanel: {fileID: 0}
-  interactText: {fileID: 0}
-  animationSpeed: 2
-  animationAmplitude: 10
   interactionPromptText: '[E] to Enter'
 --- !u!1 &282700677
 GameObject:
@@ -15149,7 +15144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
   allowClimbFromTop: 1
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1611603505}
 --- !u!1 &526361292
 GameObject:
   m_ObjectHideFlags: 0
@@ -25569,7 +25564,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
   allowClimbFromTop: 1
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1611603505}
 --- !u!4 &933629735 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4311636104808577214, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
@@ -28797,7 +28792,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
   allowClimbFromTop: 1
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1611603505}
 --- !u!1 &1140464079
 GameObject:
   m_ObjectHideFlags: 0
@@ -32334,7 +32329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
   allowClimbFromTop: 1
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1611603505}
 --- !u!61 &1272527604
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -37000,7 +36995,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
   allowClimbFromTop: 1
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1611603505}
 --- !u!1 &1445212394
 GameObject:
   m_ObjectHideFlags: 0
@@ -52428,7 +52423,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowClimbFromBottom: 1
   allowClimbFromTop: 1
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 1611603505}
 --- !u!1 &1976805882
 GameObject:
   m_ObjectHideFlags: 0
@@ -55258,8 +55253,8 @@ Transform:
   m_GameObject: {fileID: 2100455774}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -186.0159, y: -1.1957, z: 0}
-  m_LocalScale: {x: 3.4967892, y: 4.817146, z: 1}
+  m_LocalPosition: {x: -186.24, y: -2.0697, z: 0}
+  m_LocalScale: {x: 2.637108, y: 2.4767735, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 648294127}
@@ -55694,8 +55689,8 @@ Transform:
   m_GameObject: {fileID: 2124017744}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -135.743, y: -27.6743, z: 0}
-  m_LocalScale: {x: 37.164726, y: 3.9280612, z: 1}
+  m_LocalPosition: {x: -136.9366, y: -27.5951, z: 0}
+  m_LocalScale: {x: 34.7779, y: 4.0866218, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 670139084}
