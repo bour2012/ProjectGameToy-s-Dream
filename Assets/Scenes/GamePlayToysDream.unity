@@ -18367,8 +18367,8 @@ Transform:
   m_GameObject: {fileID: 1272527600}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.8921, y: 1.3818, z: 0}
-  m_LocalScale: {x: 0.14883095, y: 3.8363335, z: 1}
+  m_LocalPosition: {x: -12.8921, y: 1.5892, z: 0}
+  m_LocalScale: {x: 0.14883095, y: 3.9985697, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 951242823}
@@ -26338,11 +26338,6 @@ MonoBehaviour:
   transition: {fileID: 1704016412}
   nextSceneName: GamePlayTown
   requireButtonPress: 0
-  interactKey: 101
-  interactUIPanel: {fileID: 0}
-  interactText: {fileID: 0}
-  animationSpeed: 2
-  animationAmplitude: 10
   interactionPromptText: '[E] to Enter'
 --- !u!4 &1792485711
 Transform:
@@ -28177,7 +28172,6 @@ GameObject:
   - component: {fileID: 1922689635}
   - component: {fileID: 1922689634}
   - component: {fileID: 1922689633}
-  - component: {fileID: 1922689632}
   - component: {fileID: 1922689631}
   - component: {fileID: 1922689630}
   - component: {fileID: 1922689629}
@@ -28501,19 +28495,6 @@ MonoBehaviour:
   isSwinging: 0
   ropeHook: {x: 0, y: 0}
   isClimbing: 0
---- !u!114 &1922689632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1922689623}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a40064efa98db4e82d27e4e2e1ec11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  loseHeight: -5
 --- !u!95 &1922689633
 Animator:
   serializedVersion: 7

@@ -248,6 +248,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //rBody.AddForce(new Vector2(0f, jumpSpeed));
              rBody.linearVelocity = new Vector2(0f, jumpSpeed);
+         
         }
         isJumping = false;
     }
@@ -258,6 +259,7 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetButtonDown("Jump") && groundCheck)
         {
             isJumping = true;
+           
         }
         horizontalInput = Input.GetAxisRaw("Horizontal");
     }
@@ -492,22 +494,29 @@ public class PlayerMovement : MonoBehaviour
     void UpdateAnimations()
     {
         animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
+
+        animator.SetFloat("yVelocity", rBody.linearVelocity.y);
+        bool isFallingOrJumping = !groundCheck && !isClimbing && !isSwinging;
+        animator.SetBool("IsJumping", isFallingOrJumping);
+
+        bool isClimbigOnGround = !groundCheck && isClimbing;
+        animator.SetBool("IsClimbing", isClimbigOnGround);
         //animator.SetBool("IsGrounded", groundCheck);
         animator.SetBool("IsSwinging", isSwinging);
         //playerSprite.flipX = horizontalInput < 0f;
 
-        // เพิ่ม Animation สำหรับปีนบันได (ถ้ามี)
-        if (animator.parameters.Length > 0)
-        {
-            foreach (var param in animator.parameters)
-            {
-                if (param.name == "IsClimbing")
-                {
-                    animator.SetBool("IsClimbing", isClimbing);
-                    break;
-                }
-            }
-        }
+        //// เพิ่ม Animation สำหรับปีนบันได (ถ้ามี)
+        //if (animator.parameters.Length > 0)
+        //{
+        //    foreach (var param in animator.parameters)
+        //    {
+        //        if (param.name == "IsClimbing")
+        //        {
+        //            animator.SetBool("IsClimbing", isClimbing);
+        //            break;
+        //        }
+        //    }
+        //}
     }
 
     public void ResetMovementState()
