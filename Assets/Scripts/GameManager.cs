@@ -555,9 +555,22 @@ public class GameManager : MonoBehaviour
         {
             if (!resetToLastCheckpoint)
             {
-                // ถ้าอยู่ในโหมดปกติ ให้ล้างเซฟเก่าทิ้งเพื่อความแน่นอน
-                ClearCheckpointSaveData();
-                Debug.Log("<color=yellow>[Normal Mode] Cleared saved checkpoint data.</color>");
+
+                foreach (Checkpoint checkpoint in allCheckpoints)
+                {
+                    string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
+                    if (checkpoint != null && checkpoint.GetCheckpointID() == checkpointID)
+                    {
+                        SetActiveCheckpoint(checkpoint);
+                        checkpoint.ActivateCheckpoint();
+                        checkpointIsSet = true;
+                        Debug.Log($"<color=lime>[Debug Mode] Checkpoint loaded from save: {checkpointID}</color>");
+                        break;
+                    }
+                }
+                //// ถ้าอยู่ในโหมดปกติ ให้ล้างเซฟเก่าทิ้งเพื่อความแน่นอน
+                //ClearCheckpointSaveData();
+                //Debug.Log("<color=yellow>[Normal Mode] Cleared saved checkpoint data.</color>");
             }
 
             if (defaultCheckpoint != null)

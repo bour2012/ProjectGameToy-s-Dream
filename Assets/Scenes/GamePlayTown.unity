@@ -955,7 +955,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31a40064efa98db4e82d27e4e2e1ec11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loseHeight: -5
 --- !u!95 &457222220
 Animator:
   serializedVersion: 7
@@ -2159,11 +2158,6 @@ MonoBehaviour:
   transition: {fileID: 1027866019}
   nextSceneName: GamePlayZone1
   requireButtonPress: 1
-  interactKey: 101
-  interactUIPanel: {fileID: 0}
-  interactText: {fileID: 0}
-  animationSpeed: 2
-  animationAmplitude: 10
   interactionPromptText: '[E] to Enter'
 --- !u!61 &1143351600
 BoxCollider2D:
@@ -3309,7 +3303,7 @@ GameObject:
   - component: {fileID: 1787451447}
   - component: {fileID: 1787451446}
   - component: {fileID: 1787451445}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3651,8 +3645,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultCheckpoint: {fileID: 0}
-  showCheckpointDebugInfo: 1
-  enableCheckpointNavigation: 1
+  showCheckpointDebugInfo: 0
+  resetToLastCheckpoint: 0
   currentState: 0
   player: {fileID: 0}
   playerController: {fileID: 0}

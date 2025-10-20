@@ -33,15 +33,15 @@ public class GlueProjectile : MonoBehaviour
     private bool hasStuck = false;               // ป้องกัน trigger ซ้ำ
     private bool hasSlowed = false;              // ป้องกัน slow ซ้ำ
     private bool hasSlowedHard = false;              // ป้องกัน slow ซ้ำ
-    private bool isOnGround = false;             // ตรวจสอบว่าติดพื้นหรือไม่
+ /*   private bool isOnGround = false;*/             // ตรวจสอบว่าติดพื้นหรือไม่
     private bool hasStartedDestroyCountdown = false;
-    private bool hasExtendedDestroyTime = false; // เพิ่ม flag
+    //private bool hasExtendedDestroyTime = false; // เพิ่ม flag
 
     private float currentDestroyDelay;           // เวลาปัจจุบันสำหรับ Destroy
     private Coroutine destroyCoroutine;          // เก็บ Coroutine ปัจจุบัน
 
-    private float slowCooldown = 0.2f;           // interval สำหรับ slow
-    private float lastSlowTime = -1f;
+    //private float slowCooldown = 0.2f;           // interval สำหรับ slow
+    //private float lastSlowTime = -1f;
     private float destroyStartTime;
 
     private bool targetInside = false;   // flag ว่ามี target อยู่ข้างในไหม
@@ -114,14 +114,16 @@ public class GlueProjectile : MonoBehaviour
         }
         else if ((layerMask & targetLayers) != 0)
         {
+            
             StickToTarget(other, timeStickToTarget);
             targetInside = true;
             currentTarget = other;
             Debug.Log($"Enter: {other.name} at {other.transform.position}");
-            if (RemainingLifetime > timeGlueStick)
-            {
-                ApplySlow(other);
-            }
+            //ApplySlow(other);
+            //if (RemainingLifetime > timeGlueStick)
+            //{
+            //    ApplySlow(other);
+            //}
         }
 
         else
@@ -235,7 +237,7 @@ public class GlueProjectile : MonoBehaviour
         PlaySound(impactSound);
 
         transform.SetParent(ground.transform);
-        isOnGround = true;
+        //isOnGround = true;
 
         Debug.Log($"Glue stuck on ground: {ground.name}");
 
@@ -256,7 +258,6 @@ public class GlueProjectile : MonoBehaviour
         PlaySound(impactSound);
 
         int targetLayerMask = 1 << target.gameObject.layer;
-
         int layerMask = 1 << target.gameObject.layer;
         if ((layerMask & excludedTargetLayers) != 0)
         {
@@ -266,12 +267,6 @@ public class GlueProjectile : MonoBehaviour
 
         transform.SetParent(target.transform);
         Debug.Log($"Glue stuck directly to target: {target.name}");
-        //Vector3 stickPoint = target.ClosestPoint(transform.position);
-
-        //// เรียก Coroutine ให้ค่อย ๆ ชะลอ + ดูดเข้าจุด stickPoint
-        //StartCoroutine(SlowDownAndStick(stickPoint));
-
-        // เมื่อจบ coroutine แล้วค่อยเริ่มนับเวลา
         StartDestroyCountdown(destroyDelay);
 
     }
@@ -460,35 +455,7 @@ public class GlueProjectile : MonoBehaviour
         }
 
     }
-    //private IEnumerator DestroyCountdownRoutine(Collider2D target)
-    //{
-    //    //float timer = currentDestroyDelay; // เวลาเริ่มต้น
-    //    while (RemainingLifetime > 0f)
-    //    {
-
-    //        //Debug.Log("Target Slow IS :" + target);
-    //        // ทุก ๆ frame จะเช็คว่าเหลือเวลาเท่าไหร่
-
-    //        //if (targetInside /*&& currentTarget != null*/)
-    //        //{
-    //            if (RemainingLifetime > timeGlueStick)
-    //                ApplySlow(target);
-    //            else if (RemainingLifetime <= timeGlueStick && targetInside )
-    //                ApplySlowHard(target);
-    //        //else
-    //        //    ApplySlowHard(target);
-
-    //        //}
-
-    //        //currentDestroyDelay -= Time.deltaTime; // ลดเวลาไปเรื่อย ๆ
-    //        yield return null; // รอ 1 frame
-    //    }
-
-    //    // เมื่อหมดเวลา -> ทำลาย object
-    //    Destroy(gameObject);
-    //}
-
-
+   
     private void StartDestroyCountdown(float delay)
     {
         if (hasStartedDestroyCountdown) return;

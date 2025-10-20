@@ -10,6 +10,7 @@ TagManager:
   - DistractableDoll
   - FakeDoll
   - EnemyHead
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX

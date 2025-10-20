@@ -57,12 +57,12 @@ public class PlayerDeathSystem : MonoBehaviour
     // Private variables
     private PlayerMovement playerMovement;
     private Rigidbody2D playerRigidbody;
-    private Collider2D playerCollider;
+    //private Collider2D playerCollider;
    private GameManager checkpointManager;
     private PlayerController playerController;
     private GameState previousGameState;
     private bool isDead = false;
-    private bool wasPlayerDeadLastFrame = false;
+    //private bool wasPlayerDeadLastFrame = false;
     private Vector3 originalScale;
     private Color originalColor;
 
@@ -71,7 +71,7 @@ public class PlayerDeathSystem : MonoBehaviour
         // หา Components
         playerMovement = GetComponent<PlayerMovement>();
         playerRigidbody = GetComponent<Rigidbody2D>();
-        playerCollider = GetComponent<Collider2D>();
+        //playerCollider = GetComponent<Collider2D>();
         playerController = GetComponent<PlayerController>();
 
         // หา CheckpointManager

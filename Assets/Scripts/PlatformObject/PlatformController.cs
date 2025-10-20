@@ -1,29 +1,35 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 public class PlatformController : MonoBehaviour
 {
 
-    public Animator platformAnimator; // µ—«§«∫§ÿ¡Õπ‘‡¡™—π¢Õß·æ≈µøÕ√Ï¡
-    public string openAnimationName = "PlatformOpen"; // ™◊ËÕÕπ‘‡¡™—π‡¡◊ËÕ‡ª‘¥
-    public string closeAnimationName = "PlatformClose"; // ™◊ËÕÕπ‘‡¡™—π‡¡◊ËÕª‘¥
+    public Animator platformAnimator; // ‡∏ï‡∏±‡∏ß‡∏Ñ‡∏ß‡∏ö‡∏Ñ‡∏∏‡∏°‡∏≠‡∏ô‡∏¥‡πÄ‡∏°‡∏ä‡∏±‡∏ô‡∏Ç‡∏≠‡∏á‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°
+    public string openAnimationName = "PlatformOpen"; // ‡∏ä‡∏∑‡πà‡∏≠‡∏≠‡∏ô‡∏¥‡πÄ‡∏°‡∏ä‡∏±‡∏ô‡πÄ‡∏°‡∏∑‡πà‡∏≠‡πÄ‡∏õ‡∏¥‡∏î
+    public string closeAnimationName = "PlatformClose"; // ‡∏ä‡∏∑‡πà‡∏≠‡∏≠‡∏ô‡∏¥‡πÄ‡∏°‡∏ä‡∏±‡∏ô‡πÄ‡∏°‡∏∑‡πà‡∏≠‡∏õ‡∏¥‡∏î
     public string idleCloseAnimationName = "PlatformIdleClose";
     public string idleOpenAnimationName = "PlatformIdleOpen";
-    private bool isActive = false; //  ∂“π–¢Õß·æ≈µøÕ√Ï¡ (‡ª‘¥/ª‘¥)
+    private bool isActive = false; // ‡∏™‡∏ñ‡∏≤‡∏ô‡∏∞‡∏Ç‡∏≠‡∏á‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏° (‡πÄ‡∏õ‡∏¥‡∏î/‡∏õ‡∏¥‡∏î)
 
 
-    public Transform platform; // µ—«·æ≈µøÕ√Ï¡∑’ËµÈÕß°“√§«∫§ÿ¡
-    public Vector3 pivotPosition; // µ”·ÀπËß¢Õß®ÿ¥»Ÿπ¬Ï°≈“ß ”À√—∫°“√À¡ÿπ
-    public Vector3 upPosition; // µ”·ÀπËß‡¡◊ËÕ‡ª‘¥
-    public Vector3 downPosition; // µ”·ÀπËß‡¡◊ËÕª‘¥
-    public float speed = 2f; // §«“¡‡√Á«„π°“√‡§≈◊ËÕπ∑’Ë
-    public float openRotationAngle = 0f; // Õß»“∑’ËµÈÕß°“√À¡ÿπ‡¡◊ËÕ‡ª‘¥
-    public float rotationSpeed = 50f; // §«“¡‡√Á«„π°“√À¡ÿπ (Õß»“µËÕ«‘π“∑’)
-    public float startRotation = 0f; // Õß»“ª—®®ÿ∫—π¢Õß·æ≈µøÕ√Ï¡
-    public bool isRotationMode = false; // µ—«‡≈◊Õ°: true = À¡ÿπ, false = ¬È“¬µ”·ÀπËß
-    public bool isAnimMode = false; // µ—«‡≈◊Õ°: true = À¡ÿπ, false = ¬È“¬µ”·ÀπËß
+    public Transform platform; // ‡∏ï‡∏±‡∏ß‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°‡∏ó‡∏µ‡πà‡∏ï‡πâ‡∏≠‡∏á‡∏Å‡∏≤‡∏£‡∏Ñ‡∏ß‡∏ö‡∏Ñ‡∏∏‡∏°
+    public Vector3 pivotPosition; // ‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á‡∏Ç‡∏≠‡∏á‡∏à‡∏∏‡∏î‡∏®‡∏π‡∏ô‡∏¢‡πå‡∏Å‡∏•‡∏≤‡∏á‡∏™‡∏≥‡∏´‡∏£‡∏±‡∏ö‡∏Å‡∏≤‡∏£‡∏´‡∏°‡∏∏‡∏ô
+    public Vector3 upPosition; // ‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á‡πÄ‡∏°‡∏∑‡πà‡∏≠‡πÄ‡∏õ‡∏¥‡∏î
+    public Vector3 downPosition; // ‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á‡πÄ‡∏°‡∏∑‡πà‡∏≠‡∏õ‡∏¥‡∏î
+    public float speed = 2f; // ‡∏Ñ‡∏ß‡∏≤‡∏°‡πÄ‡∏£‡πá‡∏ß‡πÉ‡∏ô‡∏Å‡∏≤‡∏£‡πÄ‡∏Ñ‡∏•‡∏∑‡πà‡∏≠‡∏ô‡∏ó‡∏µ‡πà
+    public float openRotationAngle = 0f; // ‡∏≠‡∏á‡∏®‡∏≤‡∏ó‡∏µ‡πà‡∏ï‡πâ‡∏≠‡∏á‡∏Å‡∏≤‡∏£‡∏´‡∏°‡∏∏‡∏ô‡πÄ‡∏°‡∏∑‡πà‡∏≠‡πÄ‡∏õ‡∏¥‡∏î
+    public float rotationSpeed = 50f; // ‡∏Ñ‡∏ß‡∏≤‡∏°‡πÄ‡∏£‡πá‡∏ß‡πÉ‡∏ô‡∏Å‡∏≤‡∏£‡∏´‡∏°‡∏∏‡∏ô (‡∏≠‡∏á‡∏®‡∏≤‡∏ï‡πà‡∏≠‡∏ß‡∏¥‡∏ô‡∏≤‡∏ó‡∏µ)
+    public float startRotation = 0f; // ‡∏≠‡∏á‡∏®‡∏≤‡∏õ‡∏±‡∏à‡∏à‡∏∏‡∏ö‡∏±‡∏ô‡∏Ç‡∏≠‡∏á‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°
+    public bool isRotationMode = false; // ‡∏ï‡∏±‡∏ß‡πÄ‡∏•‡∏∑‡∏≠‡∏Å: true = ‡∏´‡∏°‡∏∏‡∏ô, false = ‡∏¢‡πâ‡∏≤‡∏¢‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á
+    public bool isAnimMode = false; // ‡∏ï‡∏±‡∏ß‡πÄ‡∏•‡∏∑‡∏≠‡∏Å: true = ‡∏´‡∏°‡∏∏‡∏ô, false = ‡∏¢‡πâ‡∏≤‡∏¢‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á
+
+    [Header("Lock Settings")]
+    public bool isLocked = false;
+    public string requiredKeyID;
+
+
 
     //private bool isActive = false;
-    private float currentRotation = 0f; // Õß»“ª—®®ÿ∫—π¢Õß·æ≈µøÕ√Ï¡
+    private float currentRotation = 0f; // ‡∏≠‡∏á‡∏®‡∏≤‡∏õ‡∏±‡∏à‡∏à‡∏∏‡∏ö‡∏±‡∏ô‡∏Ç‡∏≠‡∏á‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°
 
     void Start()
     {
@@ -34,42 +40,60 @@ public class PlatformController : MonoBehaviour
         }
         else
         {
-            // ∂È“‰¡Ë‰¥Èµ—Èß§Ë“ downPosition „π Inspector „ÀÈ„™Èµ”·ÀπËßª—®®ÿ∫—π
+            // ‡∏ñ‡πâ‡∏≤‡πÑ‡∏°‡πà‡πÑ‡∏î‡πâ‡∏ï‡∏±‡πâ‡∏á‡∏Ñ‡πà‡∏≤ downPosition ‡πÉ‡∏ô Inspector ‡πÉ‡∏´‡πâ‡πÉ‡∏ä‡πâ‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á‡∏õ‡∏±‡∏à‡∏à‡∏∏‡∏ö‡∏±‡∏ô
             if (Mathf.Approximately(downPosition.x, 0f) && Mathf.Approximately(downPosition.y, 0f) && Mathf.Approximately(downPosition.z, 0f))
             {
                 downPosition = platform.position;
             }
         }
     }
-    public void Toggle(bool state)
+    private void OnEnable()
     {
-        //if (isActive == state) return; // ∂È“ ∂“π–‰¡Ë‡ª≈’Ë¬π·ª≈ß ‰¡ËµÈÕß∑”Õ–‰√
+        ItemManager.OnKeyCollected += OnKeyCollectedHandler;
+    }
 
-        isActive = state;
+    private void OnDisable()
+    {
+        ItemManager.OnKeyCollected -= OnKeyCollectedHandler;
+    }
 
-        if (isAnimMode)
+    private void OnKeyCollectedHandler(string collectedKeyID)
+    {
+        if (isLocked && collectedKeyID == requiredKeyID)
         {
-            if (platformAnimator != null)
-            {
-                if (isActive)
-                {
-                    // ‡≈ËπÕπ‘‡¡™—π‡ª‘¥
-                    platformAnimator.Play(openAnimationName);
-                }
-                else
-                {
-                    // ‡≈ËπÕπ‘‡¡™—πª‘¥
-                    platformAnimator.Play(closeAnimationName);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Platform Animator is not assigned!");
-            }
+            UnlockAndActivate();
         }
     }
 
-    //    }
+    private void UnlockAndActivate()
+    {
+        isLocked = false;
+        Debug.Log($"Platform '{gameObject.name}' was automatically unlocked by key: {requiredKeyID}");
+        Toggle(true);
+    }
+
+    public void Toggle(bool state)
+    {
+        if (isLocked)
+        {
+            Debug.Log($"Platform '{gameObject.name}' is locked! Need key: {requiredKeyID}");
+            return;
+        }
+
+        isActive = state;
+
+        if (isAnimMode && platformAnimator != null)
+        {
+            if (isActive)
+            {
+                platformAnimator.Play(openAnimationName);
+            }
+            else
+            {
+                platformAnimator.Play(closeAnimationName);
+            }
+        }
+    }
 
 
     public void PlayIdleOpenAnimation()
@@ -97,32 +121,32 @@ public class PlatformController : MonoBehaviour
     {
         if (isRotationMode)
         {
-            // À¡ÿπ·æ≈µøÕ√Ï¡
+            // ‡∏´‡∏°‡∏∏‡∏ô‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°
             RotatePlatform();
         }
-        else if(!isAnimMode)
+        else if (!isAnimMode)
         {
-            // ¬È“¬µ”·ÀπËß·æ≈µøÕ√Ï¡
+            // ‡∏¢‡πâ‡∏≤‡∏¢‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°
             MovePlatform();
         }
     }
 
     private void MovePlatform()
     {
-        // ‡§≈◊ËÕπ∑’Ë·æ≈µøÕ√Ï¡‰ª¬—ßµ”·ÀπËß‡ªÈ“À¡“¬
+        // ‡πÄ‡∏Ñ‡∏•‡∏∑‡πà‡∏≠‡∏ô‡∏ó‡∏µ‡πà‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°‡πÑ‡∏õ‡∏¢‡∏±‡∏á‡∏ï‡∏≥‡πÅ‡∏´‡∏ô‡πà‡∏á‡πÄ‡∏õ‡πâ‡∏≤‡∏´‡∏°‡∏≤‡∏¢
         Vector3 target = isActive ? upPosition : downPosition;
         platform.position = Vector3.MoveTowards(platform.position, target, speed * Time.deltaTime);
     }
 
     private void RotatePlatform()
     {
-        // §”π«≥Õß»“‡ªÈ“À¡“¬
+        // ‡∏Ñ‡∏≥‡∏ô‡∏ß‡∏ì‡∏≠‡∏á‡∏®‡∏≤‡πÄ‡∏õ‡πâ‡∏≤‡∏´‡∏°‡∏≤‡∏¢
         float targetRotation = isActive ? openRotationAngle : startRotation;
 
-        // À¡ÿπ·æ≈µøÕ√Ï¡∑’≈–πÈÕ¬®π∂÷ßÕß»“‡ªÈ“À¡“¬
+        // ‡∏´‡∏°‡∏∏‡∏ô‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°‡∏ó‡∏µ‡∏•‡∏∞‡∏ô‡πâ‡∏≠‡∏¢‡∏à‡∏ô‡∏ñ‡∏∂‡∏á‡∏≠‡∏á‡∏®‡∏≤‡πÄ‡∏õ‡πâ‡∏≤‡∏´‡∏°‡∏≤‡∏¢
         currentRotation = Mathf.MoveTowards(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-        // À¡ÿπ·æ≈µøÕ√Ï¡√Õ∫®ÿ¥»Ÿπ¬Ï°≈“ß∑’Ë°”Àπ¥ (pivotPosition)
+        // ‡∏´‡∏°‡∏∏‡∏ô‡πÅ‡∏û‡∏•‡∏ï‡∏ü‡∏≠‡∏£‡πå‡∏°‡∏£‡∏≠‡∏ö‡∏à‡∏∏‡∏î‡∏®‡∏π‡∏ô‡∏¢‡πå‡∏Å‡∏•‡∏≤‡∏á‡∏ó‡∏µ‡πà‡∏Å‡∏≥‡∏´‡∏ô‡∏î (pivotPosition)
         platform.RotateAround(pivotPosition, Vector3.forward, currentRotation - platform.eulerAngles.z);
     }
 }

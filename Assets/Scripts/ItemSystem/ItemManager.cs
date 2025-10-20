@@ -1,17 +1,17 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 
 // ========================================
-// Item Manager - �Ѵ�������������
+// Item Manager - จัดการไอเทมทั้งหมด
 // ========================================
 
 public class ItemManager : MonoBehaviour
 {
     [Header("Item Counts")]
     [SerializeField] private int glueCount = 3;
-    [SerializeField] private int threadCount = 5; // ���������͡�������ѹ
+    [SerializeField] private int threadCount = 5; // ด้ายและเชือกใช้ร่วมกัน
 
     [Header("UI References")]
     public TextMeshProUGUI glueCountText;
@@ -31,10 +31,13 @@ public class ItemManager : MonoBehaviour
 
     private Dictionary<ItemType, int> itemCounts = new Dictionary<ItemType, int>();
 
+    private HashSet<string> collectedKeyIDs = new HashSet<string>();
+    public static System.Action<string> OnKeyCollected;
     public enum ItemType
     {
         Glue,
-        Thread // �������ѹ�����ҧ��������˹��͡
+        Thread, // ใช้ร่วมกันระหว่างซ่อมและโหนเชือก
+        
     }
 
     void Awake()
@@ -68,12 +71,54 @@ public class ItemManager : MonoBehaviour
             Debug.Log($"ItemManager initialized - Glue: {glueCount}, Thread: {threadCount}");
     }
 
+    #region Key System
 
+    /// <summary>
+    /// เพิ่มกุญแจดอกใหม่เข้าไปในพวงกุญแจ
+    /// </summary>
+    public void AddKey(string keyID)
+    {
+        if (!string.IsNullOrEmpty(keyID) && !collectedKeyIDs.Contains(keyID))
+        {
+            collectedKeyIDs.Add(keyID);
+            Debug.Log($"<color=yellow>Key Collected: {keyID}</color>");
+
+           
+            OnKeyCollected?.Invoke(keyID);
+           
+        }
+    }
+
+    /// <summary>
+    /// ตรวจสอบว่าผู้เล่นมีกุญแจดอกที่ต้องการหรือไม่
+    /// </summary>
+    public bool HasKey(string keyID)
+    {
+        if (string.IsNullOrEmpty(keyID)) return false;
+        return collectedKeyIDs.Contains(keyID);
+    }
+
+    /// <summary>
+    /// ใช้กุญแจ (แต่ยังไม่ลบออกจากพวง เว้นแต่คุณต้องการ)
+    /// </summary>
+    public bool UseKey(string keyID)
+    {
+        if (HasKey(keyID))
+        {
+            Debug.Log($"Key Used: {keyID}");
+            // หมายเหตุ: โดยทั่วไปเราจะไม่ลบกุญแจหลังจากใช้
+            // collectedKeyIDs.Remove(keyID); // <-- เปิดใช้อันนี้ถ้าอยากให้กุญแจหายไปหลังใช้
+            return true;
+        }
+        return false;
+    }
+
+    #endregion
 
     #region Item Operations
 
     /// <summary>
-    /// ��Ǩ�ͺ��������������������
+    /// ตรวจสอบว่ามีไอเทมพอใช้หรือไม่
     /// </summary>
     public bool HasItem(ItemType itemType, int amount = 1)
     {
@@ -81,7 +126,7 @@ public class ItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ������ (Ŵ�ӹǹ)
+    /// ใช้ไอเทม (ลดจำนวน)
     /// </summary>
     public bool UseItem(ItemType itemType, int amount = 1)
     {
@@ -94,7 +139,7 @@ public class ItemManager : MonoBehaviour
 
         itemCounts[itemType] -= amount;
 
-        // ���˵ء�ó�
+        // แจ้งเหตุการณ์
         OnItemUsed?.Invoke(itemType);
         OnItemCountChanged?.Invoke(itemType, itemCounts[itemType]);
 
@@ -107,7 +152,7 @@ public class ItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ������ (�����ӹǹ)
+    /// เก็บไอเทม (เพิ่มจำนวน)
     /// </summary>
     public void CollectItem(ItemType itemType, int amount = 1)
     {
@@ -116,7 +161,7 @@ public class ItemManager : MonoBehaviour
 
         itemCounts[itemType] += amount;
 
-        // ���˵ء�ó�
+        // แจ้งเหตุการณ์
         OnItemCollected?.Invoke(itemType);
         OnItemCountChanged?.Invoke(itemType, itemCounts[itemType]);
 
@@ -127,7 +172,7 @@ public class ItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// �٨ӹǹ���������
+    /// ดูจำนวนไอเทมที่มี
     /// </summary>
     public int GetItemCount(ItemType itemType)
     {
@@ -135,7 +180,7 @@ public class ItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// �絨ӹǹ���� (����Ѻ Debug)
+    /// เซ็ตจำนวนไอเทม (สำหรับ Debug)
     /// </summary>
     public void SetItemCount(ItemType itemType, int count)
     {
@@ -165,7 +210,7 @@ public class ItemManager : MonoBehaviour
         if (threadCountText != null)
             threadCountText.text = GetItemCount(ItemType.Thread).ToString();
 
-        // �ʴ�/��͹ Panel ������������
+        // แสดง/ซ่อน Panel ตามการมีไอเทม
         //if (itemDisplayPanel != null)
         //{
         //    bool hasAnyItems = GetItemCount(ItemType.Glue) > 0 || GetItemCount(ItemType.Thread) > 0;

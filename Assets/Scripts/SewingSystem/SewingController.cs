@@ -26,7 +26,7 @@ public class SewingController : MonoBehaviour
 
     private List<Vector3> playerPath = new List<Vector3>();
     private bool isSewing = false;
-    private bool isStarted = false;
+    //private bool isStarted = false;
     private Vector3 lastMousePosition;
     private int currentWaypointIndex = 0;
 
@@ -154,7 +154,7 @@ public class SewingController : MonoBehaviour
     void StartSewing(Vector3 startPosition)
     {
         isSewing = true;
-        isStarted = true;
+        //isStarted = true;
         playerPath.Clear();
         currentWaypointIndex = 0;
 
@@ -298,7 +298,7 @@ public class SewingController : MonoBehaviour
         playerPath.Clear();
         playerLineRenderer.positionCount = 0;
         isSewing = false;
-        isStarted = false;
+        //isStarted = false;
         currentWaypointIndex = 0;
 
         // Reset target path ถ้ามี

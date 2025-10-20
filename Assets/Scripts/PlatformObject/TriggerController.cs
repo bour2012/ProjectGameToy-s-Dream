@@ -17,7 +17,7 @@ public class TriggerController : MonoBehaviour
     private bool trigger = true;
 
     public float destroyDelay = 5f;
-    private bool isDestroying = false; // ตรวจสอบว่ากำลังรอทำลายหรือไม่
+    //private bool isDestroying = false; // ตรวจสอบว่ากำลังรอทำลายหรือไม่
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))

@@ -44,14 +44,14 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     }
 
     #region Slowing Glue Effect
-    public void ApplySlow(float slowAmount, float duration)
+    public virtual void ApplySlow(float slowAmount, float duration)
     {
         onSlowApplied.Invoke();
         if (slowRoutine != null) StopCoroutine(slowRoutine);
         slowRoutine = StartCoroutine(SlowRoutine(slowAmount, duration));
     }
 
-    public void ApplyGradualSlow(float targetSlowAmount, float duration, float lerpTime)
+    public virtual void ApplyGradualSlow(float targetSlowAmount, float duration, float lerpTime)
     {
         onSlowApplied.Invoke();
         if (slowRoutine != null) StopCoroutine(slowRoutine);
