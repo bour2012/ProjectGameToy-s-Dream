@@ -72,6 +72,12 @@ public class SceneTransition : MonoBehaviour, IInteractable
     // Coroutine หลักสำหรับจัดการ Animation และการโหลดซีน (เหมือนเดิม)
     IEnumerator LoadScene()
     {
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ClearCheckpointSaveData();
+        }
+
         transition.SetTrigger("End");
         yield return new WaitForSeconds(1.5f);
         SceneManager.LoadScene(nextSceneName);

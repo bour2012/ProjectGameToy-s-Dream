@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
+//using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 public enum GameState
 {
@@ -556,6 +556,43 @@ public class GameManager : MonoBehaviour
             if (!resetToLastCheckpoint)
             {
 
+
+                //// ค้นหา Checkpoint แรกในฉากใหม่
+                //if (allCheckpoints != null && allCheckpoints.Length > 0)
+                //{
+                //    // เรียงลำดับ Checkpoints ตาม ID
+                //    System.Array.Sort(allCheckpoints, (a, b) =>
+                //        string.Compare(a.GetCheckpointID(), b.GetCheckpointID()));
+
+                //    // ใช้ Checkpoint แรก (ID น้อยที่สุด) เป็นจุดเริ่มต้น
+                //    Checkpoint firstCheckpoint = allCheckpoints[0];
+                //    SetActiveCheckpoint(firstCheckpoint);
+                //    firstCheckpoint.ActivateCheckpoint();
+
+                //    Debug.Log($"<color=yellow>Starting at first checkpoint: {firstCheckpoint.GetCheckpointID()}</color>");
+
+                //    // ย้ายผู้เล่นไปยังตำแหน่ง Checkpoint แรก
+                //    if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
+                //    if (player != null)
+                //    {
+                //        player.position = firstCheckpoint.GetSpawnPosition();
+                //        if (playerDeath != null)
+                //        {
+                //            playerDeath.Respawn(firstCheckpoint.GetSpawnPosition());
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    Debug.LogWarning("No checkpoints found in the scene!");
+                //    // ถ้าไม่มี Checkpoint ให้ใช้ตำแหน่งเริ่มต้นของ Player
+                //    if (player != null)
+                //    {
+                //        player.position = defaultSpawnPosition;
+                //    }
+                //}
+
+
                 foreach (Checkpoint checkpoint in allCheckpoints)
                 {
                     string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
@@ -568,6 +605,10 @@ public class GameManager : MonoBehaviour
                         break;
                     }
                 }
+
+
+
+
                 //// ถ้าอยู่ในโหมดปกติ ให้ล้างเซฟเก่าทิ้งเพื่อความแน่นอน
                 //ClearCheckpointSaveData();
                 //Debug.Log("<color=yellow>[Normal Mode] Cleared saved checkpoint data.</color>");

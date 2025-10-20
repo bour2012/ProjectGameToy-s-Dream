@@ -31059,8 +31059,8 @@ MonoBehaviour:
   triggerOnce: 1
   freezePlayerOnStart: 1
   rememberAcrossScenes: 0
-  useDelay: 0
-  delay: 1
+  useDelay: 1
+  delay: 0.5
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   onDialogComplete:
