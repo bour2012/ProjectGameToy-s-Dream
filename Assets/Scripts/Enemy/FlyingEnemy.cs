@@ -35,12 +35,11 @@ public class FlyingEnemy : Enemy
     [Tooltip("(Optional) ไอเทมที่จะดรอปเมื่อตาย")]
     public GameObject dropItemPrefab;
 
-    private Coroutine groundedCoroutine;
 
     [Header("Debug")]
     public bool showDebugGizmos = true;
 
-    private Rigidbody2D rb;
+  
     private Vector2 flightTargetPosition;
     private float attackTimer;
     private bool isAttacking = false;

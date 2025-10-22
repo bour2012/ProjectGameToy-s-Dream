@@ -11,6 +11,19 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     [Header("Head Collider")]
     public Collider2D headCollider; // Collider สำหรับหัวของศัตรู
 
+    [Header("Environment Checks")]
+    [Tooltip("Layer ของพื้น (ต้องตั้งค่าในคลาสลูกด้วย)")]
+    [SerializeField] protected LayerMask groundLayer;
+    [Tooltip("ระยะยิง Raycast ลงพื้นเพื่อตรวจจับ")]
+    [SerializeField] protected float groundCheckDistance = 1f;
+    [Tooltip("ระยะยิง Raycast ด้านข้างเพื่อตรวจจับกำแพง")]
+    [SerializeField] protected float wallCheckDistance = 0.5f;
+    protected Animator animator;
+    [Header("Effects")]
+    [Tooltip("Prefab ของ Particle Effect ที่จะเล่นตอนตาย")]
+    public GameObject deathEffectPrefab;
+    [Tooltip("ระยะเวลาที่เอฟเฟกต์จะเล่นก่อนที่ Object จะถูกทำลาย (วินาที)")]
+    public float deathDuration = 2f;
     [Header("Basic Stats")]
     public string enemyName;
     public float maxHealth = 100f;
@@ -24,12 +37,19 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected bool isChasing;
     private float originalSpeed;
     private Coroutine slowRoutine;
-
+    protected Rigidbody2D rb;
+    protected bool isGrounded;
     protected GameObject currentTarget;
+    protected SpriteRenderer spriteRenderer;
+
 
     protected virtual void Awake()
     {
         originalSpeed = moveSpeed;
+        rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        animator = GetComponent<Animator>();
     }
 
     protected virtual void Start()
@@ -40,8 +60,46 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
     protected virtual void Update()
     {
-        if (!isChasing) Patrol();
+        isGrounded = IsGrounded();
+
+        if (!isChasing)
+        {
+            if (isGrounded)
+            {
+                Patrol();
+            }
+            else
+            {
+                StopHorizontalMovement();
+            }
+        }
     }
+
+    protected virtual void StopHorizontalMovement()
+    {
+        if (rb != null && rb.bodyType == RigidbodyType2D.Dynamic)
+        {
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+        }
+    }
+    protected virtual bool IsGrounded()
+    {
+        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
+    
+#if UNITY_EDITOR
+        Debug.DrawRay(transform.position, Vector2.down * groundCheckDistance, groundHit.collider ? Color.magenta : Color.gray);
+#endif
+
+        return groundHit.collider != null;
+    }
+    protected virtual void FlipSprite(float moveDirection)
+    {
+        if (spriteRenderer != null && moveDirection != 0)
+        {
+            spriteRenderer.flipX = (moveDirection > 0);
+        }
+    }
+
 
     #region Slowing Glue Effect
     public virtual void ApplySlow(float slowAmount, float duration)
@@ -135,6 +193,21 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected virtual void Die()
     {
         Debug.Log($"{enemyName} has been defeated!");
+        this.enabled = false;
+        foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
+        {
+            col.enabled = false;
+        }
+        if (TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+        }
+        if (deathEffectPrefab != null)
+        {
+            Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        }
+     
         Destroy(gameObject);
     }
 
@@ -162,9 +235,10 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected virtual void Chase(GameObject target)
     {
         float directionX = target.transform.position.x - transform.position.x;
-        directionX = Mathf.Sign(directionX); // +1 หรือ -1
-
-        transform.position += Vector3.right * directionX * moveSpeed * Time.deltaTime;
+        float moveDirection = Mathf.Sign(directionX);
+        FlipSprite(moveDirection);
+        
+        transform.position += Vector3.right * moveDirection * moveSpeed * Time.deltaTime;
     }
 
     protected GameObject DetectTarget()
@@ -218,6 +292,8 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         //    }
         //}
     }
+
+
 
     public void OnStomped(PlayerMovement player)
     {
