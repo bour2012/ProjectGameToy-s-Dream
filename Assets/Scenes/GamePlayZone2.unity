@@ -495,7 +495,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4335615913772803810, guid: 47208897213b5794abe033c544cf5203, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1366,6 +1366,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1611603494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &846017983
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4019485406932222969, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_Name
+      value: Rope
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -11.473136
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.900219
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 893781a0ef9046649940843985601701, type: 3}
 --- !u!1 &1054159678
 GameObject:
   m_ObjectHideFlags: 0
@@ -1385,7 +1442,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1054159679
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3275,12 +3332,12 @@ GameObject:
   - component: {fileID: 1611603503}
   - component: {fileID: 1611603502}
   - component: {fileID: 1611603501}
-  - component: {fileID: 1611603500}
   - component: {fileID: 1611603499}
   - component: {fileID: 1611603498}
   - component: {fileID: 1611603497}
   - component: {fileID: 1611603496}
   - component: {fileID: 1611603511}
+  - component: {fileID: 1611603500}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -3618,6 +3675,8 @@ MonoBehaviour:
   ropeMaxCastDistance: 4
   ropeStandardDistance: 1.8
   respectGameManagerState: 1
+  shootAnimationDuration: 0.5
+  shootRopeTriggerName: ShootRope
 --- !u!232 &1611603504
 DistanceJoint2D:
   m_ObjectHideFlags: 0
@@ -3674,8 +3733,8 @@ MonoBehaviour:
   groundLayerNumber: 9
   wallLayerNumber: 11
   firePoint: {fileID: 1893078957}
-  firePointOffsetRight: {x: 2, y: 1}
-  firePointOffsetLeft: {x: -2, y: 1}
+  firePointOffsetRight: {x: 1.43, y: -0.05}
+  firePointOffsetLeft: {x: -1.43, y: -0.05}
   respawnDialogDelay: 1
   isSwinging: 0
   ropeHook: {x: 0, y: 0}
@@ -3815,7 +3874,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 6.4, y: 6.421875}
+  m_Size: {x: 6.401563, y: 6.4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -4811,3 +4870,4 @@ SceneRoots:
   - {fileID: 2074980687}
   - {fileID: 1923187891}
   - {fileID: 188145755}
+  - {fileID: 846017983}

@@ -47,11 +47,12 @@ public class GlueShooting : MonoBehaviour
     private Camera mainCamera;
     private float scrollAccumulator = 0f;
     private float scrollThreshold = 0.2f;
-
+    private Animator animator;
     void Awake()
     {
         ropeScript = GetComponent<Rope>();
         mainCamera = Camera.main;
+        animator = GetComponentInParent<Animator>();
         if (trajectoryLine != null)
         {
             trajectoryLine.enabled = false;
@@ -121,6 +122,18 @@ public class GlueShooting : MonoBehaviour
             {
                 SwitchItem(false);
                 scrollAccumulator = 0f;
+            }
+
+            if (scrollAccumulator >= scrollThreshold || scrollAccumulator <= -scrollThreshold)
+            {
+                SwitchItem(scrollAccumulator >= scrollThreshold);
+                scrollAccumulator = 0f;
+
+                if (isAiming)
+                {
+                    HideAiming();
+                }
+             
             }
         }
     }
@@ -212,6 +225,10 @@ public class GlueShooting : MonoBehaviour
     private void StartAiming()
     {
         isAiming = true;
+        if (animator != null)
+        {
+            animator.SetBool("IsUseGlue", true);
+        }
         mouseWorldPos = GetMouseWorldPosition();
 
         if (aimingCrosshair != null)
@@ -226,6 +243,10 @@ public class GlueShooting : MonoBehaviour
     private void HideAiming()
     {
         isAiming = false;
+        if (animator != null)
+        {
+            animator.SetBool("IsUseGlue", false);
+        }
         if (trajectoryLine != null) trajectoryLine.enabled = false;
         if (aimingCrosshair != null) aimingCrosshair.SetActive(false);
         if (glueAimIndicator != null) glueAimIndicator.SetActive(false);
