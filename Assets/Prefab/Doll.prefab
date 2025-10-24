@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6746782298268455399}
   - component: {fileID: 5923288655793180269}
   - component: {fileID: 341668253494494649}
+  - component: {fileID: 6236602969828659465}
   m_Layer: 9
   m_Name: Doll
   m_TagString: Pushable
@@ -216,3 +217,18 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 2.9699998
+--- !u!114 &6236602969828659465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5425856077105691806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 598501a175bc35445a683e670c5ac6d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onPlayerStartPush:
+    m_PersistentCalls:
+      m_Calls: []

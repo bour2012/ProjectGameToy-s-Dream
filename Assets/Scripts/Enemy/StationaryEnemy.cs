@@ -5,9 +5,6 @@ public class StationaryEnemy : Enemy
     public LayerMask fakeDollLayer;
     public float possessRange = 0.5f;
 
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float wallCheckDistance = 0.5f;
-    [SerializeField] private float groundCheckDistance = 1f;
     public float chaseCooldown = 2f;
 
     private float chaseTimer;
@@ -88,23 +85,7 @@ public class StationaryEnemy : Enemy
         }
     }
 
-    //private bool HasLineOfSight(GameObject target)
-    //{
-    //    Vector2 direction = (target.transform.position - transform.position).normalized;
-    //    float distance = Vector2.Distance(transform.position, target.transform.position);
-
-    //    // Raycast ตรวจหาสิ่งกีดขวางระหว่าง Enemy และ Player
-    //    RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
-
-    //    if (hit.collider != null)
-    //    {
-    //        // เจอกำแพงหรือสิ่งกีดขวาง → มองไม่เห็น Player
-    //        return false;
-    //    }
-
-    //    return true; // ไม่มีสิ่งกีดขวาง → มองเห็น
-    //}
-
+ 
     protected override void Patrol()
     {
         Vector3 direction = (initialPosition - transform.position).normalized;
@@ -138,41 +119,9 @@ public class StationaryEnemy : Enemy
         }
 
 
-        //// ตรวจจับสิ่งกีดขวางข้างหน้า
-        //RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, wallCheckDistance, obstacleLayers);
-
-        //if (hit.collider == null)
-        //{
-        //    // ไม่มีสิ่งกีดขวาง เดินกลับไปที่เดิม
-        //    transform.position = Vector3.MoveTowards(transform.position, initialPosition, step);
-        //    isReturningBlocked = false;
-        //}
-        //else
-        //{
-        //    // เจอกำแพงหรือสิ่งกีดขวาง ให้หยุดอยู่กับที่
-        //    isReturningBlocked = true;
-        //    return;
-        //}
-
-        //// ถึงตำแหน่งเดิมแล้ว ให้ยืนนิ่ง
-        //if (Vector3.Distance(transform.position, initialPosition) <= 0.01f)
-        //{
-        //    transform.position = initialPosition;
-        //    isReturningBlocked = false;
-        //}
+     
     }
 
-    //private void MergeWithFakeDoll(GameObject fakeDoll)
-    //{
-    //    Debug.Log($"{enemyName} merged with {fakeDoll.name}!");
-    //    Destroy(fakeDoll);
-    //    gameObject.SetActive(false);
-    //}
-
-    //private bool IsInLayerMask(GameObject obj, LayerMask layerMask)
-    //{
-    //    return (layerMask.value & (1 << obj.layer)) > 0;
-    //}
 
 
 

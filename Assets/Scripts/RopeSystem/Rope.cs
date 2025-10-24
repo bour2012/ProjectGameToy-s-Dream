@@ -39,6 +39,11 @@ public class Rope : MonoBehaviour
 
     // Integration with GlueShooting
     private GlueShooting glueShootingScript;
+    [Tooltip("ระยะเวลาที่ Animation 'ยิงเชือก' เล่นก่อนที่เชือกจะพุ่งออกไป")]
+    public float shootAnimationDuration = 0.5f;
+    [Tooltip("ชื่อของ Trigger ใน Animator ที่จะสั่งให้เล่นท่ายิงเชือก")]
+    public string shootRopeTriggerName = "ShootRope"; // (คุณต้องไปสร้าง Trigger ชื่อนี้ใน Animator ด้วย)
+    private Animator animator;
 
     void Awake()
     {
@@ -47,7 +52,7 @@ public class Rope : MonoBehaviour
         playerPosition = transform.position;
         ropeHingeAnchorRb = ropeHingeAnchor.GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
-
+        animator = GetComponentInParent<Animator>();
         // หา GlueShooting script
         glueShootingScript = GetComponent<GlueShooting>();
     }
@@ -64,6 +69,8 @@ public class Rope : MonoBehaviour
             {
                 ResetRope();
             }
+
+
             return;
         }
 
@@ -332,11 +339,17 @@ public class Rope : MonoBehaviour
         {
             // ลดระยะเชือก (หด)
             ropeJoint.distance = Mathf.Max(ropeJoint.distance - ropeAdjustSpeed * Time.deltaTime, minRopeLength);
+            if (animator != null) animator.SetBool("IsClimbUpDown", true);
         }
         else if (Input.GetKey(KeyCode.S))
         {
             // เพิ่มระยะเชือก (ยืด)
             ropeJoint.distance = Mathf.Min(ropeJoint.distance + ropeAdjustSpeed * Time.deltaTime, maxRopeLength);
+            if (animator != null) animator.SetBool("IsClimbUpDown", true);
+        }
+        else
+        {
+            if (animator != null) animator.SetBool("IsClimbUpDown", false);
         }
     }
     private IEnumerator SmoothShortenRope(float fromDistance, float toDistance, float duration)

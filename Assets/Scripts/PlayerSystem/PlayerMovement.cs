@@ -503,20 +503,14 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("IsClimbing", isClimbigOnGround);
         //animator.SetBool("IsGrounded", groundCheck);
         animator.SetBool("IsSwinging", isSwinging);
+
+        GameState state = GameManager.Instance.currentState;
+        if (state == GameState.RopeSwinging)
+            animator.SetBool("IsClimbThread", true);
+        else
+            animator.SetBool("IsClimbThread", false);
         //playerSprite.flipX = horizontalInput < 0f;
 
-        //// เพิ่ม Animation สำหรับปีนบันได (ถ้ามี)
-        //if (animator.parameters.Length > 0)
-        //{
-        //    foreach (var param in animator.parameters)
-        //    {
-        //        if (param.name == "IsClimbing")
-        //        {
-        //            animator.SetBool("IsClimbing", isClimbing);
-        //            break;
-        //        }
-        //    }
-        //}
     }
 
     public void ResetMovementState()
