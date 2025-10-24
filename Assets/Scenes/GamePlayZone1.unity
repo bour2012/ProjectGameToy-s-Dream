@@ -6999,7 +6999,7 @@ Transform:
   m_GameObject: {fileID: 239477998}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 112.2, y: 31.4, z: 0}
+  m_LocalPosition: {x: 112.2, y: 31.4, z: 6.6}
   m_LocalScale: {x: 2.9921, y: 2.9921, z: 2.9921}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -32388,7 +32388,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultCheckpoint: {fileID: 365757839}
   showCheckpointDebugInfo: 0
-  resetToLastCheckpoint: 0
+  resetToLastCheckpoint: 1
   currentState: 0
   player: {fileID: 1611603494}
   playerController: {fileID: 0}

@@ -28,12 +28,13 @@ public class PatrollingEnemy : Enemy
     private bool isAttacking = false;
     private bool isEngaged = false;
     private float step;
-
+    private Collider2D col;
     protected override void Start()
     {
         base.Start();
         patrolStartPos = transform.position;
         currentState = State.Idle; // เริ่มต้นที่ Idle
+        col = GetComponent<Collider2D>();
     }
 
     protected override void Update()
@@ -131,7 +132,7 @@ public class PatrollingEnemy : Enemy
                 Chase(target);
             }
         }
-        else // ถ้าไม่เจอเป้าหมาย
+        else if ( target == null && usePatrolRange)// ถ้าไม่เจอเป้าหมาย
         {
             isEngaged = false;
             lastSeenTimer += Time.deltaTime;
@@ -141,6 +142,8 @@ public class PatrollingEnemy : Enemy
                 currentState = State.Returning; // <-- เปลี่ยนเป็น "กลับบ้าน"
             }
         }
+        else
+            currentState = State.Patrolling;
     }
 
     private void HandleAttackState()
@@ -279,27 +282,28 @@ public class PatrollingEnemy : Enemy
                 transform.position += Vector3.right * (directionX * step);
             }
         }
-        else
-        {
-            StopHorizontalMovement();
-        }
+        
     }
 
     private bool CanMoveInDirection(float direction)
     {
         Vector2 dirVec = (direction > 0) ? Vector2.right : Vector2.left;
 
+        // 1. ตรวจกำแพง (ยิงจากจุดเดียวกัน)
         Vector2 wallCheckOrigin = (Vector2)transform.position + (dirVec * 0.5f);
         RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, dirVec, wallCheckDistance, obstacleLayers);
 
+        // 2. ตรวจพื้น (ยิงจากจุดเดียวกัน)
         Vector2 groundCheckOrigin = (Vector2)transform.position + (dirVec * 0.5f);
         RaycastHit2D groundHit = Physics2D.Raycast(groundCheckOrigin, Vector2.down, groundCheckDistance, groundLayer);
 
 #if UNITY_EDITOR
+        // วาด Debug Rays
         Debug.DrawRay(wallCheckOrigin, dirVec * wallCheckDistance, wallHit.collider ? Color.red : Color.green);
         Debug.DrawRay(groundCheckOrigin, Vector2.down * groundCheckDistance, groundHit.collider ? Color.blue : Color.yellow);
 #endif
 
+        // เงื่อนไขเดิม: ต้อง "ไม่เจอ" กำแพง และ "เจอ" พื้น
         return (wallHit.collider == null && groundHit.collider != null);
     }
 }

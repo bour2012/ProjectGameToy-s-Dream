@@ -120,10 +120,10 @@ public class GlueProjectile : MonoBehaviour
             currentTarget = other;
             Debug.Log($"Enter: {other.name} at {other.transform.position}");
             //ApplySlow(other);
-            //if (RemainingLifetime > timeGlueStick)
-            //{
-            //    ApplySlow(other);
-            //}
+            if (RemainingLifetime > timeGlueStick)
+            {
+                ApplySlow(other);
+            }
         }
 
         else

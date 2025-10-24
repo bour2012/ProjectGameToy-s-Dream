@@ -494,25 +494,25 @@ public class PlayerDeathSystem : MonoBehaviour
         }
     }
 
-    private void OnGUI()
-    {
-        if (!showDeathStateDebug) return;
+    //private void OnGUI()
+    //{
+    //    if (!showDeathStateDebug) return;
 
-        GUILayout.BeginArea(new Rect(10, 270, 300, 100));
+    //    GUILayout.BeginArea(new Rect(10, 270, 300, 100));
 
-        string deathStatus = isDead ? "DEAD" : "ALIVE";
-        Color oldColor = GUI.color;
-        GUI.color = isDead ? Color.red : Color.green;
-        GUILayout.Label($"Player Status: {deathStatus}", GUI.skin.box);
-        GUI.color = oldColor;
+    //    string deathStatus = isDead ? "DEAD" : "ALIVE";
+    //    Color oldColor = GUI.color;
+    //    GUI.color = isDead ? Color.red : Color.green;
+    //    GUILayout.Label($"Player Status: {deathStatus}", GUI.skin.box);
+    //    GUI.color = oldColor;
 
-        if (GameManager.Instance != null)
-        {
-            GUILayout.Label($"Game State: {GameManager.Instance.currentState}", GUI.skin.box);
-            GUILayout.Label($"Previous State: {previousGameState}", GUI.skin.box);
-        }
+    //    if (GameManager.Instance != null)
+    //    {
+    //        GUILayout.Label($"Game State: {GameManager.Instance.currentState}", GUI.skin.box);
+    //        GUILayout.Label($"Previous State: {previousGameState}", GUI.skin.box);
+    //    }
 
-        GUILayout.EndArea();
-    }
+    //    GUILayout.EndArea();
+    //}
     #endregion
 }

@@ -1308,6 +1308,13 @@ public class GameManager : MonoBehaviour
         {
             DebugResetAll();
         }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            ClearPlayedDialogsHistory();
+            // (Optional) เพิ่ม Debug Log เพื่อให้รู้ว่าทำงานแล้ว
+            Debug.LogWarning("[GameManager] ประวัติ Dialog ถูกล้างด้วยปุ่มลัด (X)!");
+        }
     }
 
     public void DebugResetAll()

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5456607924390893811}
   - component: {fileID: 8854236734645776330}
   - component: {fileID: 9094772734244229833}
-  - component: {fileID: 6712185755742459834}
+  - component: {fileID: 6014697536698065424}
   m_Layer: 11
   m_Name: Enemy01
   m_TagString: Enemy
@@ -131,7 +131,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 273b55415e935fb4faa3694ae5d0bc6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onSlowApplied:
+    m_PersistentCalls:
+      m_Calls: []
   headCollider: {fileID: 3827656043758538455}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  groundCheckDistance: 1
+  wallCheckDistance: 0.5
+  deathEffectPrefab: {fileID: 0}
+  deathDuration: 2
   enemyName: 
   maxHealth: 100
   moveSpeed: 3
@@ -142,17 +152,14 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 1152
-  chaseCooldown: 2
+  chaseMemoryDuration: 2
   usePatrolRange: 0
   patrolLeftOffset: -3
   patrolRightOffset: 3
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  wallCheckDistance: 0.5
-  groundCheckDistance: 1
---- !u!61 &6712185755742459834
-BoxCollider2D:
+  attackCooldown: 2
+  attackDuration: 1
+--- !u!70 &6014697536698065424
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -185,18 +192,9 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.20632935, y: 0.23963928}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 7.13, y: 5.56}
-    newSize: {x: 1.36, y: 1.68}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 3.2775269, y: 5.245453}
-  m_EdgeRadius: 0
+  m_Offset: {x: 0.08487154, y: 0.1516239}
+  m_Size: {x: 3.2543292, y: 5.4891434}
+  m_Direction: 0
 --- !u!1 &7102549064788204067
 GameObject:
   m_ObjectHideFlags: 0

@@ -681,67 +681,67 @@ public class PlayerPush : MonoBehaviour
 
     #endregion
 
-    #region Debug & Gizmos
+    //#region Debug & Gizmos
 
-    void OnDrawGizmos()
-    {
-        if (!showDebugGizmos) return;
-
-        if (playerSprite == null)
-            playerSprite = GetComponent<SpriteRenderer>();
-
-        float facingDir = GetFacingDirection();
-        Vector2 playerPos = transform.position;
-
-        // วาดพื้นที่ตรวจจับ
-        Vector2 boxCenter = new Vector2(
-            playerPos.x + (detectionDistance * 0.5f * facingDir),
-            playerPos.y
-        );
-
-        Vector2 boxSize = new Vector2(detectionDistance, detectionHeight);
-
-        Gizmos.color = gizmoColor;
-        Gizmos.DrawWireCube(boxCenter, boxSize);
-
-        // แสดงสถานะปัจจุบัน
-        if (isHolding && targetBox != null)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireCube(targetBox.transform.position, targetBox.GetComponent<Collider2D>().bounds.size);
-        }
-        else if (availableBox != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(availableBox.transform.position, availableBox.GetComponent<Collider2D>().bounds.size);
-        }
-
-        // วาดทิศทางที่กำลังหน้า
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(playerPos, playerPos + Vector2.right * facingDir * 0.5f);
-    }
-
-    //void OnGUI()
+    //void OnDrawGizmos()
     //{
     //    if (!showDebugGizmos) return;
 
-    //    GUILayout.BeginArea(new Rect(Screen.width - 250, 10, 240, 150));
-    //    GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
-    //    GUILayout.Label($"Is Holding: {isHolding}");
-    //    GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
-    //    GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
-    //    GUILayout.Label($"Can Use: {CanUsePushSystem()}");
-    //    GUILayout.Label($"Facing: {(lastFacingDirection > 0 ? "Right" : "Left")}");
-    //    GUILayout.Label($"Cooldown: {detectionCooldown:F2}");
+    //    if (playerSprite == null)
+    //        playerSprite = GetComponent<SpriteRenderer>();
 
-    //    if (availableBox != null)
+    //    float facingDir = GetFacingDirection();
+    //    Vector2 playerPos = transform.position;
+
+    //    // วาดพื้นที่ตรวจจับ
+    //    Vector2 boxCenter = new Vector2(
+    //        playerPos.x + (detectionDistance * 0.5f * facingDir),
+    //        playerPos.y
+    //    );
+
+    //    Vector2 boxSize = new Vector2(detectionDistance, detectionHeight);
+
+    //    Gizmos.color = gizmoColor;
+    //    Gizmos.DrawWireCube(boxCenter, boxSize);
+
+    //    // แสดงสถานะปัจจุบัน
+    //    if (isHolding && targetBox != null)
     //    {
-    //        float distance = Vector2.Distance(transform.position, availableBox.transform.position);
-    //        GUILayout.Label($"Distance: {distance:F2}");
+    //        Gizmos.color = Color.blue;
+    //        Gizmos.DrawWireCube(targetBox.transform.position, targetBox.GetComponent<Collider2D>().bounds.size);
+    //    }
+    //    else if (availableBox != null)
+    //    {
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawWireCube(availableBox.transform.position, availableBox.GetComponent<Collider2D>().bounds.size);
     //    }
 
-    //    GUILayout.EndArea();
+    //    // วาดทิศทางที่กำลังหน้า
+    //    Gizmos.color = Color.green;
+    //    Gizmos.DrawLine(playerPos, playerPos + Vector2.right * facingDir * 0.5f);
     //}
 
-    #endregion
+    ////void OnGUI()
+    ////{
+    ////    if (!showDebugGizmos) return;
+
+    ////    GUILayout.BeginArea(new Rect(Screen.width - 250, 10, 240, 150));
+    ////    GUILayout.Label("=== PlayerPush Debug ===", GUI.skin.box);
+    ////    GUILayout.Label($"Is Holding: {isHolding}");
+    ////    GUILayout.Label($"Available: {(availableBox != null ? availableBox.name : "None")}");
+    ////    GUILayout.Label($"Target: {(targetBox != null ? targetBox.name : "None")}");
+    ////    GUILayout.Label($"Can Use: {CanUsePushSystem()}");
+    ////    GUILayout.Label($"Facing: {(lastFacingDirection > 0 ? "Right" : "Left")}");
+    ////    GUILayout.Label($"Cooldown: {detectionCooldown:F2}");
+
+    ////    if (availableBox != null)
+    ////    {
+    ////        float distance = Vector2.Distance(transform.position, availableBox.transform.position);
+    ////        GUILayout.Label($"Distance: {distance:F2}");
+    ////    }
+
+    ////    GUILayout.EndArea();
+    ////}
+
+    //#endregion
 }
