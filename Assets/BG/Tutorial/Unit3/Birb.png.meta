@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: eea3592ef4f81454e83eb41f9731a0bf
+guid: 630883b0d6e84a847ba04ef4050c177c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 9169877530624898698
-    second: Slider_0
+      213: 7252451413403397519
+    second: Birb_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Slider_0
+      name: Birb_0
       rect:
         serializedVersion: 2
-        x: 432
-        y: 4
-        width: 1285
-        height: 2044
+        x: 0
+        y: 0
+        width: 523
+        height: 834
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a86bbbea703f14f70800000000000000
-      internalID: 9169877530624898698
+      spriteID: f8d60b6a222e5a460800000000000000
+      internalID: 7252451413403397519
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Slider_0: 9169877530624898698
+      Birb_0: 7252451413403397519
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

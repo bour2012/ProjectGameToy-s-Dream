@@ -57,8 +57,8 @@ public class CraftedObject : MonoBehaviour
         parentCraftingSystem = craftingSystem;
         currentHitPoints = data.maxHitPoints;
 
-        // ตั้งค่าคุณสมบัติของวัตถุ
-        SetupObjectProperties();
+        //// ตั้งค่าคุณสมบัติของวัตถุ
+        //SetupObjectProperties();
 
         // เริ่มจับเวลาอายุการใช้งาน (ถ้าไม่ใช่วัตถุที่สามารถถูกสิงได้)
         if (!itemData.canBePossessed)
@@ -77,50 +77,50 @@ public class CraftedObject : MonoBehaviour
         }
     }
 
-    void SetupObjectProperties()
-    {
-        if (itemData == null) return;
+    //void SetupObjectProperties()
+    //{
+    //    if (itemData == null) return;
 
-        // ตั้งค่า Rigidbody2D สำหรับการผลัก
-        if (rb != null)
-        {
-            if (itemData.canBePushed)
-            {
-                rb.bodyType = RigidbodyType2D.Dynamic;
-                //rb.freezeRotation = true;
+    //    // ตั้งค่า Rigidbody2D สำหรับการผลัก
+    //    if (rb != null)
+    //    {
+    //        if (itemData.canBePushed)
+    //        {
+    //            rb.bodyType = RigidbodyType2D.Dynamic;
+    //            //rb.freezeRotation = true;
 
-                // กล่อง = หนักกว่า, ตุ๊กตา = เบากว่า
-                rb.mass = itemData.itemName.ToLower().Contains("box") ? 2f : 0.5f;
-                rb.linearDamping = 5f; // เพิ่ม drag เพื่อให้หยุดได้เร็ว
-            }
-            else
-            {
-                rb.bodyType = RigidbodyType2D.Kinematic;
-            }
-        }
+    //            // กล่อง = หนักกว่า, ตุ๊กตา = เบากว่า
+    //            rb.mass = itemData.itemName.ToLower().Contains("box") ? 2f : 0.5f;
+    //            rb.linearDamping = 5f; // เพิ่ม drag เพื่อให้หยุดได้เร็ว
+    //        }
+    //        else
+    //        {
+    //            rb.bodyType = RigidbodyType2D.Kinematic;
+    //        }
+    //    }
 
-        // ตั้งค่า Collider สำหรับการชน
-        if (col != null)
-        {
-            col.isTrigger = false; // ต้องเป็น solid เพื่อให้ผลักได้
-        }
+    //    // ตั้งค่า Collider สำหรับการชน
+    //    if (col != null)
+    //    {
+    //        col.isTrigger = false; // ต้องเป็น solid เพื่อให้ผลักได้
+    //    }
 
-        //// ตั้งค่า Tag เพื่อระบุประเภท
-        //if (itemData.canBePushed && !itemData.canDistractEnemies)
-        //{
-        //    gameObject.tag = "PushableBox";
-        //}
-        //else if (itemData.canDistractEnemies)
-        //{
-        //    gameObject.tag = "DistractableDoll";
-        //}
+    //    //// ตั้งค่า Tag เพื่อระบุประเภท
+    //    //if (itemData.canBePushed && !itemData.canDistractEnemies)
+    //    //{
+    //    //    gameObject.tag = "PushableBox";
+    //    //}
+    //    //else if (itemData.canDistractEnemies)
+    //    //{
+    //    //    gameObject.tag = "DistractableDoll";
+    //    //}
 
-        // เพิ่ม Layer สำหรับ Enemy detection ถ้าเป็นตุ๊กตา
-        if (itemData.canDistractEnemies)
-        {
-            gameObject.layer = LayerMask.NameToLayer("DistractableObject");
-        }
-    }
+    //    // เพิ่ม Layer สำหรับ Enemy detection ถ้าเป็นตุ๊กตา
+    //    if (itemData.canDistractEnemies)
+    //    {
+    //        gameObject.layer = LayerMask.NameToLayer("DistractableObject");
+    //    }
+    //}
 
     void StartLifetimeCountdown()
     {
