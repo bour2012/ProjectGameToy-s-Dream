@@ -11,6 +11,7 @@ TagManager:
   - FakeDoll
   - EnemyHead
   - EnemyProjectile
+  - LaserBlocker
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - DeadZone
   - GlueZone
   - FakeDoll
-  - 
+  - LaserBlocker
   - 
   - 
   - 
