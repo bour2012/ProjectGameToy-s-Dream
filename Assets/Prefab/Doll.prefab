@@ -232,3 +232,4 @@ MonoBehaviour:
   onPlayerStartPush:
     m_PersistentCalls:
       m_Calls: []
+  modeXUnLock: 0

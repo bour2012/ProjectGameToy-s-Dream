@@ -190,8 +190,10 @@ public class PlatformController : MonoBehaviour
     private void RotatePlatform()
     {
         float targetRotation = isActive ? openRotationAngle : startRotation;
-        currentRotation = Mathf.MoveTowards(currentRotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+        currentRotation = Mathf.MoveTowards(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
         // Platform 2D ควรหมุนรอบ Z
-        platformRb2D.MoveRotation(currentRotation);
+    
+        //platformRb2D.MoveRotation(pivotPosition, Vector3.forward, currentRotation - platform.eulerAngles.z);
+        platform.RotateAround(pivotPosition, Vector3.forward, currentRotation - platform.eulerAngles.z);
     }
 }

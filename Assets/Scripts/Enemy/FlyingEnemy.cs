@@ -1,10 +1,14 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Security.Cryptography;
+using UnityEngine;
 
 public class FlyingEnemy : Enemy
 {
     private enum State { Idle, Flying, Attacking, Falling, Returning }
     private State currentState = State.Idle;
+
+    public enum ChaseMode { Normal, Zone }
+    public ChaseMode chaseMode = ChaseMode.Normal;
 
     [Header("Flying Enemy Settings")]
     public float flyingSpeed = 3f;
@@ -38,8 +42,9 @@ public class FlyingEnemy : Enemy
 
     [Header("Debug")]
     public bool showDebugGizmos = true;
-
-  
+    private bool isPlayerInZone = false;
+    private GameObject playerInZone;
+    private bool canFallByGlue = false;
     private Vector2 flightTargetPosition;
     private float attackTimer;
     private bool isAttacking = false;
@@ -47,9 +52,24 @@ public class FlyingEnemy : Enemy
 
     protected override void Awake()
     {
+        //base.Awake();
+        //rb = GetComponent<Rigidbody2D>();
+        //rb.gravityScale = 0;
+        //currentSpeed = 0f;
+
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
+
+        // สุ่ม speed, cooldown ตอนเกิด
+        //flyingSpeed = Random.Range(2f, 4.5f);
+        if (chaseMode == ChaseMode.Zone)
+        {
+            attackCooldown = Random.Range(1.0f, 3.0f);
+            flightPatrolRadius = Random.Range(5f, 7f);
+            //hoverHeight = Random.Range(1.5f, 4f);
+            attackTimer = Random.Range(0f, attackCooldown);
+        }
         currentSpeed = 0f;
     }
 
@@ -74,13 +94,36 @@ public class FlyingEnemy : Enemy
         }
     }
 
+    protected override GameObject DetectAndLockTarget()
+    {
+        if (chaseMode == ChaseMode.Normal)
+        {
+            // เรียกของ base class เฉพาะ Normal mode
+            return base.DetectAndLockTarget();
+        }
+        // ถ้า zone mode ไม่หาเป้าเองเลย
+        return currentTarget;
+    }
+
     void HandleIdleState()
     {
-        GameObject target = DetectAndLockTarget();
-        if (target != null)
+        if (chaseMode == ChaseMode.Normal)
         {
-            currentState = State.Flying;
-            SetNewFlightTarget();
+            GameObject target = DetectAndLockTarget();
+            if (target != null)
+            {
+                currentState = State.Flying;
+                SetNewFlightTarget();
+            }
+        }
+        else if (chaseMode == ChaseMode.Zone)
+        {
+            if (isPlayerInZone && playerInZone != null)
+            {
+                currentTarget = playerInZone;
+                currentState = State.Flying;
+                SetNewFlightTarget();
+            }
         }
     }
 
@@ -118,6 +161,9 @@ public class FlyingEnemy : Enemy
         {
             currentState = State.Attacking;
         }
+
+        if (!canFallByGlue)
+            canFallByGlue = false;
     }
 
     void HandleAttackingState()
@@ -152,6 +198,10 @@ public class FlyingEnemy : Enemy
     {
         isAttacking = true;
 
+        // เพิ่มสุ่ม delay ก่อนยิง
+        float shootDelay = Random.Range(0.1f, 0.7f);
+        yield return new WaitForSeconds(shootDelay);
+
         // หยุดเคลื่อนที่และเล็ง
         currentSpeed = 0f;
         yield return new WaitForSeconds(0.5f);
@@ -171,8 +221,9 @@ public class FlyingEnemy : Enemy
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
         }
-
-        yield return new WaitForSeconds(1f);
+        float afterShotWait = Random.Range(0.2f, 0.7f);
+        yield return new WaitForSeconds(afterShotWait);
+        //yield return new WaitForSeconds(1f);
 
         attackTimer = 0f;
         currentState = State.Flying;
@@ -188,18 +239,31 @@ public class FlyingEnemy : Enemy
         for (int i = 0; i < maxPositionAttempts; i++)
         {
             // กรณีมีผู้เล่น: บินไปรอบๆ เหนือผู้เล่น
+
             if (currentTarget != null)
             {
-                float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
-                float targetY = currentTarget.transform.position.y + hoverHeight;
+                float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius); 
+                float targetY = currentTarget.transform.position.y + Random.Range(hoverHeight * 0.7f, hoverHeight * 1.3f);
                 newTarget = new Vector2(currentTarget.transform.position.x + randomX, targetY);
             }
             else
             {
-                // กรณีไม่มีผู้เล่น: บินรอบรัง
+                // ปกติบินรอบรัง
                 float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
                 newTarget = new Vector2(initialPosition.x + randomX, initialPosition.y);
             }
+            //if (currentTarget != null)
+            //{
+            //    float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
+            //    float targetY = currentTarget.transform.position.y + hoverHeight;
+            //    newTarget = new Vector2(currentTarget.transform.position.x + randomX, targetY);
+            //}
+            //else
+            //{
+            //    // กรณีไม่มีผู้เล่น: บินรอบรัง
+            //    float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
+            //    newTarget = new Vector2(initialPosition.x + randomX, initialPosition.y);
+            //}
 
             // ตรวจสอบว่าเส้นทางไปยังตำแหน่งใหม่ชนกำแพงหรือไม่
             if (IsPathClear(transform.position, newTarget))
@@ -243,13 +307,25 @@ public class FlyingEnemy : Enemy
     {
         // ไม่ต้องสนใจค่า slowAmount หรือ lerpTime
         // แค่เรียกฟังก์ชัน ApplySlow ของตัวเอง แล้วส่ง "ระยะเวลา" ที่ถูกต้องไปก็พอ
-        ApplySlow(0f, duration);
+        ApplySlow(targetSlowAmount, duration);
+        ApplySlow(targetSlowAmount, duration);
+        //ApplySlow(0f, duration);
     }
     public override void ApplySlow(float slowAmount, float duration)
     {
         if ((currentState == State.Flying || currentState == State.Attacking || currentState == State.Returning))
         {
-            StartCoroutine(GroundedByGlueSequence(duration));
+            if (!canFallByGlue) // ได้ trigger slow เฉพาะตอนบิน ล่าสุด
+            {
+                canFallByGlue = true;
+                StartCoroutine(GroundedByGlueSequence(duration));
+            }
+        }
+        else
+        {
+            // ถ้าโดนกาวขณะที่ Idle, Attacking, Returning, Falling หรือสถานะอื่น → ไม่ร่วง
+            // อาจจะใส่ visual effect ได้แต่ไม่ trigger coroutine glue
+            canFallByGlue = false;
         }
     }
 
@@ -266,6 +342,7 @@ public class FlyingEnemy : Enemy
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
         currentState = State.Returning; // 3. สั่งให้บินกลับรัง
+        canFallByGlue = false;
     }
    
     protected override void Die()
@@ -322,5 +399,22 @@ public class FlyingEnemy : Enemy
             Gizmos.DrawLine(prevPoint, newPoint);
             prevPoint = newPoint;
         }
+    }
+
+    public void OnPlayerEnterZone(GameObject player)
+    {
+        isPlayerInZone = true;
+        playerInZone = player;
+        currentTarget = player;
+        currentState = State.Flying;
+        SetNewFlightTarget();
+    }
+
+    public void OnPlayerExitZone()
+    {
+        isPlayerInZone = false;
+        playerInZone = null;
+        currentTarget = null;
+        currentState = State.Returning;
     }
 }

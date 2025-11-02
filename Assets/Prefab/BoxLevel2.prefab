@@ -195,6 +195,7 @@ MonoBehaviour:
   onPlayerStartPush:
     m_PersistentCalls:
       m_Calls: []
+  modeXUnLock: 1
 --- !u!1 &7899959792572343891
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,3 +392,4 @@ MonoBehaviour:
   onPlayerStartPush:
     m_PersistentCalls:
       m_Calls: []
+  modeXUnLock: 0

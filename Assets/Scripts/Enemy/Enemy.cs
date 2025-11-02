@@ -145,7 +145,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     }
     #endregion
 
-    protected GameObject DetectAndLockTarget()
+    protected virtual GameObject DetectAndLockTarget()
     {
         // ถ้ามี target เดิมแล้ว → ตรวจสอบว่ายัง valid อยู่มั้ย
         if (currentTarget != null)
@@ -281,17 +281,17 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         isChasing = false;
         // รีเซ็ตสถานะอื่น ๆ ตามต้องการ
     }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        //if (collision.collider.CompareTag("Player"))
-        //{
-        //    // ตรวจสอบว่าผู้เล่นชน Head Collider หรือไม่
-        //    if (collision.otherCollider == headCollider)
-        //    {
-        //        OnStomped(collision.collider.GetComponent<PlayerMovement>());
-        //    }
-        //}
-    }
+    //private void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    //if (collision.collider.CompareTag("Player"))
+    //    //{
+    //    //    // ตรวจสอบว่าผู้เล่นชน Head Collider หรือไม่
+    //    //    if (collision.otherCollider == headCollider)
+    //    //    {
+    //    //        OnStomped(collision.collider.GetComponent<PlayerMovement>());
+    //    //    }
+    //    //}
+    //}
 
 
 

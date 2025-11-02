@@ -7,7 +7,7 @@ public class PushableBox : MonoBehaviour
     [Tooltip("Event ที่จะทำงานเมื่อผู้เล่นเริ่มผลักกล่องนี้ครั้งแรก")]
     public UnityEvent onPlayerStartPush;
     private Rigidbody2D rb;
-
+    public bool modeXUnLock = false;
     private bool hasBeenPushed = false;
 
     // ฟังก์ชันนี้จะถูกเรียกโดย Player
@@ -51,6 +51,13 @@ public class PushableBox : MonoBehaviour
         if (rb != null)
         {
             // ล็อกทุกอย่าง: ตำแหน่ง X, Y และการหมุน Z
+
+            if (modeXUnLock)
+            {
+                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+                Debug.Log($"[PushableBox] '{gameObject.name}' Locked Y axis only.");
+                return;
+            }
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
             Debug.Log($"[PushableBox] '{gameObject.name}' Locked.");
         }
