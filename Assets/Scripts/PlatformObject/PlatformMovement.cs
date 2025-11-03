@@ -9,11 +9,17 @@ public class PlatformMovement : MonoBehaviour
     private int pointIndex;
     private bool canMove = false; // ตัวแปรเช็คว่ากด E หรือยัง
     private bool isPlayerNear = false; // ผู้เล่นอยู่ใกล้หรือไม่
+    [Tooltip("แพลตฟอร์มวิ่งวนลูปตามจุดใน points")]
     public bool modeLoop = false;
+    [Tooltip("แพลตฟอร์มแกว่งซ้าย-ขวา")]
     public bool modeSwing = false;
+    [Tooltip("เมื่อผู้เล่นเหยียบแล้วกระเด้งขึ้น (ใช้กับ bounce)")]
     public bool modeJumped = false;
+    [Tooltip("เมื่อชนกับตัว DeadZone แล้ว Platform ถูกทำลาย")]
     public bool modeDestroyed = false;
+    [Tooltip("แพลตฟอร์มยิงออกไปจากจุด spawn สู่ targetPoint")]
     public bool modeShoot = false;
+    [Tooltip("โหมดใช้ Animator คุมแพลตฟอร์ม (ใช้ร่วมกับ Animator)")]
     public bool modeAnim = false;
     [Header("Destroy Settings")]
     public float timeDelay = 2f; // กำหนดแรงกระเด้ง

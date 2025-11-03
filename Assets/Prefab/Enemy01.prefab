@@ -148,7 +148,7 @@ MonoBehaviour:
   detectionRange: 2.5
   detectionLayers:
     serializedVersion: 2
-    m_Bits: 576
+    m_Bits: 66112
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 1152

@@ -182,10 +182,10 @@ MonoBehaviour:
   timeGlueStick: 3
   targetLayers:
     serializedVersion: 2
-    m_Bits: 166912
+    m_Bits: 658432
   groundLayers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 32896
   excludedTargetLayers:
     serializedVersion: 2
     m_Bits: 16705

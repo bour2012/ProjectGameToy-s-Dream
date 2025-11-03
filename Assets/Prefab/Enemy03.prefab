@@ -108,6 +108,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   headCollider: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 2176
+  groundCheckDistance: 1
+  wallCheckDistance: 0.5
+  deathEffectPrefab: {fileID: 0}
+  deathDuration: 2
   enemyName: 
   maxHealth: 100
   moveSpeed: 2
@@ -117,7 +124,8 @@ MonoBehaviour:
     m_Bits: 64
   obstacleLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2176
+  chaseMode: 0
   flyingSpeed: 3
   attackRange: 8
   attackCooldown: 3
@@ -127,7 +135,7 @@ MonoBehaviour:
   wallDetectionDistance: 2
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2176
   maxPositionAttempts: 5
   projectilePrefab: {fileID: 760080139131159738, guid: 3ccc24b9a72985e4b8070727a2fdb981, type: 3}
   projectileSpawnPoint: {fileID: 3719873707518783203}

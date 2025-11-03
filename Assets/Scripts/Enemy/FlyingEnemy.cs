@@ -10,6 +10,15 @@ public class FlyingEnemy : Enemy
     public enum ChaseMode { Normal, Zone }
     public ChaseMode chaseMode = ChaseMode.Normal;
 
+    [Header("Glue Settings")]
+    [Tooltip("จำนวนครั้งที่ต้องโดนกาวก่อนจะร่วง")]
+    public int requiredGlueHitsToFall = 3;
+    public float glueHitCooldown = 0.1f; // เวลาบล็อกนับเบิ้ล (วินาที)
+    // สำหรับนับว่าโดนกาวแล้วกี่ครั้ง (รีเซ็ตได้เมื่อลอยอีกครั้ง)
+    [HideInInspector]
+    public int currentGlueHitCount = 0;
+    private float lastGlueHitTime = -10f;
+
     [Header("Flying Enemy Settings")]
     public float flyingSpeed = 3f;
     public float attackRange = 8f;
@@ -307,24 +316,38 @@ public class FlyingEnemy : Enemy
     {
         // ไม่ต้องสนใจค่า slowAmount หรือ lerpTime
         // แค่เรียกฟังก์ชัน ApplySlow ของตัวเอง แล้วส่ง "ระยะเวลา" ที่ถูกต้องไปก็พอ
+     
         ApplySlow(targetSlowAmount, duration);
-        ApplySlow(targetSlowAmount, duration);
+        //ApplySlow(targetSlowAmount, duration);
         //ApplySlow(0f, duration);
     }
     public override void ApplySlow(float slowAmount, float duration)
     {
+
+        //// บล็อกถ้าเพิ่งโดนในเวลา cooldown
+        //if (Time.time - lastGlueHitTime < glueHitCooldown)
+        //    return;
+
+        //lastGlueHitTime = Time.time;
+
         if ((currentState == State.Flying || currentState == State.Attacking || currentState == State.Returning))
         {
-            if (!canFallByGlue) // ได้ trigger slow เฉพาะตอนบิน ล่าสุด
+            
+         
+
+            // ถ้าครบจำนวนที่กำหนด → ร่วง
+            if (currentGlueHitCount >= requiredGlueHitsToFall && !canFallByGlue)
             {
                 canFallByGlue = true;
                 StartCoroutine(GroundedByGlueSequence(duration));
+                
             }
+            // ถ้ายังไม่ถึง limit แค่ชะลอความเร็วหรือ effect ได้ (no fall yet)
         }
         else
         {
-            // ถ้าโดนกาวขณะที่ Idle, Attacking, Returning, Falling หรือสถานะอื่น → ไม่ร่วง
-            // อาจจะใส่ visual effect ได้แต่ไม่ trigger coroutine glue
+            // โดนกาวขณะไม่บิน รีเซ็ต counter ทิ้ง
+            currentGlueHitCount = 0;
             canFallByGlue = false;
         }
     }
@@ -343,6 +366,7 @@ public class FlyingEnemy : Enemy
         rb.linearVelocity = Vector2.zero;
         currentState = State.Returning; // 3. สั่งให้บินกลับรัง
         canFallByGlue = false;
+        currentGlueHitCount = 0; // รีเซ็ต counter (หรือจะรอให้บินใหม่ก่อนรีเซ็ตก็ได้)
     }
    
     protected override void Die()
@@ -416,5 +440,14 @@ public class FlyingEnemy : Enemy
         playerInZone = null;
         currentTarget = null;
         currentState = State.Returning;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.GetComponent<GlueProjectile>() != null)
+        {
+            currentGlueHitCount++;
+            Debug.Log($"{enemyName} glue hit! (count = {currentGlueHitCount})");
+        }
     }
 }
