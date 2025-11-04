@@ -17,7 +17,7 @@ public class FlyingEnemy : Enemy
     // สำหรับนับว่าโดนกาวแล้วกี่ครั้ง (รีเซ็ตได้เมื่อลอยอีกครั้ง)
     [HideInInspector]
     public int currentGlueHitCount = 0;
-    private float lastGlueHitTime = -10f;
+    //private float lastGlueHitTime = -10f;
 
     [Header("Flying Enemy Settings")]
     public float flyingSpeed = 3f;
@@ -99,6 +99,7 @@ public class FlyingEnemy : Enemy
                 HandleReturningState();
                 break;
             case State.Falling:
+                //currentGlueHitCount = 0;
                 break;
         }
     }
@@ -116,6 +117,7 @@ public class FlyingEnemy : Enemy
 
     void HandleIdleState()
     {
+        //currentGlueHitCount = 0;
         if (chaseMode == ChaseMode.Normal)
         {
             GameObject target = DetectAndLockTarget();
@@ -199,6 +201,8 @@ public class FlyingEnemy : Enemy
         if (Vector2.Distance(transform.position, initialPosition) < 0.1f)
         {
             currentState = State.Idle;
+           
+            currentGlueHitCount = 0;
             attackTimer = 0f;
         }
     }
@@ -333,21 +337,20 @@ public class FlyingEnemy : Enemy
         if ((currentState == State.Flying || currentState == State.Attacking || currentState == State.Returning))
         {
             
-         
-
-            // ถ้าครบจำนวนที่กำหนด → ร่วง
-            if (currentGlueHitCount >= requiredGlueHitsToFall && !canFallByGlue)
-            {
-                canFallByGlue = true;
-                StartCoroutine(GroundedByGlueSequence(duration));
+            //// ถ้าครบจำนวนที่กำหนด → ร่วง
+            //if (currentGlueHitCount >= requiredGlueHitsToFall && !canFallByGlue)
+            //{
+            //    canFallByGlue = true;
+            //    StartCoroutine(GroundedByGlueSequence(duration));
                 
-            }
+            //}
             // ถ้ายังไม่ถึง limit แค่ชะลอความเร็วหรือ effect ได้ (no fall yet)
         }
         else
         {
             // โดนกาวขณะไม่บิน รีเซ็ต counter ทิ้ง
-            currentGlueHitCount = 0;
+           
+
             canFallByGlue = false;
         }
     }
@@ -447,7 +450,15 @@ public class FlyingEnemy : Enemy
         if (other.GetComponent<GlueProjectile>() != null)
         {
             currentGlueHitCount++;
-            Debug.Log($"{enemyName} glue hit! (count = {currentGlueHitCount})");
+            //Debug.Log($"{enemyName} glue hit! (count = {currentGlueHitCount})");
+
+            // ถ้าครบจำนวนที่กำหนด → ร่วง
+            if (currentGlueHitCount >= requiredGlueHitsToFall && !canFallByGlue)
+            {
+                canFallByGlue = true;
+                StartCoroutine(GroundedByGlueSequence(2.5f));
+
+            }
         }
     }
 }
