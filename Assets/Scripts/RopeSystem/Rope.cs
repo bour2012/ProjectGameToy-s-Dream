@@ -12,10 +12,16 @@ public class Rope : MonoBehaviour
     public SpriteRenderer crosshairSprite;
     public PlayerMovement playerMovement;
 
+    [Header("Rope Length Settings")]
+    public float maxRopeLength = 20f; // ความยาวสูงสุดของเชือก
+    public float minRopeLength = 2f;  // ความยาวต่ำสุดของเชือก
+    public float ropeAdjustSpeed = 5f; // ความเร็วในการยืด/หดเชือก
+
     [Header("Rope Settings")]
     public LineRenderer ropeRenderer;
     public LayerMask ropeLayerMask;
-    private float ropeMaxCastDistance = 20f;
+    public float ropeMaxCastDistance = 20f;
+    public float ropeStandardDistance = 5f; // ระยะมาตรฐานของเชือก
 
     [Header("Game Manager Integration")]
     public bool respectGameManagerState = true; // เปิด/ปิดการใช้ GameManager
@@ -28,6 +34,16 @@ public class Rope : MonoBehaviour
     private List<Vector2> ropePositions = new List<Vector2>();
     private bool distanceSet;
     private bool wasSwingingLastFrame = false;
+    private Transform attachedTarget; // เก็บวัตถุที่เชือกเกี่ยว
+    private Vector2 localHitOffset;   // เก็บ offset จากตำแหน่ง anchor ของวัตถุ
+
+    // Integration with GlueShooting
+    private GlueShooting glueShootingScript;
+    [Tooltip("ระยะเวลาที่ Animation 'ยิงเชือก' เล่นก่อนที่เชือกจะพุ่งออกไป")]
+    public float shootAnimationDuration = 0.5f;
+    [Tooltip("ชื่อของ Trigger ใน Animator ที่จะสั่งให้เล่นท่ายิงเชือก")]
+    public string shootRopeTriggerName = "ShootRope"; // (คุณต้องไปสร้าง Trigger ชื่อนี้ใน Animator ด้วย)
+    private Animator animator;
 
     void Awake()
     {
@@ -36,10 +52,15 @@ public class Rope : MonoBehaviour
         playerPosition = transform.position;
         ropeHingeAnchorRb = ropeHingeAnchor.GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
+        animator = GetComponentInParent<Animator>();
+        // หา GlueShooting script
+        glueShootingScript = GetComponent<GlueShooting>();
     }
 
     void Update()
     {
+        AdjustRopeLength();
+
         // ตรวจสอบว่าสามารถใช้เชือกได้หรือไม่
         if (!CanUseRope())
         {
@@ -48,11 +69,30 @@ public class Rope : MonoBehaviour
             {
                 ResetRope();
             }
+
+
+            return;
+        }
+
+        // ตรวจสอบว่าเลือกใช้ Thread หรือไม่
+        bool usingThread = (glueShootingScript != null &&
+                           glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Thread);
+
+        if (!usingThread)
+        {
+            // ถ้าไม่ได้เลือก Thread และกำลังโหนอยู่ ให้รีเซ็ต
+            if (ropeAttached)
+            {
+                ResetRope();
+            }
             return;
         }
 
         // คำนวณทิศทางการเล็ง
-        var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
+        float distanceFromCamera = Mathf.Abs(Camera.main.transform.position.z - transform.position.z);
+        var worldMousePosition = Camera.main.ScreenToWorldPoint(
+            new Vector3(Input.mousePosition.x, Input.mousePosition.y, distanceFromCamera)
+        );
         var facingDirection = worldMousePosition - transform.position;
         var aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
         if (aimAngle < 0f)
@@ -123,69 +163,6 @@ public class Rope : MonoBehaviour
     /// <summary>
     /// ตรวจสอบว่าสามารถใช้เชือกได้หรือไม่ตามสถานะของ GameManager และไอเทม
     /// </summary>
-    private bool CanUseRope()
-    {
-        if (!respectGameManagerState) return true;
-
-        if (GameManager.Instance == null) return true;
-
-        // ตรวจสอบสถานะเกม
-        GameState currentState = GameManager.Instance.currentState;
-        bool stateAllowed = currentState == GameState.Normal || currentState == GameState.RopeSwinging;
-
-        if (!stateAllowed) return false;
-
-        // ตรวจสอบไอเทม Thread (ใช้ร่วมกันระหว่างซ่อมและโหนเชือก)
-        if (ItemManager.Instance != null)
-        {
-            bool hasThread = ItemManager.Instance.HasItem(ItemManager.ItemType.Thread);
-            if (!hasThread && !ropeAttached) // ถ้าไม่มีด้ายและยังไม่ได้โหนอยู่
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// แจ้ง GameManager ว่าเริ่มโหนเชือกแล้ว
-    /// </summary>
-    private void NotifySwingingStart()
-    {
-        if (!respectGameManagerState || GameManager.Instance == null) return;
-
-        bool success = GameManager.Instance.StartRopeSwinging();
-
-        if (!success)
-        {
-            Debug.LogWarning("Failed to start rope swinging - GameManager rejected state change");
-            // หากไม่สามารถเปลี่ยนสถานะได้ ให้รีเซ็ตเชือก
-            ResetRope();
-        }
-    }
-
-    /// <summary>
-    /// แจ้ง GameManager ว่าหยุดโหนเชือกแล้ว
-    /// </summary>
-    private void NotifySwingingEnd()
-    {
-        if (!respectGameManagerState || GameManager.Instance == null) return;
-
-        GameManager.Instance.EndRopeSwinging();
-    }
-
-    /// <summary>
-    /// ตรวจสอบว่าสามารถเริ่มโหนเชือกใหม่ได้หรือไม่
-    /// </summary>
-    private bool CanStartSwinging()
-    {
-        if (!respectGameManagerState) return true;
-
-        if (GameManager.Instance == null) return true;
-
-        return GameManager.Instance.currentState == GameState.Normal;
-    }
 
     #endregion
 
@@ -211,10 +188,16 @@ public class Rope : MonoBehaviour
 
     private void HandleInput(Vector2 aimDirection)
     {
-        // คลิกซ้าย - ยิงเชือก
+        // คลิกซ้าย - ยิงเชือก (เฉพาะเมื่อเลือก Thread)
         if (Input.GetMouseButton(0))
         {
             if (ropeAttached) return;
+
+            // ตรวจสอบว่าเลือกใช้ Thread หรือไม่
+            bool usingThread = (glueShootingScript != null &&
+                               glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Thread);
+
+            if (!usingThread) return;
 
             // ตรวจสอบว่าสามารถเริ่มโหนได้หรือไม่
             if (!CanStartSwinging()) return;
@@ -231,6 +214,12 @@ public class Rope : MonoBehaviour
 
             if (hit.collider != null)
             {
+                ropeAttached = true;
+
+                // ถ้าวัตถุสามารถเคลื่อนที่ได้
+                attachedTarget = hit.collider.transform;
+                localHitOffset = (Vector2)hit.point - (Vector2)attachedTarget.position;
+
                 // ใช้ Thread
                 if (ItemManager.Instance != null)
                 {
@@ -242,23 +231,53 @@ public class Rope : MonoBehaviour
                     }
                 }
 
-                ropeAttached = true;
-
                 if (!ropePositions.Contains(hit.point))
                 {
-                    // เพิ่มแรงกระตุ้นเล็กน้อย
                     transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 1f), ForceMode2D.Impulse);
+                    var playerRb = transform.GetComponent<Rigidbody2D>();
+                    Vector2 preSwingVelocity = playerRb.linearVelocity;
 
                     // เพิ่มตำแหน่งปลายเชือก
                     ropePositions.Add(hit.point);
 
-                    // ตั้งค่าเชือกให้สั้นลงเล็กน้อยทันที
+                    // คำนวณระยะจริงและระยะที่ต้องการ
                     float actualDistance = Vector2.Distance(playerPosition, hit.point);
-                    StartCoroutine(SmoothShortenRope(actualDistance, actualDistance * 0.65f, 0.5f));
+                    float targetDistance;
+
+                    // ตรวจสอบว่าระยะอยู่ในช่วงมาตรฐานหรือไม่
+                    if (actualDistance < ropeStandardDistance)
+                    {
+                        // ถ้าระยะสั้นกว่ามาตรฐาน ให้ใช้ระยะมาตรฐาน
+                        targetDistance = ropeStandardDistance;
+                        Debug.Log($"Rope distance extended from {actualDistance:F2} to standard distance {ropeStandardDistance}");
+                    }
+                    else if (actualDistance == ropeStandardDistance)
+                    {
+                        // ถ้าระยะเท่ากับมาตรฐานพอดี ให้ยาว 75%
+                        targetDistance = actualDistance * 0.75f;
+                    }
+                    else
+                    {
+                        // ถ้าระยะเกินมาตรฐาน ให้ใช้ระยะมาตรฐานแทน
+                        targetDistance = ropeStandardDistance;
+                        Debug.Log($"Rope distance clamped from {actualDistance:F2} to standard distance {ropeStandardDistance}");
+                    }
+
+                    // ทำให้เชือกสั้นลงตามที่คำนวณ
+                    StartCoroutine(SmoothShortenRope(actualDistance, targetDistance, 0.5f));
+
+
 
                     // เปิดใช้งานเชือกและ anchor
                     ropeJoint.enabled = true;
                     ropeHingeAnchorSprite.enabled = true;
+
+                    if (preSwingVelocity.magnitude < 1f)
+                    {
+                        Vector2 swingDirection = Vector2.Perpendicular((hit.point - (Vector2)transform.position).normalized);
+                        if (aimDirection.x > 0) swingDirection *= -1;
+                        playerRb.AddForce(swingDirection * 2f, ForceMode2D.Impulse);
+                    }
 
                     Debug.Log("Rope attached successfully - Thread consumed");
                 }
@@ -272,10 +291,30 @@ public class Rope : MonoBehaviour
             }
         }
 
-        // คลิกขวา - รีเซ็ตเชือก
-        if (Input.GetMouseButton(1))
+        // คลิกขวา - รีเซ็ตเชือก (แต่เฉพาะเมื่อไม่ได้เล็งกาว)
+        if (/*Input.GetMouseButton(1)|| */Input.GetKeyDown(KeyCode.Space) && ropeAttached)
         {
-            ResetRope();
+            bool isAimingGlue = (glueShootingScript != null &&
+                                glueShootingScript.IsAiming() &&
+                                glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Glue);
+
+            if (!isAimingGlue)
+            {
+
+                var playerRb = transform.GetComponent<Rigidbody2D>();
+                Vector2 releaseVelocity = playerRb.linearVelocity;
+
+                if (releaseVelocity.magnitude > 2f)
+                {
+                    // เพิ่มแรงส่งล่วงในทิศทางที่แกว่งไป
+                    Vector2 forwardForce = releaseVelocity.normalized * Mathf.Min(releaseVelocity.magnitude * 0.3f, 3f);
+                    playerRb.linearVelocity = releaseVelocity + forwardForce;
+
+                    //NotifySwingingEnd();
+                    //wasSwingingLastFrame = false;
+                }
+                ResetRope();
+            }
         }
 
         // ESC - รีเซ็ตเชือกฉุกเฉิน (สำหรับกรณีติดขัด)
@@ -290,6 +329,29 @@ public class Rope : MonoBehaviour
 
     #region Rope Management
 
+
+    private void AdjustRopeLength()
+    {
+        if (!ropeAttached) return; // ถ้าเชือกไม่ได้เกี่ยวอยู่ ให้ข้ามไป
+
+        // ตรวจจับการกดปุ่ม W (หดเชือก) และ S (ยืดเชือก)
+        if (Input.GetKey(KeyCode.W))
+        {
+            // ลดระยะเชือก (หด)
+            ropeJoint.distance = Mathf.Max(ropeJoint.distance - ropeAdjustSpeed * Time.deltaTime, minRopeLength);
+            if (animator != null) animator.SetBool("IsClimbUpDown", true);
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            // เพิ่มระยะเชือก (ยืด)
+            ropeJoint.distance = Mathf.Min(ropeJoint.distance + ropeAdjustSpeed * Time.deltaTime, maxRopeLength);
+            if (animator != null) animator.SetBool("IsClimbUpDown", true);
+        }
+        else
+        {
+            if (animator != null) animator.SetBool("IsClimbUpDown", false);
+        }
+    }
     private IEnumerator SmoothShortenRope(float fromDistance, float toDistance, float duration)
     {
         float elapsed = 0f;
@@ -311,6 +373,22 @@ public class Rope : MonoBehaviour
 
     private void ResetRope()
     {
+        if (!ropeAttached) return;
+        // เก็บ velocity ก่อนรีเซ็ต (สำหรับกรณีอื่นๆ ที่เรียก ResetRope)
+        var playerRb = GetComponent<Rigidbody2D>();
+
+        if (wasSwingingLastFrame)
+        {
+            NotifySwingingEnd();
+            wasSwingingLastFrame = false;
+        }
+
+        //Vector2 currentVelocity = Vector2.zero;
+
+        //if (ropeAttached && playerRb != null)
+        //{
+        //    currentVelocity = playerRb.linearVelocity;
+        //}
         // รีเซ็ตสถานะเชือก
         ropeJoint.enabled = false;
         ropeAttached = false;
@@ -320,13 +398,19 @@ public class Rope : MonoBehaviour
         ropePositions.Clear();
         ropeHingeAnchorSprite.enabled = false;
         distanceSet = false;
+        // คืนค่า gravity เป็นปกติ
+        if (playerRb != null)
+        {
+            playerRb.gravityScale = 1f;
 
-        // รีเซ็ตแรงโน้มถ่วง
-        GetComponent<Rigidbody2D>().gravityScale = 1f;
+        }
 
         // รีเซ็ตสถานะ PlayerMovement
         if (playerMovement != null)
+        {
             playerMovement.isSwinging = false;
+            playerMovement.ropeHook = Vector2.zero;
+        }
 
         Debug.Log("Rope reset completed");
     }
@@ -337,40 +421,75 @@ public class Rope : MonoBehaviour
 
     private void UpdateRopePositions()
     {
+
         if (!ropeAttached) return;
 
         ropeRenderer.positionCount = ropePositions.Count + 1;
 
-        for (var i = ropeRenderer.positionCount - 1; i >= 0; i--)
+        for (int i = 0; i < ropePositions.Count; i++)
         {
-            if (i != ropeRenderer.positionCount - 1) // ถ้าไม่ใช่จุดสุดท้าย
+            Vector2 ropePoint = ropePositions[i];
+
+            // ถ้าเป็น anchor ที่ปลายสุด และมี target ให้ติดตามวัตถุเคลื่อนที่
+            if (i == ropePositions.Count - 1 && attachedTarget != null)
             {
-                ropeRenderer.SetPosition(i, ropePositions[i]);
-
-                // ตั้งค่าตำแหน่ง anchor
-                if (i == ropePositions.Count - 1 || ropePositions.Count == 1)
-                {
-                    var ropePosition = ropePositions[ropePositions.Count - 1];
-                    ropeHingeAnchorRb.transform.position = ropePosition;
-                }
-                else if (i - 1 == ropePositions.IndexOf(ropePositions.Last()))
-                {
-                    var ropePosition = ropePositions.Last();
-                    ropeHingeAnchorRb.transform.position = ropePosition;
-
-                    if (!distanceSet)
-                    {
-                        ropeJoint.distance = Vector2.Distance(transform.position, ropePosition);
-                        distanceSet = true;
-                    }
-                }
+                ropePoint = (Vector2)attachedTarget.position + localHitOffset;
+                ropePositions[i] = ropePoint; // อัปเดตตำแหน่ง anchor
             }
-            else
+
+            ropeRenderer.SetPosition(i, ropePoint);
+        }
+
+        // จุดสุดท้ายของ LineRenderer = player
+        ropeRenderer.SetPosition(ropeRenderer.positionCount - 1, transform.position);
+
+        // ตั้ง anchor ของ DistanceJoint ให้ตรงกับ anchor ปลายสุด
+        if (ropePositions.Count > 0)
+        {
+            ropeHingeAnchorRb.transform.position = ropePositions.Last();
+
+            // ตั้งค่า distance ของ Joint ถ้ายังไม่ตั้ง
+            if (!distanceSet)
             {
-                // จุดสุดท้าย = ตำแหน่งผู้เล่น
-                ropeRenderer.SetPosition(i, transform.position);
+                ropeJoint.distance = Vector2.Distance(transform.position, ropePositions.Last());
+                distanceSet = true;
             }
         }
+
+        //if (!ropeAttached) return;
+
+        //ropeRenderer.positionCount = ropePositions.Count + 1;
+
+        //for (var i = ropeRenderer.positionCount - 1; i >= 0; i--)
+        //{
+        //    if (i != ropeRenderer.positionCount - 1) // ถ้าไม่ใช่จุดสุดท้าย
+        //    {
+        //        ropeRenderer.SetPosition(i, ropePositions[i]);
+
+        //        // ตั้งค่าตำแหน่ง anchor
+        //        if (i == ropePositions.Count - 1 || ropePositions.Count == 1)
+        //        {
+        //            var ropePosition = ropePositions[ropePositions.Count - 1];
+        //            ropeHingeAnchorRb.transform.position = ropePosition;
+        //        }
+        //        else if (i - 1 == ropePositions.IndexOf(ropePositions.Last()))
+        //        {
+        //            var ropePosition = ropePositions.Last();
+        //            ropeHingeAnchorRb.transform.position = ropePosition;
+
+        //            if (!distanceSet)
+        //            {
+        //                ropeJoint.distance = Vector2.Distance(transform.position, ropePosition);
+        //                distanceSet = true;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // จุดสุดท้าย = ตำแหน่งผู้เล่น
+        //        ropeRenderer.SetPosition(i, transform.position);
+        //    }
+        //}
     }
 
     #endregion
@@ -451,17 +570,23 @@ public class Rope : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        // วาดเส้นการเล็งสำหรับ Debug
+        // วาดเส้นการเล็งสำหรับ Debug (เฉพาะเมื่อเลือก Thread)
         if (!ropeAttached && Application.isPlaying)
         {
-            var worldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            worldMousePosition.z = 0;
+            bool usingThread = (glueShootingScript != null &&
+                               glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Thread);
 
-            var direction = (worldMousePosition - transform.position).normalized;
-            var endPoint = transform.position + direction * ropeMaxCastDistance;
+            if (usingThread)
+            {
+                var worldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                worldMousePosition.z = 0;
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, endPoint);
+                var direction = (worldMousePosition - transform.position).normalized;
+                var endPoint = transform.position + direction * ropeMaxCastDistance;
+
+                Gizmos.color = Color.blue; // สีน้ำเงินสำหรับเชือก
+                Gizmos.DrawLine(transform.position, endPoint);
+            }
         }
 
         // วาดจุดยึดเชือก
@@ -473,6 +598,77 @@ public class Rope : MonoBehaviour
                 Gizmos.DrawWireSphere(pos, 0.2f);
             }
         }
+    }
+
+    #endregion
+
+    #region GameManager Integration
+
+    /// <summary>
+    /// ตรวจสอบว่าสามารถใช้เชือกได้หรือไม่ตามสถานะของ GameManager และไอเทม
+    /// </summary>
+    private bool CanUseRope()
+    {
+        if (!respectGameManagerState) return true;
+
+        if (GameManager.Instance == null) return true;
+
+        // ตรวจสอบสถานะเกม
+        GameState currentState = GameManager.Instance.currentState;
+        bool stateAllowed = currentState == GameState.Normal || currentState == GameState.RopeSwinging;
+
+        if (!stateAllowed) return false;
+
+        // ตรวจสอบไอเทม Thread (ใช้ร่วมกันระหว่างซ่อมและโหนเชือก)
+        if (ItemManager.Instance != null)
+        {
+            bool hasThread = ItemManager.Instance.HasItem(ItemManager.ItemType.Thread);
+            if (!hasThread && !ropeAttached) // ถ้าไม่มีด้ายและยังไม่ได้โหนอยู่
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// แจ้ง GameManager ว่าเริ่มโหนเชือกแล้ว
+    /// </summary>
+    private void NotifySwingingStart()
+    {
+        if (!respectGameManagerState || GameManager.Instance == null) return;
+
+        bool success = GameManager.Instance.StartRopeSwinging();
+
+        if (!success)
+        {
+            Debug.LogWarning("Failed to start rope swinging - GameManager rejected state change");
+            // หากไม่สามารถเปลี่ยนสถานะได้ ให้รีเซ็ตเชือก
+            ResetRope();
+        }
+    }
+
+    /// <summary>
+    /// แจ้ง GameManager ว่าหยุดโหนเชือกแล้ว
+    /// </summary>
+    private void NotifySwingingEnd()
+    {
+        if (!respectGameManagerState || GameManager.Instance == null) return;
+
+        GameManager.Instance.EndRopeSwinging();
+    }
+
+    /// <summary>
+    /// ตรวจสอบว่าสามารถเริ่มโหนเชือกใหม่ได้หรือไม่
+    /// </summary>
+    private bool CanStartSwinging()
+    {
+        if (!respectGameManagerState) return true;
+
+        if (GameManager.Instance == null) return true;
+
+        return GameManager.Instance.currentState == GameState.Normal;
     }
 
     #endregion
