@@ -126,6 +126,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2176
   chaseMode: 0
+  requiredGlueHitsToFall: 3
+  glueHitCooldown: 0.5
+  glueFallDuration: 3
+  currentGlueHitCount: 0
   flyingSpeed: 3
   attackRange: 8
   attackCooldown: 3
@@ -142,6 +146,7 @@ MonoBehaviour:
   projectileSpeed: 10
   dropItemPrefab: {fileID: 0}
   showDebugGizmos: 1
+  showGlueDebugLogs: 1
 --- !u!58 &5351402897135363221
 CircleCollider2D:
   m_ObjectHideFlags: 0

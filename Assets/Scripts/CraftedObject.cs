@@ -404,6 +404,10 @@ public class CraftedObject : MonoBehaviour
                 TakeDamage(1);
            // }
         }
+        else
+        {
+            return;
+        }
     }
 
     #endregion
