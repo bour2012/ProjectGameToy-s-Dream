@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: -3995207338424895877
     second: treefore_0
-  - first:
-      213: 3024182107706248343
-    second: treefore_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -108,8 +105,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 524
-        height: 1032
+        width: 651
+        height: 1292
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -120,28 +117,6 @@ TextureImporter:
       bones: []
       spriteID: b76762dd71c2e88c0800000000000000
       internalID: -3995207338424895877
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: treefore_1
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 787
-        width: 13
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 79c4ce9aa9d08f920800000000000000
-      internalID: 3024182107706248343
       vertices: []
       indices: 
       edges: []
@@ -161,7 +136,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       treefore_0: -3995207338424895877
-      treefore_1: 3024182107706248343
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

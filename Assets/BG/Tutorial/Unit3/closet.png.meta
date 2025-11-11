@@ -103,10 +103,10 @@ TextureImporter:
       name: closet_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1226
-        height: 1330
+        x: 10
+        y: 15
+        width: 1239
+        height: 1345
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3475f8d876ade1e4d94fa0f7de50b270
+guid: 1745a13a3bf83b74dad4b6bc5c581cec
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1636240934216283020
-    second: Switch3_0
+      213: -5654405626334497244
+    second: Wall_3_7_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Switch3_0
+      name: Wall_3_7_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 13
-        width: 1075
-        height: 1038
+        x: 0
+        y: 2
+        width: 1996
+        height: 1957
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c833ae2e57815b610800000000000000
-      internalID: 1636240934216283020
+      spriteID: 426bc5a8a048781b0800000000000000
+      internalID: -5654405626334497244
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Switch3_0: 1636240934216283020
+      Wall_3_7_0: -5654405626334497244
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

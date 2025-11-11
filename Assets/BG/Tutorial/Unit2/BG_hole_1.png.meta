@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3475f8d876ade1e4d94fa0f7de50b270
+guid: b4bccd7a6b05ee445a1abf59e8ef5c77
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1636240934216283020
-    second: Switch3_0
+      213: -2282308334814018904
+    second: BG_hole_1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Switch3_0
+      name: BG_hole_1_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 13
-        width: 1075
-        height: 1038
+        x: 0
+        y: 0
+        width: 2689
+        height: 1892
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c833ae2e57815b610800000000000000
-      internalID: 1636240934216283020
+      spriteID: 8a24f7369ac9350e0800000000000000
+      internalID: -2282308334814018904
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Switch3_0: 1636240934216283020
+      BG_hole_1_0: -2282308334814018904
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
