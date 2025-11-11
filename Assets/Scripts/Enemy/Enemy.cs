@@ -32,7 +32,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     public LayerMask detectionLayers;
     public LayerMask obstacleLayers; // สำหรับตรวจ LOS
 
-    protected float currentHealth;
+    public float currentHealth;
     protected Vector3 initialPosition;
     protected bool isChasing;
     private float originalSpeed;
