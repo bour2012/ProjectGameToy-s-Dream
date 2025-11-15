@@ -27,6 +27,12 @@ public class FlyBoss : StateMachineBehaviour
         if (player == null || attackSystem == null || bossTransform == null || hasTriggeredAttack) return;
 
         float moveSpeed = attackSystem.moveSpeed;
+        // apply phase move speed multiplier if available (higher => faster)
+        var controller = animator.GetComponent<BossController>();
+        if (controller != null && controller.phases != null && controller.phases.Length > controller.currentPhaseIndex)
+        {
+            moveSpeed *= controller.phases[controller.currentPhaseIndex].moveSpeedMultiplier;
+        }
         float alignmentThreshold = attackSystem.alignmentThreshold;
         float targetX = player.position.x;
 
@@ -48,6 +54,19 @@ public class FlyBoss : StateMachineBehaviour
 
             if (!string.IsNullOrEmpty(triggerName))
             {
+                // Safety: ask the AI to trigger any passive ability mapped to this trigger name
+                if (attackAI != null)
+                {
+                    try
+                    {
+                        attackAI.TriggerPassiveFromAnimation(triggerName);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[FlyBoss] TriggerPassiveFromAnimation threw: {ex.Message}");
+                    }
+                }
+
                 animator.SetTrigger(triggerName);
                 if (attackAI != null && attackAI.controller != null && attackAI.controller.showDebugLogs)
                     Debug.Log($"[FlyBoss] Triggered {triggerName} for index {attackIndex}");
@@ -57,6 +76,7 @@ public class FlyBoss : StateMachineBehaviour
                 // Fallback: if nothing mapped, try legacy names
                 if (attackIndex == 1) animator.SetTrigger("FireSpread");
                 else if (attackIndex == 2) animator.SetTrigger("FireBeam");
+                //else if (attackIndex == 3) animator.SetTrigger("Hazard");
                 else animator.SetTrigger("GoToIdle");
             }
         }

@@ -18,14 +18,29 @@ public class BossController : Enemy
     [HideInInspector] public float currentSpeedMultiplier = 1f;
     public AnimationCurve glueSlowCurve = AnimationCurve.Linear(0, 1, 1, 0.3f);
     private float lastGlueHitTime = -999f;
-    private float glueHitCooldown = 0.2f;
+    private float glueHitCooldown = 0.15f;
 
-    [Header("Combat")]
-    public GameObject projectilePrefab;
-    public Transform projectileSpawnPoint;
-    public float projectileSpeed = 8f;
-    public GameObject minionPrefab;
-    public Transform[] minionSpawnPoints;
+    [Header("Glue Accumulation")]
+    [Tooltip("เวลา (วินาที) ที่การโจมตีกาวจะถูกสะสมก่อนจะรีเซ็ตเป็นศูนย์ ถ้าไม่มีการโดนกาวใหม่ในช่วงนี้")]
+    public float glueAccumulationWindow = 3f;
+    private float glueAccumulationTimer = 0f;
+    private bool glueFullTriggered = false; // true เมื่อหลอดเต็มและ Fall ถูก triggered
+    [Header("Fall / Grounding")]
+    [Tooltip("Layer(s) used to detect ground contact when boss falls")]
+    public LayerMask groundLayerMask;
+    [Tooltip("gravityScale applied while boss is falling toward the ground")]
+    public float fallGravityScale = 2f;
+    [Tooltip("เวลาที่บอสจะนิ่งอยู่บนพื้น (วินาที) ก่อนรีเซ็ตกาวและกลับไปบินได้อีกครั้ง")]
+    public float fallGroundedDuration = 5f;
+    private bool isGroundedFromFall = false;
+    private Coroutine groundedCoroutine = null;
+
+    //[Header("Combat")]
+    //public GameObject projectilePrefab;
+    //public Transform projectileSpawnPoint;
+    //public float projectileSpeed = 8f;
+    //public GameObject minionPrefab;
+    //public Transform[] minionSpawnPoints;
 
     [Header("Movement")]
     public float baseSpeed = 4f;
@@ -51,27 +66,44 @@ public class BossController : Enemy
     [Header("Debug")]
     public bool showDebugLogs = true;
 
-    // (��ǹ AI & Attack Logic �١�����͡�����)
+    [Header("Stomp")]
+    [Tooltip("Damage applied to the boss when the player stomps its head while it's falling")]
+    public float stompDamage = 10f;
 
     // Public properties for State Machine
     [HideInInspector] public bool isCurrentlyFalling = false;
     [HideInInspector] public bool isInvincible = false;
     [HideInInspector] public Vector2 targetPosition;
-    //[HideInInspector] public GameObject currentTarget; // ������� Public ���� [HideInInspector]
     [HideInInspector] public float fallDuration = 3f;
     [HideInInspector] public float damageInvincibilityTime = 1f;
 
     private AudioSource audioSource;
     private SpriteRenderer bossSprite;
 
+    // Position lock while accumulating glue to avoid being displaced by projectile collisions
+    private Vector2 lastFixedPosition;
+    [Tooltip("ถ้า true ขณะสะสมกาว จะล็อกตำแหน่งทางฟิสิกส์ไม่ให้ถูกดัน")]
+    public bool enforcePositionLockWhileAccumulating = true;
+
+    // Remember starting position so boss can return after falling
+    private Vector2 startingPosition;
+    [Header("Return Settings")]
+    [Tooltip("ความเร็วที่บอสบินกลับตำแหน่งเริ่มต้น (หน่วย Unity units/second)")]
+    public float returnToStartSpeed = 3f;
+    private bool isReturningToStart = false;
+
     [System.Serializable]
     public class BossPhaseData
     {
         public string phaseName = "Phase 1";
-        [Range(0f, 1f)] public float healthThreshold = 0.5f;
+        [Header("Health Range (0..1)")]
+        [Range(0f, 1f)] public float minHealthPercent = 0f; // inclusive
+        [Range(0f, 1f)] public float maxHealthPercent = 1f; // inclusive
+
+        [Header("Phase Tuning")]
         public int requiredGlueHits = 5;
-        public float flyingSpeed = 3f;
-        public float attackCooldown = 3f;
+        public float moveSpeedMultiplier = 1f;
+        public float attackSpeedMultiplier = 1f; // >1 => faster (cooldowns shorter)
         public Color phaseColor = Color.white;
     }
 
@@ -79,15 +111,15 @@ public class BossController : Enemy
     {
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0;
+        if (rb != null) rb.gravityScale = 0;
         audioSource = GetComponent<AudioSource>();
         bossSprite = GetComponentInChildren<SpriteRenderer>();
 
         if (phases == null || phases.Length == 0)
         {
             phases = new BossPhaseData[2];
-            phases[0] = new BossPhaseData { phaseName = "Phase 1", healthThreshold = 0.5f, requiredGlueHits = 5 };
-            phases[1] = new BossPhaseData { phaseName = "Phase 2", healthThreshold = 0f, requiredGlueHits = 7 };
+            phases[0] = new BossPhaseData { phaseName = "Phase 1", minHealthPercent = 0.5f, maxHealthPercent = 1f, requiredGlueHits = 5 };
+            phases[1] = new BossPhaseData { phaseName = "Phase 2", minHealthPercent = 0f, maxHealthPercent = 0.5f, requiredGlueHits = 7 };
         }
     }
 
@@ -95,8 +127,25 @@ public class BossController : Enemy
     {
         base.Start();
 
-        // �� Player �������� MovementAI ��
         currentTarget = GameObject.FindGameObjectWithTag("Player");
+
+        // cache starting position (use rb if available)
+        if (rb != null) startingPosition = rb.position; else startingPosition = transform.position;
+
+        // set default phase mapping if phases defined but ranges not configured
+        if (phases != null && phases.Length > 0)
+        {
+            // If phases don't have sensible min/max ranges yet, set defaults: Phase1=0.6-1.0, Phase2=0.25-0.6, Phase3=0-0.25
+            bool needsDefaults = true;
+            foreach (var p in phases) if (p.minHealthPercent != 0f || p.maxHealthPercent != 1f) { needsDefaults = false; break; }
+            if (needsDefaults && phases.Length >= 3)
+            {
+                // user requested: Phase1 = 60-100%, Phase2 = 25-60%, Phase3 = 0-25%
+                phases[0].minHealthPercent = 0.6f; phases[0].maxHealthPercent = 1f;
+                phases[1].minHealthPercent = 0.25f; phases[1].maxHealthPercent = 0.6f;
+                phases[2].minHealthPercent = 0f; phases[2].maxHealthPercent = 0.25f;
+            }
+        }
 
         if (healthBar != null)
         {
@@ -120,27 +169,49 @@ public class BossController : Enemy
         UpdateSpeedFromGlue();
         CheckPhaseTransition();
 
-        //// �Ѿഷ animator parameters (�ѧ������)
-        //if (animator != null)
-        //{
-        //    animator.SetFloat("SpeedMultiplier", currentSpeedMultiplier);
-        //    animator.SetBool("IsFalling", isCurrentlyFalling);
-        //    animator.SetBool("IsInvincible", isInvincible);
-        //    animator.SetInteger("CurrentPhase", currentPhaseIndex);
-        //    animator.SetInteger("GlueCount", currentGlueHitCount);
-        //}
-
-        // (AI Loop �������١ź�͡�ҡ��ǹ���)
+        // decay glue accumulation timer
+        if (!glueFullTriggered && currentGlueHitCount > 0)
+        {
+            glueAccumulationTimer -= Time.deltaTime;
+            if (glueAccumulationTimer <= 0f)
+            {
+                if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation timed out, reset.");
+                ResetGlueAccumulation();
+            }
+        }
     }
 
-    // (�ѧ��ѹ RunPhase1AttackLoop() �١ź�͡�)
+    void FixedUpdate()
+    {
+        if (rb != null)
+            lastFixedPosition = rb.position;
+
+        // If recovering, move smoothly back to starting position
+        if (isReturningToStart && rb != null)
+        {
+            Vector2 current = rb.position;
+            Vector2 next = Vector2.MoveTowards(current, startingPosition, returnToStartSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(next);
+
+            // arrived
+            if (Vector2.Distance(next, startingPosition) < 0.05f)
+            {
+                isReturningToStart = false;
+                rb.linearVelocity = Vector2.zero;
+                // ensure flight physics restored
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.gravityScale = 0f;
+                if (showDebugLogs) Debug.Log($"[{bossName}] Returned to starting position");
+            }
+        }
+    }
 
     void UpdateSpeedFromGlue()
     {
         if (isCurrentlyFalling) return;
 
         BossPhaseData currentPhase = phases[currentPhaseIndex];
-        float glueProgress = (float)currentGlueHitCount / currentPhase.requiredGlueHits;
+        float glueProgress = (float)currentGlueHitCount / Mathf.Max(1, currentPhase.requiredGlueHits);
         currentSpeedMultiplier = glueSlowCurve.Evaluate(glueProgress);
 
         if (animator != null)
@@ -159,15 +230,20 @@ public class BossController : Enemy
     {
         float healthPercent = currentHealth / maxHealth;
 
-        for (int i = phases.Length - 1; i > currentPhaseIndex; i--)
+        // find phase where healthPercent is within [min,max]
+        for (int i = 0; i < phases.Length; i++)
         {
-            if (healthPercent <= phases[i].healthThreshold)
+            var p = phases[i];
+            if (healthPercent >= p.minHealthPercent && healthPercent <= p.maxHealthPercent)
             {
-                if (animator != null)
+                if (i != currentPhaseIndex)
                 {
-                    animator.SetTrigger("PhaseTransition");
+                    if (animator != null)
+                    {
+                        animator.SetTrigger("PhaseTransition");
+                    }
+                    EnterPhase(i);
                 }
-                EnterPhase(i);
                 break;
             }
         }
@@ -178,7 +254,10 @@ public class BossController : Enemy
         currentPhaseIndex = phaseIndex;
         BossPhaseData phase = phases[phaseIndex];
 
+        // Reset glue on phase enter
         currentGlueHitCount = 0;
+        glueFullTriggered = false;
+        glueAccumulationTimer = 0f;
         currentSpeedMultiplier = 1f;
 
         if (glueMeter != null)
@@ -190,42 +269,191 @@ public class BossController : Enemy
         if (showDebugLogs)
             Debug.Log($"[{bossName}] Entered {phase.phaseName}");
 
-        // --- ������ǹ��� ---
-        // �� AI �������Ǣ�ͧ���������¹����
-        GetComponent<BossAttackAI>()?.OnPhaseChanged(phaseIndex);
+        // Apply multipliers to animator and notify other systems
+        if (animator != null)
+        {
+            animator.SetInteger("Phase", phaseIndex);
+            animator.speed = phase.moveSpeedMultiplier; // optional: scale base animation speed
+        }
+
+        var ai = GetComponent<BossAttackAI>();
+        if (ai != null) ai.OnPhaseChanged(phaseIndex);
+
+        var passive = GetComponent<BossPhasePassiveBehaviors>();
+        if (passive != null) passive.OnPhaseChanged(phaseIndex);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.GetComponent<GlueProjectile>() != null)
+        // glue projectile hits
+        var gp = other.GetComponent<GlueProjectile>();
+        if (gp != null)
         {
+            // handle glue hit and prevent physics displacement while accumulating
             HandleGlueHit();
+
+            if (enforcePositionLockWhileAccumulating && !glueFullTriggered && currentGlueHitCount > 0 && rb != null)
+            {
+                rb.position = lastFixedPosition;
+                rb.linearVelocity = Vector2.zero;
+            }
         }
     }
 
     void HandleGlueHit()
     {
-        if (isCurrentlyFalling) return;
+        if (isCurrentlyFalling) return; // when already falling, glue does nothing
         if (Time.time - lastGlueHitTime < glueHitCooldown) return;
 
         lastGlueHitTime = Time.time;
+
+        // Start or refresh accumulation window
+        glueAccumulationTimer = glueAccumulationWindow;
+
         currentGlueHitCount++;
 
         if (showDebugLogs)
-            Debug.Log($"[{bossName}] Glue hit! {currentGlueHitCount}/{phases[currentPhaseIndex].requiredGlueHits}");
+            Debug.Log($"[{bossName}] Glue hit! {currentGlueHitCount}/{phases[currentPhaseIndex].requiredGlueHits} (timer {glueAccumulationTimer:F1}s)");
 
         if (glueMeter != null)
-        {
             glueMeter.SetCurrentGlue(currentGlueHitCount);
-        }
 
-        if (currentGlueHitCount >= phases[currentPhaseIndex].requiredGlueHits)
+        // if reached required count -> trigger fall behaviour
+        if (!glueFullTriggered && currentGlueHitCount >= phases[currentPhaseIndex].requiredGlueHits)
         {
+            glueFullTriggered = true;
             if (animator != null)
             {
-                animator.SetTrigger("Fall");
+                animator.SetBool("Fall",true);
             }
+            PlaySound(fallSound);
+
+            // Apply gravity so boss will fall down naturally
+            if (rb != null)
+            {
+                // ensure body is dynamic so gravity affects it
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.gravityScale = fallGravityScale;
+            }
+
+            // DO NOT reset glue here: wait until the boss lands on ground and the grounded duration completes
+            if (showDebugLogs) Debug.Log($"[{bossName}] Glue full -> Fall triggered (gravity enabled)");
         }
+    }
+
+    /// <summary>
+    /// Called externally when the fall sequence completes (Animation Event or SMB should call this).
+    /// Resets glue state so boss can resume normal behaviour.
+    /// </summary>
+    public void OnFallComplete()
+    {
+        // If called manually, cancel any grounded coroutine and recover immediately
+        if (groundedCoroutine != null)
+        {
+            StopCoroutine(groundedCoroutine);
+            groundedCoroutine = null;
+        }
+
+        RecoverFromFall();
+    }
+
+    //private IEnumerator TemporarilyInvincible(float duration)
+    //{
+    //    isInvincible = true;
+    //    yield return new WaitForSeconds(duration);
+    //    isInvincible = false;
+    //}
+
+    // Called when boss lands on ground after falling
+    private void LandedOnGround()
+    {
+        if (isGroundedFromFall) return;
+        isGroundedFromFall = true;
+
+        // mark vulnerable while grounded
+        isCurrentlyFalling = true;
+
+        // stop physics motion and freeze on ground
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.gravityScale = 0f;
+            rb.bodyType = RigidbodyType2D.Kinematic; // keep in place while grounded
+        }
+
+        // start grounded timer to recover
+        groundedCoroutine = StartCoroutine(GroundedRoutine());
+    }
+
+    private IEnumerator GroundedRoutine()
+    {
+        // stay on ground for configured duration
+        float t = 0f;
+        while (t < fallGroundedDuration)
+        {
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        groundedCoroutine = null;
+        RecoverFromFall();
+    }
+
+    private void RecoverFromFall()
+    {
+        // boss recovers and returns to flying
+        isCurrentlyFalling = false;
+        isGroundedFromFall = false;
+
+        // reset glue and effects
+        ResetGlueAccumulation();
+
+        // restore physics for flight
+        if (rb != null)
+        {
+            animator.SetBool("Fall", false);
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f;
+            rb.linearVelocity = Vector2.zero;
+            // start moving back to starting position smoothly
+            isReturningToStart = true;
+            if (showDebugLogs) Debug.Log($"[{bossName}] Recovering: returning to start {startingPosition}");
+        }
+
+        // Let animations / AI resume normally. Do not automatically trigger another animation here;
+        // the Attack AI or Animator controller can decide next state.
+
+        // Ensure AI is unpaused and reset so it can resume its attack loop when back in flight
+        var ai = GetComponent<BossAttackAI>();
+        if (ai != null)
+        {
+            ai.ResetAIState();
+            ai.OnPhaseChanged(currentPhaseIndex); // re-select the correct sequence
+            ai.PauseForSummons(false);
+        }
+
+        if (showDebugLogs) Debug.Log($"[{bossName}] Recovered from fall and resumed flight");
+    }
+
+    /// <summary>
+    /// Reset glue accumulation and related UI/effects immediately.
+    /// </summary>
+    public void ResetGlueAccumulation()
+    {
+        currentGlueHitCount = 0;
+        glueAccumulationTimer = 0f;
+        glueFullTriggered = false;
+
+        if (glueMeter != null)
+            glueMeter.SetCurrentGlue(0);
+
+        if (glueAccumulationEffect != null)
+        {
+            glueAccumulationEffect.Stop();
+            glueAccumulationEffect.Clear();
+        }
+
+        if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation reset");
     }
 
     public override void TakeDamage(float damage)
@@ -259,6 +487,26 @@ public class BossController : Enemy
         }
     }
 
+    // Boss-specific stomp behavior: only respond when boss is in falling/vulnerable state
+    public override void OnStomped(PlayerMovement player)
+    {
+        if (player == null) return;
+
+        // Only allow stomping when boss is currently falling / vulnerable
+        if (!isCurrentlyFalling)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Stomp ignored: not falling");
+            return;
+        }
+
+        // Bounce the player as usual
+        player.BounceAfterStomp();
+
+        // Apply damage via existing TakeDamage method (it already respects isCurrentlyFalling/isInvincible)
+        if (showDebugLogs) Debug.Log($"[{bossName}] Stomped by player -> applying {stompDamage} damage");
+        TakeDamage(stompDamage);
+    }
+
     protected override void Die()
     {
         if (animator != null)
@@ -281,40 +529,47 @@ public class BossController : Enemy
         }
     }
 
-    public void SpawnProjectile(Vector2 direction)
+    /// <summary>
+    /// Called by BossPhasePassiveBehaviors (or other systems) to pause AI actions while summons/obstacles are active.
+    /// </summary>
+    public void PauseForSummons(bool pause)
     {
-        if (projectilePrefab == null || projectileSpawnPoint == null) return;
-
-        GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
-
-        if (projectile.TryGetComponent<Rigidbody2D>(out var projectileRb))
-        {
-            projectileRb.linearVelocity = direction * projectileSpeed;
-        }
-
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
+        var ai = GetComponent<BossAttackAI>();
+        if (ai != null) ai.PauseForSummons(pause);
+        if (animator != null) animator.SetBool("PauseActions", pause);
+        if (showDebugLogs) Debug.Log($"[{bossName}] PauseForSummons = {pause}");
     }
 
-    public void SummonMinions(int count)
+    // Called when a collision happens - used to detect landing on ground after fall
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (minionPrefab == null || minionSpawnPoints == null) return;
+        if (!glueFullTriggered) return;
 
-        int spawned = 0;
-        foreach (Transform spawnPoint in minionSpawnPoints)
+        // check collision layer against groundLayerMask
+        if ((groundLayerMask.value & (1 << collision.gameObject.layer)) != 0)
         {
-            if (spawned >= count) break;
-            if (spawnPoint != null)
-            {
-                Instantiate(minionPrefab, spawnPoint.position, Quaternion.identity);
-                spawned++;
-            }
+            LandedOnGround();
         }
     }
+
+    //public void SummonMinions(int count)
+    //{
+    //    if (minionPrefab == null || minionSpawnPoints == null) return;
+
+    //    int spawned = 0;
+    //    foreach (Transform spawnPoint in minionSpawnPoints)
+    //    {
+    //        if (spawned >= count) break;
+    //        if (spawnPoint != null)
+    //        {
+    //            Instantiate(minionPrefab, spawnPoint.position, Quaternion.identity);
+    //            spawned++;
+    //        }
+    //    }
+    //}
 
     public Vector2 GetRandomFlightPosition()
     {
-        // 'initialPosition' ����ô��Ҩҡ base class 'Enemy'
         Vector2 basePos = initialPosition;
 
         if (currentTarget != null)

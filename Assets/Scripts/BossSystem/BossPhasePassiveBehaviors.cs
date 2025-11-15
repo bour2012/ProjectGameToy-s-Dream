@@ -1,61 +1,88 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 
-// ========================================
-// Phase Behavior System - Wave Limit Version
-// เพิ่มระบบควบคุม Wave สำหรับการ Spawn ศัตรู
-// ========================================
-
-/// <summary>
-/// ระบบจัดการ Passive Behaviors ของแต่ละ Phase (รองรับ Wave Limit)
-/// </summary>
 public class BossPhasePassiveBehaviors : MonoBehaviour
 {
     [System.Serializable]
     public class PhasePassiveAbility
     {
+        [System.Serializable]
+        public class ObstacleSlot
+        {
+            [Tooltip("Local position relative to the boss when 'relativeToBoss' is true, otherwise world position.")]
+            public Vector2 slotPosition = Vector2.zero;
+
+            [Tooltip("If true, slotPosition is interpreted relative to the boss transform; otherwise world coordinates.")]
+            public bool relativeToBoss = true;
+
+            [Tooltip("List of prefabs that can be used for this slot. Spawning will pick from these using the start index and sequence rules.")]
+            public GameObject[] prefabs;
+
+            [Tooltip("How many objects to spawn at this slot (will pick prefabs in sequence).")]
+            public int spawnCount = 1;
+
+            [Tooltip("Starting index into the 'prefabs' array for the first spawned object at this slot.")]
+            public int startPrefabIndex = 0;
+
+            [Tooltip("If true, spawned objects at this slot will use subsequent prefab indices (wraparound). If false, the same prefab will be used for all items at this slot.")]
+            public bool usePrefabSequence = true;
+
+            [Tooltip("Optional spacing (local X axis) to place multiple items at this slot in order.")]
+            public float spacingBetweenItems = 0.5f;
+        }
+
         [Header("Phase Info")]
         public string abilityName = "Falling Rocks";
-        public int phaseIndex = 1; // ใช้ใน Phase ไหน
+        public int phaseIndex = 1;
 
         [Header("Ability Type")]
         public PassiveAbilityType abilityType;
 
+        [Header("Auto-Start Settings")]
+        public bool autoStartOnPhaseChange = true;
+
         [Header("Spawn Settings")]
         public GameObject spawnPrefab;
         public float spawnInterval = 3f;
-        public int spawnCount = 1;
+        public int spawnCount = 0;
 
-        [Header("Wave Limit Settings (สำหรับ Minion/Obstacle)")]
-        public bool useWaveLimit = false; // เปิด/ปิด wave limit
-        public int maxWaves = 3; // จำนวน wave สูงสุด (0 = ไม่จำกัด)
-        public int enemiesPerWave = 5; // จำนวนศัตรูต่อ wave
-        public bool waitForWaveComplete = true; // รอให้ wave ปัจจุบันตายหมดก่อน spawn wave ใหม่
+        [Header("Wave Limit Settings (for Minion/Obstacle)")]
+        public bool useWaveLimit = false;
+        public int maxWaves = 3;
+        public int enemiesPerWave = 5;
+        public bool waitForWaveComplete = true;
 
         [Header("Spawn Area")]
         public SpawnAreaType areaType = SpawnAreaType.AbovePlayer;
         public Vector2 spawnOffset = Vector2.zero;
-        public float spawnHeight = 10f; // ความสูงเหนือเป้าหมาย
-        public float randomRadius = 3f; // รัศมีการสุ่ม
+        public float spawnHeight = 10f;
+        public float randomRadius = 3f;
 
         [Header("Spawn Pattern")]
         public SpawnPattern pattern = SpawnPattern.Random;
         public float patternSpacing = 2f;
 
+        [Header("Obstacle Slots (CreateObstacle only)")]
+        [Tooltip("Define explicit slots for CreateObstacle abilities. Each slot can hold multiple prefabs and spawn counts.")]
+        public ObstacleSlot[] obstacleSlots;
+
         [Header("Spawn Timing")]
-        public bool sequentialSpawn = true; // spawn ทีละตัว
-        public float spawnDelay = 0.2f; // ดีเลย์ระหว่างการ spawn แต่ละตัว
+        public bool sequentialSpawn = true;
+        public float spawnDelay = 0.2f;
 
         [Header("Object Lifetime")]
         public bool autoDestroy = true;
-        public float destroyAfter = 5f; // ทำลายหลังกี่วินาที
+        public float destroyAfter = 5f;
 
         [Header("Advanced Settings")]
         public bool onlyWhenGrounded = false;
         public bool onlyWhenFlying = false;
         public float startDelay = 0f;
-        public int maxActiveCount = -1; // -1 = ไม่จำกัด (ไม่ใช้กับ wave mode)
+        public int maxActiveCount = -1;
 
         [Header("Visual Effects")]
         public GameObject warningEffectPrefab;
@@ -67,35 +94,91 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         [Range(0f, 1f)]
         public float soundVolume = 1f;
 
-        // Runtime wave tracking (internal)
         [HideInInspector] public int currentWave = 0;
         [HideInInspector] public List<GameObject> currentWaveObjects = new List<GameObject>();
+
+        public PhasePassiveAbility Clone()
+        {
+            var c = new PhasePassiveAbility();
+            c.abilityName = this.abilityName;
+            c.phaseIndex = this.phaseIndex;
+            c.abilityType = this.abilityType;
+            c.spawnPrefab = this.spawnPrefab;
+            c.spawnInterval = this.spawnInterval;
+            c.spawnCount = this.spawnCount;
+            c.useWaveLimit = this.useWaveLimit;
+            c.maxWaves = this.maxWaves;
+            c.enemiesPerWave = this.enemiesPerWave;
+            c.waitForWaveComplete = this.waitForWaveComplete;
+            c.areaType = this.areaType;
+            c.spawnOffset = this.spawnOffset;
+            c.spawnHeight = this.spawnHeight;
+            c.randomRadius = this.randomRadius;
+            c.pattern = this.pattern;
+            c.patternSpacing = this.patternSpacing;
+            c.sequentialSpawn = this.sequentialSpawn;
+            c.spawnDelay = this.spawnDelay;
+            c.autoDestroy = this.autoDestroy;
+            c.destroyAfter = this.destroyAfter;
+            c.onlyWhenGrounded = this.onlyWhenGrounded;
+            c.onlyWhenFlying = this.onlyWhenFlying;
+            c.startDelay = this.startDelay;
+            c.maxActiveCount = this.maxActiveCount;
+            c.warningEffectPrefab = this.warningEffectPrefab;
+            c.warningDuration = this.warningDuration;
+            c.warningColor = this.warningColor;
+            c.spawnSound = this.spawnSound;
+            c.soundVolume = this.soundVolume;
+            c.autoStartOnPhaseChange = this.autoStartOnPhaseChange;
+
+            if (this.obstacleSlots != null)
+            {
+                c.obstacleSlots = new ObstacleSlot[this.obstacleSlots.Length];
+                for (int i = 0; i < this.obstacleSlots.Length; i++)
+                {
+                    var s = new ObstacleSlot();
+                    s.slotPosition = this.obstacleSlots[i].slotPosition;
+                    s.relativeToBoss = this.obstacleSlots[i].relativeToBoss;
+                    s.prefabs = this.obstacleSlots[i].prefabs;
+                    s.spawnCount = this.obstacleSlots[i].spawnCount;
+                    s.startPrefabIndex = this.obstacleSlots[i].startPrefabIndex;
+                    s.usePrefabSequence = this.obstacleSlots[i].usePrefabSequence;
+                    s.spacingBetweenItems = this.obstacleSlots[i].spacingBetweenItems;
+                    c.obstacleSlots[i] = s;
+                }
+            }
+
+            c.currentWave = 0;
+            c.currentWaveObjects = new List<GameObject>();
+
+            return c;
+        }
     }
 
     public enum PassiveAbilityType
     {
-        FallingHazard,      // ของตกจากบน (เช่น หิน)
-        GroundHazard,       // อันตรายจากพื้น (เช่น หนาม)
-        SpawnMinion,        // เสก minion
-        CreateObstacle,     // สร้างสิ่งกีดขวาง
-        PoisonCloud         // เมฆพิษ
+        FallingHazard,
+        GroundHazard,
+        SpawnMinion,
+        CreateObstacle,
+        PoisonCloud
     }
 
     public enum SpawnAreaType
     {
-        AbovePlayer,        // เหนือผู้เล่น
-        AroundPlayer,       // รอบๆ ผู้เล่น (แนวนอน)
-        AroundBoss,         // รอบๆ Boss
-        RandomInArena,      // สุ่มทั่วสนาม
-        BehindPlayer        // ด้านหลังผู้เล่น
+        AbovePlayer,
+        AroundPlayer,
+        AroundBoss,
+        RandomInArena,
+        BehindPlayer
     }
 
     public enum SpawnPattern
     {
-        Random,             // สุ่มตำแหน่ง
-        Line,               // เรียงเป็นแนว
-        Circle,             // วงกลม
-        Grid                // ตาราง
+        Random,
+        Line,
+        Circle,
+        Grid
     }
 
     [Header("Phase Abilities")]
@@ -134,29 +217,61 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         }
     }
 
+    public bool TriggerAbilityByName(string abilityName)
+    {
+        if (phaseAbilities == null || phaseAbilities.Length == 0) return false;
+
+        foreach (var ability in phaseAbilities)
+        {
+            if (ability != null && ability.abilityName == abilityName)
+            {
+                var runtimeCopy = ability.Clone();
+                StartCoroutine(PassiveAbilityRoutine(runtimeCopy));
+                if (showDebugLogs) Debug.Log($"[PhasePassive] TriggerAbilityByName started: {abilityName}");
+                return true;
+            }
+        }
+
+        if (showDebugLogs) Debug.LogWarning($"[PhasePassive] TriggerAbilityByName: ability '{abilityName}' not found");
+        return false;
+    }
+
+    public PhasePassiveAbility FindAbilityByName(string abilityName)
+    {
+        if (phaseAbilities == null || phaseAbilities.Length == 0) return null;
+        foreach (var ability in phaseAbilities)
+        {
+            if (ability != null && ability.abilityName == abilityName) return ability;
+        }
+        return null;
+    }
+
+    public void TriggerAbilityInstance(PhasePassiveAbility abilityInstance)
+    {
+        if (abilityInstance == null) return;
+        StartCoroutine(PassiveAbilityRoutine(abilityInstance));
+        if (showDebugLogs) Debug.Log($"[PhasePassive] TriggerAbilityInstance started: {abilityInstance.abilityName}");
+    }
+
     void Update()
     {
-        // ตรวจสอบว่า Phase เปลี่ยนหรือไม่
         if (bossController != null && bossController.currentPhaseIndex != currentPhase)
         {
             OnPhaseChanged(bossController.currentPhaseIndex);
         }
 
-        // ทำความสะอาด spawned objects ที่โดนทำลายแล้ว
         CleanupDestroyedObjects();
     }
 
-    void OnPhaseChanged(int newPhase)
+    public void OnPhaseChanged(int newPhase)
     {
         if (showDebugLogs)
             Debug.Log($"[PhasePassive] Phase changed to {newPhase}");
 
-        // หยุด abilities ทั้งหมดของ phase เก่า
         StopAllPhaseAbilities(currentPhase);
 
         currentPhase = newPhase;
 
-        // Reset wave counters
         foreach (var ability in phaseAbilities)
         {
             if (ability.phaseIndex == newPhase)
@@ -166,7 +281,6 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
             }
         }
 
-        // เริ่ม abilities ของ phase ใหม่
         StartPhaseAbilities(newPhase);
     }
 
@@ -176,7 +290,7 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 
         foreach (var ability in phaseAbilities)
         {
-            if (ability.phaseIndex == phaseIndex && ability.spawnPrefab != null)
+            if (ability.phaseIndex == phaseIndex && (ability.spawnPrefab != null || (ability.abilityType == PassiveAbilityType.CreateObstacle && ability.obstacleSlots != null && ability.obstacleSlots.Length > 0)))
             {
                 Coroutine coroutine = StartCoroutine(PassiveAbilityRoutine(ability));
 
@@ -209,77 +323,73 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 
     IEnumerator PassiveAbilityRoutine(PhasePassiveAbility ability)
     {
-        // Start delay
         if (ability.startDelay > 0)
         {
             yield return new WaitForSeconds(ability.startDelay);
         }
 
-        // ถ้าใช้ wave limit mode
         if (ability.useWaveLimit)
         {
             yield return StartCoroutine(WaveLimitRoutine(ability));
         }
         else
         {
-            // โหมดปกติ (ไม่มี wave limit)
             yield return StartCoroutine(NormalRoutine(ability));
         }
     }
 
-    /// <summary>
-    /// โหมด Wave Limit - Spawn ตาม wave ที่กำหนด รอให้ตายหมดก่อน spawn wave ใหม่
-    /// </summary>
     IEnumerator WaveLimitRoutine(PhasePassiveAbility ability)
     {
         while (true)
         {
-            // ตรวจสอบว่าครบจำนวน wave สูงสุดหรือยัง
             if (ability.maxWaves > 0 && ability.currentWave >= ability.maxWaves)
             {
                 if (showDebugLogs)
                     Debug.Log($"[PhasePassive] {ability.abilityName} reached max waves ({ability.maxWaves})");
-                yield break; // หยุดการ spawn
+                yield break;
             }
 
-            // ตรวจสอบเงื่อนไข
             if (!ShouldActivateAbility(ability))
             {
                 yield return new WaitForSeconds(0.5f);
                 continue;
             }
 
-            // ถ้าต้องรอให้ wave ปัจจุบันตายหมดก่อน
             if (ability.waitForWaveComplete && ability.currentWave > 0)
             {
-                // รอให้ศัตรูใน wave ปัจจุบันตายหมด
                 yield return new WaitUntil(() => IsWaveComplete(ability));
 
                 if (showDebugLogs)
                     Debug.Log($"[PhasePassive] {ability.abilityName} wave {ability.currentWave} completed!");
 
-                // รอ interval ก่อน spawn wave ใหม่
                 yield return new WaitForSeconds(ability.spawnInterval);
             }
 
-            // Spawn wave ใหม่
             ability.currentWave++;
             ability.currentWaveObjects.Clear();
 
             if (showDebugLogs)
                 Debug.Log($"[PhasePassive] {ability.abilityName} spawning wave {ability.currentWave}/{ability.maxWaves}");
 
-            // Override spawnCount ด้วย enemiesPerWave
             int originalSpawnCount = ability.spawnCount;
             ability.spawnCount = ability.enemiesPerWave;
 
-            // Execute spawn
+            if (bossController != null && ability.abilityType == PassiveAbilityType.SpawnMinion && ability.waitForWaveComplete)
+            {
+                bossController.PauseForSummons(true);
+            }
+
             yield return StartCoroutine(ExecuteAbility(ability));
 
-            // Restore original spawnCount
+            if (ability.waitForWaveComplete && ability.abilityType == PassiveAbilityType.SpawnMinion)
+            {
+                yield return new WaitUntil(() => IsWaveComplete(ability));
+                if (bossController != null)
+                    bossController.PauseForSummons(false);
+            }
+
             ability.spawnCount = originalSpawnCount;
 
-            // ถ้าไม่ต้องรอให้ wave เสร็จ ให้รอ interval แทน
             if (!ability.waitForWaveComplete)
             {
                 yield return new WaitForSeconds(ability.spawnInterval);
@@ -287,17 +397,12 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// โหมดปกติ - Spawn ตามเวลาปกติ
-    /// </summary>
     IEnumerator NormalRoutine(PhasePassiveAbility ability)
     {
         while (true)
         {
-            // ตรวจสอบเงื่อนไข
             if (ShouldActivateAbility(ability))
             {
-                // ตรวจสอบ max active count
                 if (ability.maxActiveCount > 0)
                 {
                     int activeCount = GetActiveSpawnCount(ability.phaseIndex);
@@ -308,29 +413,33 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
                     }
                 }
 
-                // ทำ ability
+                if (bossController != null && ability.abilityType == PassiveAbilityType.SpawnMinion && ability.waitForWaveComplete)
+                {
+                    bossController.PauseForSummons(true);
+                }
+
                 yield return StartCoroutine(ExecuteAbility(ability));
+
+                if (ability.waitForWaveComplete && ability.abilityType == PassiveAbilityType.SpawnMinion)
+                {
+                    yield return new WaitUntil(() => IsWaveComplete(ability));
+                    if (bossController != null)
+                        bossController.PauseForSummons(false);
+                }
             }
 
             yield return new WaitForSeconds(ability.spawnInterval);
         }
     }
 
-    /// <summary>
-    /// ตรวจสอบว่า wave ปัจจุบันเสร็จหรือยัง (ศัตรูตายหมดแล้ว)
-    /// </summary>
     bool IsWaveComplete(PhasePassiveAbility ability)
     {
-        // ลบ objects ที่เป็น null ออก
         ability.currentWaveObjects.RemoveAll(obj => obj == null);
-
-        // ถ้าไม่มีอะไรเหลือแล้ว = wave เสร็จ
         return ability.currentWaveObjects.Count == 0;
     }
 
     bool ShouldActivateAbility(PhasePassiveAbility ability)
     {
-        // ตรวจสอบ Boss state
         if (bossController != null)
         {
             if (ability.onlyWhenGrounded && bossController.isCurrentlyFalling)
@@ -345,18 +454,119 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 
     IEnumerator ExecuteAbility(PhasePassiveAbility ability)
     {
-        // คำนวณตำแหน่งที่จะ spawn
+        if (ability.abilityType == PassiveAbilityType.CreateObstacle && ability.obstacleSlots != null && ability.obstacleSlots.Length > 0)
+        {
+            yield return StartCoroutine(ExecuteCreateObstacles(ability));
+            yield break;
+        }
+
+        bool pausedByThis = false;
+        if (ability.abilityType == PassiveAbilityType.SpawnMinion && ability.waitForWaveComplete && bossController != null)
+        {
+            bossController.PauseForSummons(true);
+            pausedByThis = true;
+            if (showDebugLogs) Debug.Log($"[PhasePassive] Pausing boss for SpawnMinion '{ability.abilityName}' (one-shot)");
+        }
+
         List<Vector2> spawnPositions = CalculateSpawnPositions(ability);
 
         if (ability.sequentialSpawn)
         {
-            // Spawn ทีละตัวแบบมีดีเลย์
             yield return StartCoroutine(SpawnSequentially(ability, spawnPositions));
         }
         else
         {
-            // Spawn พร้อมกันทั้งหมด
             yield return StartCoroutine(SpawnSimultaneously(ability, spawnPositions));
+        }
+
+        if (pausedByThis)
+        {
+            if (showDebugLogs) Debug.Log($"[PhasePassive] Waiting for SpawnMinion '{ability.abilityName}' spawned objects to be destroyed...");
+            yield return new WaitUntil(() => IsWaveComplete(ability));
+            bossController.PauseForSummons(false);
+            if (showDebugLogs) Debug.Log($"[PhasePassive] SpawnMinion '{ability.abilityName}' cleared, resuming boss actions");
+        }
+    }
+
+    IEnumerator ExecuteCreateObstacles(PhasePassiveAbility ability)
+    {
+        if (ability.obstacleSlots == null || ability.obstacleSlots.Length == 0) yield break;
+
+        if (bossController != null && ability.waitForWaveComplete && ability.abilityType == PassiveAbilityType.CreateObstacle)
+        {
+            bossController.PauseForSummons(true);
+            if (showDebugLogs) Debug.Log($"[PhasePassive] Pausing boss for CreateObstacle '{ability.abilityName}' until spawned objects clear");
+        }
+
+        for (int s = 0; s < ability.obstacleSlots.Length; s++)
+        {
+            var slot = ability.obstacleSlots[s];
+            Vector2 basePos = slot.relativeToBoss ? (Vector2)transform.position + slot.slotPosition : slot.slotPosition;
+
+            if (ability.warningEffectPrefab != null && ability.warningDuration > 0)
+            {
+                GameObject warning = Instantiate(ability.warningEffectPrefab, basePos, Quaternion.identity);
+                Destroy(warning, ability.warningDuration);
+                yield return new WaitForSeconds(ability.warningDuration);
+            }
+
+            for (int i = 0; i < Mathf.Max(0, slot.spawnCount); i++)
+            {
+                GameObject prefabToUse = ability.spawnPrefab;
+                if (slot.prefabs != null && slot.prefabs.Length > 0)
+                {
+                    int idx = slot.startPrefabIndex;
+                    if (slot.usePrefabSequence)
+                    {
+                        idx = (slot.startPrefabIndex + i) % slot.prefabs.Length;
+                    }
+                    idx = Mathf.Clamp(idx, 0, slot.prefabs.Length - 1);
+                    prefabToUse = slot.prefabs[idx];
+                }
+
+                if (prefabToUse == null) continue;
+
+                Vector2 itemPos = basePos + new Vector2(i * slot.spacingBetweenItems, 0f);
+
+                GameObject spawned = Instantiate(prefabToUse, itemPos, Quaternion.identity);
+                spawnedObjects[spawned] = ability.phaseIndex;
+
+                if (ability.waitForWaveComplete || ability.useWaveLimit)
+                {
+                    ability.currentWaveObjects.Add(spawned);
+                }
+
+                SetupSpawnedObject(spawned, ability);
+
+                if (ability.autoDestroy && ability.destroyAfter > 0)
+                {
+                    Destroy(spawned, ability.destroyAfter);
+                }
+
+                if (ability.spawnSound != null)
+                {
+                    AudioSource.PlayClipAtPoint(ability.spawnSound, transform.position, ability.soundVolume);
+                }
+
+                if (showDebugLogs)
+                    Debug.Log($"[PhasePassive] CreateObstacle spawned '{spawned.name}' at {itemPos} (slot {s + 1}/{ability.obstacleSlots.Length})");
+
+                if (i < slot.spawnCount - 1)
+                    yield return new WaitForSeconds(ability.spawnDelay > 0 ? ability.spawnDelay : 0.05f);
+            }
+
+            if (ability.sequentialSpawn && s < ability.obstacleSlots.Length - 1)
+            {
+                yield return new WaitForSeconds(ability.spawnInterval);
+            }
+        }
+
+        if (bossController != null && ability.waitForWaveComplete && ability.abilityType == PassiveAbilityType.CreateObstacle)
+        {
+            if (showDebugLogs) Debug.Log($"[PhasePassive] Waiting for CreateObstacle '{ability.abilityName}' spawned objects to be destroyed...");
+            yield return new WaitUntil(() => IsWaveComplete(ability));
+            bossController.PauseForSummons(false);
+            if (showDebugLogs) Debug.Log($"[PhasePassive] CreateObstacle '{ability.abilityName}' cleared, resuming boss actions");
         }
     }
 
@@ -366,7 +576,6 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         {
             Vector2 pos = spawnPositions[i];
 
-            // แสดง warning
             if (ability.warningEffectPrefab != null && ability.warningDuration > 0)
             {
                 GameObject warning = Instantiate(ability.warningEffectPrefab, pos, Quaternion.identity);
@@ -377,34 +586,27 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
                 CreateSimpleWarning(pos, ability.warningDuration, ability.warningColor);
             }
 
-            // รอให้ warning เสร็จ
             if (ability.warningDuration > 0)
             {
                 yield return new WaitForSeconds(ability.warningDuration);
             }
 
-            // Spawn object
             GameObject spawned = Instantiate(ability.spawnPrefab, pos, Quaternion.identity);
 
-            // Track spawned object
             spawnedObjects[spawned] = ability.phaseIndex;
 
-            // ถ้าใช้ wave mode ให้เพิ่มเข้า currentWaveObjects
-            if (ability.useWaveLimit)
+            if (ability.useWaveLimit || ability.waitForWaveComplete)
             {
                 ability.currentWaveObjects.Add(spawned);
             }
 
-            // Setup spawned object
             SetupSpawnedObject(spawned, ability);
 
-            // Auto destroy (ไม่ใช้กับ minion ที่ต้องรอให้ตาย)
             if (ability.autoDestroy && ability.destroyAfter > 0 && ability.abilityType != PassiveAbilityType.SpawnMinion)
             {
                 Destroy(spawned, ability.destroyAfter);
             }
 
-            // Play sound
             if (ability.spawnSound != null)
             {
                 AudioSource.PlayClipAtPoint(ability.spawnSound, transform.position, ability.soundVolume);
@@ -413,7 +615,6 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
             if (showDebugLogs)
                 Debug.Log($"[PhasePassive] Spawned {ability.abilityName} at {pos} ({i + 1}/{spawnPositions.Count})");
 
-            // ดีเลย์ก่อน spawn ตัวถัดไป (ยกเว้นตัวสุดท้าย)
             if (i < spawnPositions.Count - 1)
             {
                 yield return new WaitForSeconds(ability.spawnDelay);
@@ -423,7 +624,6 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 
     IEnumerator SpawnSimultaneously(PhasePassiveAbility ability, List<Vector2> spawnPositions)
     {
-        // แสดง warning ทั้งหมดพร้อมกัน
         if (ability.warningEffectPrefab != null && ability.warningDuration > 0)
         {
             foreach (Vector2 pos in spawnPositions)
@@ -442,24 +642,19 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
             yield return new WaitForSeconds(ability.warningDuration);
         }
 
-        // Spawn objects ทั้งหมดพร้อมกัน
         foreach (Vector2 pos in spawnPositions)
         {
             GameObject spawned = Instantiate(ability.spawnPrefab, pos, Quaternion.identity);
 
-            // Track spawned object
             spawnedObjects[spawned] = ability.phaseIndex;
 
-            // ถ้าใช้ wave mode ให้เพิ่มเข้า currentWaveObjects
-            if (ability.useWaveLimit)
+            if (ability.useWaveLimit || ability.waitForWaveComplete)
             {
                 ability.currentWaveObjects.Add(spawned);
             }
 
-            // Setup spawned object
             SetupSpawnedObject(spawned, ability);
 
-            // Auto destroy (ไม่ใช้กับ minion ที่ต้องรอให้ตาย)
             if (ability.autoDestroy && ability.destroyAfter > 0 && ability.abilityType != PassiveAbilityType.SpawnMinion)
             {
                 Destroy(spawned, ability.destroyAfter);
@@ -469,11 +664,22 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
                 Debug.Log($"[PhasePassive] Spawned {ability.abilityName} at {pos}");
         }
 
-        // Play sound
         if (ability.spawnSound != null)
         {
             AudioSource.PlayClipAtPoint(ability.spawnSound, transform.position, ability.soundVolume);
         }
+    }
+
+    public List<Vector2> GetSpawnPositionsForAbility(PhasePassiveAbility ability)
+    {
+        return CalculateSpawnPositions(ability);
+    }
+
+    public void ExecuteAbilityOnce(PhasePassiveAbility abilityInstance)
+    {
+        if (abilityInstance == null) return;
+        StartCoroutine(ExecuteAbility(abilityInstance));
+        if (showDebugLogs) Debug.Log($"[PhasePassive] ExecuteAbilityOnce: {abilityInstance.abilityName}");
     }
 
     List<Vector2> CalculateSpawnPositions(PhasePassiveAbility ability)
@@ -481,7 +687,6 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         List<Vector2> positions = new List<Vector2>();
         Vector2 basePosition = Vector2.zero;
 
-        // กำหนดจุด base ตาม area type
         switch (ability.areaType)
         {
             case SpawnAreaType.AbovePlayer:
@@ -528,7 +733,6 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
                 break;
         }
 
-        // สร้างตำแหน่งตาม pattern
         switch (ability.pattern)
         {
             case SpawnPattern.Random:
@@ -756,14 +960,41 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         Vector3 size = new Vector3(arenaMax.x - arenaMin.x, arenaMax.y - arenaMin.y, 0);
         Gizmos.DrawWireCube(center, size);
 
-        if (phaseAbilities != null && Application.isPlaying)
+        if (phaseAbilities != null)
         {
             foreach (var ability in phaseAbilities)
             {
-                if (ability.phaseIndex == currentPhase && ability.spawnPrefab != null)
+                if (Application.isPlaying && ability.phaseIndex != currentPhase) continue;
+
+                Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
+
+                if (ability.abilityType == PassiveAbilityType.CreateObstacle && ability.obstacleSlots != null && ability.obstacleSlots.Length > 0)
                 {
-                    Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
-                    List<Vector2> positions = CalculateSpawnPositions(ability);
+                    for (int i = 0; i < ability.obstacleSlots.Length; i++)
+                    {
+                        var slot = ability.obstacleSlots[i];
+                        Vector2 basePos = slot.relativeToBoss ? (Vector2)transform.position + slot.slotPosition : slot.slotPosition;
+
+                        int displayCount = Mathf.Max(1, slot.spawnCount);
+                        for (int item = 0; item < displayCount; item++)
+                        {
+                            Vector2 itemPos = basePos + new Vector2(item * slot.spacingBetweenItems, 0f);
+                            Gizmos.DrawWireSphere(itemPos, 0.5f);
+                        }
+                    }
+                }
+                else
+                {
+                    List<Vector2> positions = null;
+                    try
+                    {
+                        positions = CalculateSpawnPositions(ability);
+                    }
+                    catch
+                    {
+                        positions = new List<Vector2>();
+                    }
+
                     foreach (Vector2 pos in positions)
                     {
                         Gizmos.DrawWireSphere(pos, 0.5f);
@@ -788,286 +1019,6 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         activeCoroutines.Clear();
     }
 }
-
-//// ========================================
-//// Hazard Objects (เหมือนเดิม)
-//// ========================================
-
-//public class FallingRock : MonoBehaviour
-//{
-//    [Header("Settings")]
-//    public float damage = 10f;
-//    public float lifetime = 10f;
-//    public LayerMask damageableLayers;
-
-//    [Header("Effects")]
-//    public GameObject impactEffect;
-//    public AudioClip impactSound;
-//    [Range(0f, 1f)]
-//    public float impactVolume = 0.7f;
-
-//    [Header("Visual")]
-//    public SpriteRenderer spriteRenderer;
-//    public float rotationSpeed = 180f;
-
-//    private bool hasHit = false;
-//    private Rigidbody2D rb;
-
-//    void Start()
-//    {
-//        rb = GetComponent<Rigidbody2D>();
-//        if (rb != null)
-//        {
-//            rb.gravityScale = 2f;
-//            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-//        }
-
-//        if (spriteRenderer == null)
-//        {
-//            spriteRenderer = GetComponent<SpriteRenderer>();
-//        }
-
-//        Destroy(gameObject, lifetime);
-//    }
-
-//    void Update()
-//    {
-//        if (rb != null && !hasHit)
-//        {
-//            transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
-//        }
-//    }
-
-//    void OnCollisionEnter2D(Collision2D collision)
-//    {
-//        if (hasHit) return;
-
-//        hasHit = true;
-
-//        if (((1 << collision.gameObject.layer) & damageableLayers) != 0)
-//        {
-//            if (collision.gameObject.TryGetComponent<IDamageable>(out var damageable))
-//            {
-//                damageable.TakeDamage(damage);
-//            }
-//        }
-
-//        if (impactEffect != null)
-//        {
-//            Instantiate(impactEffect, transform.position, Quaternion.identity);
-//        }
-
-//        if (impactSound != null)
-//        {
-//            AudioSource.PlayClipAtPoint(impactSound, transform.position, impactVolume);
-//        }
-
-//        Destroy(gameObject, 0.1f);
-//    }
-//}
-
-//public class GroundSpike : MonoBehaviour
-//{
-//    [Header("Settings")]
-//    public float damage = 15f;
-//    public float riseSpeed = 5f;
-//    public float riseHeight = 2f;
-//    public float stayDuration = 2f;
-//    public float sinkSpeed = 3f;
-
-//    [Header("Effects")]
-//    public AudioClip riseSound;
-//    [Range(0f, 1f)]
-//    public float soundVolume = 0.7f;
-
-//    private Vector3 startPosition;
-//    private Vector3 targetPosition;
-//    private enum State { Rising, Staying, Sinking }
-//    private State currentState = State.Rising;
-//    private float stayTimer = 0f;
-//    private HashSet<GameObject> damagedObjects = new HashSet<GameObject>();
-
-//    void Start()
-//    {
-//        startPosition = transform.position;
-//        targetPosition = startPosition + Vector3.up * riseHeight;
-
-//        if (riseSound != null)
-//        {
-//            AudioSource.PlayClipAtPoint(riseSound, transform.position, soundVolume);
-//        }
-//    }
-
-//    void Update()
-//    {
-//        switch (currentState)
-//        {
-//            case State.Rising:
-//                transform.position = Vector3.MoveTowards(transform.position, targetPosition, riseSpeed * Time.deltaTime);
-
-//                if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
-//                {
-//                    currentState = State.Staying;
-//                    stayTimer = 0f;
-//                }
-//                break;
-
-//            case State.Staying:
-//                stayTimer += Time.deltaTime;
-
-//                if (stayTimer >= stayDuration)
-//                {
-//                    currentState = State.Sinking;
-//                }
-//                break;
-
-//            case State.Sinking:
-//                transform.position = Vector3.MoveTowards(transform.position, startPosition, sinkSpeed * Time.deltaTime);
-
-//                if (Vector3.Distance(transform.position, startPosition) < 0.01f)
-//                {
-//                    Destroy(gameObject);
-//                }
-//                break;
-//        }
-//    }
-
-//    void OnTriggerEnter2D(Collider2D other)
-//    {
-//        if (currentState == State.Rising || currentState == State.Staying)
-//        {
-//            if (!damagedObjects.Contains(other.gameObject))
-//            {
-//                if (other.TryGetComponent<IDamageable>(out var damageable))
-//                {
-//                    damageable.TakeDamage(damage);
-//                    damagedObjects.Add(other.gameObject);
-//                }
-//            }
-//        }
-//    }
-//}
-
-//public class PoisonCloud : MonoBehaviour
-//{
-//    [Header("Settings")]
-//    public float damagePerSecond = 5f;
-//    public float lifetime = 10f;
-//    public float damageInterval = 0.5f;
-//    public float cloudRadius = 2f;
-
-//    [Header("Visual")]
-//    public SpriteRenderer cloudSprite;
-//    public float fadeInDuration = 1f;
-//    public float fadeOutDuration = 2f;
-//    public Color cloudColor = new Color(0f, 1f, 0f, 0.5f);
-
-//    private HashSet<IDamageable> affectedTargets = new HashSet<IDamageable>();
-//    private float damageTimer = 0f;
-//    private float lifeTimer = 0f;
-
-//    void Start()
-//    {
-//        if (cloudSprite != null)
-//        {
-//            cloudSprite.color = cloudColor;
-//            StartCoroutine(FadeInOut());
-//        }
-
-//        CircleCollider2D collider = GetComponent<CircleCollider2D>();
-//        if (collider != null)
-//        {
-//            collider.radius = cloudRadius;
-//            collider.isTrigger = true;
-//        }
-//    }
-
-//    void Update()
-//    {
-//        lifeTimer += Time.deltaTime;
-//        damageTimer += Time.deltaTime;
-
-//        if (damageTimer >= damageInterval)
-//        {
-//            DamageAffectedTargets();
-//            damageTimer = 0f;
-//        }
-
-//        if (lifeTimer >= lifetime)
-//        {
-//            Destroy(gameObject);
-//        }
-//    }
-
-//    void DamageAffectedTargets()
-//    {
-//        List<IDamageable> toRemove = new List<IDamageable>();
-
-//        foreach (var target in affectedTargets)
-//        {
-//            if (target != null && target is MonoBehaviour mb && mb != null)
-//            {
-//                target.TakeDamage(damagePerSecond * damageInterval);
-//            }
-//            else
-//            {
-//                toRemove.Add(target);
-//            }
-//        }
-
-//        foreach (var target in toRemove)
-//        {
-//            affectedTargets.Remove(target);
-//        }
-//    }
-
-//    void OnTriggerEnter2D(Collider2D other)
-//    {
-//        if (other.TryGetComponent<IDamageable>(out var damageable))
-//        {
-//            affectedTargets.Add(damageable);
-//        }
-//    }
-
-//    void OnTriggerExit2D(Collider2D other)
-//    {
-//        if (other.TryGetComponent<IDamageable>(out var damageable))
-//        {
-//            affectedTargets.Remove(damageable);
-//        }
-//    }
-
-//    IEnumerator FadeInOut()
-//    {
-//        float elapsed = 0f;
-//        Color startColor = cloudSprite.color;
-//        startColor.a = 0f;
-//        cloudSprite.color = startColor;
-
-//        while (elapsed < fadeInDuration)
-//        {
-//            elapsed += Time.deltaTime;
-//            float alpha = elapsed / fadeInDuration;
-//            Color color = cloudSprite.color;
-//            color.a = alpha * cloudColor.a;
-//            cloudSprite.color = color;
-//            yield return null;
-//        }
-
-//        yield return new WaitForSeconds(lifetime - fadeInDuration - fadeOutDuration);
-
-//        elapsed = 0f;
-//        while (elapsed < fadeOutDuration)
-//        {
-//            elapsed += Time.deltaTime;
-//            float alpha = 1f - (elapsed / fadeOutDuration);
-//            Color color = cloudSprite.color;
-//            color.a = alpha * cloudColor.a;
-//            cloudSprite.color = color;
-//            yield return null;
-//        }
-//    }
-//}
 
 public interface IDamageable
 {

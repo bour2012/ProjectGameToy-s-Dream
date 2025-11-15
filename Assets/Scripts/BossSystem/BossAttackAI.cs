@@ -1,45 +1,74 @@
-﻿// ...existing code...
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(BossController), typeof(BossAttackSystem), typeof(Animator))]
 public class BossAttackAI : MonoBehaviour
 {
-    [Header("Core References")]
-    public BossController controller;
-    public BossAttackSystem attackSystem;
-    public Animator animator;
-
-    [Header("Attack Sequence (editable)")]
-    [Tooltip("กำหนดลำดับท่า: attackIndex ต้องตรงกับที่ Animator/AttackSystem ใช้, triggerName ต้องมีใน Animator")]
-    public List<AttackEntry> attackSequence = new List<AttackEntry>()
-    {
-        // ตัวอย่าง default (สามารถแก้/ลบ/เพิ่มใน Inspector)
-        new AttackEntry(){ attackIndex = 1, triggerName = "FireSpread", postCooldown = 1.5f },
-        new AttackEntry(){ attackIndex = 2, triggerName = "FireBeam",   postCooldown = 2.0f }
-    };
-
     [System.Serializable]
     public class AttackEntry
     {
         public int attackIndex = 1;
         public string triggerName = "FireSpread";
         public float postCooldown = 1.5f;
-        public bool enabled = true; // ถ้าต้องการปิดท่านี้ชั่วคราว
+        public bool enabled = true;
     }
 
-    // State tracking
+    [System.Serializable]
+    public class PhaseAttackSet
+    {
+        public int phaseIndex = 0;
+        public List<AttackEntry> entries = new List<AttackEntry>();
+    }
+
+    [Header("Core References")]
+    public BossController controller;
+    public BossAttackSystem attackSystem;
+    public Animator animator;
+
+    [Header("Attack Sequence (editable)")]
+    [Tooltip("Define attack order: attackIndex must match Animator/AttackSystem, triggerName must exist in Animator")]
+    public List<AttackEntry> attackSequence = new List<AttackEntry>()
+    {
+        new AttackEntry(){ attackIndex = 1, triggerName = "FireSpread", postCooldown = 1.5f },
+        new AttackEntry(){ attackIndex = 2, triggerName = "FireBeam",   postCooldown = 2.0f }
+    };
+
+    [Header("Per-Phase Attack Sets")]
+    public List<PhaseAttackSet> phaseAttackSets = new List<PhaseAttackSet>();
+
+    [Header("Exhaustion / Stun Settings")]
+    [Tooltip("How many full cycles of the attack sequence the boss will perform before entering exhaustion/stun state.")]
+    public int cyclesBeforeExhaustion = 2;
+
+    [Tooltip("How long (seconds) the boss stays exhausted/stunned when the threshold is reached.")]
+    public float exhaustionDuration = 5f;
+
+    [Header("Inspector Passive Abilities (optional)")]
+    [Tooltip("Define passive abilities here if you want the AI to expose them to Animation Events. These will be forwarded to BossPhasePassiveBehaviors for execution.")]
+    public BossPhasePassiveBehaviors.PhasePassiveAbility[] passiveAbilitiesFromAI;
+
     private int sequenceCursor = 0;
     private bool isAttacking = false;
     private bool isInCooldown = false;
     private float cooldownTimer = 0f;
+    private bool pausedForSummons = false;
+
+    private int attacksStartedThisCycle = 0;
+    private int cycleLength = 0;
+    private int cyclesCompleted = 0;
+    private bool isExhausted = false;
+    private float exhaustionTimer = 0f;
+
+    private List<AttackEntry> currentSequence = null;
+    private BossPhasePassiveBehaviors passiveBehaviorsComponent;
 
     void Awake()
     {
         if (controller == null) controller = GetComponent<BossController>();
         if (attackSystem == null) attackSystem = GetComponent<BossAttackSystem>();
         if (animator == null) animator = GetComponent<Animator>();
+        passiveBehaviorsComponent = GetComponent<BossPhasePassiveBehaviors>();
     }
 
     void Update()
@@ -47,7 +76,25 @@ public class BossAttackAI : MonoBehaviour
         if (controller == null || attackSystem == null || animator == null) return;
         if (controller.isCurrentlyFalling || controller.isInvincible) return;
 
-        // cooldown countdown
+        if (isExhausted)
+        {
+            exhaustionTimer -= Time.deltaTime;
+            if (exhaustionTimer <= 0f)
+            {
+                isExhausted = false;
+                cyclesCompleted = 0;
+                attacksStartedThisCycle = 0;
+                exhaustionTimer = 0f;
+                pausedForSummons = false;
+                ResetAIState();
+                if (controller != null && controller.showDebugLogs)
+                    Debug.Log("[AttackAI] Exhaustion ended, resuming attacks");
+            }
+            return;
+        }
+
+        if (pausedForSummons) return;
+
         if (isInCooldown)
         {
             cooldownTimer -= Time.deltaTime;
@@ -56,29 +103,26 @@ public class BossAttackAI : MonoBehaviour
                 isInCooldown = false;
                 cooldownTimer = 0f;
                 animator.SetTrigger("GoToIdle");
-                if (controller.showDebugLogs) Debug.Log("[AttackAI] Cooldown finished -> GoToIdle");
+                if (controller.showDebugLogs)
+                    Debug.Log("[AttackAI] Cooldown finished -> GoToIdle");
             }
-            return; // block queuing while cooldown
+            return;
         }
 
-        // run sequence loop
-        if (!isAttacking && attackSequence != null && attackSequence.Count > 0)
+        if (!isAttacking && (currentSequence != null ? currentSequence.Count > 0 : (attackSequence != null && attackSequence.Count > 0)))
         {
-            // advance to next enabled entry
+            var seq = currentSequence != null ? currentSequence : attackSequence;
             int tries = 0;
-            while (tries < attackSequence.Count)
+            while (tries < seq.Count)
             {
-                var entry = attackSequence[sequenceCursor];
+                var entry = seq[sequenceCursor];
                 if (entry.enabled && attackSystem.CanUseAttack(entry.attackIndex))
                 {
-                    // queue this attack
                     StartAttack(entry.attackIndex);
-                    // advance cursor for next time
-                    sequenceCursor = (sequenceCursor + 1) % attackSequence.Count;
+                    sequenceCursor = (sequenceCursor + 1) % seq.Count;
                     break;
                 }
-                // skip disabled or unavailable entry
-                sequenceCursor = (sequenceCursor + 1) % attackSequence.Count;
+                sequenceCursor = (sequenceCursor + 1) % seq.Count;
                 tries++;
             }
         }
@@ -88,53 +132,105 @@ public class BossAttackAI : MonoBehaviour
     {
         isAttacking = true;
 
-        // Clear triggers to avoid conflicts
+        if (animator == null && controller != null)
+        {
+            animator = controller.GetComponent<Animator>();
+        }
+
+        if (animator == null)
+        {
+            Debug.LogWarning("[AttackAI] Animator is null when trying to start attack. Aborting StartAttack.");
+            isAttacking = false;
+            return;
+        }
+
         animator.ResetTrigger("GoToIdle");
         animator.ResetTrigger("FlyToAttack");
-        // Note: do NOT reset specific Fire triggers here because FlyBoss will set correct one
 
-        // set attack type and trigger fly
         animator.SetInteger("AttackIndex", attackIndex);
         animator.SetTrigger("FlyToAttack");
 
-        if (controller.showDebugLogs)
-            Debug.Log($"[AttackAI] StartAttack index={attackIndex}");
+        if (controller != null && controller.showDebugLogs)
+            Debug.Log($"[AttackAI] StartAttack index={attackIndex} -> Animator set AttackIndex={attackIndex} and triggered FlyToAttack");
+
+        var seq = currentSequence != null ? currentSequence : attackSequence;
+        if (seq != null && seq.Count > 0)
+        {
+            int enabledCount = 0;
+            foreach (var e in seq) if (e != null && e.enabled) enabledCount++;
+            cycleLength = Mathf.Max(1, enabledCount);
+        }
+
+        attacksStartedThisCycle++;
+
+        if (attacksStartedThisCycle >= cycleLength)
+        {
+            attacksStartedThisCycle = 0;
+            cyclesCompleted++;
+            if (controller != null && controller.showDebugLogs)
+                Debug.Log($"[AttackAI] Completed cycle {cyclesCompleted}/{cyclesBeforeExhaustion}");
+
+            if (cyclesBeforeExhaustion > 0 && cyclesCompleted >= cyclesBeforeExhaustion)
+            {
+                isExhausted = true;
+                exhaustionTimer = exhaustionDuration;
+                pausedForSummons = true;
+                if (animator != null) animator.SetTrigger("GoToIdle");
+                if (controller != null && controller.showDebugLogs)
+                    Debug.Log($"[AttackAI] Entering exhaustion for {exhaustionDuration} seconds");
+            }
+        }
     }
 
-    /// <summary>
-    /// Called by AttackFinishedSMB when animation completes.
-    /// AI uses the attackSequence list to pick postCooldown (fallback uses default values)
-    /// </summary>
+    public void TriggerAttackByIndex(int attackIndex)
+    {
+        if (controller != null && controller.showDebugLogs)
+            Debug.Log($"[AttackAI] TriggerAttackByIndex({attackIndex}) called");
+        StartAttack(attackIndex);
+    }
+
     public void NotifyAttackComplete(int finishedAttackIndex)
     {
         isAttacking = false;
 
-        // find entry to determine post cooldown
         float chosenCooldown = 0f;
-        var entry = attackSequence.Find(e => e.attackIndex == finishedAttackIndex);
-        if (entry != null) chosenCooldown = entry.postCooldown;
+        var seq = currentSequence != null ? currentSequence : attackSequence;
+        var entry = seq != null ? seq.Find(e => e.attackIndex == finishedAttackIndex) : null;
+        if (entry != null)
+            chosenCooldown = entry.postCooldown;
         else
         {
-            // fallback: try known defaults
             if (finishedAttackIndex == 1) chosenCooldown = 1.5f;
             else if (finishedAttackIndex == 2) chosenCooldown = 2.0f;
             else chosenCooldown = 1.0f;
         }
 
-        cooldownTimer = Mathf.Max(0f, chosenCooldown);
+        float multiplier = 1f;
+        if (controller != null && controller.phases != null && controller.phases.Length > controller.currentPhaseIndex)
+            multiplier = controller.phases[controller.currentPhaseIndex].attackSpeedMultiplier;
+
+        cooldownTimer = Mathf.Max(0f, chosenCooldown / Mathf.Max(0.0001f, multiplier));
         isInCooldown = cooldownTimer > 0f;
 
-        // Reset triggers that may remain
         animator.ResetTrigger("FlyToAttack");
-        if (controller.showDebugLogs) Debug.Log($"[AttackAI] Attack {finishedAttackIndex} finished, cooldown={cooldownTimer:F2}s");
+        if (controller.showDebugLogs)
+            Debug.Log($"[AttackAI] Attack {finishedAttackIndex} finished, cooldown={cooldownTimer:F2}s");
     }
 
-    /// <summary>
-    /// Utility: FlyBoss SMB will call this to get trigger name for the attack index
-    /// </summary>
+    public void PauseForSummons(bool pause)
+    {
+        pausedForSummons = pause;
+        if (controller != null && controller.showDebugLogs)
+        {
+            Debug.Log($"[AttackAI] PauseForSummons = {pause}");
+        }
+    }
+
     public string GetTriggerNameForIndex(int attackIndex)
     {
-        var entry = attackSequence.Find(e => e.attackIndex == attackIndex);
+        var seq = currentSequence != null ? currentSequence : attackSequence;
+        if (seq == null) return null;
+        var entry = seq.Find(e => e.attackIndex == attackIndex);
         return entry != null ? entry.triggerName : null;
     }
 
@@ -145,10 +241,86 @@ public class BossAttackAI : MonoBehaviour
         isInCooldown = false;
         cooldownTimer = 0f;
 
+        attacksStartedThisCycle = 0;
+        cyclesCompleted = 0;
+        isExhausted = false;
+        exhaustionTimer = 0f;
+
+        currentSequence = null;
+        var set = phaseAttackSets.Find(s => s.phaseIndex == newPhaseIndex);
+        if (set != null) currentSequence = set.entries;
+
         animator.SetInteger("AttackIndex", 0);
         animator.ResetTrigger("FlyToAttack");
         animator.ResetTrigger("GoToIdle");
-        if (controller.showDebugLogs) Debug.Log($"[AttackAI] Phase changed to {newPhaseIndex}, reset sequence");
+        if (controller.showDebugLogs)
+            Debug.Log($"[AttackAI] Phase changed to {newPhaseIndex}, reset sequence (loaded {(currentSequence != null ? currentSequence.Count : attackSequence.Count)} entries)");
+    }
+
+    public void ResetAIState()
+    {
+        sequenceCursor = 0;
+        isAttacking = false;
+        isInCooldown = false;
+        cooldownTimer = 0f;
+        pausedForSummons = false;
+
+        attacksStartedThisCycle = 0;
+        cyclesCompleted = 0;
+        isExhausted = false;
+        exhaustionTimer = 0f;
+
+        if (animator != null)
+        {
+            animator.ResetTrigger("FlyToAttack");
+            animator.ResetTrigger("GoToIdle");
+            animator.SetInteger("AttackIndex", 0);
+        }
+
+        if (controller != null && controller.showDebugLogs)
+            Debug.Log("[AttackAI] ResetAIState called");
+    }
+
+    public void TriggerPassiveFromAnimation(string abilityName)
+    {
+        if (string.IsNullOrEmpty(abilityName)) return;
+
+        if (passiveAbilitiesFromAI != null && passiveAbilitiesFromAI.Length > 0)
+        {
+            for (int i = 0; i < passiveAbilitiesFromAI.Length; i++)
+            {
+                var a = passiveAbilitiesFromAI[i];
+                if (a != null && a.abilityName == abilityName)
+                {
+                    if (passiveBehaviorsComponent != null)
+                    {
+                        var runtimeCopy = a.Clone();
+                        passiveBehaviorsComponent.ExecuteAbilityOnce(runtimeCopy);
+                        if (controller != null && controller.showDebugLogs)
+                            Debug.Log($"[AttackAI] ExecuteAbilityOnce for AI passive '{abilityName}'");
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (passiveBehaviorsComponent != null)
+        {
+            var found = passiveBehaviorsComponent.FindAbilityByName(abilityName);
+            if (found != null)
+            {
+                passiveBehaviorsComponent.ExecuteAbilityOnce(found.Clone());
+                if (controller != null && controller.showDebugLogs)
+                    Debug.Log($"[AttackAI] ExecuteAbilityOnce fallback for passive '{abilityName}'");
+                return;
+            }
+
+            if (controller != null && controller.showDebugLogs)
+                Debug.LogWarning($"[AttackAI] Passive ability not found anywhere: {abilityName}");
+            return;
+        }
+
+        if (controller != null && controller.showDebugLogs)
+            Debug.LogWarning($"[AttackAI] No passive component present to trigger '{abilityName}'");
     }
 }
-// ...existing code...

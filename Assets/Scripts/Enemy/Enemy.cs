@@ -295,7 +295,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
 
 
-    public void OnStomped(PlayerMovement player)
+    public virtual void OnStomped(PlayerMovement player)
     {
         if (player != null)
         {

@@ -121,7 +121,13 @@ public class BossAttackSystem : MonoBehaviour
             currentAngle += angleStep;
         }
 
-        spreadAttackTimer = spreadAttackData.cooldown;
+        // apply phase attack speed multiplier if present
+        float multiplier = 1f;
+        var controller = GetComponent<BossController>();
+        if (controller != null && controller.phases != null && controller.phases.Length > controller.currentPhaseIndex)
+            multiplier = controller.phases[controller.currentPhaseIndex].attackSpeedMultiplier;
+
+        spreadAttackTimer = spreadAttackData.cooldown / Mathf.Max(0.0001f, multiplier);
         isAttacking = false;
     }
 
@@ -194,7 +200,13 @@ public class BossAttackSystem : MonoBehaviour
             Destroy(currentBeam);
         }
 
-        beamAttackTimer = beamAttackData.cooldown;
+        // apply phase attack speed multiplier if present
+        float multiplier = 1f;
+        var controller = GetComponent<BossController>();
+        if (controller != null && controller.phases != null && controller.phases.Length > controller.currentPhaseIndex)
+            multiplier = controller.phases[controller.currentPhaseIndex].attackSpeedMultiplier;
+
+        beamAttackTimer = beamAttackData.cooldown / Mathf.Max(0.0001f, multiplier);
         isAttacking = false;
     }
 
