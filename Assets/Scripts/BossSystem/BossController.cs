@@ -481,6 +481,27 @@ public class BossController : Enemy
             animator.SetTrigger("TakeDamage");
         }
 
+        // If this damage dropped the boss into the next phase(s), immediately transition and recover
+        int newPhaseIndex = currentPhaseIndex;
+        float healthPercent = currentHealth / maxHealth;
+        for (int i = 0; i < phases.Length; i++)
+        {
+            var p = phases[i];
+            if (healthPercent >= p.minHealthPercent && healthPercent <= p.maxHealthPercent)
+            {
+                newPhaseIndex = i;
+                break;
+            }
+        }
+
+        if (newPhaseIndex != currentPhaseIndex && newPhaseIndex > currentPhaseIndex)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Damage caused phase change -> EnterPhase({newPhaseIndex}) and immediate recover");
+            // Enter new phase and immediately recover from fall (stop waiting on grounded timer)
+            EnterPhase(newPhaseIndex);
+            OnFallComplete();
+        }
+
         if (currentHealth <= 0)
         {
             Die();

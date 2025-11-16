@@ -63,12 +63,49 @@ public class BossAttackAI : MonoBehaviour
     private List<AttackEntry> currentSequence = null;
     private BossPhasePassiveBehaviors passiveBehaviorsComponent;
 
+    // Variant selection: for ability names that have multiple inspector variants,
+    // we keep a shuffled order per ability name and cycle through it so variants
+    // are distributed predictably (no immediate repeats until cycle completes).
+    private Dictionary<string, int[]> variantOrder = new Dictionary<string, int[]>();
+    private Dictionary<string, int> variantPointers = new Dictionary<string, int>();
+
     void Awake()
     {
         if (controller == null) controller = GetComponent<BossController>();
         if (attackSystem == null) attackSystem = GetComponent<BossAttackSystem>();
         if (animator == null) animator = GetComponent<Animator>();
         passiveBehaviorsComponent = GetComponent<BossPhasePassiveBehaviors>();
+    }
+
+    // Ensure we have a shuffled order for a set of N variants for the given ability name
+    void EnsureVariantOrder(string abilityName, int count)
+    {
+        if (count <= 0) return;
+        if (variantOrder.ContainsKey(abilityName) && variantOrder[abilityName] != null && variantOrder[abilityName].Length == count)
+            return;
+
+        int[] order = new int[count];
+        for (int i = 0; i < count; i++) order[i] = i;
+
+        // Fisher-Yates shuffle
+        for (int i = count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            int tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+        }
+
+        variantOrder[abilityName] = order;
+        variantPointers[abilityName] = 0;
+    }
+
+    // Get next variant index (0..count-1) for abilityName, advancing the pointer
+    int GetNextVariantChoice(string abilityName, int count)
+    {
+        EnsureVariantOrder(abilityName, count);
+        int ptr = variantPointers.ContainsKey(abilityName) ? variantPointers[abilityName] : 0;
+        int val = variantOrder[abilityName][ptr % count];
+        variantPointers[abilityName] = (ptr + 1) % count;
+        return val;
     }
 
     void Update()
@@ -285,21 +322,40 @@ public class BossAttackAI : MonoBehaviour
     {
         if (string.IsNullOrEmpty(abilityName)) return;
 
+        // If the AI has inspector-assigned passive variants, pick one using
+        // a shuffled-cycle selection so variants are distributed across uses.
         if (passiveAbilitiesFromAI != null && passiveAbilitiesFromAI.Length > 0)
         {
+            // collect indices that match the requested ability name
+            List<int> matches = new List<int>();
             for (int i = 0; i < passiveAbilitiesFromAI.Length; i++)
             {
                 var a = passiveAbilitiesFromAI[i];
                 if (a != null && a.abilityName == abilityName)
+                    matches.Add(i);
+            }
+
+            if (matches.Count > 0)
+            {
+                int chosenIndexInMatches = 0;
+                if (matches.Count == 1)
                 {
-                    if (passiveBehaviorsComponent != null)
-                    {
-                        var runtimeCopy = a.Clone();
-                        passiveBehaviorsComponent.ExecuteAbilityOnce(runtimeCopy);
-                        if (controller != null && controller.showDebugLogs)
-                            Debug.Log($"[AttackAI] ExecuteAbilityOnce for AI passive '{abilityName}'");
-                        return;
-                    }
+                    chosenIndexInMatches = 0;
+                }
+                else
+                {
+                    chosenIndexInMatches = GetNextVariantChoice(abilityName, matches.Count);
+                }
+
+                int chosenArrayIndex = matches[chosenIndexInMatches];
+                var chosenAbility = passiveAbilitiesFromAI[chosenArrayIndex];
+                if (chosenAbility != null && passiveBehaviorsComponent != null)
+                {
+                    var runtimeCopy = chosenAbility.Clone();
+                    passiveBehaviorsComponent.ExecuteAbilityOnce(runtimeCopy);
+                    if (controller != null && controller.showDebugLogs)
+                        Debug.Log($"[AttackAI] ExecuteAbilityOnce (variant #{chosenIndexInMatches}) for AI passive '{abilityName}' -> arrayIndex={chosenArrayIndex}");
+                    return;
                 }
             }
         }

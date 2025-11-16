@@ -953,7 +953,8 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if (!showDebugGizmos) return;
+        // Draw gizmos in Edit when `showDebugGizmos` is enabled, but always draw spawn previews during Play
+        if (!Application.isPlaying && !showDebugGizmos) return;
 
         Gizmos.color = Color.yellow;
         Vector3 center = new Vector3((arenaMin.x + arenaMax.x) / 2f, (arenaMin.y + arenaMax.y) / 2f, 0);
@@ -966,6 +967,7 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
             {
                 if (Application.isPlaying && ability.phaseIndex != currentPhase) continue;
 
+                // spawn preview color (use solid red in play for better visibility)
                 Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
 
                 if (ability.abilityType == PassiveAbilityType.CreateObstacle && ability.obstacleSlots != null && ability.obstacleSlots.Length > 0)
@@ -979,7 +981,20 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
                         for (int item = 0; item < displayCount; item++)
                         {
                             Vector2 itemPos = basePos + new Vector2(item * slot.spacingBetweenItems, 0f);
-                            Gizmos.DrawWireSphere(itemPos, 0.5f);
+                            Vector3 p3 = new Vector3(itemPos.x, itemPos.y, 0f);
+#if UNITY_EDITOR
+                            if (Application.isPlaying)
+                            {
+                                Handles.color = Color.red;
+                                Handles.DrawSolidDisc(p3, Vector3.forward, 0.45f);
+                            }
+                            else
+                            {
+                                Gizmos.DrawWireSphere(p3, 0.5f);
+                            }
+#else
+                            Gizmos.DrawWireSphere(p3, 0.5f);
+#endif
                         }
                     }
                 }
@@ -997,7 +1012,20 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 
                     foreach (Vector2 pos in positions)
                     {
-                        Gizmos.DrawWireSphere(pos, 0.5f);
+                        Vector3 p3 = new Vector3(pos.x, pos.y, 0f);
+#if UNITY_EDITOR
+                        if (Application.isPlaying)
+                        {
+                            Handles.color = Color.red;
+                            Handles.DrawSolidDisc(p3, Vector3.forward, 0.45f);
+                        }
+                        else
+                        {
+                            Gizmos.DrawWireSphere(p3, 0.5f);
+                        }
+#else
+                        Gizmos.DrawWireSphere(p3, 0.5f);
+#endif
                     }
                 }
             }

@@ -1692,40 +1692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa761c31b609ad4a9ffeed7182e64e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  phaseAbilities:
-  - abilityName: 
-    phaseIndex: 0
-    abilityType: 3
-    autoStartOnPhaseChange: 0
-    spawnPrefab: {fileID: 0}
-    spawnInterval: 0
-    spawnCount: 0
-    useWaveLimit: 0
-    maxWaves: 0
-    enemiesPerWave: 0
-    waitForWaveComplete: 0
-    areaType: 0
-    spawnOffset: {x: 0, y: 0}
-    spawnHeight: 0
-    randomRadius: 0
-    pattern: 0
-    patternSpacing: 0
-    obstacleSlots: []
-    sequentialSpawn: 0
-    spawnDelay: 0
-    autoDestroy: 0
-    destroyAfter: 0
-    onlyWhenGrounded: 0
-    onlyWhenFlying: 0
-    startDelay: 0
-    maxActiveCount: 0
-    warningEffectPrefab: {fileID: 0}
-    warningDuration: 0
-    warningColor: {r: 0, g: 0, b: 0, a: 0}
-    spawnSound: {fileID: 0}
-    soundVolume: 0
-    currentWave: 0
-    currentWaveObjects: []
+  phaseAbilities: []
   arenaMin: {x: -150.1, y: -54}
   arenaMax: {x: -124, y: -38}
   bossController: {fileID: 430781522}
@@ -1895,7 +1862,7 @@ Rigidbody2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1056968
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -2017,6 +1984,72 @@ MonoBehaviour:
     soundVolume: 1
     currentWave: 0
     currentWaveObjects: []
+  - abilityName: Hazard
+    phaseIndex: 1
+    abilityType: 0
+    autoStartOnPhaseChange: 1
+    spawnPrefab: {fileID: 548407930713113153, guid: 197815962090a144596080c97f3cf19c, type: 3}
+    spawnInterval: 2.5
+    spawnCount: 3
+    useWaveLimit: 0
+    maxWaves: 3
+    enemiesPerWave: 5
+    waitForWaveComplete: 1
+    areaType: 0
+    spawnOffset: {x: -0.14, y: 3.81}
+    spawnHeight: 87.8
+    randomRadius: 2.5
+    pattern: 0
+    patternSpacing: 4.38
+    obstacleSlots: []
+    sequentialSpawn: 1
+    spawnDelay: 0.5
+    autoDestroy: 1
+    destroyAfter: 1.58
+    onlyWhenGrounded: 0
+    onlyWhenFlying: 1
+    startDelay: 0
+    maxActiveCount: 4
+    warningEffectPrefab: {fileID: 0}
+    warningDuration: 0
+    warningColor: {r: 1, g: 0, b: 0, a: 1}
+    spawnSound: {fileID: 0}
+    soundVolume: 1
+    currentWave: 0
+    currentWaveObjects: []
+  - abilityName: Summon
+    phaseIndex: 1
+    abilityType: 2
+    autoStartOnPhaseChange: 1
+    spawnPrefab: {fileID: 4335615913772803810, guid: 47208897213b5794abe033c544cf5203, type: 3}
+    spawnInterval: 2
+    spawnCount: 2
+    useWaveLimit: 1
+    maxWaves: 2
+    enemiesPerWave: 5
+    waitForWaveComplete: 1
+    areaType: 1
+    spawnOffset: {x: -0.14, y: 5}
+    spawnHeight: 87.8
+    randomRadius: 5.7
+    pattern: 1
+    patternSpacing: 4.38
+    obstacleSlots: []
+    sequentialSpawn: 1
+    spawnDelay: 0.5
+    autoDestroy: 1
+    destroyAfter: 1.58
+    onlyWhenGrounded: 1
+    onlyWhenFlying: 0
+    startDelay: 5
+    maxActiveCount: 5
+    warningEffectPrefab: {fileID: 0}
+    warningDuration: 0
+    warningColor: {r: 1, g: 0, b: 0, a: 1}
+    spawnSound: {fileID: 0}
+    soundVolume: 1
+    currentWave: 0
+    currentWaveObjects: []
   - abilityName: Summon
     phaseIndex: 1
     abilityType: 2
@@ -2077,6 +2110,90 @@ MonoBehaviour:
       startPrefabIndex: 0
       usePrefabSequence: 1
       spacingBetweenItems: 19.18
+    sequentialSpawn: 1
+    spawnDelay: 1
+    autoDestroy: 1
+    destroyAfter: 15
+    onlyWhenGrounded: 1
+    onlyWhenFlying: 0
+    startDelay: 5
+    maxActiveCount: 5
+    warningEffectPrefab: {fileID: 0}
+    warningDuration: 0
+    warningColor: {r: 1, g: 0, b: 0, a: 1}
+    spawnSound: {fileID: 0}
+    soundVolume: 1
+    currentWave: 0
+    currentWaveObjects: []
+  - abilityName: Obstacle
+    phaseIndex: 1
+    abilityType: 3
+    autoStartOnPhaseChange: 1
+    spawnPrefab: {fileID: 857119630352314834, guid: 80c2ba14227b7d84586088c4ee673627, type: 3}
+    spawnInterval: 2
+    spawnCount: 1
+    useWaveLimit: 0
+    maxWaves: 2
+    enemiesPerWave: 5
+    waitForWaveComplete: 1
+    areaType: 1
+    spawnOffset: {x: -0.36, y: 5}
+    spawnHeight: 87.8
+    randomRadius: 5.7
+    pattern: 1
+    patternSpacing: 6
+    obstacleSlots:
+    - slotPosition: {x: -146.9, y: -45}
+      relativeToBoss: 0
+      prefabs:
+      - {fileID: 857119630352314834, guid: 80c2ba14227b7d84586088c4ee673627, type: 3}
+      - {fileID: 857119630352314834, guid: e63e048e5d19d3d47ae3d2abc5b663d0, type: 3}
+      spawnCount: 2
+      startPrefabIndex: 0
+      usePrefabSequence: 1
+      spacingBetweenItems: 0
+    sequentialSpawn: 1
+    spawnDelay: 1
+    autoDestroy: 1
+    destroyAfter: 15
+    onlyWhenGrounded: 1
+    onlyWhenFlying: 0
+    startDelay: 5
+    maxActiveCount: 5
+    warningEffectPrefab: {fileID: 0}
+    warningDuration: 0
+    warningColor: {r: 1, g: 0, b: 0, a: 1}
+    spawnSound: {fileID: 0}
+    soundVolume: 1
+    currentWave: 0
+    currentWaveObjects: []
+  - abilityName: Obstacle
+    phaseIndex: 1
+    abilityType: 3
+    autoStartOnPhaseChange: 1
+    spawnPrefab: {fileID: 857119630352314834, guid: 80c2ba14227b7d84586088c4ee673627, type: 3}
+    spawnInterval: 2
+    spawnCount: 1
+    useWaveLimit: 0
+    maxWaves: 2
+    enemiesPerWave: 5
+    waitForWaveComplete: 1
+    areaType: 1
+    spawnOffset: {x: -0.36, y: 5}
+    spawnHeight: 87.8
+    randomRadius: 5.7
+    pattern: 1
+    patternSpacing: 6
+    obstacleSlots:
+    - slotPosition: {x: -127.7, y: -45}
+      relativeToBoss: 0
+      prefabs:
+      - {fileID: 857119630352314834, guid: 80c2ba14227b7d84586088c4ee673627, type: 3}
+      - {fileID: 857119630352314834, guid: e63e048e5d19d3d47ae3d2abc5b663d0, type: 3}
+      spawnCount: 2
+      startPrefabIndex: 0
+      usePrefabSequence: 1
+      spacingBetweenItems: 0
     sequentialSpawn: 1
     spawnDelay: 1
     autoDestroy: 1
@@ -5856,7 +5973,7 @@ Transform:
   m_GameObject: {fileID: 1611603493}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -137.64, y: -52.23, z: 0}
+  m_LocalPosition: {x: -137.57, y: -51.72, z: 0}
   m_LocalScale: {x: 0.39364597, y: 0.39364597, z: 0.39364597}
   m_ConstrainProportionsScale: 0
   m_Children:
