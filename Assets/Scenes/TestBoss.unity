@@ -1639,7 +1639,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1224
   fallGravityScale: 2
-  fallGroundedDuration: 5
+  fallGroundedDuration: 15
   baseSpeed: 4
   attackRange: 10
   hoverHeight: 4
@@ -1939,10 +1939,6 @@ MonoBehaviour:
       triggerName: FireBeam
       postCooldown: 2
       enabled: 1
-    - attackIndex: 3
-      triggerName: Obstacle
-      postCooldown: 2
-      enabled: 1
   - phaseIndex: 1
     entries:
     - attackIndex: 1
@@ -1958,7 +1954,33 @@ MonoBehaviour:
       postCooldown: 2
       enabled: 1
   - phaseIndex: 2
-    entries: []
+    entries:
+    - attackIndex: 1
+      triggerName: FireSpread
+      postCooldown: 2
+      enabled: 1
+    - attackIndex: 2
+      triggerName: FireBeam
+      postCooldown: 2
+      enabled: 1
+    - attackIndex: 3
+      triggerName: Obstacle
+      postCooldown: 2
+      enabled: 1
+  - phaseIndex: 3
+    entries:
+    - attackIndex: 1
+      triggerName: FireSpread
+      postCooldown: 2
+      enabled: 1
+    - attackIndex: 2
+      triggerName: FireBeam
+      postCooldown: 2
+      enabled: 1
+    - attackIndex: 3
+      triggerName: Summon
+      postCooldown: 2
+      enabled: 1
   cyclesBeforeExhaustion: 2
   exhaustionDuration: 10
   passiveAbilitiesFromAI:
@@ -3684,63 +3706,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1163790677}
   m_CullTransparentMesh: 1
---- !u!1001 &1170853412
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -136.70108
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -52.275726
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3276045831625616735, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5425856077105691806, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
-      propertyPath: m_Name
-      value: ShieldDoll
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
 --- !u!1 &1171197869
 GameObject:
   m_ObjectHideFlags: 0
@@ -6359,8 +6324,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.074695766, y: -0.90426105}
-  m_Size: {x: 2.462092, y: 4.185496}
+  m_Offset: {x: -0.074695766, y: -1.1888542}
+  m_Size: {x: 2.462092, y: 3.616313}
   m_Direction: 0
 --- !u!212 &1611603510
 SpriteRenderer:
@@ -7397,4 +7362,3 @@ SceneRoots:
   - {fileID: 1112475543}
   - {fileID: 1264473998}
   - {fileID: 1416124714}
-  - {fileID: 1170853412}
