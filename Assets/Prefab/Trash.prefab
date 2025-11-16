@@ -415,7 +415,7 @@ MonoBehaviour:
   progressPanel: {fileID: 6923794253056509803}
   progressText: {fileID: 8604123549334216767}
   progressBar: {fileID: 1127462105166481820}
-  craftingEffect: {fileID: 0}
+  craftingEffect: {fileID: 265766274217486953, guid: 92072c862e751bf4dad748129cb56883, type: 3}
   craftingSound: {fileID: 0}
   onPickup:
     m_PersistentCalls:
