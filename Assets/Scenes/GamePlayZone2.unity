@@ -22204,7 +22204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathFadeTime: 0.5
   respawnDelay: 0.2
-  deathEffect: {fileID: 0}
+  deathEffect: {fileID: 5752511743020672802, guid: ea4b21af6a81ee14b99abc29c513a56b, type: 3}
   playerSprite: {fileID: 1611603510}
   fadeCanvasGroup: {fileID: 0}
   audioSource: {fileID: 0}

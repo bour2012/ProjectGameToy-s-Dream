@@ -65,6 +65,8 @@ public class PlayerDeathSystem : MonoBehaviour
     //private bool wasPlayerDeadLastFrame = false;
     private Vector3 originalScale;
     private Color originalColor;
+    // instance of the death particle prefab spawned on death (if any)
+    private ParticleSystem currentDeathEffectInstance = null;
 
     private void Awake()
     {
@@ -234,18 +236,17 @@ public class PlayerDeathSystem : MonoBehaviour
                 DialogTrigger dialogToPlay = deathDialogManager.GetCurrentDeathDialog();
                 if (dialogToPlay != null)
                 {
-                   
                     GameManager.Instance.dialogIDToPlayOnRespawn = dialogToPlay.dialogID;
-                    Debug.Log("<color=orange>DIALOG ID SENT TO GAMEMANAGER: </color>" + dialogToPlay.dialogID); // <-- เพิ่ม
+                    Debug.Log("<color=orange>DIALOG ID SENT TO GAMEMANAGER: </color>" + dialogToPlay.dialogID);
                 }
                 else
                 {
-                    Debug.Log("<color=red>FAILED TO GET DIALOG! dialogToPlay is null or has no ID.</color>"); // <-- เพิ่ม
+                    Debug.Log("<color=red>FAILED TO GET DIALOG! dialogToPlay is null or has no ID.</color>");
                 }
             }
 
-            GameManager.Instance.ManualReset();
-
+            // DO NOT call ManualReset immediately here - we want to play the death particle/sound and fade
+            // before performing the respawn/reset. The DeathSequence coroutine will handle the reset.
         }
 
 
@@ -267,29 +268,91 @@ public class PlayerDeathSystem : MonoBehaviour
             playerRigidbody.angularVelocity = 0f;
         }
 
+        // If the player has a Camera as a child, detach it so destroying/disabling the player
+        // won't remove the camera from the scene (prevents sudden blank view).
+        Camera childCam = GetComponentInChildren<Camera>(true);
+        if (childCam != null && childCam.transform.IsChildOf(transform))
+        {
+            childCam.transform.SetParent(null);
+            if (showDeathStateDebug) Debug.Log("PlayerDeathSystem: Detached child camera to preserve view during death sequence");
+        }
+
+        // Instead of deactivating the whole GameObject (which would stop coroutines on this MonoBehaviour),
+        // disable player control and visuals so the player 'disappears' while the death particle plays.
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = false;
+        }
+
+        if (playerController != null)
+        {
+            playerController.SetControlEnabled(false);
+        }
+
+        if (playerSprite != null)
+        {
+            playerSprite.enabled = false;
+        }
+
+        var col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        if (playerRigidbody != null)
+        {
+            playerRigidbody.simulated = false;
+        }
+
         // เล่นเสียงตาย
         if (audioSource != null && deathSound != null)
         {
             audioSource.PlayOneShot(deathSound);
         }
 
-        //// เล่น Effect ตาย
-        //if (deathEffect != null)
-        //{
-        //    deathEffect.transform.position = transform.position;
-        //    deathEffect.Play();
-        //}
+        // เล่น Effect ตาย (instantiate prefab so it remains visible while we fade/reload)
+        if (deathEffect != null)
+        {
+            ParticleSystem ps = Instantiate(deathEffect, transform.position, Quaternion.identity);
+            ps.Play();
+            currentDeathEffectInstance = ps;
+
+            // calculate a safe destroy time (duration + max start lifetime)
+            var main = ps.main;
+            float maxLifetime = 0f;
+            // try get constantMax safely
+            if (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants)
+            {
+                maxLifetime = main.startLifetime.constantMax;
+            }
+            else
+            {
+                maxLifetime = main.startLifetime.constant;
+            }
+
+            float destroyAfter = main.duration + maxLifetime + 0.25f;
+            Destroy(ps.gameObject, destroyAfter);
+        }
 
         Debug.Log($"Player ตายจาก: {deathType}");
 
-        //// เริ่มกระบวนการ Respawn
-        //StartCoroutine(DeathSequence());
+        // เริ่มกระบวนการ Respawn (จะทำ ManualReset / Reload ภายใน)
+        StartCoroutine(DeathSequence());
     }
 
     private IEnumerator DeathSequence()
     {
         yield return StartCoroutine(FadeOut());
+        // wait a short respawn delay first (timing for UI/fade)
         yield return new WaitForSeconds(respawnDelay);
+
+        // If we spawned a death particle instance, wait for it to finish playing
+        if (currentDeathEffectInstance != null)
+        {
+            // Wait until particle system is no longer alive (all particles finished)
+            yield return new WaitUntil(() => currentDeathEffectInstance == null || !currentDeathEffectInstance.IsAlive(true));
+            // give a tiny buffer
+            yield return new WaitForSeconds(0.05f);
+            currentDeathEffectInstance = null;
+        }
 
         // บันทึก checkpoint ID และข้อมูลสำคัญลง PlayerPrefs ก่อน reload
         if (checkpointManager != null)
