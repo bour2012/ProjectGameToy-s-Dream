@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HazardRockAttackBoss
+  m_Name: ObstacleAttackBoss
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -93,8 +93,15 @@ AnimationClip:
   m_Events:
   - time: 0.45
     functionName: TriggerPassiveFromAnimation
-    data: Hazard
+    data: Obstacle
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
+    messageOptions: 0
+  - time: 0.45
+    functionName: NotifyAttackComplete
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 1
     messageOptions: 0

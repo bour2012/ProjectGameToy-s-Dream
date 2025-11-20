@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 //[RequireComponent(typeof(BossController), typeof(BossAttackSystem), typeof(Animator))]
 public class BossAttackAI : MonoBehaviour
 {
+    #region Types
     [System.Serializable]
     public class AttackEntry
     {
@@ -12,6 +14,9 @@ public class BossAttackAI : MonoBehaviour
         public string triggerName = "FireSpread";
         public float postCooldown = 1.5f;
         public bool enabled = true;
+        // [เพิ่มใหม่] ถ้าช่องนี้ว่าง = ท่าโจมตีปกติ, ถ้าใส่ชื่อ = ท่า Passive
+        //[Tooltip("Leave empty for normal attacks. If set, checking logic will ask BossPhasePassiveBehaviors instead.")]
+        //public string passiveAbilityName = "";
     }
 
     [System.Serializable]
@@ -20,7 +25,9 @@ public class BossAttackAI : MonoBehaviour
         public int phaseIndex = 0;
         public List<AttackEntry> entries = new List<AttackEntry>();
     }
+    #endregion
 
+    #region Inspector & Tuning
     [Header("Core References")]
     public BossController controller;
     public BossAttackSystem attackSystem;
@@ -47,7 +54,9 @@ public class BossAttackAI : MonoBehaviour
     [Header("Inspector Passive Abilities (optional)")]
     [Tooltip("Define passive abilities here if you want the AI to expose them to Animation Events. These will be forwarded to BossPhasePassiveBehaviors for execution.")]
     public BossPhasePassiveBehaviors.PhasePassiveAbility[] passiveAbilitiesFromAI;
+    #endregion
 
+    #region Runtime State
     private int sequenceCursor = 0;
     private bool isAttacking = false;
     private bool isInCooldown = false;
@@ -62,12 +71,18 @@ public class BossAttackAI : MonoBehaviour
 
     private List<AttackEntry> currentSequence = null;
     private BossPhasePassiveBehaviors passiveBehaviorsComponent;
+    // When an attack finishes we set this flag; sequence index advances only when
+    // any pause-for-summons is lifted so waitForWaveComplete abilities can finish.
+    private bool attackFinishedPendingAdvance = false;
+    #endregion
 
+    #region Variant Selection
     // Variant selection: for ability names that have multiple inspector variants,
     // we keep a shuffled order per ability name and cycle through it so variants
     // are distributed predictably (no immediate repeats until cycle completes).
     private Dictionary<string, int[]> variantOrder = new Dictionary<string, int[]>();
     private Dictionary<string, int> variantPointers = new Dictionary<string, int>();
+    #endregion
 
     void Awake()
     {
@@ -107,6 +122,8 @@ public class BossAttackAI : MonoBehaviour
         variantPointers[abilityName] = (ptr + 1) % count;
         return val;
     }
+
+    #region Unity Callbacks
 
     void Update()
     {
@@ -153,10 +170,12 @@ public class BossAttackAI : MonoBehaviour
             while (tries < seq.Count)
             {
                 var entry = seq[sequenceCursor];
-                if (entry.enabled && attackSystem.CanUseAttack(entry.attackIndex))
+                if (entry.enabled && attackSystem.CanUseAttack(entry.attackIndex) /*&& attackFinishedPendingAdvance == false*/)
                 {
                     StartAttack(entry.attackIndex);
-                    sequenceCursor = (sequenceCursor + 1) % seq.Count;
+                    // Do not advance sequenceCursor here. We advance it only after the
+                    // attack completes (NotifyAttackComplete) and any active
+                    // PauseForSummons has been cleared so wave-based passives finish.
                     break;
                 }
                 sequenceCursor = (sequenceCursor + 1) % seq.Count;
@@ -164,6 +183,7 @@ public class BossAttackAI : MonoBehaviour
             }
         }
     }
+    #endregion
 
     private void StartAttack(int attackIndex)
     {
@@ -198,33 +218,39 @@ public class BossAttackAI : MonoBehaviour
             cycleLength = Mathf.Max(1, enabledCount);
         }
 
-        attacksStartedThisCycle++;
+        // Note: attacksStartedThisCycle increment moved to AdvanceSequenceCursor()
+        // so a cycle count is only recorded when the attack actually finishes
+        // and the sequence advances (prevents counting at attack start).
+        //var ability = passiveBehaviorsComponent.FindAbilityByName("CreateObstacle");
 
-        if (attacksStartedThisCycle >= cycleLength)
-        {
-            attacksStartedThisCycle = 0;
-            cyclesCompleted++;
-            if (controller != null && controller.showDebugLogs)
-                Debug.Log($"[AttackAI] Completed cycle {cyclesCompleted}/{cyclesBeforeExhaustion}");
-
-            if (cyclesBeforeExhaustion > 0 && cyclesCompleted >= cyclesBeforeExhaustion)
+        //if (attackFinishedPendingAdvance == false & ability.waitForWaveComplete)
+        //{
+            if (attacksStartedThisCycle >= cycleLength )
             {
-                isExhausted = true;
-                exhaustionTimer = exhaustionDuration;
-                pausedForSummons = true;
-                if (animator != null) animator.SetTrigger("GoToIdle");
+                attacksStartedThisCycle = 0;
+                cyclesCompleted++;
                 if (controller != null && controller.showDebugLogs)
-                    Debug.Log($"[AttackAI] Entering exhaustion for {exhaustionDuration} seconds");
-            }
-        }
-    }
+                    Debug.Log($"[AttackAI] Completed cycle {cyclesCompleted}/{cyclesBeforeExhaustion}");
 
-    public void TriggerAttackByIndex(int attackIndex)
-    {
-        if (controller != null && controller.showDebugLogs)
-            Debug.Log($"[AttackAI] TriggerAttackByIndex({attackIndex}) called");
-        StartAttack(attackIndex);
+                if (cyclesBeforeExhaustion > 0 && cyclesCompleted >= cyclesBeforeExhaustion+1)
+                {
+                    isExhausted = true;
+                    exhaustionTimer = exhaustionDuration;
+                    pausedForSummons = true;
+                    if (animator != null) animator.SetTrigger("GoToIdle");
+                    if (controller != null && controller.showDebugLogs)
+                        Debug.Log($"[AttackAI] Entering exhaustion for {exhaustionDuration} seconds");
+                }
+            }
+        //}
     }
+    #region Attack Flow
+    //public void TriggerAttackByIndex(int attackIndex)
+    //{
+    //    if (controller != null && controller.showDebugLogs)
+    //        Debug.Log($"[AttackAI] TriggerAttackByIndex({attackIndex}) called");
+    //    StartAttack(attackIndex);
+    //}
 
     public void NotifyAttackComplete(int finishedAttackIndex)
     {
@@ -252,6 +278,15 @@ public class BossAttackAI : MonoBehaviour
         animator.ResetTrigger("FlyToAttack");
         if (controller.showDebugLogs)
             Debug.Log($"[AttackAI] Attack {finishedAttackIndex} finished, cooldown={cooldownTimer:F2}s");
+
+        // Mark that the attack finished; advance the sequence cursor only when
+        // we are not paused for summons. If we are paused, PauseForSummons(false)
+        // will advance the cursor when the pause is lifted.
+        attackFinishedPendingAdvance = true;
+        if (!pausedForSummons)
+        {
+            AdvanceSequenceCursor();
+        }
     }
 
     public void PauseForSummons(bool pause)
@@ -261,7 +296,54 @@ public class BossAttackAI : MonoBehaviour
         {
             Debug.Log($"[AttackAI] PauseForSummons = {pause}");
         }
+
+        // If a pause is being cleared and an attack finished while we were paused,
+        // advance the sequence now so the AI continues to the next attack.
+        if (!pause && attackFinishedPendingAdvance)
+        {
+            AdvanceSequenceCursor();
+        }
     }
+
+    void AdvanceSequenceCursor()
+    {
+        var seq = currentSequence != null ? currentSequence : attackSequence;
+        if (seq != null && seq.Count > 0)
+        {
+            // Advance to next attack entry
+            sequenceCursor = (sequenceCursor + 1) % seq.Count;
+
+            // Recalculate cycle length (in case entries changed)
+            int enabledCount = 0;
+            foreach (var e in seq) if (e != null && e.enabled) enabledCount++;
+            cycleLength = Mathf.Max(1, enabledCount);
+
+            // Increment completed-attack counter now that the attack finished
+            attacksStartedThisCycle++;
+
+            // If we've completed a full cycle, update counters and possibly exhaust
+            if (attacksStartedThisCycle >= cycleLength)
+            {
+                attacksStartedThisCycle = 0;
+                cyclesCompleted++;
+                if (controller != null && controller.showDebugLogs)
+                    Debug.Log($"[AttackAI] Completed cycle {cyclesCompleted}/{cyclesBeforeExhaustion}");
+
+                if (cyclesBeforeExhaustion > 0 && cyclesCompleted >= cyclesBeforeExhaustion+1)
+                {
+                    isExhausted = true;
+                    exhaustionTimer = exhaustionDuration;
+                    pausedForSummons = true;
+                    if (animator != null) animator.SetTrigger("GoToIdle");
+                    if (controller != null && controller.showDebugLogs)
+                        Debug.Log($"[AttackAI] Entering exhaustion for {exhaustionDuration} seconds");
+                }
+            }
+        }
+
+        attackFinishedPendingAdvance = false;
+    }
+    #endregion
 
     public string GetTriggerNameForIndex(int attackIndex)
     {
@@ -294,6 +376,8 @@ public class BossAttackAI : MonoBehaviour
             Debug.Log($"[AttackAI] Phase changed to {newPhaseIndex}, reset sequence (loaded {(currentSequence != null ? currentSequence.Count : attackSequence.Count)} entries)");
     }
 
+    #region Phase & Reset
+
     public void ResetAIState()
     {
         sequenceCursor = 0;
@@ -317,10 +401,19 @@ public class BossAttackAI : MonoBehaviour
         if (controller != null && controller.showDebugLogs)
             Debug.Log("[AttackAI] ResetAIState called");
     }
+    #endregion
 
     public void TriggerPassiveFromAnimation(string abilityName)
     {
         if (string.IsNullOrEmpty(abilityName)) return;
+
+        // NOTE: This method is intended to be invoked by Animation Events
+        // (add an Animation Event on the relevant animation clip that calls
+        // `TriggerPassiveFromAnimation` with the ability name). We avoid calling
+        // passive abilities directly from state logic to prevent duplicate
+        // execution and potential spawn loops. If other systems need to invoke
+        // a passive at runtime, consider calling TriggerAbilityInstance or
+        // using the BossPhasePassiveBehaviors API directly.
 
         // If the AI has inspector-assigned passive variants, pick one using
         // a shuffled-cycle selection so variants are distributed across uses.

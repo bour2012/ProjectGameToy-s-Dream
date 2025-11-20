@@ -33,6 +33,7 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 
             [Tooltip("Optional spacing (local X axis) to place multiple items at this slot in order.")]
             public float spacingBetweenItems = 0.5f;
+            
         }
 
         [Header("Phase Info")]
@@ -49,6 +50,10 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         public GameObject spawnPrefab;
         public float spawnInterval = 3f;
         public int spawnCount = 0;
+
+        //[Header("Obstacle Prefab Pool (optional)")]
+        //[Tooltip("A shared pool of prefabs that obstacle slots can reference. Useful when you want multiple slots to draw from a single list of prefabs.")]
+        //public GameObject[] obstaclePrefabsPool;
 
         [Header("Wave Limit Settings (for Minion/Obstacle)")]
         public bool useWaveLimit = false;
@@ -88,6 +93,11 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         public GameObject warningEffectPrefab;
         public float warningDuration = 0.5f;
         public Color warningColor = Color.red;
+        [Header("Destroy Effects (optional)")]
+        [Tooltip("Optional prefab to spawn when this spawned object is destroyed (e.g. smoke/pop). Leave empty to disable.")]
+        public GameObject destroyEffectPrefab;
+        [Tooltip("Optional sound to play when the spawned object is destroyed.")]
+        public AudioClip destroySound;
 
         [Header("Audio")]
         public AudioClip spawnSound;
@@ -127,6 +137,8 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
             c.warningEffectPrefab = this.warningEffectPrefab;
             c.warningDuration = this.warningDuration;
             c.warningColor = this.warningColor;
+            c.destroyEffectPrefab = this.destroyEffectPrefab;
+            c.destroySound = this.destroySound;
             c.spawnSound = this.spawnSound;
             c.soundVolume = this.soundVolume;
             c.autoStartOnPhaseChange = this.autoStartOnPhaseChange;
@@ -144,9 +156,13 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
                     s.startPrefabIndex = this.obstacleSlots[i].startPrefabIndex;
                     s.usePrefabSequence = this.obstacleSlots[i].usePrefabSequence;
                     s.spacingBetweenItems = this.obstacleSlots[i].spacingBetweenItems;
+                    
                     c.obstacleSlots[i] = s;
                 }
             }
+
+            //// copy obstacle prefab pool if present
+            //c.obstaclePrefabsPool = this.obstaclePrefabsPool;
 
             c.currentWave = 0;
             c.currentWaveObjects = new List<GameObject>();
@@ -513,6 +529,8 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
             for (int i = 0; i < Mathf.Max(0, slot.spawnCount); i++)
             {
                 GameObject prefabToUse = ability.spawnPrefab;
+
+                // priority: slot.prefabs[] (explicit per-slot) -> ability.obstaclePrefabsPool (with optional slot.prefabIndices mapping) -> ability.spawnPrefab fallback
                 if (slot.prefabs != null && slot.prefabs.Length > 0)
                 {
                     int idx = slot.startPrefabIndex;
@@ -523,6 +541,17 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
                     idx = Mathf.Clamp(idx, 0, slot.prefabs.Length - 1);
                     prefabToUse = slot.prefabs[idx];
                 }
+                //else if (ability.obstaclePrefabsPool != null && ability.obstaclePrefabsPool.Length > 0)
+                //{
+                //    int poolLen = ability.obstaclePrefabsPool.Length;
+                //    int idx = slot.startPrefabIndex;
+                //    if (slot.usePrefabSequence)
+                //    {
+                //        idx = (slot.startPrefabIndex + i) % poolLen;
+                //    }
+                //    int poolIndex = Mathf.Clamp(idx, 0, poolLen - 1);
+                //    prefabToUse = ability.obstaclePrefabsPool[poolIndex];
+                //}
 
                 if (prefabToUse == null) continue;
 
@@ -887,6 +916,36 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
         return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
     }
 
+    //public bool IsPassiveReady(string abilityName)
+    //{
+    //    var ability = FindAbilityByName(abilityName);
+    //    if (ability == null) return false;
+
+    //    // 1. เช็ค MaxActiveCount (ถ้าตั้งไว้)
+    //    if (ability.maxActiveCount > 0)
+    //    {
+    //        // หมายเหตุ: ต้องมั่นใจว่า spawnedObjects ถูกจัดการถูกต้องใน BossPhasePassiveBehaviors
+    //        // ถ้าคุณไม่ได้แยก Type ของ Object อาจจะเช็คยากหน่อย 
+    //        // แต่วิธีพื้นฐานคือเช็คจำนวนรวมใน Phase นั้นๆ
+    //        int currentActive = GetActiveSpawnCount(ability.phaseIndex);
+    //        if (currentActive >= ability.maxActiveCount)
+    //        {
+    //            return false; // เต็มแล้ว ห้ามเสกเพิ่ม
+    //        }
+    //    }
+
+    //    // 2. เช็ค WaitForWaveComplete (ถ้าจำเป็น)
+    //    // ถ้าท่านี้ตั้งให้รอ Wave จบ และตอนนี้บอสกำลังติดสถานะ PauseForSummons อยู่
+    //    // แสดงว่า Wave เก่ายังไม่จบ จึงไม่ควรเสกซ้ำ
+    //    if (ability.waitForWaveComplete && bossController != null && bossController.IsWaitingForSummons)
+    //    {
+    //        return false;
+    //    }
+
+    //    // 3. (Optional) ถ้ามี Logic อื่นๆ เช่น Cooldown เฉพาะของ Passive ก็ใส่ตรงนี้
+
+    //    return true;
+    //}
     void SetupSpawnedObject(GameObject spawned, PhasePassiveAbility ability)
     {
         if (ability.abilityType == PassiveAbilityType.SpawnMinion)
@@ -917,6 +976,15 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
             {
                 spawned.transform.position = hit.point;
             }
+        }
+
+        // Attach a marker so we can play destroy effects/sounds when this spawned object is destroyed
+        if (ability.destroyEffectPrefab != null || ability.destroySound != null)
+        {
+            var marker = spawned.AddComponent<SpawnedObjectMarker>();
+            marker.destroyEffectPrefab = ability.destroyEffectPrefab;
+            marker.destroySound = ability.destroySound;
+            marker.soundVolume = ability.soundVolume;
         }
     }
 
@@ -1051,4 +1119,42 @@ public class BossPhasePassiveBehaviors : MonoBehaviour
 public interface IDamageable
 {
     void TakeDamage(float damage);
+}
+
+/// <summary>
+/// Helper component attached to spawned objects so we can run cleanup effects
+/// (particle prefab + sound) when the spawned GameObject is destroyed.
+/// </summary>
+public class SpawnedObjectMarker : MonoBehaviour
+{
+    public GameObject destroyEffectPrefab;
+    public AudioClip destroySound;
+    public float soundVolume = 1f;
+
+    void OnDestroy()
+    {
+        // spawn effect at last known position
+        Vector3 pos = transform.position;
+        if (destroyEffectPrefab != null)
+        {
+            GameObject fx = Instantiate(destroyEffectPrefab, pos, Quaternion.identity);
+            var ps = fx.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                var main = ps.main;
+                float maxLifetime = (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants) ? main.startLifetime.constantMax : main.startLifetime.constant;
+                float destroyAfter = main.duration + maxLifetime + 0.25f;
+                Destroy(fx, destroyAfter);
+            }
+            else
+            {
+                Destroy(fx, 4f);
+            }
+        }
+
+        if (destroySound != null)
+        {
+            AudioSource.PlayClipAtPoint(destroySound, pos, soundVolume);
+        }
+    }
 }

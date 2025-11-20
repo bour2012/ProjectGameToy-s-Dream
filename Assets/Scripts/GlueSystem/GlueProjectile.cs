@@ -364,11 +364,26 @@ public class GlueProjectile : MonoBehaviour
     {
         if (hasSlowed) return;
 
-        ISlowable slowable = target.GetComponent<ISlowable>();
+        // Guard against destroyed Unity objects: the Collider2D or its GameObject
+        // may be destroyed while the coroutine is running which causes
+        // MissingReferenceException when accessing components. Check for null
+        // using Unity's overloaded null operator and bail out safely.
+        if (target == null) return;
+
+        ISlowable slowable = null;
+        try
+        {
+            slowable = target.GetComponent<ISlowable>();
+        }
+        catch (MissingReferenceException)
+        {
+            // Target was destroyed mid-frame; ignore and stop attempting to slow it.
+            return;
+        }
 
         if (slowable != null)
         {
-            // ค่อยๆ ลดความเร็วลงเหลือ 0.05 ภายใน 1 วินาที และ slow ค้างไว้ 5 วินาที
+            // Gradually slow the target and mark as slowed
             slowable.ApplyGradualSlow(0.25f, 3.5f, 0.35f);
             hasSlowed = true;
             Debug.Log("Applied normal slow to target");
@@ -380,11 +395,21 @@ public class GlueProjectile : MonoBehaviour
     {
         if (hasSlowedHard) return;
 
-        ISlowable slowable = target.GetComponent<ISlowable>();
+        if (target == null) return;
+
+        ISlowable slowable = null;
+        try
+        {
+            slowable = target.GetComponent<ISlowable>();
+        }
+        catch (MissingReferenceException)
+        {
+            return;
+        }
 
         if (slowable != null)
         {
-            // ค่อยๆ ลดความเร็วลงเหลือ 0.05 ภายใน 1 วินาที และ slow ค้างไว้ 5 วินาที
+            // Gradually apply a stronger slow
             slowable.ApplyGradualSlow(0.05f, 5f, 0.35f);
             hasSlowedHard = true;
 
@@ -436,6 +461,15 @@ public class GlueProjectile : MonoBehaviour
         while (RemainingLifetime > 0f)
         {
             // เช็คเงื่อนไขเรียลไทม์ทุกเฟรม
+            // Protect against the target being destroyed while this coroutine runs.
+            if (target == null || currentTarget == null)
+            {
+                // Clear flags and exit coroutine early when target no longer exists
+                targetInside = false;
+                currentTarget = null;
+                yield break;
+            }
+
             if (targetInside && currentTarget != null)
             {
                 if (RemainingLifetime > timeGlueStick)

@@ -377,6 +377,24 @@ public class BossController : Enemy
                 rb.gravityScale = fallGravityScale;
             }
 
+            // Mark falling state immediately so AI and movement systems stop
+            isCurrentlyFalling = true;
+
+            // Reset and pause the attack AI to prevent it remembering/continuing attacks
+            var ai = GetComponent<BossAttackAI>();
+            if (ai != null)
+            {
+                ai.ResetAIState();
+                ai.PauseForSummons(true);
+            }
+
+            // Ensure animator transitions to idle/fall properly
+            if (animator != null)
+            {
+                try { animator.SetTrigger("GoToIdle"); } catch { }
+                try { animator.ResetTrigger("FlyToAttack"); } catch { }
+            }
+
             // DO NOT reset glue here: wait until the boss lands on ground and the grounded duration completes
             if (showDebugLogs) Debug.Log($"[{bossName}] Glue full -> Fall triggered (gravity enabled)");
         }

@@ -64,22 +64,14 @@ public class FlyBoss : StateMachineBehaviour
 
             if (!string.IsNullOrEmpty(triggerName))
             {
-                // Safety: ask the AI to trigger any passive ability mapped to this trigger name
-                if (attackAI != null)
-                {
-                    try
-                    {
-                        attackAI.TriggerPassiveFromAnimation(triggerName);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Debug.LogWarning($"[FlyBoss] TriggerPassiveFromAnimation threw: {ex.Message}");
-                    }
-                }
+                // Passive abilities should be triggered by an Animation Event inside the
+                // animation clip (which calls `BossAttackAI.TriggerPassiveFromAnimation`).
+                // Do not invoke the passive programmatically here to avoid duplicate
+                // execution or spawn loops when the animation also fires the event.
 
                 animator.SetTrigger(triggerName);
                 if (attackAI != null && attackAI.controller != null && attackAI.controller.showDebugLogs)
-                    Debug.Log($"[FlyBoss] Triggered {triggerName} for index {attackIndex}");
+                    Debug.Log($"[FlyBoss] Triggered {triggerName} for index {attackIndex} (passive via Animation Event)");
             }
             else
             {
