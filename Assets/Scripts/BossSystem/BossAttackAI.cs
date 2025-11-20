@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(BossController), typeof(BossAttackSystem), typeof(Animator))]
+//[RequireComponent(typeof(BossController), typeof(BossAttackSystem), typeof(Animator))]
 public class BossAttackAI : MonoBehaviour
 {
     [System.Serializable]

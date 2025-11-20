@@ -79,14 +79,14 @@ public class BossController : Enemy
 
     private AudioSource audioSource;
     private SpriteRenderer bossSprite;
-
+    private BossPhaseData currentPhaseData;
     // Position lock while accumulating glue to avoid being displaced by projectile collisions
     private Vector2 lastFixedPosition;
     [Tooltip("ถ้า true ขณะสะสมกาว จะล็อกตำแหน่งทางฟิสิกส์ไม่ให้ถูกดัน")]
     public bool enforcePositionLockWhileAccumulating = true;
 
     // Remember starting position so boss can return after falling
-    private Vector2 startingPosition;
+    public Vector2 startingPosition;
     [Header("Return Settings")]
     [Tooltip("ความเร็วที่บอสบินกลับตำแหน่งเริ่มต้น (หน่วย Unity units/second)")]
     public float returnToStartSpeed = 3f;
@@ -104,6 +104,19 @@ public class BossController : Enemy
         public int requiredGlueHits = 5;
         public float moveSpeedMultiplier = 1f;
         public float attackSpeedMultiplier = 1f; // >1 => faster (cooldowns shorter)
+        [Tooltip("If true the boss will fly to follow the player's X position during flight; if false the boss will stay at its start X (but can still perform attacks).")]
+        public bool followPlayer = true;
+        [Header("Optional Warp On Phase Enter")]
+        [Tooltip("If true the boss will teleport to 'warpLocation' when entering this phase.")]
+        public bool warpOnEnter = false;
+        [Tooltip("Optional Transform to teleport the boss to when entering this phase. Assign a marker GameObject in the scene.")]
+        public Transform warpLocation;
+        [Tooltip("Optional prefab (particle/smoke/etc.) to spawn when warping; will be instantiated at the warp location.")]
+        public GameObject warpEffectPrefab;
+        [Tooltip("Optional animator trigger name to play before warping. Leave empty to skip animation.")]
+        public string warpAnimationTrigger = "PhaseWarp";
+        [Tooltip("Delay (seconds) to wait after playing the warp animation trigger before performing the teleport.")]
+        public float warpPreDelay = 0.5f;
         public Color phaseColor = Color.white;
     }
 
@@ -253,7 +266,7 @@ public class BossController : Enemy
     {
         currentPhaseIndex = phaseIndex;
         BossPhaseData phase = phases[phaseIndex];
-
+        currentPhaseData = phase;
         // Reset glue on phase enter
         currentGlueHitCount = 0;
         glueFullTriggered = false;
@@ -276,12 +289,40 @@ public class BossController : Enemy
             animator.speed = phase.moveSpeedMultiplier; // optional: scale base animation speed
         }
 
+        // Optional: warp (instant teleport) when entering this phase
+        if (phase.warpOnEnter && phase.warpLocation != null)
+        {
+            // If an animation trigger or a pre-delay is specified, play the animation then perform warp after delay
+            if (animator != null && (!string.IsNullOrEmpty(phase.warpAnimationTrigger) || phase.warpPreDelay > 0f))
+            {
+                if (!string.IsNullOrEmpty(phase.warpAnimationTrigger))
+                {
+                    try { animator.SetTrigger(phase.warpAnimationTrigger); } catch { }
+                }
+                StartCoroutine(PerformWarpSequence(phase));
+            }
+            else
+            {
+                // immediate warp
+                DoWarp(phase);
+            }
+        }
+
         var ai = GetComponent<BossAttackAI>();
         if (ai != null) ai.OnPhaseChanged(phaseIndex);
 
         var passive = GetComponent<BossPhasePassiveBehaviors>();
         if (passive != null) passive.OnPhaseChanged(phaseIndex);
+
+        // Update startingPosition so the boss will use this point as its "home" when recovering from fall
+        if (rb != null) startingPosition = rb.position; else startingPosition = transform.position;
     }
+
+    //public void OnAnimationFinished()
+    //{
+    //    if (currentPhaseData != null)
+    //        StartCoroutine(PerformWarpSequence(currentPhaseData));
+    //}
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -548,6 +589,73 @@ public class BossController : Enemy
         {
             audioSource.PlayOneShot(clip);
         }
+    }
+
+    IEnumerator PerformWarpSequence(BossPhaseData phase)
+    {
+        // Wait for specified pre-delay (allow animation to play)
+        float wait = Mathf.Max(0f, phase.warpPreDelay);
+        if (wait > 0f)
+            yield return new WaitForSeconds(wait);
+
+        DoWarp(phase);
+    }
+
+    void DoWarp(BossPhaseData phase)
+    {
+        Vector2 dest = phase.warpLocation.position;
+
+        // Spawn warp effect at the boss's current position first (smoke-out)
+        if (phase.warpEffectPrefab != null)
+        {
+            Vector2 oldPos = transform.position;
+            GameObject fxOut = Instantiate(phase.warpEffectPrefab, oldPos, Quaternion.identity);
+            var psOut = fxOut.GetComponent<ParticleSystem>();
+            if (psOut != null)
+            {
+                var mainOut = psOut.main;
+                float maxLifetimeOut = (mainOut.startLifetime.mode == ParticleSystemCurveMode.TwoConstants) ? mainOut.startLifetime.constantMax : mainOut.startLifetime.constant;
+                float destroyAfterOut = mainOut.duration + maxLifetimeOut + 0.25f;
+                Destroy(fxOut, destroyAfterOut);
+            }
+            else
+            {
+                Destroy(fxOut, 4f);
+            }
+        }
+
+        // Teleport physics body and transform
+        if (rb != null)
+        {
+            rb.position = dest;
+            rb.linearVelocity = Vector2.zero;
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f;
+        }
+        transform.position = dest;
+        // Cancel any return-in-progress
+        isReturningToStart = false;
+
+        // Spawn warp effect at destination (smoke-in)
+        if (phase.warpEffectPrefab != null)
+        {
+            GameObject fx = Instantiate(phase.warpEffectPrefab, dest, Quaternion.identity);
+            var ps = fx.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                var main = ps.main;
+                float maxLifetime = (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants) ? main.startLifetime.constantMax : main.startLifetime.constant;
+                float destroyAfter = main.duration + maxLifetime + 0.25f;
+                Destroy(fx, destroyAfter);
+            }
+            else
+            {
+                Destroy(fx, 4f);
+            }
+        }
+
+        // Update startingPosition so the boss will use this point as its "home" when recovering from fall
+        if (rb != null) startingPosition = rb.position; else startingPosition = transform.position;
     }
 
     /// <summary>

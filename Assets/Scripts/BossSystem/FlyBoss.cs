@@ -34,7 +34,17 @@ public class FlyBoss : StateMachineBehaviour
             moveSpeed *= controller.phases[controller.currentPhaseIndex].moveSpeedMultiplier;
         }
         float alignmentThreshold = attackSystem.alignmentThreshold;
+        // Determine whether this phase follows the player. Use existing `controller` variable.
         float targetX = player.position.x;
+        if (controller != null && controller.phases != null && controller.phases.Length > controller.currentPhaseIndex)
+        {
+            bool follow = controller.phases[controller.currentPhaseIndex].followPlayer;
+            if (!follow)
+            {
+                // Use starting X position (stay where the boss returned to)
+                targetX = controller.startingPosition.x;
+            }
+        }
 
         if (Mathf.Abs(bossTransform.position.x - targetX) > alignmentThreshold)
         {
