@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3968328463941729982}
   - component: {fileID: 5351402897135363221}
   - component: {fileID: 6351660356958916677}
-  m_Layer: 10
+  m_Layer: 19
   m_Name: Enemy03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,6 +125,7 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 2176
+  currentHealth: 0
   chaseMode: 0
   requiredGlueHitsToFall: 3
   glueHitCooldown: 0.5

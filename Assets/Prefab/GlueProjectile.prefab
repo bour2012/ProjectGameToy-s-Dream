@@ -191,5 +191,8 @@ MonoBehaviour:
     m_Bits: 16705
   impactEffect: {fileID: 0}
   splatEffect: {fileID: 0}
+  burningSprite: {fileID: 21300000, guid: f55b0c72dd6096f44b3586db5354d4ee, type: 3}
+  burningEffectPrefab: {fileID: 0}
+  burningDamage: 15
   shootSound: {fileID: 0}
   impactSound: {fileID: 0}

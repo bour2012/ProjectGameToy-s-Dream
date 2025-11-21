@@ -21,6 +21,12 @@ public class GlueProjectile : MonoBehaviour
     [Header("Effects")]
     public GameObject impactEffect;          // Effect เมื่อกระทบ
     public GameObject splatEffect;           // Effect กาวกระเซ็น
+    [Header("Burning / Boss Fire")]
+    public Sprite burningSprite;             // optional sprite to show when glue is on fire
+    public GameObject burningEffectPrefab;   // optional VFX when glue becomes burning
+    public float burningDamage = 15f;        // damage applied to Boss when burning glue hits
+    [Tooltip("Turn speed (deg/sec) used to smoothly rotate the glue to face its velocity when burning")]
+    public float burningRotationTurnSpeed = 720f;
 
     [Header("Audio")]
     public AudioClip shootSound;
@@ -29,10 +35,12 @@ public class GlueProjectile : MonoBehaviour
     // Private Variables
     private Rigidbody2D rb;
     private AudioSource audioSource;
+    private SpriteRenderer spriteRenderer;
 
     private bool hasStuck = false;               // ป้องกัน trigger ซ้ำ
     private bool hasSlowed = false;              // ป้องกัน slow ซ้ำ
     private bool hasSlowedHard = false;              // ป้องกัน slow ซ้ำ
+    private bool isBurning = false;               // glue is on fire (can damage boss)
  /*   private bool isOnGround = false;*/             // ตรวจสอบว่าติดพื้นหรือไม่
     private bool hasStartedDestroyCountdown = false;
     //private bool hasExtendedDestroyTime = false; // เพิ่ม flag
@@ -53,6 +61,7 @@ public class GlueProjectile : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         // ทำลายตัวเองหลังเวลาที่กำหนด
         //Destroy(gameObject, lifetime);
@@ -66,6 +75,30 @@ public class GlueProjectile : MonoBehaviour
     private void Update()
     {
 
+    }
+    private void LateUpdate()
+    {
+        // Smoothly rotate to face velocity when burning
+        if (!isBurning) return;
+
+        float desiredAngle = transform.rotation.eulerAngles.z;
+        // prefer Rigidbody2D velocity if available
+        if (rb != null && rb.linearVelocity.sqrMagnitude > 0.0001f)
+        {
+            Vector2 v = rb.linearVelocity;
+            desiredAngle = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+        }
+        else
+        {
+            // fallback: use current forward direction
+            Vector3 fwd = transform.right;
+            desiredAngle = Mathf.Atan2(fwd.y, fwd.x) * Mathf.Rad2Deg;
+        }
+
+        float current = transform.rotation.eulerAngles.z;
+        float maxDelta = burningRotationTurnSpeed * Time.deltaTime;
+        float newAngle = Mathf.MoveTowardsAngle(current, desiredAngle, maxDelta);
+        transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
     }
     private void FixedUpdate()
     {
@@ -98,6 +131,17 @@ public class GlueProjectile : MonoBehaviour
     {
         if (hasStuck) return;
 
+        // Boss fire barrier: glue passing through becomes "burning" (ไฟ)
+        if (other != null && other.CompareTag("BossFireBarrier"))
+        {
+            if (!isBurning)
+            {
+                BecomeBurning();
+            }
+            // don't treat barrier as ground/target; let projectile continue
+            return;
+        }
+
         int layerMask = 1 << other.gameObject.layer;
 
 
@@ -114,7 +158,19 @@ public class GlueProjectile : MonoBehaviour
         }
         else if ((layerMask & targetLayers) != 0)
         {
-            
+            // If glue is burning and we hit a Boss, apply damage immediately
+            // use InParent in case collider is on child of boss GameObject
+            var boss = other.GetComponentInParent<BossController>();
+            if (isBurning && boss != null)
+            {
+                // apply damage that bypasses falling-only restriction
+                boss.ReceiveEnvironmentalDamage(burningDamage);
+                CreateImpactEffects();
+                PlaySound(impactSound);
+                Destroy(gameObject);
+                return;
+            }
+
             StickToTarget(other, timeStickToTarget);
             targetInside = true;
             currentTarget = other;
@@ -358,6 +414,44 @@ public class GlueProjectile : MonoBehaviour
         //joint.frequency = 1f;
         //joint.breakForce = stickForce * 1.2f;
         //Debug.Log($"Glue joint attached to {target.name} with force {stickForce}");
+    }
+
+    private void BecomeBurning()
+    {
+        isBurning = true;
+
+        // change sprite if provided
+        if (burningSprite != null && spriteRenderer != null)
+        {
+            spriteRenderer.sprite = burningSprite;
+            spriteRenderer.enabled = true;
+        }
+
+        // immediately align to current velocity so the visual starts facing travel direction
+        if (rb != null && rb.linearVelocity.sqrMagnitude > 0.0001f)
+        {
+            Vector2 v = rb.linearVelocity;
+            float desiredAngle = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, 0f, desiredAngle);
+        }
+
+        // play burning effect if any
+        if (burningEffectPrefab != null)
+        {
+            var fx = Instantiate(burningEffectPrefab, transform.position, Quaternion.identity, transform);
+            var ps = fx.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                float maxLifetime = (ps.main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants) ? ps.main.startLifetime.constantMax : ps.main.startLifetime.constant;
+                Destroy(fx, ps.main.duration + maxLifetime + 0.25f);
+            }
+            else
+            {
+                Destroy(fx, 4f);
+            }
+        }
+
+        Debug.Log("Glue became burning after passing BossFireBarrier");
     }
 
     private void ApplySlow(Collider2D target)

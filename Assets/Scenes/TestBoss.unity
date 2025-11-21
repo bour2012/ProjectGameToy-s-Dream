@@ -703,7 +703,7 @@ Transform:
   m_GameObject: {fileID: 161216423}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -129.3, y: -51.3, z: 0}
+  m_LocalPosition: {x: -129.95, y: -51.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1269,6 +1269,67 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1001 &339894420
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7701354496848542230, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_Name
+      value: BossFireBarrier
+      objectReference: {fileID: 0}
+    - target: {fileID: 7701354496848542230, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -137.54
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -50.89
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491501070644151978, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
 --- !u!1 &357478004
 GameObject:
   m_ObjectHideFlags: 0
@@ -1513,8 +1574,8 @@ MonoBehaviour:
     requiredGlueHits: 5
     moveSpeedMultiplier: 1
     attackSpeedMultiplier: 1
-    followPlayer: 1
-    warpOnEnter: 0
+    followPlayer: 0
+    warpOnEnter: 1
     warpLocation: {fileID: 0}
     warpEffectPrefab: {fileID: 0}
     warpAnimationTrigger: PhaseWarp
@@ -1596,6 +1657,11 @@ MonoBehaviour:
   hurtSound: {fileID: 0}
   showDebugLogs: 1
   stompDamage: 10
+  stompIndicatorPrefab: {fileID: 5995010023984085031, guid: 3afa188ef821dfe42943ec1f508aef84, type: 3}
+  stompIndicatorOffset: {x: -1, y: 3.5, z: 0}
+  stompIndicatorBobAmplitude: 0.25
+  stompIndicatorBobFrequency: 2
+  enableFinalPhaseGroundedBehavior: 1
   isCurrentlyFalling: 0
   isInvincible: 0
   targetPosition: {x: 0, y: 0}
@@ -1652,6 +1718,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1985c393c2c6f8043bb9aa2f2148843b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
+  alignmentThreshold: 0.5
+  maxBeamLength: 40
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 128
   spreadAttackData:
     cooldown: 2
     damage: 10
@@ -1670,12 +1742,37 @@ MonoBehaviour:
   warningDuration: 1.5
   beamDuration: 2
   beamWidth: 5.5
-  moveSpeed: 5
-  alignmentThreshold: 0.5
-  maxBeamLength: 40
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 128
+  sideBeamAttackData:
+    cooldown: 2
+    damage: 10
+    projectileSpeed: 5
+    projectilePrefab: {fileID: 8575472934418601295, guid: 166e856006ef48146a9fff74cf1b6d5b, type: 3}
+    warningEffectPrefab: {fileID: 8088246724170768330, guid: ab999ada86ab18948aa21c0b20859ff9, type: 3}
+  sideBeamMode: 1
+  sideWarningDuration: 2
+  sideBeamDuration: 1.8
+  sideBeamWidth: 2
+  bossFireBarrierPrefab: {fileID: 7701354496848542230, guid: 363dc8ff2fb3d864397e2dc74eb1bafc, type: 3}
+  barrierSpawnOffset: {x: -6.25, y: 0}
+  barrierDuration: 12
+  fireBarrierAttackData:
+    cooldown: 2
+    damage: 10
+    projectileSpeed: 3.5
+    projectilePrefab: {fileID: 8179761046936208054, guid: 4a05445302d266d4d9c7a914b2dcadd4, type: 3}
+    warningEffectPrefab: {fileID: 8088246724170768330, guid: ab999ada86ab18948aa21c0b20859ff9, type: 3}
+  fireProjectileCount: 3
+  fireProjectileTurnSpeed: 360
+  fireProjectileLifetime: 5
+  fireProjectileDestroyDistance: 30
+  fireProjectileDestroyEffect: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
+  waitAfterProjectilesDestroyed: 2
+  barrierProjectileSpawnDistance: 0.5
+  waitForBarrierDestruction: 1
+  fireProjectileSpawnJitter: 2.5
+  fireProjectileSpawnStagger: 1.5
+  fireProjectileTurnSlowFactor: 1
+  fireProjectileHomingDuration: 2
 --- !u!114 &430781526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1803,7 +1900,7 @@ Rigidbody2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 1056840
+    m_Bits: 1583176
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -1828,17 +1925,14 @@ MonoBehaviour:
     triggerName: FireSpread
     postCooldown: 1.5
     enabled: 0
-    passiveAbilityName: 
   - attackIndex: 2
     triggerName: FireBeam
     postCooldown: 2
     enabled: 0
-    passiveAbilityName: 
   - attackIndex: 3
-    triggerName: Obstacle
+    triggerName: FrireBeamSide
     postCooldown: 2
     enabled: 0
-    passiveAbilityName: 
   phaseAttackSets:
   - phaseIndex: 0
     entries:
@@ -1846,42 +1940,39 @@ MonoBehaviour:
       triggerName: FireSpread
       postCooldown: 1.5
       enabled: 1
-      passiveAbilityName: 
     - attackIndex: 2
       triggerName: FireBeam
       postCooldown: 2
       enabled: 1
-      passiveAbilityName: 
   - phaseIndex: 1
     entries:
     - attackIndex: 3
       triggerName: Hazard
       postCooldown: 1.5
       enabled: 1
-      passiveAbilityName: FallingHazard
     - attackIndex: 4
       triggerName: Obstacle
       postCooldown: 2
-      enabled: 1
-      passiveAbilityName: CreateObstacle
+      enabled: 0
   - phaseIndex: 2
     entries:
-    - attackIndex: 5
-      triggerName: FireSpread
+    - attackIndex: 1
+      triggerName: FrireBeamSide
       postCooldown: 2
       enabled: 1
-      passiveAbilityName: 
-    - attackIndex: 6
-      triggerName: FireBeam
+    - attackIndex: 2
+      triggerName: TriggerFireBarrierAttack
       postCooldown: 2
       enabled: 1
-      passiveAbilityName: 
+    - attackIndex: 3
+      triggerName: Summon
+      postCooldown: 2
+      enabled: 1
     - attackIndex: 7
-      triggerName: Obstacle
+      triggerName: Summon
       postCooldown: 2
-      enabled: 1
-      passiveAbilityName: 
-  cyclesBeforeExhaustion: 1
+      enabled: 0
+  cyclesBeforeExhaustion: 2
   exhaustionDuration: 10
   passiveAbilitiesFromAI:
   - abilityName: Hazard
@@ -1891,7 +1982,6 @@ MonoBehaviour:
     spawnPrefab: {fileID: 548407930713113153, guid: 197815962090a144596080c97f3cf19c, type: 3}
     spawnInterval: 0
     spawnCount: 5
-    obstaclePrefabsPool: []
     useWaveLimit: 0
     maxWaves: 3
     enemiesPerWave: 5
@@ -1927,17 +2017,16 @@ MonoBehaviour:
     spawnPrefab: {fileID: 4335615913772803810, guid: 47208897213b5794abe033c544cf5203, type: 3}
     spawnInterval: 2
     spawnCount: 2
-    obstaclePrefabsPool: []
-    useWaveLimit: 1
+    useWaveLimit: 0
     maxWaves: 2
-    enemiesPerWave: 5
+    enemiesPerWave: 1
     waitForWaveComplete: 1
-    areaType: 1
-    spawnOffset: {x: -0.14, y: 5}
+    areaType: 2
+    spawnOffset: {x: 2.5, y: 2.8}
     spawnHeight: 87.8
     randomRadius: 5.7
     pattern: 1
-    patternSpacing: 4.38
+    patternSpacing: 2.4
     obstacleSlots: []
     sequentialSpawn: 1
     spawnDelay: 0.5
@@ -1960,23 +2049,22 @@ MonoBehaviour:
     phaseIndex: 1
     abilityType: 2
     autoStartOnPhaseChange: 1
-    spawnPrefab: {fileID: 4335615913772803810, guid: 47208897213b5794abe033c544cf5203, type: 3}
+    spawnPrefab: {fileID: 2592376929119044878, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
     spawnInterval: 2
-    spawnCount: 1
-    obstaclePrefabsPool: []
-    useWaveLimit: 1
+    spawnCount: 3
+    useWaveLimit: 0
     maxWaves: 2
-    enemiesPerWave: 5
+    enemiesPerWave: 1
     waitForWaveComplete: 1
-    areaType: 1
-    spawnOffset: {x: -0.14, y: 5}
+    areaType: 2
+    spawnOffset: {x: 0, y: 2.38}
     spawnHeight: 87.8
     randomRadius: 5.7
     pattern: 1
-    patternSpacing: 4.38
+    patternSpacing: 0
     obstacleSlots: []
     sequentialSpawn: 1
-    spawnDelay: 0.5
+    spawnDelay: 3
     autoDestroy: 1
     destroyAfter: 1.58
     onlyWhenGrounded: 1
@@ -1999,7 +2087,6 @@ MonoBehaviour:
     spawnPrefab: {fileID: 857119630352314834, guid: 80c2ba14227b7d84586088c4ee673627, type: 3}
     spawnInterval: 2
     spawnCount: 1
-    obstaclePrefabsPool: []
     useWaveLimit: 0
     maxWaves: 2
     enemiesPerWave: 5
@@ -2053,7 +2140,6 @@ MonoBehaviour:
     spawnPrefab: {fileID: 857119630352314834, guid: 80c2ba14227b7d84586088c4ee673627, type: 3}
     spawnInterval: 2
     spawnCount: 1
-    obstaclePrefabsPool: []
     useWaveLimit: 0
     maxWaves: 2
     enemiesPerWave: 5
@@ -2107,7 +2193,6 @@ MonoBehaviour:
     spawnPrefab: {fileID: 857119630352314834, guid: 80c2ba14227b7d84586088c4ee673627, type: 3}
     spawnInterval: 2
     spawnCount: 1
-    obstaclePrefabsPool: []
     useWaveLimit: 0
     maxWaves: 2
     enemiesPerWave: 5
@@ -12319,3 +12404,4 @@ SceneRoots:
   - {fileID: 161216425}
   - {fileID: 771373543}
   - {fileID: 115965590}
+  - {fileID: 339894420}

@@ -35,6 +35,8 @@ public class AttackFinishedSMB : StateMachineBehaviour
         // Clean up attack triggers when leaving state
         animator.ResetTrigger("FireSpread");
         animator.ResetTrigger("FireBeam");
+        animator.ResetTrigger("FrireBeamSide");
+        animator.ResetTrigger("TriggerFireBarrierAttack");
         animator.ResetTrigger("Hazard");
         animator.ResetTrigger("Obstacle");
     }

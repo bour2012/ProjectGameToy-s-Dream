@@ -70,6 +70,27 @@ public class BossController : Enemy
     [Tooltip("Damage applied to the boss when the player stomps its head while it's falling")]
     public float stompDamage = 10f;
 
+    [Header("Stomp Indicator")]
+    [Tooltip("Prefab shown above the boss to indicate the player should stomp its head while it's falling")]
+    public GameObject stompIndicatorPrefab;
+    [Tooltip("Local offset from the boss transform where the indicator will appear")]
+    public Vector3 stompIndicatorOffset = new Vector3(0f, 1.6f, 0f);
+    [Tooltip("Vertical bob amplitude for the indicator (world units)")]
+    public float stompIndicatorBobAmplitude = 0.12f;
+    [Tooltip("Vertical bob frequency for the indicator (cycles per second)")]
+    public float stompIndicatorBobFrequency = 2f;
+
+    // internal indicator instance
+    private GameObject stompIndicatorInstance;
+    private float stompIndicatorTimer = 0f;
+
+    [Header("Final Phase Grounded")]
+    [Tooltip("When true, entering the final phase will put the boss into a grounded 'glue-locked' state: glue will no longer accumulate/reset and stomping is disabled.")]
+    public bool enableFinalPhaseGroundedBehavior = true;
+
+    // internal flag to track final-phase grounded state
+    private bool finalPhaseGroundedActive = false;
+
     // Public properties for State Machine
     [HideInInspector] public bool isCurrentlyFalling = false;
     [HideInInspector] public bool isInvincible = false;
@@ -181,6 +202,30 @@ public class BossController : Enemy
         base.Update();
         UpdateSpeedFromGlue();
         CheckPhaseTransition();
+        // Update stomp indicator when boss is falling
+        if (isCurrentlyFalling)
+        {
+            if (stompIndicatorInstance == null && stompIndicatorPrefab != null)
+            {
+                stompIndicatorInstance = Instantiate(stompIndicatorPrefab, transform.position + stompIndicatorOffset, Quaternion.identity);
+            }
+
+            if (stompIndicatorInstance != null)
+            {
+                stompIndicatorTimer += Time.deltaTime;
+                float bob = Mathf.Sin(stompIndicatorTimer * stompIndicatorBobFrequency * Mathf.PI * 2f) * stompIndicatorBobAmplitude;
+                stompIndicatorInstance.transform.position = transform.position + stompIndicatorOffset + new Vector3(0f, bob, 0f);
+            }
+        }
+        else
+        {
+            if (stompIndicatorInstance != null)
+            {
+                Destroy(stompIndicatorInstance);
+                stompIndicatorInstance = null;
+                stompIndicatorTimer = 0f;
+            }
+        }
 
         // decay glue accumulation timer
         if (!glueFullTriggered && currentGlueHitCount > 0)
@@ -267,10 +312,33 @@ public class BossController : Enemy
         currentPhaseIndex = phaseIndex;
         BossPhaseData phase = phases[phaseIndex];
         currentPhaseData = phase;
-        // Reset glue on phase enter
-        currentGlueHitCount = 0;
-        glueFullTriggered = false;
-        glueAccumulationTimer = 0f;
+        // Handle glue reset behavior: in final phase we may want to keep glue and force grounded behavior
+        finalPhaseGroundedActive = (enableFinalPhaseGroundedBehavior && phaseIndex == (phases != null ? phases.Length - 1 : -1));
+
+        if (!finalPhaseGroundedActive)
+        {
+            // Reset glue on non-final phase enter
+            currentGlueHitCount = 0;
+            glueFullTriggered = false;
+            glueAccumulationTimer = 0f;
+        }
+        else
+        {
+            // In final-phase grounded mode: ensure boss is grounded and will not respond to glue/stomps
+            isCurrentlyFalling = false;
+            isGroundedFromFall = true;
+            // freeze physics on ground so boss stays in place
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.gravityScale = 0f;
+                rb.bodyType = RigidbodyType2D.Kinematic;
+            }
+            if (animator != null)
+            {
+                try { animator.SetBool("Fall", false); } catch { }
+            }
+        }
         currentSpeedMultiplier = 1f;
 
         if (glueMeter != null)
@@ -330,6 +398,9 @@ public class BossController : Enemy
         var gp = other.GetComponent<GlueProjectile>();
         if (gp != null)
         {
+            // If final-phase grounded behavior is active, ignore glue hits entirely
+            if (finalPhaseGroundedActive) return;
+
             // handle glue hit and prevent physics displacement while accumulating
             HandleGlueHit();
 
@@ -343,6 +414,7 @@ public class BossController : Enemy
 
     void HandleGlueHit()
     {
+        if (finalPhaseGroundedActive) return; // do nothing in final grounded phase
         if (isCurrentlyFalling) return; // when already falling, glue does nothing
         if (Time.time - lastGlueHitTime < glueHitCooldown) return;
 
@@ -490,6 +562,13 @@ public class BossController : Enemy
             ai.OnPhaseChanged(currentPhaseIndex); // re-select the correct sequence
             ai.PauseForSummons(false);
         }
+        // ensure any stomp indicator is removed on recovery
+        if (stompIndicatorInstance != null)
+        {
+            Destroy(stompIndicatorInstance);
+            stompIndicatorInstance = null;
+            stompIndicatorTimer = 0f;
+        }
 
         if (showDebugLogs) Debug.Log($"[{bossName}] Recovered from fall and resumed flight");
     }
@@ -567,10 +646,71 @@ public class BossController : Enemy
         }
     }
 
+    /// <summary>
+    /// Apply damage coming from environmental sources (e.g. burning glue) that should
+    /// affect the boss regardless of its falling state. This bypasses the "only damage
+    /// when falling" guard used by player stomps and projectile hits.
+    /// </summary>
+    public void ReceiveEnvironmentalDamage(float damage)
+    {
+        if (isInvincible)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Environmental damage blocked by invincibility");
+            return;
+        }
+
+        currentHealth -= damage;
+        PlaySound(hurtSound);
+
+        if (healthBar != null)
+        {
+            healthBar.SetHealth(currentHealth);
+        }
+
+        if (showDebugLogs)
+            Debug.Log($"[{bossName}] Took environmental damage {damage} HP: {currentHealth}/{maxHealth}");
+
+        if (animator != null)
+        {
+            animator.SetTrigger("TakeDamage");
+        }
+
+        // Check for phase transition (same logic as TakeDamage)
+        int newPhaseIndex = currentPhaseIndex;
+        float healthPercent = currentHealth / maxHealth;
+        for (int i = 0; i < phases.Length; i++)
+        {
+            var p = phases[i];
+            if (healthPercent >= p.minHealthPercent && healthPercent <= p.maxHealthPercent)
+            {
+                newPhaseIndex = i;
+                break;
+            }
+        }
+
+        if (newPhaseIndex != currentPhaseIndex && newPhaseIndex > currentPhaseIndex)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Environmental damage caused phase change -> EnterPhase({newPhaseIndex})");
+            EnterPhase(newPhaseIndex);
+        }
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
     // Boss-specific stomp behavior: only respond when boss is in falling/vulnerable state
     public override void OnStomped(PlayerMovement player)
     {
         if (player == null) return;
+
+        // In final-phase grounded behavior stomps are disabled
+        if (finalPhaseGroundedActive)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Stomp ignored: final-phase grounded (stomps disabled)");
+            return;
+        }
 
         // Only allow stomping when boss is currently falling / vulnerable
         if (!isCurrentlyFalling)
