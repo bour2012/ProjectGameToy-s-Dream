@@ -337,11 +337,7 @@ public class TrashCraftingSystem : MonoBehaviour
             Debug.Log("Crafting....");
         }
 
-        // เอฟเฟกต์การประดิษฐ์
-        if (craftingEffect) craftingEffect.Play();
-        if (craftingSound) craftingSound.Play();
-
-        // รอเวลาการประดิษฐ์
+        // รอเวลาการประดิษฐ์ (ไม่เล่นเอฟเฟกต์ทันที)
         float elapsedTime = 0f;
         while (elapsedTime < craftingTime)
         {
@@ -356,7 +352,25 @@ public class TrashCraftingSystem : MonoBehaviour
             yield return null;
         }
 
-        // ประดิษฐ์เสร็จสิ้น
+        // ประดิษฐ์เสร็จสิ้น: ให้ progress bar แตะ 100% เพื่อให้ UI อัปเดต
+        if (progressBar != null) progressBar.value = 1f;
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.05f);
+
+        // เล่นเอฟเฟกต์การคราฟและเสียง หลังจาก progress เสร็จ
+        if (craftingEffect)
+        {
+            ParticleSystem ps = Instantiate(craftingEffect, transform.position, transform.rotation);
+            var main = ps.main;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            ps.transform.SetParent(null);
+            ps.Play();
+            float maxLifetime = (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants) ? main.startLifetime.constantMax : main.startLifetime.constant;
+            float destroyAfter = main.duration + maxLifetime + 0.25f;
+            Destroy(ps.gameObject, destroyAfter);
+        }
+        if (craftingSound) craftingSound.Play();
+
         CompleteCrafting();
     }
 
@@ -432,11 +446,8 @@ public class TrashCraftingSystem : MonoBehaviour
             // เก็บ reference
             currentCraftedObject = craftedObj;
 
-            // เอฟเฟกต์การสร้าง
-            if (itemToCreate.spawnEffect)
-            {
-                Instantiate(itemToCreate.spawnEffect, transform.position, transform.rotation);
-            }
+            // We use the shared `craftingEffect` for completion VFX (so it's consistent when crafting
+            // completes or when trash returns). If you still want per-item spawnEffect, enable here.
 
             Debug.Log($"Created {itemToCreate.itemName} at {transform.position}");
         }
@@ -626,11 +637,68 @@ public class TrashCraftingSystem : MonoBehaviour
     /// </summary>
     public void OnCraftedObjectDestroyed(Vector3 position)
     {
-        transform.position = position;
+        // The Trash GameObject may be inactive (it was hidden when crafting started).
+        // Activate it first so we can start coroutines on this MonoBehaviour, then run the return routine.
         currentCraftedObject = null;
+        // Ensure the trash GameObject is active so StartCoroutine works
+        if (!gameObject.activeInHierarchy)
+        {
+            gameObject.SetActive(true);
+        }
 
-        // เปิดกองขยะกลับมาให้คราฟได้อีก
+        // Reset progress bar UI before starting
+        if (progressBar != null) progressBar.value = 0f;
+        if (progressPanel != null) progressPanel.SetActive(false);
+
+        if (craftingEffect)
+        {
+            ParticleSystem ps = Instantiate(craftingEffect, transform.position, transform.rotation);
+            var main = ps.main;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            ps.transform.SetParent(null);
+            ps.Play();
+            float maxLifetime = (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants) ? main.startLifetime.constantMax : main.startLifetime.constant;
+            float destroyAfter = main.duration + maxLifetime + 0.25f;
+            Destroy(ps.gameObject, destroyAfter);
+        }
+        StartCoroutine(ReturnToTrashRoutine(position));
+    }
+
+    IEnumerator ReturnToTrashRoutine(Vector3 position)
+    {
+        // move pile to destroyed position
+        transform.position = position;
+
+        // show progress UI
+        if (progressPanel != null)
+        {
+            progressPanel.SetActive(true);
+            if (progressText != null) progressText.text = "Returning...";
+        }
+
+        // start from zero
+        if (progressBar != null) progressBar.value = 0f;
+
+        float elapsed = 0f;
+        while (elapsed < craftingTime)
+        {
+            elapsed += Time.deltaTime;
+            if (progressBar != null) progressBar.value = Mathf.Clamp01(elapsed / craftingTime);
+            yield return null;
+        }
+
+        if (progressBar != null) progressBar.value = 1f;
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(0.05f);
+
+        // play the shared craftingEffect
+       
+
+        // reactivate trash object
         gameObject.SetActive(true);
+
+        // hide progress UI
+        if (progressPanel != null) progressPanel.SetActive(false);
 
         Debug.Log($"Trash pile returned to position: {position}");
     }

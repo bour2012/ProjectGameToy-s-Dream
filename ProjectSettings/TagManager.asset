@@ -12,6 +12,7 @@ TagManager:
   - EnemyHead
   - EnemyProjectile
   - LaserBlocker
+  - BossFireBarrier
   layers:
   - Default
   - TransparentFX

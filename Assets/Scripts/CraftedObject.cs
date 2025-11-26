@@ -31,8 +31,8 @@ public class CraftedObject : MonoBehaviour
     private Color originalColor;
     private bool isBlinking = false;
 
-    private Vector3 initialPosition; // ตำแหน่งเริ่มต้น
-    private Quaternion initialRotation; // การหมุนเริ่มต้น
+    private Vector3 initialPosition; // ๏ฟฝ๏ฟฝ๏ฟฝหน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
+    private Quaternion initialRotation; // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝุน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
 
     void Awake()
     {
@@ -46,7 +46,7 @@ public class CraftedObject : MonoBehaviour
         {
             originalColor = spriteRenderer.color;
         }
-        // บันทึกตำแหน่งและการหมุนเริ่มต้น
+        // ๏ฟฝัน๏ฟฝึก๏ฟฝ๏ฟฝ๏ฟฝหน๏ฟฝ๏ฟฝ๏ฟฝะก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝุน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         initialPosition = transform.position;
         initialRotation = transform.rotation;
     }
@@ -57,17 +57,17 @@ public class CraftedObject : MonoBehaviour
         parentCraftingSystem = craftingSystem;
         currentHitPoints = data.maxHitPoints;
 
-        //// ตั้งค่าคุณสมบัติของวัตถุ
+        //// ๏ฟฝ๏ฟฝ้งค๏ฟฝาคุณ๏ฟฝ๏ฟฝ๏ฟฝัติของ๏ฟฝัต๏ฟฝ๏ฟฝ
         //SetupObjectProperties();
 
-        // เริ่มจับเวลาอายุการใช้งาน (ถ้าไม่ใช่วัตถุที่สามารถถูกสิงได้)
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝุก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาน (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัต๏ฟฝุท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝรถ๏ฟฝูก๏ฟฝิง๏ฟฝ๏ฟฝ)
         if (!itemData.canBePossessed)
         {
             StartLifetimeCountdown();
         }
         else if (itemData.canBePossessed)
         {
-            // สำหรับตุ๊กตาที่สามารถถูกสิงได้ - เริ่มจับเวลาปกติ
+            // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๊กตาท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝรถ๏ฟฝูก๏ฟฝิง๏ฟฝ๏ฟฝ - ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝาป๏ฟฝ๏ฟฝ๏ฟฝ
             StartLifetimeCountdown();
         }
 
@@ -81,7 +81,7 @@ public class CraftedObject : MonoBehaviour
     //{
     //    if (itemData == null) return;
 
-    //    // ตั้งค่า Rigidbody2D สำหรับการผลัก
+    //    // ๏ฟฝ๏ฟฝ้งค๏ฟฝ๏ฟฝ Rigidbody2D ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝรผ๏ฟฝัก
     //    if (rb != null)
     //    {
     //        if (itemData.canBePushed)
@@ -89,9 +89,9 @@ public class CraftedObject : MonoBehaviour
     //            rb.bodyType = RigidbodyType2D.Dynamic;
     //            //rb.freezeRotation = true;
 
-    //            // กล่อง = หนักกว่า, ตุ๊กตา = เบากว่า
+    //            // ๏ฟฝ๏ฟฝ๏ฟฝอง = หนัก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ, ๏ฟฝ๏ฟฝ๊กต๏ฟฝ = ๏ฟฝาก๏ฟฝ๏ฟฝ๏ฟฝ
     //            rb.mass = itemData.itemName.ToLower().Contains("box") ? 2f : 0.5f;
-    //            rb.linearDamping = 5f; // เพิ่ม drag เพื่อให้หยุดได้เร็ว
+    //            rb.linearDamping = 5f; // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ drag ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝุด๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
     //        }
     //        else
     //        {
@@ -99,13 +99,13 @@ public class CraftedObject : MonoBehaviour
     //        }
     //    }
 
-    //    // ตั้งค่า Collider สำหรับการชน
+    //    // ๏ฟฝ๏ฟฝ้งค๏ฟฝ๏ฟฝ Collider ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝรช๏ฟฝ
     //    if (col != null)
     //    {
-    //        col.isTrigger = false; // ต้องเป็น solid เพื่อให้ผลักได้
+    //        col.isTrigger = false; // ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ solid ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัก๏ฟฝ๏ฟฝ
     //    }
 
-    //    //// ตั้งค่า Tag เพื่อระบุประเภท
+    //    //// ๏ฟฝ๏ฟฝ้งค๏ฟฝ๏ฟฝ Tag ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝะบุป๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
     //    //if (itemData.canBePushed && !itemData.canDistractEnemies)
     //    //{
     //    //    gameObject.tag = "PushableBox";
@@ -115,7 +115,7 @@ public class CraftedObject : MonoBehaviour
     //    //    gameObject.tag = "DistractableDoll";
     //    //}
 
-    //    // เพิ่ม Layer สำหรับ Enemy detection ถ้าเป็นตุ๊กตา
+    //    // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Layer ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ Enemy detection ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ็นต๏ฟฝ๊กต๏ฟฝ
     //    if (itemData.canDistractEnemies)
     //    {
     //        gameObject.layer = LayerMask.NameToLayer("DistractableObject");
@@ -136,17 +136,17 @@ public class CraftedObject : MonoBehaviour
     {
         float remainingTime = itemData.lifetime;
 
-        // รอจนกว่าจะเหลือเวลา 1 วินาที แล้วเริ่มกระพริบเตือน
+        // ๏ฟฝอจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ 1 ๏ฟฝินาท๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝะพ๏ฟฝิบ๏ฟฝ๏ฟฝอน
         float warningTime = Mathf.Min(1f, itemData.lifetime * 0.3f);
         yield return new WaitForSeconds(remainingTime - warningTime);
 
-        // เริ่มกระพริบเตือน
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝะพ๏ฟฝิบ๏ฟฝ๏ฟฝอน
         StartBlinkWarning();
 
-        // รอเวลาที่เหลือ
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         yield return new WaitForSeconds(warningTime);
 
-        // หมดเวลา - กลับเป็นกองขยะ
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ - ๏ฟฝ๏ฟฝับ๏ฟฝ็นกอง๏ฟฝ๏ฟฝ๏ฟฝ
         ReturnToTrash();
     }
 
@@ -166,7 +166,7 @@ public class CraftedObject : MonoBehaviour
 
         while (isBlinking)
         {
-            // กระพริบทุก 0.2 วินาที
+            // ๏ฟฝ๏ฟฝะพ๏ฟฝิบ๏ฟฝุก 0.2 ๏ฟฝินาท๏ฟฝ
             if (spriteRenderer != null)
             {
                 spriteRenderer.color = Color.red;
@@ -191,7 +191,7 @@ public class CraftedObject : MonoBehaviour
             blinkWarningCoroutine = null;
         }
 
-        // คืนสีเดิม
+        // ๏ฟฝืน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         if (spriteRenderer != null)
         {
             spriteRenderer.color = originalColor;
@@ -202,18 +202,18 @@ public class CraftedObject : MonoBehaviour
     {
         isPossessed = false;
         currentHitPoints = 3;
-        // รีเซ็ตสี/เอฟเฟกต์/สถานะอื่น ๆ ตามต้องการ
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ/๏ฟฝอฟเฟก๏ฟฝ๏ฟฝ/สถาน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ
         if (spriteRenderer != null)
             spriteRenderer.color = originalColor;
-        // อื่น ๆ ...
+        // ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ ...
     }
 
 
 
-    #region Possession System (สำหรับตุ๊กตา)
+    #region Possession System (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๊กต๏ฟฝ)
 
     /// <summary>
-    /// เรียกจากปีศาจเมื่อต้องการสิงตุ๊กตา
+    /// ๏ฟฝ๏ฟฝ๏ฟฝยก๏ฟฝาก๏ฟฝ๏ฟฝ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอต๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝิง๏ฟฝ๏ฟฝ๊กต๏ฟฝ
     /// </summary>
     public bool TryPossess(GameObject possessor)
     {
@@ -221,37 +221,37 @@ public class CraftedObject : MonoBehaviour
 
         isPossessed = true;
 
-        // หยุดจับเวลาอายุการใช้งาน
+        // ๏ฟฝ๏ฟฝุด๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝุก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาน
         if (lifetimeCoroutine != null)
         {
             StopCoroutine(lifetimeCoroutine);
             lifetimeCoroutine = null;
         }
 
-        // หยุดกระพริบเตือน
+        // ๏ฟฝ๏ฟฝุด๏ฟฝ๏ฟฝะพ๏ฟฝิบ๏ฟฝ๏ฟฝอน
         StopBlinkWarning();
 
       
 
-        // เปลี่ยนคุณสมบัติเมื่อถูกสิง
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยน๏ฟฝุณ๏ฟฝ๏ฟฝ๏ฟฝัต๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอถูก๏ฟฝิง
         //EnablePossessedProperties();
 
-        // เอฟเฟกต์การสิง
+        // ๏ฟฝอฟเฟก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝิง
         if (itemData.spawnEffect)
         {
             Instantiate(itemData.spawnEffect, transform.position, transform.rotation);
         }
 
-        // เปลี่ยน Animation state ถ้ามี
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยน Animation state ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         if (animator != null)
         {
             animator.SetBool("IsPossessed", true);
         }
 
-        // เปลี่ยนสี/เอฟเฟกต์เพื่อแสดงว่าถูกสิง
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยน๏ฟฝ๏ฟฝ/๏ฟฝอฟเฟก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝสด๏ฟฝ๏ฟฝ๏ฟฝาถูก๏ฟฝิง
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = Color.red * 0.8f; // สีแดงอมชมพู
+            spriteRenderer.color = Color.red * 0.8f; // ๏ฟฝ๏ฟฝแดง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         }
 
         if (showDebugInfo)
@@ -289,7 +289,7 @@ public class CraftedObject : MonoBehaviour
     }
 
     /// <summary>
-    /// เรียกเมื่อตุ๊กตาที่ถูกสิงโดนโจมตี
+    /// ๏ฟฝ๏ฟฝ๏ฟฝยก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอต๏ฟฝ๊กตาท๏ฟฝ๏ฟฝูก๏ฟฝิงโดน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
     /// </summary>
     public void TakeDamage(int damage = 1)
     {
@@ -328,8 +328,8 @@ public class CraftedObject : MonoBehaviour
 
     void SpawnReleasedSpirit()
     {
-        // TODO: สร้างปีศาจที่หลุดออกมา
-        // อาจจะเป็น prefab ของปีศาจที่ spawn ในตำแหน่งนี้
+        // TODO: ๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝุด๏ฟฝอก๏ฟฝ๏ฟฝ
+        // ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ prefab ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ spawn ในต๏ฟฝ๏ฟฝหน่งน๏ฟฝ๏ฟฝ
 
         if (itemData.destroyEffect)
         {
@@ -365,11 +365,11 @@ public class CraftedObject : MonoBehaviour
     }
 
     /// <summary>
-    /// บังคับให้กลับเป็นกองขยะทันที (สำหรับ debug หรือสถานการณ์พิเศษ)
+    /// ๏ฟฝัง๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ็นกอง๏ฟฝ๏ฟฝะทัน๏ฟฝ๏ฟฝ (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ debug ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝสถาน๏ฟฝ๏ฟฝรณ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ)
     /// </summary>
     public void ForceReturnToTrash()
     {
-        // หยุด Coroutines ทั้งหมด
+        // ๏ฟฝ๏ฟฝุด Coroutines ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         StopAllCoroutines();
         ReturnToTrash();
     }
@@ -378,7 +378,7 @@ public class CraftedObject : MonoBehaviour
 
     #region Collision Detection
 
-    // ใน OnTriggerEnter2D ของ CraftedObject.cs
+    // ๏ฟฝ OnTriggerEnter2D ๏ฟฝอง CraftedObject.cs
     void OnTriggerEnter2D(Collider2D other)
     {
         if (itemData != null && itemData.canBePossessed && !isPossessed && other.CompareTag("Enemy"))
@@ -393,16 +393,20 @@ public class CraftedObject : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // ตรวจสอบการโจมตีจากผู้เล่นหรือวัตถุอื่นๆ
+        // ๏ฟฝ๏ฟฝวจ๏ฟฝอบ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝีจาก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัต๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         if (isPossessed && (collision.gameObject.CompareTag("Player") ||
                            collision.gameObject.CompareTag("PlayerWeapon")))
         {
-            // ตรวจสอบว่าเป็นการโจมตีหรือแค่การสัมผัส
+            // ๏ฟฝ๏ฟฝวจ๏ฟฝอบ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ็นก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
            // float impactForce = collision.relativeVelocity.magnitude;
-          //  if (impactForce > 1f) // threshold สำหรับการโจมตี
+          //  if (impactForce > 1f) // threshold ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
            // {
                 TakeDamage(1);
            // }
+        }
+        else
+        {
+            return;
         }
     }
 
@@ -427,14 +431,14 @@ public class CraftedObject : MonoBehaviour
 
     public bool CanBePushed()
     {
-        return itemData.canBePushed || isPossessed; // ถูกสิงแล้วก็ผลักได้
+        return itemData.canBePushed || isPossessed; // ๏ฟฝูก๏ฟฝิง๏ฟฝ๏ฟฝ๏ฟฝวก๏ฟฝ๏ฟฝัก๏ฟฝ๏ฟฝ
     }
 
     public float GetRemainingLifetime()
     {
-        if (isPossessed) return float.MaxValue; // ถูกสิงแล้วไม่มีขีดจำกัดเวลา
+        if (isPossessed) return float.MaxValue; // ๏ฟฝูก๏ฟฝิง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝีขีด๏ฟฝำกัด๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
 
-        // คำนวณเวลาที่เหลือ (ต้องติดตาม timer เพิ่มเติม)
+        // ๏ฟฝำนวณ๏ฟฝ๏ฟฝ๏ฟฝาท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ (๏ฟฝ๏ฟฝอง๏ฟฝิด๏ฟฝ๏ฟฝ๏ฟฝ timer ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ)
         return 0f; // placeholder
     }
 
@@ -444,19 +448,19 @@ public class CraftedObject : MonoBehaviour
     }
 
     /// <summary>
-    /// เพิ่มเวลาการใช้งาน (สำหรับ power-ups หรือ mechanics พิเศษ)
+    /// ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาน (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ power-ups ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ mechanics ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ)
     /// </summary>
     public void ExtendLifetime(float additionalTime)
     {
-        if (isPossessed) return; // ถูกสิงแล้วไม่ต้องขยายเวลา
+        if (isPossessed) return; // ๏ฟฝูก๏ฟฝิง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
 
-        // หยุด coroutine เดิมและเริ่มใหม่ด้วยเวลาที่เพิ่มขึ้น
+        // ๏ฟฝ๏ฟฝุด coroutine ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
         if (lifetimeCoroutine != null)
         {
             StopCoroutine(lifetimeCoroutine);
         }
 
-        // ขยายเวลาใน itemData ชั่วคราว
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ itemData ๏ฟฝ๏ฟฝ๏ฟฝวค๏ฟฝ๏ฟฝ๏ฟฝ
         itemData.lifetime += additionalTime;
         StartLifetimeCountdown();
 
@@ -488,7 +492,7 @@ public class CraftedObject : MonoBehaviour
             Gizmos.DrawWireCube(transform.position, Vector3.one * 0.5f);
         }
 
-        // แสดงจำนวน HP ถ้าถูกสิง
+        // ๏ฟฝสด๏ฟฝ๏ฟฝำนวน HP ๏ฟฝ๏ฟฝาถูก๏ฟฝิง
         if (isPossessed && Application.isPlaying)
         {
 #if UNITY_EDITOR
@@ -500,7 +504,7 @@ public class CraftedObject : MonoBehaviour
 
     void OnDestroy()
     {
-        // ทำความสะอาด coroutines
+        // ๏ฟฝำค๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาด coroutines
         StopAllCoroutines();
     }
 
@@ -512,7 +516,7 @@ public class CraftedObject : MonoBehaviour
 //// ========================================
 
 ///// <summary>
-///// Component สำหรับปีศาจที่สามารถสิงตุ๊กตาได้
+///// Component ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝรถ๏ฟฝิง๏ฟฝ๏ฟฝ๊กต๏ฟฝ๏ฟฝ๏ฟฝ
 ///// </summary>
 //public class EnemyPossession : MonoBehaviour
 //{
@@ -536,8 +540,8 @@ public class CraftedObject : MonoBehaviour
 //        currentPossessedObject = craftedObject;
 //        lastPossessionTime = Time.time;
 
-//        // เปลี่ยนพฤติกรรมของปีศาจ (ถ้าต้องการ)
-//        // เช่น หยุดเคลื่อนไหว, เปลี่ยน AI state, etc.
+//        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยน๏ฟฝฤติก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝาจ (๏ฟฝ๏ฟฝาต๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ)
+//        // ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝุด๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ, ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยน AI state, etc.
 
 //        Debug.Log($"Enemy {gameObject.name} possessed {craftedObject.GetItemData().itemName}");
 //    }
@@ -546,7 +550,7 @@ public class CraftedObject : MonoBehaviour
 //    {
 //        currentPossessedObject = null;
 
-//        // กลับมามีพฤติกรรมปกติ
+//        // ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝีพฤติก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
 //        Debug.Log($"Enemy {gameObject.name} lost possessed object");
 //    }
 

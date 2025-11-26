@@ -13,11 +13,14 @@ public class FlyingEnemy : Enemy
     [Header("Glue Settings")]
     [Tooltip("จำนวนครั้งที่ต้องโดนกาวก่อนจะร่วง")]
     public int requiredGlueHitsToFall = 3;
-    public float glueHitCooldown = 0.1f; // เวลาบล็อกนับเบิ้ล (วินาที)
-    // สำหรับนับว่าโดนกาวแล้วกี่ครั้ง (รีเซ็ตได้เมื่อลอยอีกครั้ง)
-    [HideInInspector]
-    public int currentGlueHitCount = 0;
-    //private float lastGlueHitTime = -10f;
+    [Tooltip("เวลาบล็อกการนับกาวซ้ำ (วินาที) - ป้องกันกระสุนเดียวนับหลายครั้ง")]
+    public float glueHitCooldown = 0.3f;
+    [Tooltip("ระยะเวลาที่ร่วงลงมาเมื่อโดนกาว")]
+    public float glueFallDuration = 2.5f;
+
+    [HideInInspector] public int currentGlueHitCount = 0;
+    private float lastGlueHitTime = -999f;
+    private bool isCurrentlyFalling = false; // ป้องกัน coroutine ซ้ำ
 
     [Header("Flying Enemy Settings")]
     public float flyingSpeed = 3f;
@@ -48,35 +51,27 @@ public class FlyingEnemy : Enemy
     [Tooltip("(Optional) ไอเทมที่จะดรอปเมื่อตาย")]
     public GameObject dropItemPrefab;
 
-
     [Header("Debug")]
     public bool showDebugGizmos = true;
+    public bool showGlueDebugLogs = true;
+
     private bool isPlayerInZone = false;
     private GameObject playerInZone;
-    private bool canFallByGlue = false;
     private Vector2 flightTargetPosition;
     private float attackTimer;
     private bool isAttacking = false;
-    private float currentSpeed; // สำหรับ Smooth acceleration
+    private float currentSpeed;
 
     protected override void Awake()
     {
-        //base.Awake();
-        //rb = GetComponent<Rigidbody2D>();
-        //rb.gravityScale = 0;
-        //currentSpeed = 0f;
-
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
 
-        // สุ่ม speed, cooldown ตอนเกิด
-        //flyingSpeed = Random.Range(2f, 4.5f);
         if (chaseMode == ChaseMode.Zone)
         {
             attackCooldown = Random.Range(1.0f, 3.0f);
             flightPatrolRadius = Random.Range(5f, 7f);
-            //hoverHeight = Random.Range(1.5f, 4f);
             attackTimer = Random.Range(0f, attackCooldown);
         }
         currentSpeed = 0f;
@@ -99,7 +94,7 @@ public class FlyingEnemy : Enemy
                 HandleReturningState();
                 break;
             case State.Falling:
-                //currentGlueHitCount = 0;
+                // ไม่ทำอะไร รอ coroutine จัดการ
                 break;
         }
     }
@@ -108,16 +103,13 @@ public class FlyingEnemy : Enemy
     {
         if (chaseMode == ChaseMode.Normal)
         {
-            // เรียกของ base class เฉพาะ Normal mode
             return base.DetectAndLockTarget();
         }
-        // ถ้า zone mode ไม่หาเป้าเองเลย
         return currentTarget;
     }
 
     void HandleIdleState()
     {
-        //currentGlueHitCount = 0;
         if (chaseMode == ChaseMode.Normal)
         {
             GameObject target = DetectAndLockTarget();
@@ -147,34 +139,26 @@ public class FlyingEnemy : Enemy
             return;
         }
 
-        // Smooth acceleration
         currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed, Time.deltaTime * 2f);
 
-        // เคลื่อนที่แบบ Smooth
         Vector2 direction = (flightTargetPosition - (Vector2)transform.position).normalized;
         transform.position = Vector2.MoveTowards(transform.position, flightTargetPosition, currentSpeed * Time.deltaTime);
 
-        // Flip sprite ตามทิศทาง
         if (direction.x != 0)
         {
             transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
         }
 
-        // เมื่อถึงเป้าหมายหรือใกล้มาก
         if (Vector2.Distance(transform.position, flightTargetPosition) < 0.5f)
         {
             SetNewFlightTarget();
         }
 
-        // นับเวลาโจมตี
         attackTimer += Time.deltaTime;
         if (attackTimer >= attackCooldown && IsTargetInRange())
         {
             currentState = State.Attacking;
         }
-
-        if (!canFallByGlue)
-            canFallByGlue = false;
     }
 
     void HandleAttackingState()
@@ -190,7 +174,6 @@ public class FlyingEnemy : Enemy
         currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed, Time.deltaTime * 2f);
         transform.position = Vector2.MoveTowards(transform.position, initialPosition, currentSpeed * Time.deltaTime);
 
-        // Flip sprite
         Vector2 direction = ((Vector2)initialPosition - (Vector2)transform.position).normalized;
 
         if (direction.x != 0)
@@ -201,8 +184,7 @@ public class FlyingEnemy : Enemy
         if (Vector2.Distance(transform.position, initialPosition) < 0.1f)
         {
             currentState = State.Idle;
-           
-            currentGlueHitCount = 0;
+            currentGlueHitCount = 0; // รีเซ็ตเมื่อกลับถึงรัง
             attackTimer = 0f;
         }
     }
@@ -211,17 +193,14 @@ public class FlyingEnemy : Enemy
     {
         isAttacking = true;
 
-        // เพิ่มสุ่ม delay ก่อนยิง
         float shootDelay = Random.Range(0.1f, 0.7f);
         yield return new WaitForSeconds(shootDelay);
 
-        // หยุดเคลื่อนที่และเล็ง
         currentSpeed = 0f;
         yield return new WaitForSeconds(0.5f);
 
         if (currentTarget != null)
         {
-            // ยิงกระสุนไปที่ผู้เล่น
             GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
             Vector2 direction = (currentTarget.transform.position - projectileSpawnPoint.position).normalized;
 
@@ -230,13 +209,12 @@ public class FlyingEnemy : Enemy
                 projectileRb.linearVelocity = direction * projectileSpeed;
             }
 
-            // หมุนกระสุนให้ตรงกับทิศทาง (Optional)
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
         }
+
         float afterShotWait = Random.Range(0.2f, 0.7f);
         yield return new WaitForSeconds(afterShotWait);
-        //yield return new WaitForSeconds(1f);
 
         attackTimer = 0f;
         currentState = State.Flying;
@@ -251,34 +229,18 @@ public class FlyingEnemy : Enemy
 
         for (int i = 0; i < maxPositionAttempts; i++)
         {
-            // กรณีมีผู้เล่น: บินไปรอบๆ เหนือผู้เล่น
-
             if (currentTarget != null)
             {
-                float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius); 
+                float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
                 float targetY = currentTarget.transform.position.y + Random.Range(hoverHeight * 0.7f, hoverHeight * 1.3f);
                 newTarget = new Vector2(currentTarget.transform.position.x + randomX, targetY);
             }
             else
             {
-                // ปกติบินรอบรัง
                 float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
                 newTarget = new Vector2(initialPosition.x + randomX, initialPosition.y);
             }
-            //if (currentTarget != null)
-            //{
-            //    float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
-            //    float targetY = currentTarget.transform.position.y + hoverHeight;
-            //    newTarget = new Vector2(currentTarget.transform.position.x + randomX, targetY);
-            //}
-            //else
-            //{
-            //    // กรณีไม่มีผู้เล่น: บินรอบรัง
-            //    float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
-            //    newTarget = new Vector2(initialPosition.x + randomX, initialPosition.y);
-            //}
 
-            // ตรวจสอบว่าเส้นทางไปยังตำแหน่งใหม่ชนกำแพงหรือไม่
             if (IsPathClear(transform.position, newTarget))
             {
                 validPositionFound = true;
@@ -286,14 +248,14 @@ public class FlyingEnemy : Enemy
             }
         }
 
-        // ถ้าหาไม่เจอเลย ให้อยู่กับที่หรือกลับรัง
         if (validPositionFound)
         {
             flightTargetPosition = newTarget;
         }
         else
         {
-            Debug.LogWarning("FlyingEnemy: ไม่พบตำแหน่งที่เหมาะสมในการบิน กำลังกลับรัง");
+            if (showGlueDebugLogs)
+                Debug.LogWarning("FlyingEnemy: ไม่พบตำแหน่งที่เหมาะสมในการบิน กำลังกลับรัง");
             currentState = State.Returning;
         }
     }
@@ -302,11 +264,7 @@ public class FlyingEnemy : Enemy
     {
         Vector2 direction = to - from;
         float distance = direction.magnitude;
-
-        // ยิง Raycast เช็คว่ามีสิ่งกีดขวางหรือไม่
         RaycastHit2D hit = Physics2D.Raycast(from, direction.normalized, distance, obstacleLayer);
-
-        // ถ้าไม่ชน = เส้นทางปลอดภัย
         return hit.collider == null;
     }
 
@@ -318,60 +276,50 @@ public class FlyingEnemy : Enemy
 
     public override void ApplyGradualSlow(float targetSlowAmount, float duration, float lerpTime)
     {
-        // ไม่ต้องสนใจค่า slowAmount หรือ lerpTime
-        // แค่เรียกฟังก์ชัน ApplySlow ของตัวเอง แล้วส่ง "ระยะเวลา" ที่ถูกต้องไปก็พอ
-     
-        ApplySlow(targetSlowAmount, duration);
-        //ApplySlow(targetSlowAmount, duration);
-        //ApplySlow(0f, duration);
+        // Flying enemy ไม่ใช้ slow effect แบบปกติ
+        // ถ้าต้องการให้มี effect อื่นตอนโดนกาว สามารถเพิ่มได้ที่นี่
     }
+
     public override void ApplySlow(float slowAmount, float duration)
     {
-
-        //// บล็อกถ้าเพิ่งโดนในเวลา cooldown
-        //if (Time.time - lastGlueHitTime < glueHitCooldown)
-        //    return;
-
-        //lastGlueHitTime = Time.time;
-
-        if ((currentState == State.Flying || currentState == State.Attacking || currentState == State.Returning))
-        {
-            
-            //// ถ้าครบจำนวนที่กำหนด → ร่วง
-            //if (currentGlueHitCount >= requiredGlueHitsToFall && !canFallByGlue)
-            //{
-            //    canFallByGlue = true;
-            //    StartCoroutine(GroundedByGlueSequence(duration));
-                
-            //}
-            // ถ้ายังไม่ถึง limit แค่ชะลอความเร็วหรือ effect ได้ (no fall yet)
-        }
-        else
-        {
-            // โดนกาวขณะไม่บิน รีเซ็ต counter ทิ้ง
-           
-
-            canFallByGlue = false;
-        }
+        // Flying enemy จะจัดการกาวผ่าน OnTriggerEnter2D แทน
+        // ฟังก์ชันนี้ไว้สำหรับ compatibility กับ base class
     }
 
     private IEnumerator GroundedByGlueSequence(float duration)
     {
-        Debug.Log("Flying enemy hit by glue! Falling...");
+        if (showGlueDebugLogs)
+            Debug.Log($"[{enemyName}] Falling due to glue! (Hit count: {currentGlueHitCount}/{requiredGlueHitsToFall})");
+
+        isCurrentlyFalling = true;
         currentState = State.Falling;
-        rb.gravityScale = 1f; // 1. เปิดแรงโน้มถ่วงเพื่อให้ร่วง
+
+        // หยุดการโจมตีถ้ากำลังโจมตีอยู่
+        if (isAttacking)
+        {
+            StopCoroutine(nameof(AttackSequence));
+            isAttacking = false;
+        }
+
+        // เปิดแรงโน้มถ่วง
+        rb.gravityScale = 1f;
         currentSpeed = 0f;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.5f, rb.linearVelocity.y); // ลดความเร็วแนวนอน
 
-        yield return new WaitForSeconds(duration); // 2. รอตามระยะเวลาของกาวทั้งหมด
+        yield return new WaitForSeconds(duration);
 
-        Debug.Log("Glue effect wore off. Returning to flight.");
+        if (showGlueDebugLogs)
+            Debug.Log($"[{enemyName}] Glue effect ended. Returning to flight.");
+
+        // กลับสู่สถานะบิน
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
-        currentState = State.Returning; // 3. สั่งให้บินกลับรัง
-        canFallByGlue = false;
-        currentGlueHitCount = 0; // รีเซ็ต counter (หรือจะรอให้บินใหม่ก่อนรีเซ็ตก็ได้)
+        currentGlueHitCount = 0; // รีเซ็ต counter
+        isCurrentlyFalling = false;
+
+        currentState = State.Returning;
     }
-   
+
     protected override void Die()
     {
         if (dropItemPrefab != null)
@@ -383,21 +331,82 @@ public class FlyingEnemy : Enemy
 
     protected override void Patrol() { }
 
-    // แสดงเส้น Debug ใน Scene View
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // ตรวจสอบว่าเป็นกระสุนกาวหรือไม่
+        if (other.GetComponent<GlueProjectile>() == null)
+            return;
+
+        // ต้องอยู่ใน state ที่บินได้เท่านั้น
+        if (currentState != State.Flying && currentState != State.Attacking && currentState != State.Returning)
+        {
+            if (showGlueDebugLogs)
+                Debug.Log($"[{enemyName}] Hit by glue but not in valid state ({currentState})");
+            return;
+        }
+            
+        // ถ้ากำลังร่วงอยู่แล้ว ไม่ต้องนับ
+        if (isCurrentlyFalling)
+        {
+            if (showGlueDebugLogs)
+                Debug.Log($"[{enemyName}] Already falling, ignoring glue hit");
+            return;
+        }
+
+        // ตรวจสอบ cooldown เพื่อป้องกันการนับซ้ำจากกระสุนเดียวกัน
+        if (Time.time - lastGlueHitTime < glueHitCooldown)
+        {
+            if (showGlueDebugLogs)
+                Debug.Log($"[{enemyName}] Glue hit ignored (cooldown: {Time.time - lastGlueHitTime:F2}s)");
+            return;
+        }
+
+        // นับการโดนกาว
+        lastGlueHitTime = Time.time;
+        currentGlueHitCount++;
+
+        if (showGlueDebugLogs)
+            Debug.Log($"[{enemyName}] Glue hit registered! Count: {currentGlueHitCount}/{requiredGlueHitsToFall}");
+
+        // ตรวจสอบว่าครบจำนวนที่กำหนดหรือยัง
+        if (currentGlueHitCount >= requiredGlueHitsToFall)
+        {
+            StartCoroutine(GroundedByGlueSequence(glueFallDuration));
+        }
+    }
+
+    public void OnPlayerEnterZone(GameObject player)
+    {
+        isPlayerInZone = true;
+        playerInZone = player;
+        currentTarget = player;
+
+        if (currentState == State.Idle)
+        {
+            currentState = State.Flying;
+            SetNewFlightTarget();
+        }
+    }
+
+    public void OnPlayerExitZone()
+    {
+        isPlayerInZone = false;
+        playerInZone = null;
+        currentTarget = null;
+        currentState = State.Returning;
+    }
+
     private void OnDrawGizmos()
     {
         if (!showDebugGizmos) return;
 
-        // วงกลมรัศมีการบิน
         Gizmos.color = Color.cyan;
         Vector3 center = Application.isPlaying ? initialPosition : transform.position;
         DrawCircle(center, flightPatrolRadius, 30);
 
-        // วงกลมระยะโจมตี
         Gizmos.color = Color.red;
         DrawCircle(transform.position, attackRange, 40);
 
-        // เส้นไปยังเป้าหมาย
         if (Application.isPlaying && currentState == State.Flying)
         {
             Gizmos.color = Color.yellow;
@@ -405,12 +414,19 @@ public class FlyingEnemy : Enemy
             Gizmos.DrawWireSphere(flightTargetPosition, 0.3f);
         }
 
-        // เส้นตรวจจับกำแพง
         if (Application.isPlaying)
         {
             Gizmos.color = Color.green;
             Vector2 toTarget = flightTargetPosition - (Vector2)transform.position;
             Gizmos.DrawRay(transform.position, toTarget.normalized * wallDetectionDistance);
+        }
+
+        // แสดงสถานะกาว
+        if (Application.isPlaying && currentGlueHitCount > 0)
+        {
+            Gizmos.color = Color.magenta;
+            float radius = 0.5f + (currentGlueHitCount * 0.2f);
+            DrawCircle(transform.position, radius, 20);
         }
     }
 
@@ -425,40 +441,6 @@ public class FlyingEnemy : Enemy
             Vector3 newPoint = center + new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
             Gizmos.DrawLine(prevPoint, newPoint);
             prevPoint = newPoint;
-        }
-    }
-
-    public void OnPlayerEnterZone(GameObject player)
-    {
-        isPlayerInZone = true;
-        playerInZone = player;
-        currentTarget = player;
-        currentState = State.Flying;
-        SetNewFlightTarget();
-    }
-
-    public void OnPlayerExitZone()
-    {
-        isPlayerInZone = false;
-        playerInZone = null;
-        currentTarget = null;
-        currentState = State.Returning;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.GetComponent<GlueProjectile>() != null)
-        {
-            currentGlueHitCount++;
-            //Debug.Log($"{enemyName} glue hit! (count = {currentGlueHitCount})");
-
-            // ถ้าครบจำนวนที่กำหนด → ร่วง
-            if (currentGlueHitCount >= requiredGlueHitsToFall && !canFallByGlue)
-            {
-                canFallByGlue = true;
-                StartCoroutine(GroundedByGlueSequence(2.5f));
-
-            }
         }
     }
 }
