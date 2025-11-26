@@ -1,0 +1,199 @@
+fileFormatVersion: 2
+guid: e48e617bd8af3a94a8e4f460f74d0ea3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6573687229081397577
+    second: nail_0
+  - first:
+      213: 1259233005790075568
+    second: nail_1
+  - first:
+      213: 3682862944860948294
+    second: nail_2
+  - first:
+      213: -657423249857323304
+    second: nail_3
+  - first:
+      213: 8994008784889618912
+    second: nail_4
+  - first:
+      213: 5772907751970309329
+    second: nail_5
+  - first:
+      213: 5311443540856029590
+    second: nail_6
+  - first:
+      213: 6385108992278354775
+    second: nail_7
+  - first:
+      213: 227450381698832947
+    second: nail_8
+  - first:
+      213: 3817927143227958895
+    second: nail_9
+  - first:
+      213: -5770212304664224797
+    second: nail_10
+  - first:
+      213: 6968220714168116117
+    second: nail_11
+  - first:
+      213: -1842206374520002104
+    second: nail_12
+  - first:
+      213: 386226979694755497
+    second: nail_13
+  - first:
+      213: 1463461779006429067
+    second: nail_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: nail_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1800
+        height: 222
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b6d4164b4295c4a0800000000000000
+      internalID: -6573687229081397577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 96ccc8b3708c4cb4cb26b853bb9666c7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      nail_0: -6573687229081397577
+      nail_1: 1259233005790075568
+      nail_10: -5770212304664224797
+      nail_11: 6968220714168116117
+      nail_12: -1842206374520002104
+      nail_13: 386226979694755497
+      nail_14: 1463461779006429067
+      nail_2: 3682862944860948294
+      nail_3: -657423249857323304
+      nail_4: 8994008784889618912
+      nail_5: 5772907751970309329
+      nail_6: 5311443540856029590
+      nail_7: 6385108992278354775
+      nail_8: 227450381698832947
+      nail_9: 3817927143227958895
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

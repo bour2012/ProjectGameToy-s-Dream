@@ -103,10 +103,10 @@ TextureImporter:
       name: Switch3_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 754
-        height: 880
+        x: 6
+        y: 13
+        width: 1075
+        height: 1038
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
