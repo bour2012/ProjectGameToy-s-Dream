@@ -33,6 +33,11 @@ public class TrashCraftingSystem : MonoBehaviour
     public ParticleSystem craftingEffect;
     public AudioSource craftingSound;
 
+    [Header("Audio")]
+    [Tooltip("One-shot sound played when crafting completes (PlayClipAtPoint will be used).")]
+    public AudioClip craftCompleteSfx;
+    [Range(0f,1f)] public float craftCompleteVolume = 1f;
+
     public UnityEvent onPickup;
 
     // GameManager reference
@@ -370,6 +375,11 @@ public class TrashCraftingSystem : MonoBehaviour
             Destroy(ps.gameObject, destroyAfter);
         }
         if (craftingSound) craftingSound.Play();
+        // Optional one-shot clip for craft completion (if assigned)
+        if (craftCompleteSfx != null)
+        {
+            AudioSource.PlayClipAtPoint(craftCompleteSfx, transform.position, craftCompleteVolume);
+        }
 
         CompleteCrafting();
     }

@@ -42,6 +42,16 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("หน่วงเวลากี่วินาทีก่อนแสดง Dialog หลังเกิดใหม่")]
     public float respawnDialogDelay = 1f; 
 
+    [Header("Crafting Animation")]
+    [Tooltip("Animator bool name set while Crafting state is active; set this to your animator parameter (e.g. 'IsCrafting' or 'Interacting')")]
+    public string craftingAnimatorBool = "IsCrafting";
+    
+    [Header("Audio")]
+    [Tooltip("Sound played when the player jumps")]
+    public AudioClip jumpSfx;
+    [Range(0f,1f)] public float jumpSfxVolume = 1f;
+    [Tooltip("Looping footstep sound played while holding movement input on ground")]
+    public AudioClip walkSfx;
     [Header("Rope Hook")]
     public bool isSwinging;
     public Vector2 ropeHook;
@@ -55,6 +65,8 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer playerSprite;
     private Rigidbody2D rBody;
     private Animator animator;
+    private AudioSource audioSource;
+    private AudioSource walkAudioSource;
     private Collider2D playerCollider;
     private float horizontalInput;
     private bool groundCheck;
@@ -70,6 +82,19 @@ public class PlayerMovement : MonoBehaviour
         rBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         playerCollider = GetComponent<Collider2D>();
+        // Prepare AudioSource for SFX playback
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
+        // Dedicated audio source for looping footstep sound
+        walkAudioSource = gameObject.AddComponent<AudioSource>();
+        walkAudioSource.playOnAwake = false;
+        walkAudioSource.loop = true;
+        walkAudioSource.spatialBlend = 0f; // 2D
+        walkAudioSource.volume = jumpSfxVolume;
     }
 
     void Start()
@@ -95,6 +120,13 @@ public class PlayerMovement : MonoBehaviour
 
         FlipCharacter();
 
+        // Toggle crafting/interact animation based on game state
+        bool isCraftingState = GameManager.Instance != null && GameManager.Instance.currentState == GameState.Crafting;
+        if (animator != null)
+        {
+            animator.SetBool(craftingAnimatorBool, isCraftingState);
+        }
+
         //// ตรวจพื้นด้วย Raycast 3 จุด (ซ้าย, กลาง, ขวา)
         CheckGround();
 
@@ -106,6 +138,26 @@ public class PlayerMovement : MonoBehaviour
 
         // Debug Line
         DrawGroundCheckDebug();
+
+        // Play/stop walking loop SFX: only when holding horizontal input and grounded
+        bool isWalking = Mathf.Abs(horizontalInput) > 0.01f && groundCheck && !isClimbing && !isSwinging;
+        if (walkSfx != null && walkAudioSource != null)
+        {
+            if (isWalking)
+            {
+                if (!walkAudioSource.isPlaying)
+                {
+                    walkAudioSource.clip = walkSfx;
+                    walkAudioSource.volume = jumpSfxVolume;
+                    walkAudioSource.Play();
+                }
+            }
+            else
+            {
+                if (walkAudioSource.isPlaying)
+                    walkAudioSource.Stop();
+            }
+        }
 
         // Animation
         UpdateAnimations();
@@ -259,6 +311,11 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetButtonDown("Jump") && groundCheck)
         {
             isJumping = true;
+            // Play jump sound effect (if assigned)
+            if (jumpSfx != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(jumpSfx, jumpSfxVolume);
+            }
            
         }
         horizontalInput = Input.GetAxisRaw("Horizontal");

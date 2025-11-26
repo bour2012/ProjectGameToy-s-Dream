@@ -140,7 +140,7 @@ MonoBehaviour:
     m_Bits: 128
   groundCheckDistance: 1
   wallCheckDistance: 0.5
-  deathEffectPrefab: {fileID: 0}
+  deathEffectPrefab: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
   deathDuration: 2
   enemyName: 
   maxHealth: 100
@@ -152,6 +152,7 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 1152
+  currentHealth: 0
   chaseMemoryDuration: 2
   usePatrolRange: 0
   patrolLeftOffset: -3

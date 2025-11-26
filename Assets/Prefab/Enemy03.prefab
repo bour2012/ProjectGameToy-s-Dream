@@ -113,7 +113,7 @@ MonoBehaviour:
     m_Bits: 2176
   groundCheckDistance: 1
   wallCheckDistance: 0.5
-  deathEffectPrefab: {fileID: 0}
+  deathEffectPrefab: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
   deathDuration: 2
   enemyName: 
   maxHealth: 100

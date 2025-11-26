@@ -363,6 +363,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   headCollider: {fileID: 7252291671804996510}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  groundCheckDistance: 1
+  wallCheckDistance: 0.5
+  deathEffectPrefab: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
+  deathDuration: 2
   enemyName: 
   maxHealth: 100
   moveSpeed: 3
@@ -373,15 +380,11 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 1152
+  currentHealth: 0
   fakeDollLayer:
     serializedVersion: 2
     m_Bits: 512
   possessRange: 1
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  wallCheckDistance: 0.5
-  groundCheckDistance: 1
   chaseCooldown: 2
   possessedDollPrefab: {fileID: 5425856077105691806, guid: 330b94865ba8ee340b990c40e968426b, type: 3}
 --- !u!61 &6854147536122949161

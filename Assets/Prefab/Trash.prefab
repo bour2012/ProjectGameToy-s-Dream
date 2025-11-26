@@ -417,6 +417,8 @@ MonoBehaviour:
   progressBar: {fileID: 1127462105166481820}
   craftingEffect: {fileID: 265766274217486953, guid: 92072c862e751bf4dad748129cb56883, type: 3}
   craftingSound: {fileID: 0}
+  craftCompleteSfx: {fileID: 8300000, guid: 66c3a9d68d3cc42489c9cecf2b0773df, type: 3}
+  craftCompleteVolume: 1
   onPickup:
     m_PersistentCalls:
       m_Calls: []
