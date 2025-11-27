@@ -20,6 +20,10 @@ public class DialogData
 
     [Tooltip("ให้ Hint แสดงค้างไว้กี่วินาที (ถ้าใส่ 0 จะแสดงค้างไว้จนกว่าจะถูกสั่งปิด)")]
     public float displayDuration = 5f;
+    
+    [Header("Actor Actions")]
+    [Tooltip("Event นี้จะทำงานทันทีที่บทพูดนี้เริ่มแสดง (เช่น สั่ง Actor เล่นท่าหัวเราะ, สั่งเปิดเสียงระเบิด)")]
+    public UnityEvent onLineStart;
 }
 
 public class DialogTrigger : MonoBehaviour
@@ -126,5 +130,44 @@ public class DialogTrigger : MonoBehaviour
     public void ResetTrigger()
     {
         hasTriggered = false;
+    }
+
+    // --- ส่วน Helper สำหรับจัดการ Actor ---
+
+    /// <summary>
+    /// ใช้สำหรับสลับ Actor (ตัวแสดง) ให้หายไป แล้วเปิดตัว Real Enemy (ตัวจริง)
+    /// ลากฟังก์ชันนี้ไปใส่ใน OnDialogComplete หรือ onLineStart ของประโยคสุดท้าย
+    /// </summary>
+    public void SwapActorToReal(GameObject actorObj)
+    {
+        if (actorObj != null)
+        {
+            actorObj.SetActive(false);
+        }
+
+        //if (realEnemyObj != null)
+        //{
+        //    realEnemyObj.SetActive(true);
+        //}
+    }
+
+    /// <summary>
+    /// ใช้สั่ง Actor เล่น Animation (เช่น "FlyAway", "Laugh")
+    /// ลากฟังก์ชันนี้ไปใส่ใน onLineStart ของประโยคที่ต้องการ
+    /// </summary>
+    public void PlayActorAnimation(Animator actorAnimator, string triggerName)
+    {
+        if (actorAnimator != null)
+        {
+            actorAnimator.SetTrigger(triggerName);
+        }
+    }
+    
+    /// <summary>
+    /// ใช้เล่นเสียง Effect ประกอบฉาก (เช่น เสียงระเบิด, เสียงหัวเราะ)
+    /// </summary>
+    public void PlaySoundEffect(AudioSource source)
+    {
+        if (source != null) source.Play();
     }
 }

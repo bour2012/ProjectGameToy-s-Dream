@@ -621,7 +621,7 @@ AnimatorStateTransition:
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
+  m_CanTransitionToSelf: 0
 --- !u!1101 &262544228177899062
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -771,7 +771,7 @@ BlendTree:
   m_BlendParameter: yVelocity
   m_BlendParameterY: Speed
   m_MinThreshold: -1
-  m_MaxThreshold: 0
+  m_MaxThreshold: 1
   m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
   m_BlendType: 0
@@ -801,7 +801,7 @@ AnimatorStateMachine:
     m_Position: {x: 190, y: 330, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8107697018512539737}
-    m_Position: {x: 190, y: 120, z: 0}
+    m_Position: {x: 190, y: 130, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5499204715465337328}
     m_Position: {x: -250, y: 440, z: 0}

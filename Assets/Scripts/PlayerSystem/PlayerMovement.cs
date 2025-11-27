@@ -74,6 +74,8 @@ public class PlayerMovement : MonoBehaviour
     private bool hitWallLeft;    // ชนกำแพงซ้าย
     private bool hitWallRight;   // ชนกำแพงขวา
     private bool facingRight = true;
+    // When dialog starts we want to suppress input until keys are released
+    private bool suppressInputUntilRelease = false;
 
 
     void Awake()
@@ -111,8 +113,47 @@ public class PlayerMovement : MonoBehaviour
             GameState state = GameManager.Instance.currentState;
             if (state == GameState.InDialog)
             {
-                // แค่ return ออกไปก็พอ เพราะ FixedUpdate จะจัดการเรื่องการหยุดเอง
+                // Entering dialog: suppress input and force idle animation/sounds.
+                if (!suppressInputUntilRelease)
+                {
+                    suppressInputUntilRelease = true;
+                    // clear movement and audio immediately
+                    horizontalInput = 0f;
+                    if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
+                    if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
+                    if (animator != null)
+                    {
+                        animator.SetFloat("Speed", 0f);
+                        animator.SetBool("IsJumping", false);
+                        animator.SetBool("IsClimbing", false);
+                        animator.SetBool("IsSwinging", false);
+                        // also clear crafting flag
+                        animator.SetBool(craftingAnimatorBool, false);
+                    }
+                }
+
+                // Don't process input while in dialog
                 return;
+            }
+            else
+            {
+                // If we are out of dialog but still suppressing, keep suppressing until player releases movement keys
+                if (suppressInputUntilRelease)
+                {
+                    float rawH = Input.GetAxisRaw("Horizontal");
+                    if (Mathf.Abs(rawH) < 0.01f)
+                    {
+                        suppressInputUntilRelease = false; // key released -> allow input again
+                    }
+                    else
+                    {
+                        // still holding movement key -> keep suppressing (don't process inputs yet)
+                        horizontalInput = 0f;
+                        if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
+                        if (animator != null) animator.SetFloat("Speed", 0f);
+                        return;
+                    }
+                }
             }
         }
 

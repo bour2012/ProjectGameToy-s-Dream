@@ -195,6 +195,12 @@ public class DialogManager : MonoBehaviour
             }
         }
 
+        // Invoke per-line start event (if assigned)
+        if (currentData.onLineStart != null)
+        {
+            currentData.onLineStart.Invoke();
+        }
+
         // --- ส่วนจัดการเสียงและอื่นๆ ---
         if (currentData.dialogVoice != null && audioSource != null)
         {
