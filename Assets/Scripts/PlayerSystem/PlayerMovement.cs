@@ -125,7 +125,7 @@ public class PlayerMovement : MonoBehaviour
                     {
                         animator.SetFloat("Speed", 0f);
                         animator.SetBool("IsJumping", false);
-                        animator.SetBool("IsClimbing", false);
+                        //animator.SetBool("IsClimbing", false);
                         animator.SetBool("IsSwinging", false);
                         // also clear crafting flag
                         animator.SetBool(craftingAnimatorBool, false);
@@ -156,6 +156,8 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+
+     
 
         ProcessInput();
 
@@ -356,6 +358,7 @@ public class PlayerMovement : MonoBehaviour
             if (jumpSfx != null && audioSource != null)
             {
                 audioSource.PlayOneShot(jumpSfx, jumpSfxVolume);
+             
             }
            
         }
@@ -607,6 +610,20 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("IsClimbThread", true);
         else
             animator.SetBool("IsClimbThread", false);
+
+
+        float hInput = Input.GetAxisRaw("Horizontal");
+
+        float currentSpeed = Mathf.Abs(hInput);
+        if (isFallingOrJumping || currentSpeed > 0.1f)
+        {
+            animator.SetBool("IsClimbUpDown", false);
+        }
+        //else
+        //{
+        //    // ใส่ Mathf.Abs > 0.1 เพื่อกันค่า Deadzone ของจอยสติ๊ก
+        //    animator.SetBool("IsClimbUpDown", Mathf.Abs(vInput) > 0.1f);
+        //}
         //playerSprite.flipX = horizontalInput < 0f;
 
     }

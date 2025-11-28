@@ -11,6 +11,8 @@ public class PlatformController : MonoBehaviour
 
     public Transform platform;
     private Rigidbody2D platformRb2D;
+    private RigidbodyType2D initialBodyType;
+    private bool animatorIsDrivingMotion = false;
     private RigidbodyConstraints2D defaultConstraints;
     public Vector3 pivotPosition;
     public Vector3 upPosition;
@@ -37,6 +39,7 @@ public class PlatformController : MonoBehaviour
             Debug.LogError("Platform ต้องมี Rigidbody2D component!");
             return;
         }
+        initialBodyType = platformRb2D.bodyType;
         defaultConstraints = platformRb2D.constraints; // เก็บค่าสำรองไว้
         FreezePlatform();
 
@@ -99,40 +102,41 @@ public class PlatformController : MonoBehaviour
 
     public void Toggle(bool state)
     {
-       
-
-
         if (isLocked)
         {
             Debug.Log($"Platform '{gameObject.name}' is locked! Need key: {requiredKeyID}");
             return;
         }
 
-
+        // only change state and play animation when the state actually changes
+        bool prevActive = isActive;
         isActive = state;
 
-        if (isAnimMode && platformAnimator != null)
+        // If Animator mode is enabled, let Animator drive the visual motion only.
+        if (isAnimMode && platformAnimator != null && prevActive != isActive)
         {
             if (isActive)
-            {
                 platformAnimator.Play(openAnimationName);
-            }
             else
-            {
                 platformAnimator.Play(closeAnimationName);
-            }
+
+            // Switch Rigidbody to kinematic so Animator moving transform doesn't fight physics MovePosition.
+            platformRb2D.bodyType = RigidbodyType2D.Kinematic;
+            animatorIsDrivingMotion = true;
+
+            // Do not unfreeze physics-driven movement while Animator is driving motion.
+            return;
         }
 
-        if (isActive)
+        // If we were previously driven by the Animator but now using physics movement again, restore body type.
+        if (animatorIsDrivingMotion && !isAnimMode)
         {
-            // ปลดล็อก ให้ขยับได้
-            UnfreezePlatform();
+            platformRb2D.bodyType = initialBodyType;
+            animatorIsDrivingMotion = false;
         }
-        else
-        {
-            // ถ้า toggle ปิด ให้ขยับลงแล้ว freeze เมื่อถึงจุดหมาย
-            UnfreezePlatform();
-        }
+
+        // allow movement physics when toggled (freeze handled on arrival)
+        UnfreezePlatform();
     }
 
     public void PlayIdleOpenAnimation()
@@ -160,7 +164,7 @@ public class PlatformController : MonoBehaviour
         {
             RotatePlatform();
         }
-        else if (!isAnimMode)
+        else if (!isAnimMode && !animatorIsDrivingMotion)
         {
             MovePlatform();
         }
