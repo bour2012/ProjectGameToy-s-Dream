@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.U2D.Animation;
+using System.Collections.Generic;
 using static UnityEngine.GraphicsBuffer;
+
 
 // ========================================
 // Glue Projectile - กระสุนกาว
@@ -36,6 +39,20 @@ public class GlueProjectile : MonoBehaviour
     private Rigidbody2D rb;
     private AudioSource audioSource;
     private SpriteRenderer spriteRenderer;
+    [Header("2D Skin / Bones")]
+    public SpriteSkin spriteSkin;
+    [Tooltip("Optional: root transform that contains bone rigidbodies. If empty, will search children.")]
+    public Transform bonesRoot;
+    [Tooltip("The root/core bone that should remain kinematic (anchored) at all times")]
+    public Rigidbody2D rootBone;
+    [Tooltip("Optional manual list of bone Rigidbody2D components. If empty, children under bonesRoot will be used.")]
+    public Rigidbody2D[] boneRigidbodies;
+
+
+    // keep original body types/constraints so we can restore them
+    private RigidbodyType2D mainInitialBodyType;
+    private Dictionary<Rigidbody2D, RigidbodyType2D> boneInitialBodyTypes = new Dictionary<Rigidbody2D, RigidbodyType2D>();
+    private Dictionary<Rigidbody2D, RigidbodyConstraints2D> boneInitialConstraints = new Dictionary<Rigidbody2D, RigidbodyConstraints2D>();
 
     private bool hasStuck = false;               // ป้องกัน trigger ซ้ำ
     private bool hasSlowed = false;              // ป้องกัน slow ซ้ำ
@@ -62,6 +79,24 @@ public class GlueProjectile : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // record initial main body type
+        if (rb != null)
+            mainInitialBodyType = rb.bodyType;
+
+        // collect bone rigidbodies if not provided
+        CollectBoneRigidbodies();
+
+        // store initial bone settings
+        foreach (var boneRb in boneRigidbodies)
+        {
+            if (boneRb == null) continue;
+            boneInitialBodyTypes[boneRb] = boneRb.bodyType;
+            boneInitialConstraints[boneRb] = boneRb.constraints;
+        }
+
+        // Default to flying mode on spawn
+        SetFlyingMode();
 
         // ทำลายตัวเองหลังเวลาที่กำหนด
         //Destroy(gameObject, lifetime);
@@ -288,7 +323,10 @@ public class GlueProjectile : MonoBehaviour
     #region Main Logic
     private void StopOnGround(Collider2D ground)
     {
-        StopMovement();
+        // determine contact point and choose nearest bone as anchor, then switch to sticky
+        Vector2 contactPoint = ground.ClosestPoint(transform.position);
+        Rigidbody2D anchor = FindNearestBone(contactPoint);
+        SetStickyMode(anchor);
         CreateImpactEffects();
         PlaySound(impactSound);
 
@@ -307,7 +345,10 @@ public class GlueProjectile : MonoBehaviour
         int enemyLayer = LayerMask.NameToLayer("Enemy");
         if (target.gameObject.layer != enemyLayer)
         { 
-           StopMovement();
+              // choose nearest bone to contact point as anchor and switch to sticky
+              Vector2 contactPoint = target.ClosestPoint(transform.position);
+              Rigidbody2D anchor = FindNearestBone(contactPoint);
+              SetStickyMode(anchor);
         }
       
         //CreateImpactEffects();
@@ -322,6 +363,8 @@ public class GlueProjectile : MonoBehaviour
         }
 
         transform.SetParent(target.transform);
+
+
         Debug.Log($"Glue stuck directly to target: {target.name}");
         StartDestroyCountdown(destroyDelay);
 
@@ -349,11 +392,12 @@ public class GlueProjectile : MonoBehaviour
             yield return null;
         }
 
-        // สุดท้ายล็อกติดแน่น
+        // สุดท้ายล็อกติดแน่น และสลับเป็น Sticky/Jelly mode
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
-        rb.bodyType = RigidbodyType2D.Kinematic;
         transform.position = stickPoint;
+        Rigidbody2D anchor = FindNearestBone(stickPoint);
+        SetStickyMode(anchor);
     }
 
     private void StopMovement()
@@ -362,6 +406,144 @@ public class GlueProjectile : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
         rb.bodyType = RigidbodyType2D.Kinematic;
+    }
+
+    // Collect bone rigidbodies from bonesRoot or children if not manually assigned
+    private void CollectBoneRigidbodies()
+    {
+        if (boneRigidbodies != null && boneRigidbodies.Length > 0) return;
+
+        List<Rigidbody2D> found = new List<Rigidbody2D>();
+        Transform searchRoot = bonesRoot != null ? bonesRoot : transform;
+        var rbs = searchRoot.GetComponentsInChildren<Rigidbody2D>(true);
+        foreach (var b in rbs)
+        {
+            // exclude the main projectile Rigidbody if accidentally included
+            if (b == rb) continue;
+            found.Add(b);
+        }
+
+        // ensure rootBone (if explicitly assigned) is included in the bones list
+        if (rootBone != null && !found.Contains(rootBone))
+            found.Add(rootBone);
+
+        boneRigidbodies = found.ToArray();
+    }
+
+    // Find the bone Rigidbody2D that is nearest to the given world point.
+    // If none found, return rootBone if assigned, otherwise null.
+    private Rigidbody2D FindNearestBone(Vector2 worldPoint)
+    {
+        if (boneRigidbodies == null || boneRigidbodies.Length == 0)
+        {
+            return rootBone != null ? rootBone : null;
+        }
+
+        Rigidbody2D best = null;
+        float bestSqr = float.MaxValue;
+        foreach (var b in boneRigidbodies)
+        {
+            if (b == null) continue;
+            var pos = b.transform.position;
+            float sqr = (pos.x - worldPoint.x) * (pos.x - worldPoint.x) + (pos.y - worldPoint.y) * (pos.y - worldPoint.y);
+            if (sqr < bestSqr)
+            {
+                bestSqr = sqr;
+                best = b;
+            }
+        }
+
+        if (best == null && rootBone != null)
+            return rootBone;
+
+        return best;
+    }
+
+    // -- Mode Switching API -------------------------------------------------
+    // Flying Mode: main Rigidbody Dynamic, SpriteSkin disabled, bones Kinematic (locked)
+    public void SetFlyingMode()
+    {
+        // Sprite skin off (no deformation)
+        if (spriteSkin != null)
+            spriteSkin.enabled = false;
+
+        // main body dynamic so projectile flies according to physics
+        if (rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.simulated = true;
+        }
+
+        // bones locked as Kinematic so visuals don't flop
+        foreach (var boneRb in boneRigidbodies)
+        {
+            if (boneRb == null) continue;
+            if (boneRb == rootBone)
+            {
+                // keep root bone kinematic and simulated so it acts as a fixed anchor
+                boneRb.bodyType = RigidbodyType2D.Kinematic;
+                boneRb.constraints = RigidbodyConstraints2D.FreezeAll;
+                boneRb.simulated = true;
+            }
+            else
+            {
+                boneRb.bodyType = RigidbodyType2D.Kinematic;
+                boneRb.constraints = RigidbodyConstraints2D.FreezeAll;
+                boneRb.simulated = false; // optionally disable simulation to fully lock
+            }
+        }
+    }
+
+    // Sticky/Jelly Mode: SpriteSkin enabled, main Rigidbody Kinematic, bones Dynamic
+    // If anchorBone != null, that bone will be set as the kinematic anchor; others become dynamic.
+    public void SetStickyMode(Rigidbody2D anchorBone)
+    {
+        // enable sprite skin for deformation
+        if (spriteSkin != null)
+            spriteSkin.enabled = true;
+
+        // stop main body and make kinematic so it sticks
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.simulated = true;
+        }
+
+        // bones: anchorBone -> Kinematic (anchored), others -> Dynamic
+        foreach (var boneRb in boneRigidbodies)
+        {
+            if (boneRb == null) continue;
+
+            if (anchorBone != null && boneRb == anchorBone)
+            {
+                // make the chosen bone the anchored pin
+                boneRb.simulated = true;
+                boneRb.constraints = RigidbodyConstraints2D.FreezeAll;
+                boneRb.bodyType = RigidbodyType2D.Kinematic;
+            }
+            else if (rootBone != null && anchorBone == null && boneRb == rootBone)
+            {
+                // if no anchor specified but a rootBone exists, keep it anchored
+                boneRb.simulated = true;
+                boneRb.constraints = RigidbodyConstraints2D.FreezeAll;
+                boneRb.bodyType = RigidbodyType2D.Kinematic;
+            }
+            else
+            {
+                // outer bones become dynamic to jiggle
+                boneRb.simulated = true;
+                boneRb.constraints = RigidbodyConstraints2D.None;
+                boneRb.bodyType = RigidbodyType2D.Dynamic;
+            }
+        }
+    }
+
+    // Backwards-compatible parameterless version: try to use rootBone if assigned
+    public void SetStickyMode()
+    {
+        SetStickyMode(rootBone);
     }
 
     private void AttachJoint(Collider2D target)

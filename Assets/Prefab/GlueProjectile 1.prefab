@@ -48,10 +48,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -59,7 +59,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -79,7 +79,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -118,7 +118,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.37795883, y: 0.41996145}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &290552570049034456
 SpringJoint2D:
@@ -139,7 +139,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: -0.14733723, y: -0.4980024}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &2697214754662104603
 SpringJoint2D:
@@ -160,7 +160,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.6596842, y: 0.13046946}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &2007608422915641413
 GameObject:
@@ -5043,10 +5043,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5054,7 +5054,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -5074,7 +5074,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -5113,7 +5113,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.014429666, y: 0.4215141}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &4622728143846318919
 SpringJoint2D:
@@ -5134,7 +5134,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: -0.130048, y: -0.36512604}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &1914971506872984267
 SpringJoint2D:
@@ -5155,7 +5155,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 2.1727486, y: 0.20735927}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &4023822538470497690
 GameObject:
@@ -5205,10 +5205,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5216,7 +5216,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -5236,7 +5236,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -5275,7 +5275,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.06280997, y: 0.46012416}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &1070487315805892309
 SpringJoint2D:
@@ -5296,7 +5296,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: -0.16393985, y: -0.52450794}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &3105688663139328462
 SpringJoint2D:
@@ -5317,7 +5317,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.970813, y: -0.68461275}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &4879848300418601392
 GameObject:
@@ -5367,10 +5367,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5378,7 +5378,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -5398,7 +5398,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -5437,7 +5437,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: -0.09954612, y: 0.6760128}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &1542915262718393484
 SpringJoint2D:
@@ -5458,7 +5458,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.28879195, y: -0.39991856}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &4732147267802491798
 SpringJoint2D:
@@ -5479,7 +5479,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.6827323, y: -0.13594504}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &6023209442017315003
 GameObject:
@@ -5529,10 +5529,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5540,7 +5540,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -5560,7 +5560,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -5599,7 +5599,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.45104402, y: 0.25697443}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &3043370074517267288
 SpringJoint2D:
@@ -5620,7 +5620,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.5271495, y: -0.4342037}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &4980744767494666467
 SpringJoint2D:
@@ -5641,7 +5641,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.3531919, y: 0.037014592}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &6079094505706024980
 GameObject:
@@ -5691,10 +5691,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5702,7 +5702,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -5722,7 +5722,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -5761,7 +5761,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.03912134, y: 0.4918512}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &8316953285164155108
 SpringJoint2D:
@@ -5782,7 +5782,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.14305666, y: -0.34699282}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &456918352780938331
 SpringJoint2D:
@@ -5803,7 +5803,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.7303096, y: -0.79450876}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &6175384733695294061
 GameObject:
@@ -5853,10 +5853,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -5864,7 +5864,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -5884,7 +5884,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -5923,7 +5923,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.11757369, y: -0.5121687}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &7671289936730447360
 SpringJoint2D:
@@ -5944,7 +5944,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.12644958, y: 0.4989153}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &3826709291480124941
 SpringJoint2D:
@@ -5965,7 +5965,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.3536061, y: -0.015725374}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &6519325067065797498
 GameObject:
@@ -6015,10 +6015,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6026,7 +6026,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -6046,7 +6046,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -6085,7 +6085,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.21996836, y: 0.3192393}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &7153384803016940614
 SpringJoint2D:
@@ -6106,7 +6106,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.00029828536, y: -0.565027}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &4540619660524970648
 SpringJoint2D:
@@ -6127,7 +6127,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 2.0460417, y: 0.40571526}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &7899959792572343891
 GameObject:
@@ -6144,7 +6144,7 @@ GameObject:
   - component: {fileID: 1689699059287420981}
   - component: {fileID: 3443039726234833293}
   m_Layer: 0
-  m_Name: GlueProjectile
+  m_Name: GlueProjectile 1
   m_TagString: Pushable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6313,22 +6313,6 @@ MonoBehaviour:
   burningRotationTurnSpeed: 720
   shootSound: {fileID: 0}
   impactSound: {fileID: 0}
-  spriteSkin: {fileID: 1689699059287420981}
-  bonesRoot: {fileID: 2360112052342386922}
-  rootBone: {fileID: 2169769285464463563}
-  boneRigidbodies:
-  - {fileID: 2169769285464463563}
-  - {fileID: 2659860577384347126}
-  - {fileID: 4135542463544155602}
-  - {fileID: 5539287918558162411}
-  - {fileID: 7823919254695480342}
-  - {fileID: 5121116565237926814}
-  - {fileID: 5877560301330917868}
-  - {fileID: 6629110750023485696}
-  - {fileID: 2079157685518870424}
-  - {fileID: 871148196107841440}
-  - {fileID: 9123890594839410315}
-  - {fileID: 7621805625279853218}
 --- !u!114 &1689699059287420981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6336,7 +6320,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7899959792572343891}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57c008f954fe54a8bb972de1018a2cb8, type: 3}
   m_Name: 
@@ -6435,10 +6419,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6446,7 +6430,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -6466,7 +6450,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -6505,7 +6489,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.21177682, y: 0.48106307}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &658934700697634038
 SpringJoint2D:
@@ -6526,7 +6510,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.05398901, y: -0.35494217}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &8063694948913276471
 SpringJoint2D:
@@ -6547,7 +6531,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.6877897, y: -0.0418897}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &8462862026291689780
 GameObject:
@@ -6597,10 +6581,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6608,7 +6592,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -6628,7 +6612,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -6667,7 +6651,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: -0.013839708, y: 0.35880014}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &4097747203327524507
 SpringJoint2D:
@@ -6688,7 +6672,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.22285345, y: -0.3579636}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &4863691529263914921
 SpringJoint2D:
@@ -6709,7 +6693,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.8601861, y: 0.41024435}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &8993938852936872945
 GameObject:
@@ -6759,10 +6743,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6770,7 +6754,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -6790,7 +6774,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -6829,7 +6813,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.36403427, y: 0.41150683}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &190366189554223959
 SpringJoint2D:
@@ -6850,7 +6834,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.17002311, y: -0.48591363}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &3309847657958761803
 SpringJoint2D:
@@ -6871,7 +6855,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 1.6488194, y: -0.2327825}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!1 &9207338648799441931
 GameObject:
@@ -6921,10 +6905,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.05
-  m_LinearDamping: 2
+  m_Mass: 0.5
+  m_LinearDamping: 0.8
   m_AngularDamping: 0.05
-  m_GravityScale: 0.2
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -6932,7 +6916,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -6952,7 +6936,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 526400
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -6991,7 +6975,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: -0.05799185, y: 0.37077636}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &5062311870293744203
 SpringJoint2D:
@@ -7012,7 +6996,7 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 0.1651178, y: -0.43421686}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
 --- !u!231 &3629428613135495326
 SpringJoint2D:
@@ -7033,5 +7017,5 @@ SpringJoint2D:
   m_ConnectedAnchor: {x: 2.1401193, y: -0.42789924}
   m_AutoConfigureDistance: 1
   m_Distance: 0.005
-  m_DampingRatio: 1
+  m_DampingRatio: 0.5
   m_Frequency: 5
