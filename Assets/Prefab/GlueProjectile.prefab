@@ -6201,7 +6201,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 63bf49c2aae1313459adba8af958a8aa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6329,6 +6329,9 @@ MonoBehaviour:
   - {fileID: 871148196107841440}
   - {fileID: 9123890594839410315}
   - {fileID: 7621805625279853218}
+  stickyFlattenX: 0.1
+  stickyFlattenY: 0.25
+  flattenDuration: 0.9
 --- !u!114 &1689699059287420981
 MonoBehaviour:
   m_ObjectHideFlags: 0

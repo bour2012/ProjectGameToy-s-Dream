@@ -159,16 +159,30 @@ public class PlayerMovement : MonoBehaviour
 
      
 
-        ProcessInput();
-
-        FlipCharacter();
-
-        // Toggle crafting/interact animation based on game state
+        // Check crafting state and disable input while crafting
         bool isCraftingState = GameManager.Instance != null && GameManager.Instance.currentState == GameState.Crafting;
         if (animator != null)
         {
             animator.SetBool(craftingAnimatorBool, isCraftingState);
         }
+        if (isCraftingState)
+        {
+            // Suppress movement and interactions during crafting
+            horizontalInput = 0f;
+            if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
+            if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
+            // ensure idle animation and stop processing further input
+            if (animator != null)
+            {
+                animator.SetFloat("Speed", 0f);
+            }
+            UpdateAnimations();
+            return;
+        }
+
+        ProcessInput();
+
+        FlipCharacter();
 
         //// ตรวจพื้นด้วย Raycast 3 จุด (ซ้าย, กลาง, ขวา)
         CheckGround();
@@ -229,6 +243,15 @@ public class PlayerMovement : MonoBehaviour
                 UpdateAnimations();
 
                 return; // ออกจาก FixedUpdate ทันที
+            }
+
+            // Prevent physics-driven horizontal movement while crafting
+            if (state == GameState.Crafting)
+            {
+                rBody.linearVelocity = new Vector2(0f, rBody.linearVelocity.y);
+                horizontalInput = 0f;
+                UpdateAnimations();
+                return;
             }
         }
 

@@ -138,8 +138,8 @@ public class StationaryEnemy : Enemy
 
         // สร้างตุ๊กตาที่ถูกสิง
         currentPossessedDoll = Instantiate(possessedDollPrefab, doll.transform.position, Quaternion.identity);
-        var possessedScript = currentPossessedDoll.GetComponent<CraftedObject>();
-        possessedScript.SetupPossession(originalEnemy, originalDoll, this);
+        //var possessedScript = currentPossessedDoll.GetComponent<CraftedObject>();
+        //possessedScript.SetupPossession(originalEnemy, originalDoll, this);
     }
 
     // เรียกจาก PossessedDollObject เมื่อถูกทำลาย

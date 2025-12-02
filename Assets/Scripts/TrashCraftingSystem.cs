@@ -23,6 +23,8 @@ public class TrashCraftingSystem : MonoBehaviour
     public Transform iconHolder;
     public GameObject[] itemIcons; // Icons for each craftable item
     public GameObject interactPrompt;
+    [Tooltip("Key used to immediately return a crafted item to a trash pile (only used by CraftedObject when active)")]
+    public KeyCode returnKey = KeyCode.Q;
 
     [Header("Progress UI")]
     public GameObject progressPanel;
@@ -224,7 +226,7 @@ public class TrashCraftingSystem : MonoBehaviour
             ToggleCraftingUI(shouldShowUI && !isCrafting);
         }
 
-        if (isPlayerNear && craftingUIContainer.activeInHierarchy)
+        if (isPlayerNear && craftingUIContainer != null && craftingUIContainer.activeInHierarchy)
         {
             UpdateUIPosition();
         }
@@ -236,8 +238,11 @@ public class TrashCraftingSystem : MonoBehaviour
 
         if (show && gameManager.currentState == GameState.Normal)
         {
-            craftingUIContainer.SetActive(true);
-            StartCoroutine(UIAppearAnimation());
+            if (craftingUIContainer != null)
+            {
+                craftingUIContainer.SetActive(true);
+                StartCoroutine(UIAppearAnimation());
+            }
             UpdateInteractPrompt();
         }
         else
@@ -248,8 +253,10 @@ public class TrashCraftingSystem : MonoBehaviour
 
     void UpdateUIPosition()
     {
-        craftingUIContainer.transform.position = transform.position + Vector3.up * 2f;
-        progressPanel.transform.position = transform.position + Vector3.up;
+        if (craftingUIContainer != null)
+            craftingUIContainer.transform.position = transform.position + Vector3.up * 2f;
+        if (progressPanel != null)
+            progressPanel.transform.position = transform.position + Vector3.up;
     }
 
     #endregion
@@ -280,6 +287,8 @@ public class TrashCraftingSystem : MonoBehaviour
             StopCrafting();
         }
     }
+
+    // (Deprecated) Trash no longer handles immediate-return input; CraftedObject handles its own UI/input.
 
     #endregion
 
@@ -332,6 +341,7 @@ public class TrashCraftingSystem : MonoBehaviour
 
         Debug.Log($"Started crafting {craftableItems[currentItemIndex].itemName}");
     }
+
     IEnumerator CraftingProcess()
     {
         // แสดง Progress UI
@@ -342,7 +352,7 @@ public class TrashCraftingSystem : MonoBehaviour
             Debug.Log("Crafting....");
         }
 
-        // รอเวลาการประดิษฐ์ (ไม่เล่นเอฟเฟกต์ทันที)
+        // รอเวลาการประดิษฐ์
         float elapsedTime = 0f;
         while (elapsedTime < craftingTime)
         {
@@ -389,11 +399,8 @@ public class TrashCraftingSystem : MonoBehaviour
         UseItemForCrafting();
         CreateCraftedObject();
 
-        // ซ่อนตัวกองขยะ
-        gameObject.SetActive(false);
-
-
-
+        // Restore original behavior: deactivate the trash GameObject; the new crafted object
+        // will manage its own UI/input for immediate return.
         isCrafting = false;
 
         if (gameManager != null)
@@ -450,8 +457,8 @@ public class TrashCraftingSystem : MonoBehaviour
                 craftedComponent = craftedObj.AddComponent<CraftedObject>();
             }
 
-            // ตั้งค่า CraftedObject
-            craftedComponent.Initialize(itemToCreate, this);
+            // ตั้งค่า CraftedObject (pass shared UI refs, but DO NOT reparent them)
+            craftedComponent.Initialize(itemToCreate, this, craftingUIContainer, progressPanel, interactPrompt, returnKey, interactionDistance);
 
             // เก็บ reference
             currentCraftedObject = craftedObj;
@@ -522,38 +529,41 @@ public class TrashCraftingSystem : MonoBehaviour
     {
         if (isPlayerNear && !isCrafting && gameManager.currentState == GameState.Normal && currentItemIndex < craftableItems.Length)
         {
-            interactPrompt.SetActive(true);
-
-            CraftableItem currentItem = craftableItems[currentItemIndex];
-            var promptText = interactPrompt.GetComponent<TextMeshProUGUI>();
-
-            if (promptText != null)
+            if (interactPrompt != null)
             {
-                // ตรวจสอบไอเทม
-                if (ItemManager.Instance != null)
-                {
-                    int itemCount = ItemManager.Instance.GetItemCount(currentItem.requiredItemType);
+                interactPrompt.SetActive(true);
 
-                    if (itemCount >= currentItem.requiredAmount)
+                CraftableItem currentItem = craftableItems[currentItemIndex];
+                var promptText = interactPrompt.GetComponent<TextMeshProUGUI>();
+
+                if (promptText != null)
+                {
+                    // ตรวจสอบไอเทม
+                    if (ItemManager.Instance != null)
                     {
-                        promptText.text = $"Press E to craft {currentItem.itemName} (Need: {currentItem.requiredAmount} {currentItem.requiredItemType}) [{itemCount}]";
-                        promptText.color = Color.black;
+                        int itemCount = ItemManager.Instance.GetItemCount(currentItem.requiredItemType);
+
+                        if (itemCount >= currentItem.requiredAmount)
+                        {
+                            promptText.text = $"Press E to craft {currentItem.itemName} (Need: {currentItem.requiredAmount} {currentItem.requiredItemType}) [{itemCount}]";
+                            promptText.color = Color.black;
+                        }
+                        else
+                        {
+                            promptText.text = $"Need {currentItem.requiredAmount} {currentItem.requiredItemType} to craft {currentItem.itemName} [{itemCount}]";
+                            promptText.color = Color.red;
+                        }
                     }
                     else
                     {
-                        promptText.text = $"Need {currentItem.requiredAmount} {currentItem.requiredItemType} to craft {currentItem.itemName} [{itemCount}]";
-                        promptText.color = Color.red;
+                        promptText.text = $"Press E to craft {currentItem.itemName}";
                     }
-                }
-                else
-                {
-                    promptText.text = $"Press E to craft {currentItem.itemName}";
                 }
             }
         }
         else
         {
-            interactPrompt.SetActive(false);
+            if (interactPrompt != null) interactPrompt.SetActive(false);
         }
     }
 

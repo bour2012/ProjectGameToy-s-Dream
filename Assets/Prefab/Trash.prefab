@@ -412,6 +412,7 @@ MonoBehaviour:
   - {fileID: 1091939187654378940}
   - {fileID: 8250862164083321917}
   interactPrompt: {fileID: 5626154364486997469}
+  returnKey: 113
   progressPanel: {fileID: 6923794253056509803}
   progressText: {fileID: 8604123549334216767}
   progressBar: {fileID: 1127462105166481820}
