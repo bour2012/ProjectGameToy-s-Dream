@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Lever : MonoBehaviour, IInteractable
 {
@@ -16,6 +17,12 @@ public class Lever : MonoBehaviour, IInteractable
     public float activeRotation = -45f;
     public float inactiveRotation = 45f;
     public float rotationSpeed = 5f;
+
+    [Header("Puzzle Settings (New)")]
+    [Tooltip("ลาก Lever อื่นๆ ที่ต้องการให้สลับสถานะตามตัวนี้มาใส่")]
+    public List<Lever> linkedLevers;
+    [Tooltip("ผู้คุมกฎของ Puzzle (ถ้ามี)")]
+    public LeverPuzzleManager puzzleManager;
 
     [Header("Visuals & Animation (Animation Mode)")]
     [Tooltip("Animator ของคันโยก (ใช้ในโหมด Animation)")]
@@ -37,6 +44,8 @@ public class Lever : MonoBehaviour, IInteractable
 
     private bool isOperating = false; // เปลี่ยนชื่อเป็น isOperating เพื่อความชัดเจน
     private Coroutine operationCoroutine;
+
+    // allow external (puzzle) toggles to call the same sequence but mark as non-player action
 
     void Start()
     {
@@ -63,23 +72,40 @@ public class Lever : MonoBehaviour, IInteractable
             return;
         }
 
-        // เริ่ม Coroutine หลัก ซึ่งจะไปเลือกว่าจะทำงานแบบไหน
-        operationCoroutine = StartCoroutine(ToggleLeverSequence());
+        // ผู้เล่นกดเอง -> เริ่ม Sequence หลัก (isPlayerAction = true)
+        if (operationCoroutine != null) StopCoroutine(operationCoroutine);
+        operationCoroutine = StartCoroutine(ToggleLeverSequence(true));
     }
 
     #endregion
 
-    private IEnumerator ToggleLeverSequence()
+    // เพิ่ม parameter เพื่อแยกแยะว่าการสลับมาจากผู้เล่นหรือจากระบบ (Puzzle)
+    private IEnumerator ToggleLeverSequence(bool isPlayerAction)
     {
         isOperating = true;
-        if (GameManager.Instance != null)
+        // ถ้าผู้เล่นเป็นคนกด ให้เปลี่ยนสถานะเกมเป็น UsingLever
+        if (isPlayerAction && GameManager.Instance != null)
             GameManager.Instance.ChangeState(GameState.UsingLever, "Using Lever");
 
+        // 1) สลับสถานะตัวเอง
         isActive = !isActive;
 
+        // 2) ถ้ามี platform ที่ผูกไว้โดยตรง ให้สั่งงาน
         if (platform != null)
         {
             platform.Toggle(isActive);
+        }
+
+        // 3) ถ้าเป็นการกดโดยผู้เล่น ให้สั่ง linked levers ให้ทำงานจากระบบ
+        if (isPlayerAction && linkedLevers != null)
+        {
+            foreach (var lever in linkedLevers)
+            {
+                if (lever != null)
+                {
+                    lever.ToggleFromPuzzle();
+                }
+            }
         }
 
         // ▼▼▼ ส่วนสำคัญ: เลือกการทำงานตามโหมด ▼▼▼
@@ -101,13 +127,24 @@ public class Lever : MonoBehaviour, IInteractable
                 }
                 break;
         }
-        // ▲▲▲ สิ้นสุดส่วนที่เลือกการทำงาน ▲▲▲
+        // 5) แจ้ง PuzzleManager ว่ามีการเปลี่ยนแปลง (เฉพาะเมื่อผู้เล่นกด)
+        if (isPlayerAction && puzzleManager != null)
+        {
+            puzzleManager.CheckWinCondition();
+        }
 
-        if (GameManager.Instance != null)
+        if (isPlayerAction && GameManager.Instance != null)
             GameManager.Instance.ChangeState(GameState.Normal, "Finished using Lever");
 
         isOperating = false;
         operationCoroutine = null;
+    }
+
+    // ฟังก์ชันให้ Puzzle เรียกใช้ (ไม่ต้องผ่าน Interact)
+    public void ToggleFromPuzzle()
+    {
+        if (operationCoroutine != null) StopCoroutine(operationCoroutine);
+        operationCoroutine = StartCoroutine(ToggleLeverSequence(false));
     }
 
     // Coroutine สำหรับโหมด Rotation (เหมือนเดิม)

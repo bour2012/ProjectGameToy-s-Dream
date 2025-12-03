@@ -40,6 +40,8 @@ public class PlatformMovement : MonoBehaviour
     public Transform spawnPoint;        // จุดเริ่มต้นที่จะ spawn ใหม่
     public GameObject platformPrefab;   // Prefab ของ Platform ตัวเอง
     private bool hasShot = false;      // เช็คว่ากด E ยิงไปแล้วหรือยัง
+    [Tooltip("If true: when a spawned projectile is destroyed mid-flight, immediately respawn it at the spawnPoint.")]
+    public bool respawnOnDisappear = true;
     // once triggered by collider, start moving and don't stop checking
     private bool triggeredLoop = false;
 
@@ -148,7 +150,15 @@ public class PlatformMovement : MonoBehaviour
 
     private IEnumerator ShootPlatformRoutine()
     {
-        // สร้าง platform ใหม่
+        // Validate required settings
+        if (platformPrefab == null || spawnPoint == null || targetPoint == null)
+        {
+            Debug.LogWarning("PlatformMovement: Missing shooting settings (platformPrefab/spawnPoint/targetPoint). Aborting shoot.");
+            hasShot = false;
+            yield break;
+        }
+
+        // Create platform projectile
         GameObject newPlatform = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
         float elapsed = 0f;
 
@@ -157,14 +167,43 @@ public class PlatformMovement : MonoBehaviour
 
         while (elapsed < travelTime)
         {
+            // If the projectile was destroyed mid-flight, optionally respawn immediately at start
+            if (newPlatform == null)
+            {
+                if (respawnOnDisappear)
+                {
+                    // Recreate a fresh instance at the spawn point and restart its travel
+                    if (platformPrefab != null && spawnPoint != null)
+                    {
+                        newPlatform = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
+                        startPos = spawnPoint.position;
+                        elapsed = 0f; // restart travel so it begins at the spawn point
+                    }
+                    else
+                    {
+                        // Can't respawn correctly, abort
+                        Debug.LogWarning("PlatformMovement: Cannot respawn projectile because prefab/spawnPoint is missing.");
+                        break;
+                    }
+                }
+                else
+                {
+                    // Not allowed to respawn: abort the travel loop
+                    break;
+                }
+            }
+
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / travelTime);
-            newPlatform.transform.position = Vector3.Lerp(startPos, endPos, t); // เคลื่อนจาก start → target
+            if (newPlatform != null)
+                newPlatform.transform.position = Vector3.Lerp(startPos, endPos, t); // เคลื่อนจาก start → target
+
             yield return null;
         }
 
-        // ถึงเป้าหมายแล้ว → ทำลาย
-        Destroy(newPlatform);
+        // ถ้ายังมี projectile อยู่ ให้ทำลายเมื่อถึงเป้าหมาย
+        if (newPlatform != null)
+            Destroy(newPlatform);
 
         // รออีก 2 วินาทีแล้วรีเซ็ตยิงใหม่ได้
         yield return new WaitForSeconds(2f);

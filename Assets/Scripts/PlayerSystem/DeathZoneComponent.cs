@@ -3,15 +3,25 @@ using UnityEngine;
 public class DeathZoneComponent : MonoBehaviour
 {
     [Header("Death Zone Settings")]
-    [Tooltip("»ÃÐàÀ·¢Í§â«¹µÒÂ")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í§â«¹ï¿½ï¿½ï¿½")]
     public PlayerDeathSystem.DeathType deathType = PlayerDeathSystem.DeathType.InstantDeath;
 
     [Header("Visual Settings")]
     public bool showGizmo = true;
     public Color gizmoColor = Color.red;
+    [Header("Behaviour")]
+    [Tooltip("If true: when any object collides with this DeathZone it will be destroyed (the DeathZone object), otherwise it will kill the player as normal.")]
+    public bool destroyOnAnyHit = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // If configured to self-destruct on any hit, do so and skip player death behavior
+        if (destroyOnAnyHit)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (other.CompareTag("Player"))
         {
             PlayerDeathSystem playerDeath = other.GetComponent<PlayerDeathSystem>();
@@ -21,7 +31,7 @@ public class DeathZoneComponent : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Player äÁèÁÕ PlayerDeathSystem component!");
+                Debug.LogWarning("Player missing PlayerDeathSystem component!");
             }
         }
    
@@ -30,6 +40,13 @@ public class DeathZoneComponent : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // If configured to self-destruct on any hit, do so and skip player death behavior
+        if (destroyOnAnyHit)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (collision.gameObject.CompareTag("Player"))
         {
             PlayerDeathSystem playerDeath = collision.gameObject.GetComponent<PlayerDeathSystem>();
