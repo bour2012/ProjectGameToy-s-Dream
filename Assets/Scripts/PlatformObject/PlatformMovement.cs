@@ -11,6 +11,8 @@ public class PlatformMovement : MonoBehaviour
     private bool isPlayerNear = false; // ผู้เล่นอยู่ใกล้หรือไม่
     [Tooltip("แพลตฟอร์มวิ่งวนลูปตามจุดใน points")]
     public bool modeLoop = false;
+    [Tooltip("ถ้า true = โหมด loop จะเริ่มขยับหลังจากมีการชนด้วย collider (เช่น ผู้เล่นยืนบนแพลตฟอร์ม), ถ้า false = เริ่มขยับทันที")]
+    public bool loopRequiresTrigger = false;
     [Tooltip("แพลตฟอร์มแกว่งซ้าย-ขวา")]
     public bool modeSwing = false;
     [Tooltip("เมื่อผู้เล่นเหยียบแล้วกระเด้งขึ้น (ใช้กับ bounce)")]
@@ -38,6 +40,18 @@ public class PlatformMovement : MonoBehaviour
     public Transform spawnPoint;        // จุดเริ่มต้นที่จะ spawn ใหม่
     public GameObject platformPrefab;   // Prefab ของ Platform ตัวเอง
     private bool hasShot = false;      // เช็คว่ากด E ยิงไปแล้วหรือยัง
+    // once triggered by collider, start moving and don't stop checking
+    private bool triggeredLoop = false;
+
+    public enum ShootStaggerMode { Simultaneous, RandomSpread, SiblingStagger, ManualStagger }
+    [Tooltip("How to stagger initial shooting when multiple platforms trigger together")]
+    public ShootStaggerMode shootStaggerMode = ShootStaggerMode.Simultaneous;
+    [Tooltip("Interval used by SiblingStagger/ManualStagger (seconds between items)")]
+    public float staggerInterval = 0.25f;
+    [Tooltip("Max random delay (seconds) when using RandomSpread mode")]
+    public float randomSpread = 1f;
+    [Tooltip("Manual order index when using ManualStagger mode (0 = first)")]
+    public int manualOrder = 0;
 
     private float startRotationZ;
 
@@ -64,24 +78,30 @@ public class PlatformMovement : MonoBehaviour
 
         if (modeLoop)
         {
-            if ( pointIndex < points.Length)
+            // If loopRequiresTrigger is true, require player presence or an explicit canMove flag to start moving
+            // once triggeredLoop is true the platform will continue to move regardless of later exits
+            if (!loopRequiresTrigger || isPlayerNear || canMove || triggeredLoop)
             {
-                transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
-
-                if (Vector2.Distance(transform.position, points[pointIndex].position) < 0.01f)
+                if (pointIndex < points.Length)
                 {
-                    pointIndex += 1;
-                }
+                    transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
 
-                if (pointIndex == points.Length)
-                {
-                    pointIndex = 0;
+                    if (Vector2.Distance(transform.position, points[pointIndex].position) < 0.01f)
+                    {
+                        pointIndex += 1;
+                    }
+
+                    if (pointIndex == points.Length)
+                    {
+                        pointIndex = 0;
+                    }
                 }
             }
         }
         if (!modeLoop && !modeSwing)
         { 
-                if (canMove && pointIndex < points.Length)
+                // For non-loop mode, move only when canMove OR when triggeredLoop (started by collider)
+                if ((canMove || triggeredLoop) && pointIndex < points.Length)
                 {
 
                     transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
@@ -105,7 +125,7 @@ public class PlatformMovement : MonoBehaviour
         if(modeShoot)
         {
             if(!hasShot)
-            StartCoroutine(ShootPlatformRoutine());
+                StartCoroutine(StartShootingWithStagger());
         }
         if (modeAnim)
         {
@@ -128,8 +148,6 @@ public class PlatformMovement : MonoBehaviour
 
     private IEnumerator ShootPlatformRoutine()
     {
-        hasShot = true;
-
         // สร้าง platform ใหม่
         GameObject newPlatform = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
         float elapsed = 0f;
@@ -151,6 +169,38 @@ public class PlatformMovement : MonoBehaviour
         // รออีก 2 วินาทีแล้วรีเซ็ตยิงใหม่ได้
         yield return new WaitForSeconds(2f);
         hasShot = false;
+    }
+
+    // Wrapper: compute initial delay according to selected stagger mode, then start ShootPlatformRoutine
+    private System.Collections.IEnumerator StartShootingWithStagger()
+    {
+        // mark scheduled so we don't schedule again
+        hasShot = true;
+
+        float delay = 0f;
+        switch (shootStaggerMode)
+        {
+            case ShootStaggerMode.Simultaneous:
+                delay = 0f;
+                break;
+            case ShootStaggerMode.RandomSpread:
+                delay = Random.Range(0f, randomSpread);
+                break;
+            case ShootStaggerMode.SiblingStagger:
+                // use sibling index to stagger items under same parent
+                int idx = transform.GetSiblingIndex();
+                delay = idx * staggerInterval;
+                break;
+            case ShootStaggerMode.ManualStagger:
+                delay = manualOrder * staggerInterval;
+                break;
+        }
+
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        // Actually perform the shooting
+        yield return StartCoroutine(ShootPlatformRoutine());
     }
     public void ShootToTarget()
     {
@@ -182,6 +232,12 @@ public class PlatformMovement : MonoBehaviour
                     Debug.Log("JUMPPP");
                 }
             }
+            // If loopRequiresTrigger is set, mark triggeredLoop so movement continues even after exit
+            if (loopRequiresTrigger)
+            {
+                triggeredLoop = true;
+                canMove = true;
+            }
         }
         if (collision.gameObject.layer == LayerMask.NameToLayer("DeadZone"))
         {
@@ -196,6 +252,8 @@ public class PlatformMovement : MonoBehaviour
         {
             isPlayerNear = false; // ผู้เล่นออกไป
             Debug.Log("Player left platform area.");
+
+            // do not clear triggeredLoop — once triggered we keep moving. Only clear isPlayerNear.
         }
     }
 
