@@ -35,6 +35,18 @@ public class GlueProjectile : MonoBehaviour
     public AudioClip shootSound;
     public AudioClip impactSound;
 
+    [Header("Sprite Options")]
+    [Tooltip("Sprite used while the glue is flying/being shot")]
+    public Sprite flyingSprite;
+    [Tooltip("Sprite used once the glue has hit and stuck to a target")]
+    public Sprite stuckSprite;
+    [Tooltip("Degrees offset applied when orienting the flying sprite to its velocity")]
+    public float flyingRotationOffset = 0f;
+    [Tooltip("Degrees offset applied when orienting the stuck sprite to face the target (flat side)")]
+    public float stuckRotationOffset = 0f;
+    [Tooltip("How long the SpriteSkin remains simulated (jiggle) before freezing the bones into the final pose")]
+    public float stickySkinDuration = 1.0f;
+
     // Private Variables
     private Rigidbody2D rb;
     private AudioSource audioSource;
@@ -105,6 +117,9 @@ public class GlueProjectile : MonoBehaviour
     private void Start()
     {
         PlaySound(shootSound); // เล่นเสียงยิงตอนเริ่ม
+        // Set initial sprite for flying if provided
+        if (spriteRenderer != null && flyingSprite != null)
+            spriteRenderer.sprite = flyingSprite;
     }
 
     private void Update()
@@ -113,27 +128,37 @@ public class GlueProjectile : MonoBehaviour
     }
     private void LateUpdate()
     {
-        // Smoothly rotate to face velocity when burning
-        if (!isBurning) return;
+        // When burning, smoothly rotate toward velocity
+        if (isBurning)
+        {
+            float desiredAngle = transform.rotation.eulerAngles.z;
+            // prefer Rigidbody2D velocity if available
+            if (rb != null && rb.linearVelocity.sqrMagnitude > 0.0001f)
+            {
+                Vector2 v = rb.linearVelocity;
+                desiredAngle = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+            }
+            else
+            {
+                // fallback: use current forward direction
+                Vector3 fwd = transform.right;
+                desiredAngle = Mathf.Atan2(fwd.y, fwd.x) * Mathf.Rad2Deg;
+            }
 
-        float desiredAngle = transform.rotation.eulerAngles.z;
-        // prefer Rigidbody2D velocity if available
+            float current = transform.rotation.eulerAngles.z;
+            float maxDelta = burningRotationTurnSpeed * Time.deltaTime;
+            float newAngle = Mathf.MoveTowardsAngle(current, desiredAngle, maxDelta);
+            transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
+            return;
+        }
+
+        // When not burning, while flying face velocity instantly (so the flat side can be oriented correctly)
         if (rb != null && rb.linearVelocity.sqrMagnitude > 0.0001f)
         {
             Vector2 v = rb.linearVelocity;
-            desiredAngle = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg + flyingRotationOffset;
+            transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
-        else
-        {
-            // fallback: use current forward direction
-            Vector3 fwd = transform.right;
-            desiredAngle = Mathf.Atan2(fwd.y, fwd.x) * Mathf.Rad2Deg;
-        }
-
-        float current = transform.rotation.eulerAngles.z;
-        float maxDelta = burningRotationTurnSpeed * Time.deltaTime;
-        float newAngle = Mathf.MoveTowardsAngle(current, desiredAngle, maxDelta);
-        transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
     }
     private void FixedUpdate()
     {
@@ -325,6 +350,20 @@ public class GlueProjectile : MonoBehaviour
     {
         // determine contact point and choose nearest bone as anchor, then switch to sticky
         Vector2 contactPoint = ground.ClosestPoint(transform.position);
+
+        // orient to surface normal so the glue faces the actual contact surface
+        Vector2 surfaceNormal = ((Vector2)transform.position - contactPoint).normalized;
+        if (surfaceNormal.sqrMagnitude <= 0.000001f && rb != null)
+        {
+            // fallback: face opposite velocity when contact point exactly equals position
+            if (rb.linearVelocity.sqrMagnitude > 0.000001f)
+                surfaceNormal = -rb.linearVelocity.normalized;
+            else
+                surfaceNormal = Vector2.up;
+        }
+
+        OrientTowards(surfaceNormal, stuckRotationOffset);
+
         Rigidbody2D anchor = FindNearestBone(contactPoint);
         SetStickyMode(anchor);
         CreateImpactEffects();
@@ -332,6 +371,14 @@ public class GlueProjectile : MonoBehaviour
 
         transform.SetParent(ground.transform);
         //isOnGround = true;
+
+        // swap to stuck sprite if provided (ground stick should also show stuck sprite)
+        if (spriteRenderer != null && stuckSprite != null)
+            spriteRenderer.sprite = stuckSprite;
+
+        // allow sprite skin to simulate/jiggle for a short time, then freeze bones into final pose
+        if (spriteSkin != null)
+            StartCoroutine(FinishStickyAfter(stickySkinDuration));
 
         Debug.Log($"Glue stuck on ground: {ground.name}");
 
@@ -364,6 +411,26 @@ public class GlueProjectile : MonoBehaviour
 
         transform.SetParent(target.transform);
 
+        // swap to stuck sprite if provided
+        if (spriteRenderer != null && stuckSprite != null)
+            spriteRenderer.sprite = stuckSprite;
+
+        // determine contact point on the target and orient using the surface normal
+        Vector2 closestPoint = target.ClosestPoint(transform.position);
+        Vector2 surfaceNormal = ((Vector2)transform.position - closestPoint).normalized;
+        if (surfaceNormal.sqrMagnitude <= 0.000001f)
+        {
+            // fallback: use opposite velocity if available, otherwise default up
+            if (rb != null && rb.linearVelocity.sqrMagnitude > 0.000001f)
+                surfaceNormal = -rb.linearVelocity.normalized;
+            else
+                surfaceNormal = Vector2.up;
+        }
+        OrientTowards(surfaceNormal, stuckRotationOffset);
+
+        // allow sprite skin to simulate/jiggle for a short time, then freeze bones into final pose
+        if (spriteSkin != null)
+            StartCoroutine(FinishStickyAfter(stickySkinDuration));
 
         Debug.Log($"Glue stuck directly to target: {target.name}");
         StartDestroyCountdown(destroyDelay);
@@ -518,16 +585,17 @@ public class GlueProjectile : MonoBehaviour
 
             if (anchorBone != null && boneRb == anchorBone)
             {
-                // make the chosen bone the anchored pin
+                // make the chosen bone the anchored pin but don't fully FreezeAll yet
+                // Leave rotation frozen so the anchor stays oriented but allow positional parenting/jiggle
                 boneRb.simulated = true;
-                boneRb.constraints = RigidbodyConstraints2D.FreezeAll;
+                boneRb.constraints = RigidbodyConstraints2D.FreezeRotation;
                 boneRb.bodyType = RigidbodyType2D.Kinematic;
             }
             else if (rootBone != null && anchorBone == null && boneRb == rootBone)
             {
-                // if no anchor specified but a rootBone exists, keep it anchored
+                // if no anchor specified but a rootBone exists, keep it anchored but not fully frozen
                 boneRb.simulated = true;
-                boneRb.constraints = RigidbodyConstraints2D.FreezeAll;
+                boneRb.constraints = RigidbodyConstraints2D.FreezeRotation;
                 boneRb.bodyType = RigidbodyType2D.Kinematic;
             }
             else
@@ -544,6 +612,52 @@ public class GlueProjectile : MonoBehaviour
     public void SetStickyMode()
     {
         SetStickyMode(rootBone);
+    }
+
+    // Wait for `duration` seconds while SpriteSkin simulates, then freeze bones into the current pose
+    private IEnumerator FinishStickyAfter(float duration)
+    {
+        if (duration <= 0f)
+        {
+            FreezeBonesToPose();
+            yield break;
+        }
+
+        float t = 0f;
+        while (t < duration)
+        {
+            // if the projectile or spriteSkin is destroyed, exit early
+            if (this == null || spriteSkin == null)
+                yield break;
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        // Freeze bones to lock the final deformed pose
+        FreezeBonesToPose();
+    }
+
+    // Make all bones kinematic and freeze constraints so the visual locks in the final pose
+    private void FreezeBonesToPose()
+    {
+        if (boneRigidbodies == null) return;
+
+        foreach (var b in boneRigidbodies)
+        {
+            if (b == null) continue;
+            b.simulated = true;
+            b.bodyType = RigidbodyType2D.Kinematic;
+            b.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+    }
+
+    // Orient the projectile so its forward (right) faces `dir` with an optional offset in degrees
+    private void OrientTowards(Vector2 dir, float offsetDegrees)
+    {
+        if (dir.sqrMagnitude <= 0.00001f) return;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + offsetDegrees;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     private void AttachJoint(Collider2D target)
