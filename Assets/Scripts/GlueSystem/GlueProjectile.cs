@@ -24,6 +24,8 @@ public class GlueProjectile : MonoBehaviour
     [Header("Effects")]
     public GameObject impactEffect;          // Effect เมื่อกระทบ
     public GameObject splatEffect;           // Effect กาวกระเซ็น
+    [Tooltip("Optional: additional particle effect to spawn on impact (assign a prefab)")]
+    public GameObject extraImpactEffect;     // Extra particle effect (optional)
     [Header("Burning / Boss Fire")]
     public Sprite burningSprite;             // optional sprite to show when glue is on fire
     public GameObject burningEffectPrefab;   // optional VFX when glue becomes burning
@@ -834,6 +836,13 @@ public class GlueProjectile : MonoBehaviour
         {
             GameObject splat = Instantiate(splatEffect, impactPos, Quaternion.identity);
             Destroy(splat, 5f);
+        }
+
+        // optional extra impact effect (user can assign another particle prefab)
+        if (extraImpactEffect != null)
+        {
+            GameObject extra = Instantiate(extraImpactEffect, impactPos, Quaternion.identity);
+            Destroy(extra, 3f);
         }
     }
 
