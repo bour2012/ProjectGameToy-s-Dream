@@ -21,6 +21,10 @@ public class PlatformMovement : MonoBehaviour
     public bool modeDestroyed = false;
     [Tooltip("แพลตฟอร์มยิงออกไปจากจุด spawn สู่ targetPoint")]
     public bool modeShoot = false;
+    [Tooltip("When true, spawn projectiles repeatedly at `continuousShootInterval` without waiting for each to reach the end point.")]
+    public bool shootContinuous = false;
+    [Tooltip("Interval (seconds) between continuous spawns when `shootContinuous` is true.")]
+    public float continuousShootInterval = 0.5f;
     [Tooltip("โหมดใช้ Animator คุมแพลตฟอร์ม (ใช้ร่วมกับ Animator)")]
     public bool modeAnim = false;
     [Header("Destroy Settings")]
@@ -148,7 +152,7 @@ public class PlatformMovement : MonoBehaviour
     //    }
     //}
 
-    private IEnumerator ShootPlatformRoutine()
+    private System.Collections.IEnumerator ShootPlatformRoutine(bool markDone = true)
     {
         // Validate required settings
         if (platformPrefab == null || spawnPoint == null || targetPoint == null)
@@ -205,9 +209,13 @@ public class PlatformMovement : MonoBehaviour
         if (newPlatform != null)
             Destroy(newPlatform);
 
-        // รออีก 2 วินาทีแล้วรีเซ็ตยิงใหม่ได้
-        yield return new WaitForSeconds(2f);
-        hasShot = false;
+        // If markDone is true we treat this as a single-shot flow and allow re-shooting
+        if (markDone)
+        {
+            // รออีก 2 วินาทีแล้วรีเซ็ตยิงใหม่ได้
+            yield return new WaitForSeconds(2f);
+            hasShot = false;
+        }
     }
 
     // Wrapper: compute initial delay according to selected stagger mode, then start ShootPlatformRoutine
@@ -238,8 +246,26 @@ public class PlatformMovement : MonoBehaviour
         if (delay > 0f)
             yield return new WaitForSeconds(delay);
 
-        // Actually perform the shooting
-        yield return StartCoroutine(ShootPlatformRoutine());
+        // If continuous mode is requested, start a looping spawn coroutine that does not wait
+        if (shootContinuous)
+        {
+            StartCoroutine(ContinuousSpawn());
+            yield break;
+        }
+
+        // Actually perform the single shooting (wait until it finishes and mark hasShot false there)
+        yield return StartCoroutine(ShootPlatformRoutine(true));
+    }
+
+    private System.Collections.IEnumerator ContinuousSpawn()
+    {
+        // keep spawning until something clears `hasShot` (for now it remains true while continuous shooting is active)
+        while (hasShot)
+        {
+            // spawn a projectile but don't mark done when it finishes
+            StartCoroutine(ShootPlatformRoutine(false));
+            yield return new WaitForSeconds(Mathf.Max(0.01f, continuousShootInterval));
+        }
     }
     public void ShootToTarget()
     {

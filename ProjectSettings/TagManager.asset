@@ -13,6 +13,7 @@ TagManager:
   - EnemyProjectile
   - LaserBlocker
   - BossFireBarrier
+  - Glue
   layers:
   - Default
   - TransparentFX
