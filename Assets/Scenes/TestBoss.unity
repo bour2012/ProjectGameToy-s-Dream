@@ -3853,11 +3853,7 @@ MonoBehaviour:
   activationDelay: 0.5
   useParentingMode: 1
   glueControlTag: Glue
-  parentableTagsWhenGlued:
-  - Player
-  - Box
-  - CraftedObject
-  - Item
+  parentableTagsWhenGlued: []
   parentingDelay: 0.1
 --- !u!4 &542230345
 Transform:
@@ -4869,11 +4865,7 @@ MonoBehaviour:
   activationDelay: 0.5
   useParentingMode: 1
   glueControlTag: Glue
-  parentableTagsWhenGlued:
-  - Player
-  - Box
-  - CraftedObject
-  - Item
+  parentableTagsWhenGlued: []
   parentingDelay: 0.1
 --- !u!4 &749444797
 Transform:
@@ -7695,11 +7687,7 @@ MonoBehaviour:
   activationDelay: 0.5
   useParentingMode: 1
   glueControlTag: Glue
-  parentableTagsWhenGlued:
-  - Player
-  - Box
-  - CraftedObject
-  - Item
+  parentableTagsWhenGlued: []
   parentingDelay: 0.1
 --- !u!61 &1075793690
 BoxCollider2D:
@@ -11918,11 +11906,7 @@ MonoBehaviour:
   activationDelay: 0.5
   useParentingMode: 1
   glueControlTag: Glue
-  parentableTagsWhenGlued:
-  - Player
-  - Box
-  - CraftedObject
-  - Item
+  parentableTagsWhenGlued: []
   parentingDelay: 0.1
 --- !u!61 &1698262502
 BoxCollider2D:
@@ -13475,11 +13459,7 @@ MonoBehaviour:
   activationDelay: 0.5
   useParentingMode: 1
   glueControlTag: Glue
-  parentableTagsWhenGlued:
-  - Player
-  - Box
-  - CraftedObject
-  - Item
+  parentableTagsWhenGlued: []
   parentingDelay: 0.1
 --- !u!61 &2005785091
 BoxCollider2D:
@@ -13678,11 +13658,7 @@ MonoBehaviour:
   activationDelay: 0.5
   useParentingMode: 1
   glueControlTag: Glue
-  parentableTagsWhenGlued:
-  - Player
-  - Box
-  - CraftedObject
-  - Item
+  parentableTagsWhenGlued: []
   parentingDelay: 0.1
 --- !u!61 &2007629950
 BoxCollider2D:

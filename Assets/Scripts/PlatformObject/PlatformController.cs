@@ -44,7 +44,7 @@ public class PlatformController : MonoBehaviour
     [Tooltip("Tag for the Glue object that controls the parenting system")]
     public string glueControlTag = "Glue";
     [Tooltip("Tags that should be parented when Glue is present on the platform")]
-    public string[] parentableTagsWhenGlued = { };
+    public string[] parentableTagsWhenGlued;
     [Tooltip("Minimum contact time before parenting occurs (to avoid flickering)")]
     public float parentingDelay = 0.1f;
 
