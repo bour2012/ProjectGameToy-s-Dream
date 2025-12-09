@@ -8,14 +8,14 @@ public class BossGlueMeter : MonoBehaviour
     public Slider glueSlider;
     public Image fillImage;
     public TextMeshProUGUI glueText;
-    public Image[] segmentImages; // ÊÓËÃÑºáÊ´§à»ç¹ segment
+    public Image[] segmentImages; // ï¿½ï¿½ï¿½ï¿½Ñºï¿½Ê´ï¿½ï¿½ï¿½ segment
     public CanvasGroup canvasGroup;
 
     [Header("Settings")]
     public Color emptyColor = Color.gray;
     public Color fillingColor = Color.yellow;
     public Color fullColor = Color.orange;
-    public bool useSegments = false; // ãªéáºº segment ËÃ×Í slider
+    public bool useSegments = false; // ï¿½ï¿½áºº segment ï¿½ï¿½ï¿½ï¿½ slider
 
     private int maxGlue;
     private int currentGlue;
@@ -58,7 +58,7 @@ public class BossGlueMeter : MonoBehaviour
 
         if (useSegments && segmentImages != null)
         {
-            // ÍÑ¾à´· segments
+            // ï¿½Ñ¾à´· segments
             for (int i = 0; i < segmentImages.Length && i < maxGlue; i++)
             {
                 if (segmentImages[i] != null)
@@ -67,7 +67,7 @@ public class BossGlueMeter : MonoBehaviour
                     {
                         segmentImages[i].color = (currentGlue >= maxGlue) ? fullColor : fillingColor;
 
-                        // Pulse effect àÁ×èÍàµçÁ
+                        // Pulse effect ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                         if (currentGlue >= maxGlue)
                         {
                             StartCoroutine(PulseSegment(segmentImages[i]));
@@ -153,5 +153,28 @@ public class BossGlueMeter : MonoBehaviour
         }
 
         gameObject.SetActive(false);
+    }
+
+    // Methods for LevelManager integration
+    public bool IsMeterFull()
+    {
+        // Protect against uninitialized maxGlue (0) which would make meter appear full immediately.
+        if (maxGlue <= 0) return false;
+        return currentGlue >= maxGlue;
+    }
+
+    public void ResetMeter()
+    {
+        SetCurrentGlue(0);
+    }
+
+    public int GetCurrentGlue()
+    {
+        return currentGlue;
+    }
+
+    public int GetMaxGlue()
+    {
+        return maxGlue;
     }
 }

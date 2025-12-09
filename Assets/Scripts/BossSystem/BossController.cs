@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 // ========================================
 // Boss Controller (Main Script)
@@ -90,6 +91,15 @@ public class BossController : Enemy
 
     // internal flag to track final-phase grounded state
     private bool finalPhaseGroundedActive = false;
+
+    [Header("Level Transition")]
+    [Tooltip("Delay (seconds) after glue meter fills before triggering level transition. Use to allow dialog to finish.")]
+    public float levelTransitionDelay = 3f;
+    [Tooltip("If assigned, Boss will trigger this DialogTrigger and wait until it completes before transitioning levels.")]
+    public DialogTrigger transitionDialogTrigger;
+
+    [Tooltip("If true and a DialogTrigger is assigned, wait for the dialog to finish instead of using the numeric delay.")]
+    public bool waitForDialogCompletion = true;
 
     // Public properties for State Machine
     [HideInInspector] public bool isCurrentlyFalling = false;
@@ -431,26 +441,20 @@ public class BossController : Enemy
         if (glueMeter != null)
             glueMeter.SetCurrentGlue(currentGlueHitCount);
 
-        // if reached required count -> trigger fall behaviour
+        // if reached required count -> schedule level transition (no fall)
         if (!glueFullTriggered && currentGlueHitCount >= phases[currentPhaseIndex].requiredGlueHits)
         {
             glueFullTriggered = true;
+
+            // Move animator to idle state (do not trigger a fall)
             if (animator != null)
             {
-                animator.SetBool("Fall",true);
+                try { animator.SetTrigger("GoToIdle"); } catch { }
+                try { animator.ResetTrigger("FlyToAttack"); } catch { }
             }
+
+            // Optionally play a sound to indicate glue full
             PlaySound(fallSound);
-
-            // Apply gravity so boss will fall down naturally
-            if (rb != null)
-            {
-                // ensure body is dynamic so gravity affects it
-                rb.bodyType = RigidbodyType2D.Dynamic;
-                rb.gravityScale = fallGravityScale;
-            }
-
-            // Mark falling state immediately so AI and movement systems stop
-            isCurrentlyFalling = true;
 
             // Reset and pause the attack AI to prevent it remembering/continuing attacks
             var ai = GetComponent<BossAttackAI>();
@@ -460,15 +464,10 @@ public class BossController : Enemy
                 ai.PauseForSummons(true);
             }
 
-            // Ensure animator transitions to idle/fall properly
-            if (animator != null)
-            {
-                try { animator.SetTrigger("GoToIdle"); } catch { }
-                try { animator.ResetTrigger("FlyToAttack"); } catch { }
-            }
+            if (showDebugLogs) Debug.Log($"[{bossName}] Glue full -> scheduling level transition in {levelTransitionDelay:F1}s");
 
-            // DO NOT reset glue here: wait until the boss lands on ground and the grounded duration completes
-            if (showDebugLogs) Debug.Log($"[{bossName}] Glue full -> Fall triggered (gravity enabled)");
+            // Start delayed level transition so dialog or other actions can complete first
+            StartCoroutine(DelayedLevelTransition());
         }
     }
 
@@ -514,6 +513,49 @@ public class BossController : Enemy
 
         // start grounded timer to recover
         groundedCoroutine = StartCoroutine(GroundedRoutine());
+    }
+
+    private System.Collections.IEnumerator DelayedLevelTransition()
+    {
+        // If configured to wait for dialog and a DialogTrigger is assigned, start it and wait for completion
+        if (waitForDialogCompletion && transitionDialogTrigger != null)
+        {
+            bool completed = false;
+            UnityAction onComplete = () => { completed = true; };
+
+            // Attach listener
+            transitionDialogTrigger.onDialogComplete.AddListener(onComplete);
+
+            // Trigger the dialog sequence
+            transitionDialogTrigger.TriggerDialog();
+
+            // Wait until dialog triggers completion event
+            while (!completed)
+            {
+                yield return null;
+            }
+
+            // Clean up listener
+            transitionDialogTrigger.onDialogComplete.RemoveListener(onComplete);
+        }
+        else
+        {
+            // Wait the configured delay (allows dialog or other events to finish)
+            float waited = 0f;
+            while (waited < levelTransitionDelay)
+            {
+                waited += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        // Trigger LevelManager transition if present
+        var lm = FindFirstObjectByType<LevelManager>();
+        if (lm != null)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Executing level transition now.");
+            lm.TriggerLevelTransition();
+        }
     }
 
     private IEnumerator GroundedRoutine()
