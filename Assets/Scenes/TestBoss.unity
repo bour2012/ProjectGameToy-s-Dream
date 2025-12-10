@@ -297,7 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: 02
   dialogSequence:
   - dialogText: "Mom: With this kind of glue, it\u2019s going to be difficult to
       take apart.\n"
@@ -1770,8 +1770,13 @@ MonoBehaviour:
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
+    - gameObject: {fileID: 1505240624}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
   - levelName: Level02
-    preTransitionDialogs: []
+    preTransitionDialogs:
+    - {fileID: 90423956}
     levelObjects:
     - gameObject: {fileID: 406562124}
       storedPosition: {x: 0, y: 0, z: 0}
@@ -1881,13 +1886,28 @@ MonoBehaviour:
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
-    - gameObject: {fileID: 1505240624}
+    - gameObject: {fileID: 1146714541}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 2123420929}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 116473197}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 126514597}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
   - levelName: End Game
-    preTransitionDialogs:
-    - {fileID: 90423956}
+    preTransitionDialogs: []
     levelObjects: []
   currentLevelIndex: 0
   player: {fileID: 1091149616006774543}
@@ -1900,6 +1920,7 @@ MonoBehaviour:
   spawnDelay: 0.1
   bossGlueMeter: {fileID: 430781526}
   boss: {fileID: 430781523}
+  isTransitioning: 0
 --- !u!4 &149019557
 Transform:
   m_ObjectHideFlags: 0
@@ -8766,6 +8787,7 @@ Transform:
   - {fileID: 882477015}
   - {fileID: 1357208168}
   - {fileID: 943783902}
+  - {fileID: 1505240628}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1187709226
@@ -10537,7 +10559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: 01
   dialogSequence:
   - dialogText: "Mom: With this kind of glue, it\u2019s going to be difficult to
       take apart.\n"
@@ -11024,7 +11046,7 @@ Transform:
   m_LocalScale: {x: 0.3252, y: 0.3252, z: 0.3252}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1654022246}
+  m_Father: {fileID: 1180913606}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1510185382
 PrefabInstance:
@@ -12373,7 +12395,6 @@ Transform:
   - {fileID: 1602334191}
   - {fileID: 1754679707}
   - {fileID: 2024291831}
-  - {fileID: 1505240628}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1685808975

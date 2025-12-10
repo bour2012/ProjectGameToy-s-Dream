@@ -14,11 +14,11 @@ GameObject:
   - component: {fileID: 1096811300187413495}
   m_Layer: 0
   m_Name: Triangle
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2575222516509306202
 Transform:
   m_ObjectHideFlags: 0

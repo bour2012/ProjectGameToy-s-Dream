@@ -110,6 +110,8 @@ public class BossController : Enemy
 
     private AudioSource audioSource;
     private SpriteRenderer bossSprite;
+    // Cached reference to LevelManager for performance (avoid repeated Find calls)
+    private LevelManager levelManager;
     private BossPhaseData currentPhaseData;
     // Position lock while accumulating glue to avoid being displaced by projectile collisions
     private Vector2 lastFixedPosition;
@@ -204,6 +206,10 @@ public class BossController : Enemy
             glueMeter.Show();
         }
 
+        // Cache LevelManager instance to avoid repeated FindFirstObjectByType calls
+        levelManager = FindFirstObjectByType<LevelManager>();
+        if (levelManager == null && showDebugLogs) Debug.LogWarning($"[{bossName}] LevelManager not found in scene (BossController cached reference)");
+
         EnterPhase(0);
     }
 
@@ -243,8 +249,9 @@ public class BossController : Enemy
             glueAccumulationTimer -= Time.deltaTime;
             if (glueAccumulationTimer <= 0f)
             {
-                if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation timed out, reset.");
-                ResetGlueAccumulation();
+                if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation timed out.");
+                // ResetGlueAccumulation();
+                // NOTE: glue reset is now performed by LevelManager during level transitions
             }
         }
     }
@@ -426,7 +433,20 @@ public class BossController : Enemy
     {
         if (finalPhaseGroundedActive) return; // do nothing in final grounded phase
         if (isCurrentlyFalling) return; // when already falling, glue does nothing
+        if (levelManager.IsTransitioning) return;
         if (Time.time - lastGlueHitTime < glueHitCooldown) return;
+
+        // If a level transition is active, ignore glue hits until transition completes.
+        if (levelManager == null)
+        {
+            // fallback - try to find and cache
+            levelManager = FindFirstObjectByType<LevelManager>();
+        }
+        if (levelManager != null && levelManager.IsTransitioning)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Ignoring glue hit while level transition in progress.");
+            return;
+        }
 
         lastGlueHitTime = Time.time;
 
@@ -466,8 +486,10 @@ public class BossController : Enemy
 
             if (showDebugLogs) Debug.Log($"[{bossName}] Glue full -> scheduling level transition in {levelTransitionDelay:F1}s");
 
+            levelManager.MonitorBossGlueMeter();
             // Start delayed level transition so dialog or other actions can complete first
-            StartCoroutine(DelayedLevelTransition());
+            //levelTriggerLevelTransition();
+            //StartCoroutine(DelayedLevelTransition());
         }
     }
 
@@ -484,7 +506,7 @@ public class BossController : Enemy
             groundedCoroutine = null;
         }
 
-        RecoverFromFall();
+        //RecoverFromFall();
     }
 
     //private IEnumerator TemporarilyInvincible(float duration)
@@ -549,12 +571,15 @@ public class BossController : Enemy
             }
         }
 
-        // Trigger LevelManager transition if present
-        var lm = FindFirstObjectByType<LevelManager>();
-        if (lm != null)
+        // Trigger LevelManager transition if present (use cached reference when possible)
+        if (levelManager == null)
+        {
+            levelManager = FindFirstObjectByType<LevelManager>();
+        }
+        if (levelManager != null)
         {
             if (showDebugLogs) Debug.Log($"[{bossName}] Executing level transition now.");
-            lm.TriggerLevelTransition();
+            levelManager.TriggerLevelTransition();
         }
     }
 
@@ -569,51 +594,51 @@ public class BossController : Enemy
         }
 
         groundedCoroutine = null;
-        RecoverFromFall();
+        //RecoverFromFall();
     }
 
-    private void RecoverFromFall()
-    {
-        // boss recovers and returns to flying
-        isCurrentlyFalling = false;
-        isGroundedFromFall = false;
+    //private void RecoverFromFall()
+    //{
+    //    // boss recovers and returns to flying
+    //    isCurrentlyFalling = false;
+    //    isGroundedFromFall = false;
 
-        // reset glue and effects
-        ResetGlueAccumulation();
+    //    // reset glue and effects
+    //    //ResetGlueAccumulation(); // Disabled: glue reset should occur on level change via LevelManager
 
-        // restore physics for flight
-        if (rb != null)
-        {
-            animator.SetBool("Fall", false);
-            rb.bodyType = RigidbodyType2D.Dynamic;
-            rb.gravityScale = 0f;
-            rb.linearVelocity = Vector2.zero;
-            // start moving back to starting position smoothly
-            isReturningToStart = true;
-            if (showDebugLogs) Debug.Log($"[{bossName}] Recovering: returning to start {startingPosition}");
-        }
+    //    // restore physics for flight
+    //    if (rb != null)
+    //    {
+    //        animator.SetBool("Fall", false);
+    //        rb.bodyType = RigidbodyType2D.Dynamic;
+    //        rb.gravityScale = 0f;
+    //        rb.linearVelocity = Vector2.zero;
+    //        // start moving back to starting position smoothly
+    //        isReturningToStart = true;
+    //        if (showDebugLogs) Debug.Log($"[{bossName}] Recovering: returning to start {startingPosition}");
+    //    }
 
-        // Let animations / AI resume normally. Do not automatically trigger another animation here;
-        // the Attack AI or Animator controller can decide next state.
+    //    // Let animations / AI resume normally. Do not automatically trigger another animation here;
+    //    // the Attack AI or Animator controller can decide next state.
 
-        // Ensure AI is unpaused and reset so it can resume its attack loop when back in flight
-        var ai = GetComponent<BossAttackAI>();
-        if (ai != null)
-        {
-            ai.ResetAIState();
-            ai.OnPhaseChanged(currentPhaseIndex); // re-select the correct sequence
-            ai.PauseForSummons(false);
-        }
-        // ensure any stomp indicator is removed on recovery
-        if (stompIndicatorInstance != null)
-        {
-            Destroy(stompIndicatorInstance);
-            stompIndicatorInstance = null;
-            stompIndicatorTimer = 0f;
-        }
+    //    // Ensure AI is unpaused and reset so it can resume its attack loop when back in flight
+    //    var ai = GetComponent<BossAttackAI>();
+    //    if (ai != null)
+    //    {
+    //        ai.ResetAIState();
+    //        ai.OnPhaseChanged(currentPhaseIndex); // re-select the correct sequence
+    //        ai.PauseForSummons(false);
+    //    }
+    //    // ensure any stomp indicator is removed on recovery
+    //    if (stompIndicatorInstance != null)
+    //    {
+    //        Destroy(stompIndicatorInstance);
+    //        stompIndicatorInstance = null;
+    //        stompIndicatorTimer = 0f;
+    //    }
 
-        if (showDebugLogs) Debug.Log($"[{bossName}] Recovered from fall and resumed flight");
-    }
+    //    if (showDebugLogs) Debug.Log($"[{bossName}] Recovered from fall and resumed flight");
+    //}
 
     /// <summary>
     /// Reset glue accumulation and related UI/effects immediately.

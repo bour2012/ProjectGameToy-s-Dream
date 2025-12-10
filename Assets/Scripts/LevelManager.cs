@@ -21,7 +21,11 @@ public class LevelManager : MonoBehaviour
     public BossGlueMeter bossGlueMeter;
     public Transform boss;
 
-    private bool isTransitioning = false;
+    public bool isTransitioning = false;
+
+    // Expose transition state so other systems (e.g. BossController) can query
+    // whether a level transition is currently in progress.
+    public bool IsTransitioning { get { return isTransitioning; } }
 
     [System.Serializable]
     public class LevelData
@@ -137,6 +141,19 @@ public class LevelManager : MonoBehaviour
 
         // Reset boss to idle state
         SetBossIdleState();
+
+
+
+        // Ensure boss glue accumulation state is reset when changing levels
+        if (boss != null)
+        {
+            var bc = boss.GetComponent<BossController>();
+            if (bc != null)
+            {
+                bc.ResetGlueAccumulation();
+                Debug.Log("LevelManager: Called ResetGlueAccumulation on boss.");
+            }
+        }
 
         isTransitioning = false;
     }
@@ -281,7 +298,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private IEnumerator MonitorBossGlueMeter()
+    public IEnumerator MonitorBossGlueMeter()
     {
         while (true)
         {

@@ -46,8 +46,21 @@ public class PlatformMovement : MonoBehaviour
     private bool hasShot = false;      // เช็คว่ากด E ยิงไปแล้วหรือยัง
     [Tooltip("If true: when a spawned projectile is destroyed mid-flight, immediately respawn it at the spawnPoint.")]
     public bool respawnOnDisappear = true;
+    // Track all spawned projectiles so we can clear them if spawn/target disappear
+    private List<GameObject> activeProjectiles = new List<GameObject>();
     // once triggered by collider, start moving and don't stop checking
     private bool triggeredLoop = false;
+
+    // Helper: ensure spawnPoint and targetPoint are present and active
+    private bool IsShootingSetupValid
+    {
+        get
+        {
+            bool isSpawnOK = spawnPoint != null && spawnPoint.gameObject.activeInHierarchy;
+            bool isTargetOK = targetPoint != null && targetPoint.gameObject.activeInHierarchy;
+            return isSpawnOK && isTargetOK;
+        }
+    }
 
     public enum ShootStaggerMode { Simultaneous, RandomSpread, SiblingStagger, ManualStagger }
     [Tooltip("How to stagger initial shooting when multiple platforms trigger together")]
@@ -128,10 +141,23 @@ public class PlatformMovement : MonoBehaviour
             // ใช้ Quaternion หมุนแกน Z
             transform.rotation = Quaternion.Euler(0f, 0f, startRotationZ + angle);
         }
-        if(modeShoot)
+        if (modeShoot)
         {
-            if(!hasShot)
-                StartCoroutine(StartShootingWithStagger());
+            //if (spawnPoint != null)
+            //{
+            //    Debug.Log($"SpawnPoint ชื่อ: {spawnPoint.name} | พ่อชื่อ: {spawnPoint.parent.name} | Active: {spawnPoint.gameObject.activeInHierarchy}");
+            //}
+            // If setup is invalid (null or disabled), clear any spawned projectiles immediately
+            if (!IsShootingSetupValid)
+            {
+                ClearAllProjectiles();
+                hasShot = false;
+            }
+            else
+            {
+                if (!hasShot)
+                    StartCoroutine(StartShootingWithStagger());
+            }
         }
         if (modeAnim)
         {
@@ -140,6 +166,12 @@ public class PlatformMovement : MonoBehaviour
         }
         // ถ้า canMove = true ถึงจะเริ่มเคลื่อนที่
 
+    }
+    private void OnDisable()
+    {
+        // ทันทีที่ถูกปิด (Disable) ให้ลบกระสุนทิ้งทั้งหมด
+        ClearAllProjectiles();
+        Debug.Log("Platform disabled: Cleared all projectiles.");
     }
     //private void OnTriggerStay2D(Collider2D collision)
     //{
@@ -164,6 +196,8 @@ public class PlatformMovement : MonoBehaviour
 
         // Create platform projectile
         GameObject newPlatform = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
+        // remember it so we can clear all later if needed
+        activeProjectiles.Add(newPlatform);
         float elapsed = 0f;
 
         Vector3 startPos = spawnPoint.position;
@@ -171,15 +205,31 @@ public class PlatformMovement : MonoBehaviour
 
         while (elapsed < travelTime)
         {
+            // If spawn/target become invalid (null or disabled) while traveling,
+            // destroy this projectile and abort.
+            if (!IsShootingSetupValid)
+            {
+                if (newPlatform != null)
+                {
+                    activeProjectiles.Remove(newPlatform);
+                    Destroy(newPlatform);
+                }
+                ClearAllProjectiles();
+                yield break;
+            }
             // If the projectile was destroyed mid-flight, optionally respawn immediately at start
             if (newPlatform == null)
             {
+                // ensure list doesn't keep null refs
+                activeProjectiles.RemoveAll(x => x == null);
+
                 if (respawnOnDisappear)
                 {
                     // Recreate a fresh instance at the spawn point and restart its travel
                     if (platformPrefab != null && spawnPoint != null)
                     {
                         newPlatform = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
+                        activeProjectiles.Add(newPlatform);
                         startPos = spawnPoint.position;
                         elapsed = 0f; // restart travel so it begins at the spawn point
                     }
@@ -207,7 +257,11 @@ public class PlatformMovement : MonoBehaviour
 
         // ถ้ายังมี projectile อยู่ ให้ทำลายเมื่อถึงเป้าหมาย
         if (newPlatform != null)
+        {
+            // remove from tracking before destroying
+            activeProjectiles.Remove(newPlatform);
             Destroy(newPlatform);
+        }
 
         // If markDone is true we treat this as a single-shot flow and allow re-shooting
         if (markDone)
@@ -216,6 +270,26 @@ public class PlatformMovement : MonoBehaviour
             yield return new WaitForSeconds(2f);
             hasShot = false;
         }
+    }
+
+    // Destroy and clear all projectiles this platform spawned
+    private void ClearAllProjectiles()
+    {
+        if (activeProjectiles == null || activeProjectiles.Count == 0)
+            return;
+
+        for (int i = activeProjectiles.Count - 1; i >= 0; --i)
+        {
+            GameObject go = activeProjectiles[i];
+            if (go != null)
+                Destroy(go);
+        }
+        activeProjectiles.Clear();
+    }
+
+    private void OnDestroy()
+    {
+        ClearAllProjectiles();
     }
 
     // Wrapper: compute initial delay according to selected stagger mode, then start ShootPlatformRoutine
@@ -262,6 +336,13 @@ public class PlatformMovement : MonoBehaviour
         // keep spawning until something clears `hasShot` (for now it remains true while continuous shooting is active)
         while (hasShot)
         {
+            // If spawn/target are missing or disabled, clear and stop continuous spawning
+            if (!IsShootingSetupValid)
+            {
+                ClearAllProjectiles();
+                yield break;
+            }
+
             // spawn a projectile but don't mark done when it finishes
             StartCoroutine(ShootPlatformRoutine(false));
             yield return new WaitForSeconds(Mathf.Max(0.01f, continuousShootInterval));
