@@ -1318,7 +1318,7 @@ Transform:
   m_GameObject: {fileID: 57583919}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 82.213745, y: -12.918915, z: -10}
+  m_LocalPosition: {x: 81.68374, y: -13.118916, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2059,6 +2059,7 @@ MonoBehaviour:
   deathType: 3
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!61 &105319343
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2640,7 +2641,7 @@ Transform:
   m_GameObject: {fileID: 119433811}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 79.98782, y: -12.672624, z: -10}
+  m_LocalPosition: {x: 79.45782, y: -12.872624, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10393,6 +10394,7 @@ MonoBehaviour:
   deathType: 3
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!61 &397803776
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13432,7 +13434,7 @@ Transform:
   m_GameObject: {fileID: 515656552}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 80.64227, y: -13.753996, z: -10}
+  m_LocalPosition: {x: 80.112274, y: -13.953997, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16897,6 +16899,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -17937,7 +17941,7 @@ Transform:
   m_GameObject: {fileID: 638131366}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 80.79175, y: -11.987552, z: -10}
+  m_LocalPosition: {x: 80.26175, y: -12.187552, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20465,11 +20469,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 30.2
+      value: 29.67
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.1
+      value: 7.9
       objectReference: {fileID: 0}
     - target: {fileID: 7432402995936259417, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_SortingOrder
@@ -20662,7 +20666,7 @@ Transform:
   m_GameObject: {fileID: 727375032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 79.22006, y: -13.880814, z: -10}
+  m_LocalPosition: {x: 78.69006, y: -14.080814, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21335,6 +21339,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -23616,6 +23622,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -35740,6 +35748,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -37624,7 +37634,7 @@ Transform:
   m_GameObject: {fileID: 1473735149}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 80.35243, y: -14.680258, z: -10}
+  m_LocalPosition: {x: 79.82243, y: -14.880259, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -39926,6 +39936,7 @@ MonoBehaviour:
   deathType: 3
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!61 &1549179417
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -44497,7 +44508,7 @@ Transform:
   m_GameObject: {fileID: 1720681710}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 80.01273, y: -11.840355, z: -10}
+  m_LocalPosition: {x: 79.48273, y: -12.040356, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46689,7 +46700,7 @@ Transform:
   m_GameObject: {fileID: 1781727788}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 80.850655, y: -12.685077, z: -10}
+  m_LocalPosition: {x: 80.32065, y: -12.885077, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -50319,6 +50330,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -50784,7 +50797,7 @@ Transform:
   m_GameObject: {fileID: 1949374036}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 79.46247, y: -13.1945095, z: -10}
+  m_LocalPosition: {x: 78.932465, y: -13.39451, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
