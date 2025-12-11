@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Security.Cryptography;
+using System.Collections.Generic; // เพิ่มเพื่อใช้ List ถ้าจำเป็น แต่ Array ก็พอครับ
 using UnityEngine;
 
 public class FlyingEnemy : Enemy
@@ -23,6 +23,10 @@ public class FlyingEnemy : Enemy
     private bool isCurrentlyFalling = false; // ป้องกัน coroutine ซ้ำ
 
     [Header("Flying Enemy Settings")]
+    // --- [ส่วนที่เพิ่ม 1] จุดพัก (Idle Points) หลายจุด ---
+    [Tooltip("ลาก GameObject (Empty) มาใส่เพื่อกำหนดจุดที่ศัตรูจะบินกลับไปพัก")]
+    public Transform[] idlePoints;
+
     public float flyingSpeed = 3f;
     public float attackRange = 8f;
     public float attackCooldown = 3f;
@@ -40,6 +44,17 @@ public class FlyingEnemy : Enemy
     public LayerMask obstacleLayer;
     [Tooltip("จำนวนครั้งที่พยายามหาตำแหน่งใหม่ก่อนยอมแพ้")]
     public int maxPositionAttempts = 5;
+
+    // --- [ส่วนที่เพิ่ม 1] การตั้งค่าหลบ Laser ---
+    [Header("Laser Avoidance")]
+    [Tooltip("Layer ของ Laser หรือสิ่งที่ต้องการให้หลบ")]
+    public LayerMask dangerLayer;
+    [Tooltip("ระยะตรวจจับ Laser ล่วงหน้า")]
+    public float avoidanceDistance = 3f;
+    [Tooltip("รัศมีของวงกลมที่ใช้ตรวจจับ (ควรเท่ากับขนาดตัวศัตรู)")]
+    public float avoidanceRadius = 0.5f;
+    [Tooltip("แรงในการหักหลบ (ยิ่งเยอะยิ่งหลบไว)")]
+    public float avoidanceForce = 5f;
 
     [Header("Attack Settings")]
     public GameObject projectilePrefab;
@@ -62,6 +77,9 @@ public class FlyingEnemy : Enemy
     private bool isAttacking = false;
     private float currentSpeed;
 
+    // --- [ส่วนที่เพิ่ม 2] ตัวแปรเก็บจุดหมายที่จะบินกลับ ---
+    private Vector2 currentReturnTarget;
+
     protected override void Awake()
     {
         base.Awake();
@@ -75,6 +93,9 @@ public class FlyingEnemy : Enemy
             attackTimer = Random.Range(0f, attackCooldown);
         }
         currentSpeed = 0f;
+        
+        // กำหนดค่าเริ่มต้น ให้เป็นจุดที่วางตัวศัตรูไว้ตอนแรก
+        currentReturnTarget = initialPosition;
     }
 
     protected override void Update()
@@ -130,23 +151,54 @@ public class FlyingEnemy : Enemy
         }
     }
 
+    // --- [ส่วนที่เพิ่ม 2] ฟังก์ชันคำนวณทิศทางหลบ ---
+    Vector2 GetAvoidanceDirection(Vector2 desiredDirection)
+    {
+        // ยิง CircleCast ไปข้างหน้าในทิศทางที่จะไป
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, avoidanceRadius, desiredDirection, avoidanceDistance, dangerLayer);
+
+        if (hit.collider != null)
+        {
+            // ถ้าเจอ Laser หรืออันตราย
+            if (showGlueDebugLogs) Debug.DrawLine(transform.position, hit.point, Color.red); // Debug เส้นสีแดง
+
+            // คำนวณทิศทางสะท้อนกลับ (หลบออกจากจุดที่ชน)
+            // ใช้ hit.normal (เวกเตอร์ตั้งฉากกับผิว Laser) เพื่อผลักศัตรูออกห่าง
+            return hit.normal * avoidanceForce;
+        }
+
+        return Vector2.zero; // ถ้าไม่มีอะไรขวาง ไม่ต้องหลบ
+    }
+
     void HandleFlyingState()
     {
         GameObject target = DetectAndLockTarget();
         if (target == null)
         {
+            // --- [แก้ไข] เมื่อหาเป้าหมายไม่เจอ ให้คำนวณหาจุดกลับใหม่ทันที ---
+            currentReturnTarget = GetNearestIdlePosition();
             currentState = State.Returning;
             return;
         }
 
         currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed, Time.deltaTime * 2f);
 
-        Vector2 direction = (flightTargetPosition - (Vector2)transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, flightTargetPosition, currentSpeed * Time.deltaTime);
+        // 1. คำนวณทิศทางที่ "อยากจะไป" (หาเป้าหมาย)
+        Vector2 directionToTarget = (flightTargetPosition - (Vector2)transform.position).normalized;
 
-        if (direction.x != 0)
+        // 2. คำนวณแรงหลบหลีก (Avoidance)
+        Vector2 avoidanceVec = GetAvoidanceDirection(directionToTarget);
+
+        // 3. รวมทิศทาง (อยากไป + ต้องหลบ)
+        Vector2 finalDirection = (directionToTarget + avoidanceVec).normalized;
+
+        // --- [แก้ไข] เปลี่ยนมาใช้การเลื่อนตำแหน่งแบบ Vector แทน MoveTowards เพื่อให้หลบได้เนียนขึ้น ---
+        transform.position += (Vector3)finalDirection * currentSpeed * Time.deltaTime;
+
+        // หันหน้า
+        if (finalDirection.x != 0)
         {
-            transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
+            transform.localScale = new Vector3(Mathf.Sign(finalDirection.x), 1, 1);
         }
 
         if (Vector2.Distance(transform.position, flightTargetPosition) < 0.5f)
@@ -172,21 +224,65 @@ public class FlyingEnemy : Enemy
     void HandleReturningState()
     {
         currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed, Time.deltaTime * 2f);
-        transform.position = Vector2.MoveTowards(transform.position, initialPosition, currentSpeed * Time.deltaTime);
+        
+        // 1. ทิศทางอยากกลับบ้าน
+        Vector2 directionToHome = (currentReturnTarget - (Vector2)transform.position).normalized;
 
-        Vector2 direction = ((Vector2)initialPosition - (Vector2)transform.position).normalized;
+        // 2. แรงหลบ
+        Vector2 avoidanceVec = GetAvoidanceDirection(directionToHome);
 
-        if (direction.x != 0)
+        // 3. รวมทิศทาง
+        Vector2 finalDirection = (directionToHome + avoidanceVec).normalized;
+
+        transform.position += (Vector3)finalDirection * currentSpeed * Time.deltaTime;
+
+        if (finalDirection.x != 0)
         {
-            transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
+            transform.localScale = new Vector3(Mathf.Sign(finalDirection.x), 1, 1);
         }
 
-        if (Vector2.Distance(transform.position, initialPosition) < 0.1f)
+        // เช็คระยะห่างกับจุดหมายใหม่
+        if (Vector2.Distance(transform.position, currentReturnTarget) < 0.1f)
         {
             currentState = State.Idle;
             currentGlueHitCount = 0; // รีเซ็ตเมื่อกลับถึงรัง
             attackTimer = 0f;
         }
+    }
+
+    // --- [ส่วนที่เพิ่ม 3] ฟังก์ชันคำนวณหาจุดพักที่ใกล้ตัวที่สุด ---
+    private Vector2 GetNearestIdlePosition()
+    {
+        // ถ้าไม่มีจุดพักเลย ให้กลับไปจุดเกิด (initialPosition)
+        if (idlePoints == null || idlePoints.Length == 0)
+        {
+            return initialPosition;
+        }
+
+        Vector2 nearestPoint = initialPosition;
+        float minDistance = float.MaxValue;
+
+        // วนลูปเช็คทุกจุดใน Array
+        foreach (Transform point in idlePoints)
+        {
+            if (point == null) continue;
+
+            float dist = Vector2.Distance(transform.position, point.position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                nearestPoint = point.position;
+            }
+        }
+        
+        // เช็คเทียบกับจุดเกิดด้วย (เผื่อจุดเกิดใกล้กว่า)
+        float distToInit = Vector2.Distance(transform.position, initialPosition);
+        if (distToInit < minDistance)
+        {
+            nearestPoint = initialPosition;
+        }
+
+        return nearestPoint;
     }
 
     IEnumerator AttackSequence()
@@ -238,7 +334,7 @@ public class FlyingEnemy : Enemy
             else
             {
                 float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
-                newTarget = new Vector2(initialPosition.x + randomX, initialPosition.y);
+                newTarget = new Vector2(currentReturnTarget.x + randomX, currentReturnTarget.y);
             }
 
             if (IsPathClear(transform.position, newTarget))
@@ -256,6 +352,8 @@ public class FlyingEnemy : Enemy
         {
             if (showGlueDebugLogs)
                 Debug.LogWarning("FlyingEnemy: ไม่พบตำแหน่งที่เหมาะสมในการบิน กำลังกลับรัง");
+            // --- [แก้ไข] คำนวณจุดกลับใหม่ก่อนเปลี่ยน State ---
+            currentReturnTarget = GetNearestIdlePosition();
             currentState = State.Returning;
         }
     }
@@ -317,6 +415,8 @@ public class FlyingEnemy : Enemy
         currentGlueHitCount = 0; // รีเซ็ต counter
         isCurrentlyFalling = false;
 
+        // --- [แก้ไข] เมื่อหายจากกาว ให้หาจุดกลับที่ใกล้ที่สุด ---
+        currentReturnTarget = GetNearestIdlePosition();
         currentState = State.Returning;
     }
 
@@ -381,7 +481,7 @@ public class FlyingEnemy : Enemy
         playerInZone = player;
         currentTarget = player;
 
-        if (currentState == State.Idle)
+        if (currentState == State.Idle || currentState == State.Returning)
         {
             currentState = State.Flying;
             SetNewFlightTarget();
@@ -393,6 +493,8 @@ public class FlyingEnemy : Enemy
         isPlayerInZone = false;
         playerInZone = null;
         currentTarget = null;
+        // --- [แก้ไข] เมื่อผู้เล่นออกจากโซน ให้หาจุดกลับที่ใกล้ที่สุด ---
+        currentReturnTarget = GetNearestIdlePosition();
         currentState = State.Returning;
     }
 
@@ -401,7 +503,8 @@ public class FlyingEnemy : Enemy
         if (!showDebugGizmos) return;
 
         Gizmos.color = Color.cyan;
-        Vector3 center = Application.isPlaying ? initialPosition : transform.position;
+        // ใช้ currentReturnTarget แทน initialPosition เพื่อดูว่ามันจะบินรอบๆ จุดไหน
+        Vector3 center = Application.isPlaying ? (Vector3)currentReturnTarget : transform.position;
         DrawCircle(center, flightPatrolRadius, 30);
 
         Gizmos.color = Color.red;
@@ -428,6 +531,30 @@ public class FlyingEnemy : Enemy
             float radius = 0.5f + (currentGlueHitCount * 0.2f);
             DrawCircle(transform.position, radius, 20);
         }
+
+        // --- [เพิ่ม] แสดงจุด Idle Points ทั้งหมดใน Scene ---
+        if (idlePoints != null)
+        {
+            Gizmos.color = Color.blue;
+            foreach (var point in idlePoints)
+            {
+                if (point != null)
+                {
+                    Gizmos.DrawWireSphere(point.position, 0.5f);
+                    Gizmos.DrawLine(transform.position, point.position); // ลากเส้นเช็คระยะ
+                }
+            }
+        }
+
+        // --- [เพิ่ม] Gizmo แสดงรัศมีการตรวจจับ Laser ---
+        Gizmos.color = new Color(1f, 0.5f, 0f, 0.5f); // สีส้มจางๆ
+        // วาดวงกลมข้างหน้าศัตรู
+        Vector3 direction = Vector3.right;
+        if(Application.isPlaying && currentState == State.Flying)
+             direction = (flightTargetPosition - (Vector2)transform.position).normalized;
+             
+        Gizmos.DrawWireSphere(transform.position + (direction * avoidanceDistance), avoidanceRadius);
+        Gizmos.DrawLine(transform.position, transform.position + (direction * avoidanceDistance));
     }
 
     void DrawCircle(Vector3 center, float radius, int segments)
