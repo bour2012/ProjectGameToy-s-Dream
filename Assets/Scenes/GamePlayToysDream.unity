@@ -1208,7 +1208,15 @@ MonoBehaviour:
       and thread to create awesome thing !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -1218,7 +1226,15 @@ MonoBehaviour:
   - dialogText: 'Son : There ! try to use the glue with that trash'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 1500594146}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -2059,6 +2075,7 @@ MonoBehaviour:
   deathType: 3
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!61 &105319343
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3452,6 +3469,13 @@ MonoBehaviour:
   isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
+  requireLeverAndPlayerNearby: 0
+  playerProximityRadius: 3
+  activationDelay: 0.5
+  useParentingMode: 1
+  glueControlTag: Glue
+  parentableTagsWhenGlued: []
+  parentingDelay: 0.1
 --- !u!4 &147364327
 Transform:
   m_ObjectHideFlags: 0
@@ -7589,10 +7613,18 @@ MonoBehaviour:
 '
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 1
-    hintUIElement: {fileID: 0}
-    displayDuration: 4
+    hintUIElement: {fileID: 345283100}
+    displayDuration: 6
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
@@ -8321,7 +8353,15 @@ MonoBehaviour:
   - dialogText: 'Son : Aw, I guess even hero make a mistake sometime.'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -8402,6 +8442,13 @@ MonoBehaviour:
   isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
+  requireLeverAndPlayerNearby: 0
+  playerProximityRadius: 3
+  activationDelay: 0.5
+  useParentingMode: 1
+  glueControlTag: Glue
+  parentableTagsWhenGlued: []
+  parentingDelay: 0.1
 --- !u!4 &340665057
 Transform:
   m_ObjectHideFlags: 0
@@ -8545,6 +8592,11 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 5
+--- !u!1 &345283100 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5468438964453069193, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+  m_PrefabInstance: {fileID: 721006044}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &350648254
 GameObject:
   m_ObjectHideFlags: 0
@@ -10393,6 +10445,7 @@ MonoBehaviour:
   deathType: 3
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!61 &397803776
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12496,7 +12549,15 @@ MonoBehaviour:
   - dialogText: 'Son : Just a little bit, we''re almost at the town !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -12707,7 +12768,15 @@ MonoBehaviour:
   - dialogText: 'Son : Whoa look ! It''s the demon lackey !!!'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -12718,7 +12787,15 @@ MonoBehaviour:
       voice) \"Ha ha! Hero, there\u2019s no way you can get past here !"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 1285374577}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -12728,7 +12805,15 @@ MonoBehaviour:
   - dialogText: "Dad : Then, it\u2019s time to use this glue power !!"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 1285374577}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -14029,7 +14114,15 @@ MonoBehaviour:
       a switch.'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 635189583}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -14039,7 +14132,15 @@ MonoBehaviour:
   - dialogText: "Son : Shh \u2014 it hasn't seen us yet"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 1083704200}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -14049,7 +14150,15 @@ MonoBehaviour:
   - dialogText: 'Dad : let''s use thread to make a doll to lure it away then'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -14059,7 +14168,15 @@ MonoBehaviour:
   - dialogText: "Son : Just as expected of a hero \u2014 what a brilliant idea !"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -15604,6 +15721,13 @@ MonoBehaviour:
   isAnimMode: 1
   isLocked: 0
   requiredKeyID: 
+  requireLeverAndPlayerNearby: 0
+  playerProximityRadius: 3
+  activationDelay: 0.5
+  useParentingMode: 1
+  glueControlTag: Glue
+  parentableTagsWhenGlued: []
+  parentingDelay: 0.1
 --- !u!61 &583322793
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16897,6 +17021,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -17429,6 +17555,13 @@ MonoBehaviour:
   isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
+  requireLeverAndPlayerNearby: 0
+  playerProximityRadius: 3
+  activationDelay: 0.5
+  useParentingMode: 1
+  glueControlTag: Glue
+  parentableTagsWhenGlued: []
+  parentingDelay: 0.1
 --- !u!50 &627594131
 Rigidbody2D:
   serializedVersion: 5
@@ -17575,6 +17708,13 @@ MonoBehaviour:
   isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
+  requireLeverAndPlayerNearby: 0
+  playerProximityRadius: 3
+  activationDelay: 0.5
+  useParentingMode: 1
+  glueControlTag: Glue
+  parentableTagsWhenGlued: []
+  parentingDelay: 0.1
 --- !u!61 &635189585
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -20463,6 +20603,14 @@ PrefabInstance:
       propertyPath: orthographic size
       value: 4.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5468438964453069193, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6043308168814221911, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
       value: 30.2
@@ -21335,6 +21483,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -21911,6 +22061,13 @@ MonoBehaviour:
   isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
+  requireLeverAndPlayerNearby: 0
+  playerProximityRadius: 3
+  activationDelay: 0.5
+  useParentingMode: 1
+  glueControlTag: Glue
+  parentableTagsWhenGlued: []
+  parentingDelay: 0.1
 --- !u!61 &781482651
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -23616,6 +23773,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -26018,7 +26177,15 @@ MonoBehaviour:
       the town that was in need of his help.'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -26293,7 +26460,15 @@ MonoBehaviour:
 '
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 1
     hintUIElement: {fileID: 0}
     displayDuration: 7
@@ -27003,7 +27178,15 @@ MonoBehaviour:
   - dialogText: 'Son : Sheesh ! It pretty tall up here !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -27463,6 +27646,13 @@ MonoBehaviour:
   isAnimMode: 1
   isLocked: 0
   requiredKeyID: 
+  requireLeverAndPlayerNearby: 0
+  playerProximityRadius: 3
+  activationDelay: 0.5
+  useParentingMode: 1
+  glueControlTag: Glue
+  parentableTagsWhenGlued: []
+  parentingDelay: 0.1
 --- !u!61 &1068194899
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -33330,7 +33520,15 @@ MonoBehaviour:
       go save the day !"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -35740,6 +35938,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -38659,7 +38859,15 @@ MonoBehaviour:
       !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -38670,7 +38878,15 @@ MonoBehaviour:
       be stopped\r\n"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -39244,7 +39460,15 @@ MonoBehaviour:
       many obstacles and trials along the way.'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -39254,7 +39478,15 @@ MonoBehaviour:
   - dialogText: 'Dad : How far away is the town bud ?'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -39265,7 +39497,15 @@ MonoBehaviour:
       in his heart. (Whisper) you have to roleplay dad !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -39276,7 +39516,15 @@ MonoBehaviour:
       obstacles and save the town !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -39926,6 +40174,7 @@ MonoBehaviour:
   deathType: 3
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!61 &1549179417
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -41084,7 +41333,15 @@ MonoBehaviour:
       hero'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -41095,7 +41352,15 @@ MonoBehaviour:
       look alike at all !"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -42463,7 +42728,15 @@ MonoBehaviour:
   - dialogText: 'Son : Well, if you stuck or make a mistake you can tell me anytime.'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -42473,7 +42746,15 @@ MonoBehaviour:
   - dialogText: 'Son : I will restart the level for you'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -42484,7 +42765,15 @@ MonoBehaviour:
       need to use it anyway."
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -42494,7 +42783,15 @@ MonoBehaviour:
   - dialogText: 'Son : We will see about that !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -42704,7 +43001,15 @@ MonoBehaviour:
   - dialogText: 'Son : This is the last puzzle before we reach the town'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -42716,7 +43021,15 @@ MonoBehaviour:
 '
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -43572,7 +43885,15 @@ MonoBehaviour:
   - dialogText: 'Son : This one you have to use the thread ! look for the hook !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -44557,7 +44878,15 @@ MonoBehaviour:
   - dialogText: Hm ! Not bad for the first try.
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -44568,7 +44897,15 @@ MonoBehaviour:
       to the way it was !"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -46523,7 +46860,15 @@ MonoBehaviour:
   - dialogText: 'Son : Yes we made it ! Let''s go to the town'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -46629,7 +46974,15 @@ MonoBehaviour:
   - dialogText: "Son : ( mimicking a lackey\u2019s voice) Ghrrr!!? I can't move !!."
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 1285374577}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -50196,7 +50549,15 @@ MonoBehaviour:
       you can stomp on it. But if you already knew that, all is good then (chuckles)"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -50319,6 +50680,8 @@ MonoBehaviour:
   activeRotation: 90
   inactiveRotation: 45
   rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -50550,7 +50913,15 @@ MonoBehaviour:
       Click to Shoot\""
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 1
     hintUIElement: {fileID: 0}
     displayDuration: 7
@@ -54736,7 +55107,15 @@ MonoBehaviour:
   - dialogText: 'Son : That was close ! good job hero !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -54746,7 +55125,15 @@ MonoBehaviour:
   - dialogText: 'Dad : well, Piece of cake'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -55438,7 +55825,15 @@ MonoBehaviour:
       go save the day !"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 2089471967}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -55448,7 +55843,15 @@ MonoBehaviour:
   - dialogText: 'Dad : All right Let''s go then'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -55777,7 +56180,15 @@ MonoBehaviour:
       land had appeared !'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
