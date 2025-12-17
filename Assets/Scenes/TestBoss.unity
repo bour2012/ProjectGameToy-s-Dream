@@ -303,7 +303,15 @@ MonoBehaviour:
       take apart.\n"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 1388148413}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -313,7 +321,15 @@ MonoBehaviour:
   - dialogText: 'Son: Hahaha'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -1862,6 +1878,10 @@ MonoBehaviour:
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
     - gameObject: {fileID: 1505240624}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 942200237}
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
@@ -7477,7 +7497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &942200238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7620,7 +7640,7 @@ Transform:
   m_LocalScale: {x: 0.3252, y: 0.3252, z: 0.3252}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2040728907}
+  m_Father: {fileID: 1180913606}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &943783897
 GameObject:
@@ -10212,6 +10232,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 942200241}
   - {fileID: 1591085596}
   - {fileID: 167338529}
   - {fileID: 24556599}
@@ -12317,7 +12338,15 @@ MonoBehaviour:
       take apart.\n"
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 1388148413}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -12327,7 +12356,15 @@ MonoBehaviour:
   - dialogText: 'Son: Hahaha'
     dialogVoice: {fileID: 0}
     focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 1
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
     shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
     isHint: 0
     hintUIElement: {fileID: 0}
     displayDuration: 5
@@ -17220,7 +17257,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 942200241}
   - {fileID: 805060224}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -365,7 +365,7 @@ public class GlueProjectile : MonoBehaviour
         }
 
         OrientTowards(surfaceNormal, stuckRotationOffset);
-
+        transform.position = contactPoint + (surfaceNormal * 0.1f);
         Rigidbody2D anchor = FindNearestBone(contactPoint);
         SetStickyMode(anchor);
         CreateImpactEffects();
