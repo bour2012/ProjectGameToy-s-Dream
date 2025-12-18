@@ -137,7 +137,7 @@ MonoBehaviour:
   headCollider: {fileID: 3827656043758538455}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 1048705
   groundCheckDistance: 1
   wallCheckDistance: 0.5
   deathEffectPrefab: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
@@ -155,6 +155,9 @@ MonoBehaviour:
   currentHealth: 0
   chaseMemoryDuration: 2
   usePatrolRange: 0
+  maxChaseHeightDifference: 2
+  stuckThreshold: 0.1
+  stuckWaitTime: 1.5
   patrolLeftOffset: -3
   patrolRightOffset: 3
   attackCooldown: 2
@@ -424,3 +427,4 @@ MonoBehaviour:
   deathType: 2
   showGizmo: 0
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0

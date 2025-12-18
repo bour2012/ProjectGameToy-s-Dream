@@ -4,13 +4,20 @@ using System.Collections;
 public class PatrollingEnemy : Enemy
 {
     // ▼▼▼ เพิ่ม State "Returning" ▼▼▼
-    private enum State { Idle, Patrolling, Chasing, Attacking, Returning }
+    private enum State { Idle, Patrolling, Chasing, Attacking, Returning , Stuck }
     private State currentState = State.Idle;
     // ▲▲▲ สิ้นสุดส่วนที่เพิ่ม ▲▲▲
 
     [Header("Behavior Settings")]
     public float chaseMemoryDuration = 2f;
     public bool usePatrolRange = false;
+    public float maxChaseHeightDifference = 2f; // สูง/ต่ำ เกินนี้จะไม่ไล่
+
+    [Header("Stuck Detection")]
+    public float stuckThreshold = 0.1f; // ระยะเคลื่อนที่ขั้นต่ำ
+    public float stuckWaitTime = 1.5f; // ติดอยู่นานเท่าไหร่ถึงจะเลิกเดิน
+    private Vector3 lastPosition;
+    private float stuckTimer = 0f;
 
     [Header("Patrol Offset (If UsePatrolRange is True)")]
     public float patrolLeftOffset = -3f;
@@ -50,25 +57,16 @@ public class PatrollingEnemy : Enemy
 
         // 3. คำนวณ step
         step = moveSpeed * Time.deltaTime;
-
+        CheckIfStuck();
         // --- State Machine Logic ---
         switch (currentState)
         {
-            case State.Idle:
-                HandleIdleState();
-                break;
-            case State.Patrolling:
-                HandlePatrolState();
-                break;
-            case State.Chasing:
-                HandleChaseState();
-                break;
-            case State.Attacking:
-                HandleAttackState();
-                break;
-            case State.Returning:
-                HandleReturnState();
-                break;
+            case State.Idle: HandleIdleState(); break;
+            case State.Patrolling: HandlePatrolState(); break;
+            case State.Chasing: HandleChaseState(); break;
+            case State.Attacking: HandleAttackState(); break;
+            case State.Returning: HandleReturnState(); break;
+            case State.Stuck: HandleStuckState(); break;
         }
     }
 
@@ -108,44 +106,82 @@ public class PatrollingEnemy : Enemy
             StopHorizontalMovement();
         }
     }
-
+    private void CheckIfStuck()
+    {
+        if (currentState == State.Chasing || currentState == State.Returning)
+        {
+            float distanceMoved = Vector3.Distance(transform.position, lastPosition);
+            if (distanceMoved < stuckThreshold * Time.deltaTime)
+            {
+                stuckTimer += Time.deltaTime;
+            }
+            else
+            {
+                stuckTimer = 0;
+            }
+            lastPosition = transform.position;
+        }
+        else
+        {
+            stuckTimer = 0;
+        }
+    }
     private void HandleChaseState()
     {
         GameObject target = DetectAndLockTarget();
+
         if (target != null)
         {
-            isChasing = true; // (เก็บไว้สำหรับ OnCollisionStay2D)
+            float heightDiff = Mathf.Abs(target.transform.position.y - transform.position.y);
+
+            // 1. ตรวจสอบว่าเป้าหมายอยู่สูงหรือต่ำเกินไปหรือไม่
+            if (heightDiff > maxChaseHeightDifference)
+            {
+                StopHorizontalMovement();
+                FaceTarget(target); // ยืนจ้องแทน
+                return;
+            }
+
+            // 2. ตรวจสอบว่าติดกำแพงหรือตกเหวหรือไม่
+            float directionX = Mathf.Sign(target.transform.position.x - transform.position.x);
+            if (stuckTimer >= stuckWaitTime || !CanMoveInDirection(directionX))
+            {
+                StopHorizontalMovement();
+                FaceTarget(target); // ยืนจ้อง
+                return;
+            }
+
+            isChasing = true;
             lastSeenTimer = 0f;
             FaceTarget(target);
 
-            if (isEngaged)
+            if (isEngaged && attackTimer <= 0)
             {
-                StopHorizontalMovement();
-                if (attackTimer <= 0)
-                {
-                    currentState = State.Attacking;
-                    StartCoroutine(AttackCoroutine(target));
-                }
+                currentState = State.Attacking;
+                StartCoroutine(AttackCoroutine(target));
             }
-            else
+            else if (!isEngaged)
             {
                 Chase(target);
             }
         }
-        else if ( target == null && usePatrolRange)// ถ้าไม่เจอเป้าหมาย
+        else
         {
-            isEngaged = false;
             lastSeenTimer += Time.deltaTime;
             if (lastSeenTimer >= chaseMemoryDuration)
             {
                 isChasing = false;
-                currentState = State.Returning; // <-- เปลี่ยนเป็น "กลับบ้าน"
+                isEngaged = false;
+                currentState = usePatrolRange ? State.Returning : State.Patrolling;
             }
         }
-        else
-            currentState = State.Patrolling;
     }
-
+    private void HandleStuckState()
+    {
+        StopHorizontalMovement();
+        // รอสักพัก หรือจนกว่าเป้าหมายจะหลุดระยะ
+        if (stuckTimer <= 0) currentState = State.Idle;
+    }
     private void HandleAttackState()
     {
         // Coroutine จะจัดการเปลี่ยน State กลับไปเป็น Chasing เมื่อโจมตีเสร็จ
@@ -154,38 +190,28 @@ public class PatrollingEnemy : Enemy
 
     private void HandleReturnState()
     {
-        // ถ้าเจอผู้เล่นอีกครั้งระหว่างทางกลับบ้าน -> ไล่ล่าทันที
         GameObject target = DetectAndLockTarget();
-        if (target != null)
-        {
-            currentState = State.Chasing;
-            return;
-        }
+        if (target != null) { currentState = State.Chasing; return; }
 
-        // คำนวณระยะทางถึงบ้าน
         float distanceToHome = Vector2.Distance(transform.position, patrolStartPos);
-
-        if (distanceToHome > 1f)
+        if (distanceToHome > 0.5f)
         {
-            // ยังไม่ถึงบ้าน -> เดินกลับบ้าน
             float direction = Mathf.Sign(patrolStartPos.x - transform.position.x);
-            if (CanMoveInDirection(direction))
+
+            // ถ้าทางกลับบ้านโดนตัดขาด (ตกเหว/ติดกำแพง) ให้หยุดแล้วเปลี่ยนเป็น Patrol แถวนี้แทน
+            if (!CanMoveInDirection(direction) || stuckTimer >= stuckWaitTime)
             {
-                FlipSprite(direction);
-              
-                    transform.position += Vector3.right * (direction * step);
-                
+                patrolStartPos = transform.position; // รีเซ็ตจุดเริ่มต้นใหม่ที่นี่
+                currentState = State.Patrolling;
+                return;
             }
-            else
-            {
-                StopHorizontalMovement(); // หยุดถ้าเจอทางตันระหว่างทางกลับ
-            }
+
+            FlipSprite(direction);
+            if (rb != null) rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
+            else transform.position += Vector3.right * (direction * step);
         }
         else
         {
-            // ถึงบ้านแล้ว -> กลับไป Idle
-            //transform.position = patrolStartPos;
-     
             currentState = State.Patrolling;
         }
     }
@@ -232,37 +258,21 @@ public class PatrollingEnemy : Enemy
     {
         float direction = movingRight ? 1f : -1f;
         FlipSprite(direction);
-
-        if (!usePatrolRange && !CanMoveInDirection(direction))
+        if (!CanMoveInDirection(direction))
         {
             movingRight = !movingRight;
             return;
         }
 
-        if (rb != null)
-        {
-            rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
-        }
-        else
-        {
-            transform.position += Vector3.right * (step * direction);
-        }
+        if (rb != null) rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
+        else transform.position += Vector3.right * (step * direction);
 
         if (usePatrolRange)
         {
             float leftBound = patrolStartPos.x + patrolLeftOffset;
             float rightBound = patrolStartPos.x + patrolRightOffset;
-
-            if (transform.position.x >= rightBound)
-            {
-                movingRight = false;
-                transform.position = new Vector3(rightBound, transform.position.y, transform.position.z);
-            }
-            else if (transform.position.x <= leftBound)
-            {
-                movingRight = true;
-                transform.position = new Vector3(leftBound, transform.position.y, transform.position.z);
-            }
+            if (transform.position.x >= rightBound) movingRight = false;
+            else if (transform.position.x <= leftBound) movingRight = true;
         }
     }
 
@@ -270,40 +280,24 @@ public class PatrollingEnemy : Enemy
     {
         if (target == null) return;
         float directionX = Mathf.Sign(target.transform.position.x - transform.position.x);
+        if (rb != null) rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);
+        else transform.position += Vector3.right * (directionX * step);
 
-        if (CanMoveInDirection(directionX))
-        {
-            if (rb != null)
-            {
-                rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);
-            }
-            else
-            {
-                transform.position += Vector3.right * (directionX * step);
-            }
-        }
-        
     }
 
     private bool CanMoveInDirection(float direction)
     {
+        Bounds bounds = col.bounds;
         Vector2 dirVec = (direction > 0) ? Vector2.right : Vector2.left;
 
-        // 1. ตรวจกำแพง (ยิงจากจุดเดียวกัน)
-        Vector2 wallCheckOrigin = (Vector2)transform.position + (dirVec * 0.5f);
-        RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, dirVec, wallCheckDistance, obstacleLayers);
+        // เช็คกำแพง (เพิ่มระยะเล็นน้อย 0.2f -> 0.5f)
+        Vector2 wallCheckOrigin = new Vector2(direction > 0 ? bounds.max.x : bounds.min.x, bounds.center.y);
+        RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, dirVec, 0.5f, obstacleLayers);
 
-        // 2. ตรวจพื้น (ยิงจากจุดเดียวกัน)
-        Vector2 groundCheckOrigin = (Vector2)transform.position + (dirVec * 0.5f);
-        RaycastHit2D groundHit = Physics2D.Raycast(groundCheckOrigin, Vector2.down, groundCheckDistance, groundLayer);
+        // เช็คพื้น (ยื่นจุดเช็คออกไปข้างหน้าตัวละครเล็กน้อย)
+        Vector2 groundCheckOrigin = new Vector2(direction > 0 ? bounds.max.x + 0.2f : bounds.min.x - 0.2f, bounds.min.y);
+        RaycastHit2D groundHit = Physics2D.Raycast(groundCheckOrigin, Vector2.down, 0.5f, groundLayer);
 
-#if UNITY_EDITOR
-        // วาด Debug Rays
-        Debug.DrawRay(wallCheckOrigin, dirVec * wallCheckDistance, wallHit.collider ? Color.red : Color.green);
-        Debug.DrawRay(groundCheckOrigin, Vector2.down * groundCheckDistance, groundHit.collider ? Color.blue : Color.yellow);
-#endif
-
-        // เงื่อนไขเดิม: ต้อง "ไม่เจอ" กำแพง และ "เจอ" พื้น
         return (wallHit.collider == null && groundHit.collider != null);
     }
 }
