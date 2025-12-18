@@ -1885,65 +1885,6 @@ MonoBehaviour:
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
-  - levelName: Level03
-    preTransitionDialogs: []
-    levelObjects:
-    - gameObject: {fileID: 2140330536}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1131724170}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1617678552}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1804399788}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1624906730}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 545361502}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1752122258}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1011421578}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1320411347}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1456721591}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 743376806}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 396474695}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1491904637}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1879568559}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
   - levelName: Level02
     preTransitionDialogs:
     - {fileID: 90423956}
@@ -2073,6 +2014,65 @@ MonoBehaviour:
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
     - gameObject: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+  - levelName: Level03
+    preTransitionDialogs: []
+    levelObjects:
+    - gameObject: {fileID: 2140330536}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1131724170}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1617678552}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1804399788}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1624906730}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 545361502}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1752122258}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1011421578}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1320411347}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1456721591}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 743376806}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 396474695}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1491904637}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1879568559}
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
@@ -2316,7 +2316,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2592376929119044878, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5174966760153331543, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4730,7 +4730,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &545361503
 Transform:
   m_ObjectHideFlags: 0
@@ -5372,7 +5372,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2064115881862371077, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3190200559895251839, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
       propertyPath: itemIcons.Array.size
@@ -5888,7 +5888,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &743376807
 Transform:
   m_ObjectHideFlags: 0
@@ -8589,7 +8589,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1011421579
 Transform:
   m_ObjectHideFlags: 0
@@ -9543,7 +9543,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2064115881862371077, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3190200559895251839, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
       propertyPath: itemIcons.Array.size
@@ -9776,7 +9776,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1131724171
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9907,7 +9907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4019485406932222969, guid: 893781a0ef9046649940843985601701, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11254,7 +11254,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1320411348
 Transform:
   m_ObjectHideFlags: 0
@@ -11944,7 +11944,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1456721592
 Transform:
   m_ObjectHideFlags: 0
@@ -13524,7 +13524,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1617678553
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14772,7 +14772,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1752122259
 Transform:
   m_ObjectHideFlags: 0
@@ -15801,7 +15801,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1879568560
 Transform:
   m_ObjectHideFlags: 0
@@ -17769,7 +17769,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &2140330537
 BoxCollider2D:
   m_ObjectHideFlags: 0
