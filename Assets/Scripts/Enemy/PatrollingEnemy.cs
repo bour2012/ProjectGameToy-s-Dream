@@ -191,29 +191,45 @@ public class PatrollingEnemy : Enemy
     private void HandleReturnState()
     {
         GameObject target = DetectAndLockTarget();
-        if (target != null) { currentState = State.Chasing; return; }
+        if (target != null)
+        {
+            currentState = State.Chasing;
+            return;
+        }
 
         float distanceToHome = Vector2.Distance(transform.position, patrolStartPos);
-        if (distanceToHome > 0.5f)
-        {
-            float direction = Mathf.Sign(patrolStartPos.x - transform.position.x);
 
-            // ถ้าทางกลับบ้านโดนตัดขาด (ตกเหว/ติดกำแพง) ให้หยุดแล้วเปลี่ยนเป็น Patrol แถวนี้แทน
-            if (!CanMoveInDirection(direction) || stuckTimer >= stuckWaitTime)
-            {
-                patrolStartPos = transform.position; // รีเซ็ตจุดเริ่มต้นใหม่ที่นี่
-                currentState = State.Patrolling;
-                return;
-            }
-
-            FlipSprite(direction);
-            if (rb != null) rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
-            else transform.position += Vector3.right * (direction * step);
-        }
-        else
+        // ถ้ากลับถึงบ้านแล้ว (ระยะห่างน้อยกว่า 0.5)
+        if (distanceToHome <= 0.5f)
         {
             currentState = State.Patrolling;
+            return;
         }
+
+        // คำนวณทิศทางกลับบ้าน
+        float direction = Mathf.Sign(patrolStartPos.x - transform.position.x);
+
+        // ตรวจสอบว่าทางกลับบ้านโดนตัดขาดหรือไม่
+        if (!CanMoveInDirection(direction) || stuckTimer >= stuckWaitTime)
+        {
+            // ไม่ต้องรีเซ็ต patrolStartPos; ให้มันหยุดเดิน (Idle) หรือพยายาม Patrol เท่าที่พื้นที่อำนวย
+            StopHorizontalMovement();
+
+            // ถ้าติดอยู่นาน ให้ลองเปลี่ยนไป Patrol ดู เผื่อว่าทิศทาง Patrol ปกติจะไปได้
+            if (stuckTimer >= stuckWaitTime)
+            {
+                currentState = State.Patrolling;
+                stuckTimer = 0f; // รีเซ็ตตัวนับติดขัด
+            }
+            return;
+        }
+
+        // การเคลื่อนที่กลับบ้าน
+        FlipSprite(direction);
+        if (rb != null)
+            rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
+        else
+            transform.position += Vector3.right * (direction * step);
     }
 
     // --- End State Handlers ---

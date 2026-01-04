@@ -125,6 +125,24 @@ public class BossController : Enemy
     public float returnToStartSpeed = 3f;
     private bool isReturningToStart = false;
 
+    [Header("Patrol Settings")]
+    //public float moveSpeed = 3f;
+    public float returnSpeed = 5f;
+    [Header("Patrol Area")]
+    [Tooltip("ระยะทางที่บินออกไปจากจุดเริ่มต้น (แกน X)")]
+    public float patrolRangeX = 5f;
+    [Tooltip("ความถี่ในการบินไปมา (ยิ่งเยอะยิ่งบินเร็ว)")]
+    public float patrolFrequency = 1f;
+
+    private Vector3 patrolStartPosition;
+    private bool isPatrolling = true; // เริ่มต้นให้บินลาดตระเวนเลยหรือไม่?
+    private bool isManualControlled = false; // when true another component is moving the boss
+    
+    // Guard point control
+    private bool isGuardingPoint = false;
+    private Vector3 guardTargetPoint;
+    private BossHarassment harassmentScript; // reference to harassment behavior
+
     [System.Serializable]
     public class BossPhaseData
     {
@@ -160,6 +178,8 @@ public class BossController : Enemy
         if (rb != null) rb.gravityScale = 0;
         audioSource = GetComponent<AudioSource>();
         bossSprite = GetComponentInChildren<SpriteRenderer>();
+        // find harassment script (used to disable attack behavior when guarding)
+        harassmentScript = GetComponent<BossHarassment>();
 
         if (phases == null || phases.Length == 0)
         {
@@ -210,6 +230,9 @@ public class BossController : Enemy
         levelManager = FindFirstObjectByType<LevelManager>();
         if (levelManager == null && showDebugLogs) Debug.LogWarning($"[{bossName}] LevelManager not found in scene (BossController cached reference)");
 
+        // cache patrol start position (use transform so editor placement is respected)
+        patrolStartPosition = transform.position;
+
         EnterPhase(0);
     }
 
@@ -252,6 +275,51 @@ public class BossController : Enemy
                 if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation timed out.");
                 // ResetGlueAccumulation();
                 // NOTE: glue reset is now performed by LevelManager during level transitions
+            }
+        }
+
+        // --- Movement Logic ---
+        if (!isCurrentlyFalling && !isGroundedFromFall && !isReturningToStart && !isManualControlled)
+        {
+            // Guard point behavior: boss moves to a designated guard point and stays there
+            if (isGuardingPoint)
+            {
+                if (Vector3.Distance(transform.position, guardTargetPoint) > 0.1f)
+                {
+                    Vector3 direction = (guardTargetPoint - transform.position).normalized;
+                    SetFacingDirection(direction);
+                    transform.position = Vector3.MoveTowards(transform.position, guardTargetPoint, returnSpeed * Time.deltaTime);
+                }
+                else
+                {
+                    // arrived: force face left and disable harassment while guarding
+                    if (bossSprite != null)
+                    {
+                        bossSprite.flipX = false; // flip to left; invert if your art faces left by default
+                    }
+                    if (harassmentScript != null && harassmentScript.enabled)
+                    {
+                        harassmentScript.enabled = false;
+                        if (showDebugLogs) Debug.Log($"[{bossName}] Harassment disabled while guarding.");
+                    }
+                }
+            }
+            else if (isPatrolling)
+            {
+                float offset = Mathf.Sin(Time.time * patrolFrequency) * patrolRangeX;
+                float nextX = patrolStartPosition.x + offset;
+                float dirX = nextX - transform.position.x;
+                SetFacingDirection(new Vector2(dirX, 0f));
+                transform.position = patrolStartPosition + new Vector3(offset, 0f, 0f);
+            }
+            else
+            {
+                if (Vector3.Distance(transform.position, patrolStartPosition) > 0.01f)
+                {
+                    Vector3 direction = (patrolStartPosition - transform.position).normalized;
+                    SetFacingDirection(direction);
+                    transform.position = Vector3.MoveTowards(transform.position, patrolStartPosition, returnSpeed * Time.deltaTime);
+                }
             }
         }
     }
@@ -645,20 +713,159 @@ public class BossController : Enemy
     /// </summary>
     public void ResetGlueAccumulation()
     {
+        
         currentGlueHitCount = 0;
         glueAccumulationTimer = 0f;
         glueFullTriggered = false;
 
-        if (glueMeter != null)
-            glueMeter.SetCurrentGlue(0);
-
+        // 2. รีเซ็ต UI และ Effect
+        if (glueMeter != null) glueMeter.SetCurrentGlue(0);
         if (glueAccumulationEffect != null)
         {
             glueAccumulationEffect.Stop();
             glueAccumulationEffect.Clear();
         }
 
-        if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation reset");
+        if (showDebugLogs) Debug.Log($"[{bossName}] Glue Reset -> Returning to Start Position.");
+
+
+        isCurrentlyFalling = false;
+        isGroundedFromFall = false;
+        isGuardingPoint = false; // ยกเลิกการเฝ้าจุดทันที
+
+        // B. สั่งบินกลับ
+        isReturningToStart = true;
+
+        // C. ตั้งค่า Patrol ให้เริ่มที่ "จุดเกิด" (ไม่ใช่จุดที่ยืนอยู่)
+        isPatrolling = true;
+
+        // 🔥 แก้ตรงนี้: ใช้ startingPosition (จุดเกิดแรกสุด) เสมอ
+        // (ห้ามใช้ transform.position หรือคำนวณ Sin offset ตรงนี้ เพราะจะทำให้จุดเพี้ยน)
+      
+
+        // D. ยกเลิกการนับเวลานอน
+        if (groundedCoroutine != null)
+        {
+            StopCoroutine(groundedCoroutine);
+            groundedCoroutine = null;
+        }
+
+        // E. รีเซ็ตฟิสิกส์
+        if (rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        // F. คืนค่าอนิเมชั่น
+        currentSpeedMultiplier = 1f;
+        if (animator != null)
+        {
+            animator.speed = 1f;
+            animator.SetBool("Fall", false);
+        }
+
+        // G. รีเซ็ต Harassment
+        TakeManualControl(false);
+        if (harassmentScript != null)
+        {
+            harassmentScript.enabled = true;
+            harassmentScript.ResetAI();
+        }
+        patrolStartPosition = startingPosition;
+    }
+
+    // ฟังก์ชันนี้จะถูกเรียกจาก Lever หรือระบบอื่นๆ เพื่อเปิด/ปิดโหมดลาดตระเวน
+    public void SetPatrolState(bool active)
+    {
+        if (isGuardingPoint) return; // ถ้าเฝ้าจุดอยู่ อย่าเพิ่งสนใจ Patrol state จากภายนอก
+        isPatrolling = active;
+    }
+    
+    // วาดเส้นให้เห็นระยะในหน้า Scene
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Vector3 startPos = (Application.isPlaying ? patrolStartPosition : transform.position);
+        Gizmos.DrawLine(startPos - Vector3.right * patrolRangeX, startPos + Vector3.right * patrolRangeX);
+        
+        if (isGuardingPoint)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(guardTargetPoint, 0.5f);
+            Gizmos.DrawLine(transform.position, guardTargetPoint);
+        }
+    }
+
+    // New API: send the boss to guard a specific world point
+    public void GoToGuardPoint(Vector3 point)
+    {
+        isGuardingPoint = true;
+        isPatrolling = false;
+        guardTargetPoint = point;
+        // disable harassment immediately so boss stops aggressive behavior while moving to guard
+        if (harassmentScript != null && harassmentScript.enabled)
+        {
+            harassmentScript.enabled = false;
+            if (showDebugLogs) Debug.Log($"[{bossName}] Moving to Guard Point & Harassment Disabled.");
+        }
+        else if (showDebugLogs)
+        {
+            Debug.Log($"[{bossName}] Moving to Guard Point.");
+        }
+    }
+
+    // Cancel guarding and resume patrol (smoothly)
+    public void CancelGuardPoint()
+    {
+        isGuardingPoint = false;
+        isPatrolling = true;
+        // re-enable harassment when canceling guard
+        if (harassmentScript != null && !harassmentScript.enabled)
+        {
+            harassmentScript.enabled = true;
+        }
+
+        float currentOffset = Mathf.Sin(Time.time * patrolFrequency) * patrolRangeX;
+        patrolStartPosition = transform.position - new Vector3(currentOffset, 0f, 0f);
+        if (showDebugLogs) Debug.Log($"[{bossName}] Cancelled Guard Point. Harassment Enabled. Resuming Patrol.");
+    }
+
+    /// <summary>
+    /// Flip / face the boss sprite according to horizontal direction.
+    /// Positive X => face right; Negative X => face left.
+    /// This uses SpriteRenderer.flipX. Adjust if your art faces left by default.
+    /// </summary>
+    public void SetFacingDirection(Vector2 direction)
+    {
+        if (bossSprite == null) return;
+        if (Mathf.Abs(direction.x) < 0.001f) return;
+        // If direction.x > 0 => moving right => don't flip. If < 0 => moving left => flip.
+        bossSprite.flipX = direction.x > 0f;
+    }
+
+    /// <summary>
+    /// Allow external components to take manual control of boss movement.
+    /// When manual control is enabled, BossController will not run its patrol/return movement.
+    /// </summary>
+    public void TakeManualControl(bool manual)
+    {
+        isManualControlled = manual;
+        // if manual control starts, stop internal patrolling
+        if (manual)
+        {
+            isPatrolling = false;
+        }
+        else
+        {
+            // when releasing manual control, resume patrolling and reset patrol start
+            isPatrolling = true;
+            // compute patrol center so resuming the sinusoidal patrol does not cause a sudden teleport
+            // currentOffset = sin(t)*range => patrolStart = currentPosition - offset
+            float currentOffset = Mathf.Sin(Time.time * patrolFrequency) * patrolRangeX;
+            patrolStartPosition = transform.position - new Vector3(currentOffset, 0f, 0f);
+        }
     }
 
     public override void TakeDamage(float damage)
@@ -879,8 +1086,8 @@ public class BossController : Enemy
             }
         }
 
-        // Update startingPosition so the boss will use this point as its "home" when recovering from fall
-        if (rb != null) startingPosition = rb.position; else startingPosition = transform.position;
+        //// Update startingPosition so the boss will use this point as its "home" when recovering from fall
+        //if (rb != null) startingPosition = rb.position; else startingPosition = transform.position;
     }
 
     /// <summary>

@@ -267,26 +267,26 @@ public class LevelManager : MonoBehaviour
     {
         if (boss != null)
         {
-            // Disable boss movement/AI components
-            var bossController = boss.GetComponent<BossController>();
-            if (bossController != null)
-            {
-                bossController.enabled = false;
-            }
+            //// Disable boss movement/AI components
+            //var bossController = boss.GetComponent<BossController>();
+            //if (bossController != null)
+            //{
+            //    bossController.enabled = false;
+            //}
 
-            var bossAI = boss.GetComponent<BossAttackAI>();
-            if (bossAI != null)
-            {
-                bossAI.enabled = false;
-            }
+            //var bossAI = boss.GetComponent<BossAttackAI>();
+            //if (bossAI != null)
+            //{
+            //    bossAI.enabled = false;
+            //}
 
-            // Stop boss movement
-            var bossRb = boss.GetComponent<Rigidbody2D>();
-            if (bossRb != null)
-            {
-                bossRb.linearVelocity = Vector2.zero;
-                bossRb.angularVelocity = 0f;
-            }
+            //// Stop boss movement
+            //var bossRb = boss.GetComponent<Rigidbody2D>();
+            //if (bossRb != null)
+            //{
+            //    bossRb.linearVelocity = Vector2.zero;
+            //    bossRb.angularVelocity = 0f;
+            //}
 
             // Reset glue meter
             if (bossGlueMeter != null)

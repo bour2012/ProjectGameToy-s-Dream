@@ -24,6 +24,14 @@ public class Lever : MonoBehaviour, IInteractable
     [Tooltip("ผู้คุมกฎของ Puzzle (ถ้ามี)")]
     public LeverPuzzleManager puzzleManager;
 
+    [Header("Boss Control")]
+    [Tooltip("ลากตัวบอสที่มีสคริปต์ BossController มาใส่")]
+    public BossController bossToControl;
+    
+    // ถ้ามีกำหนด Guard Point: เมื่อ Lever เปิด บอสจะไปเฝ้าจุดนี้
+    [Tooltip("ถ้ามีค่านี้ใส่ไว้: เมื่อ Lever เปิด บอสจะบินไปเฝ้าที่จุดนี้ / ถ้าปิด บอสจะกลับไปลาดตระเวน")]
+    public Transform guardPointTransform; 
+
     [Header("Visuals & Animation (Animation Mode)")]
     [Tooltip("Animator ของคันโยก (ใช้ในโหมด Animation)")]
     public Animator leverAnimator;
@@ -56,6 +64,8 @@ public class Lever : MonoBehaviour, IInteractable
             handle.localRotation = Quaternion.Euler(0, 0, initialRotation);
         }
         // ถ้าเป็นโหมด Animation, Animator จะจัดการ Sprite เริ่มต้นเองจาก Default State
+        // ตั้งค่าบอสตอนเริ่มเกม
+        UpdateBossState();
     }
 
     #region IInteractable Implementation
@@ -95,6 +105,9 @@ public class Lever : MonoBehaviour, IInteractable
         {
             platform.Toggle(isActive);
         }
+
+        // สั่งงานบอส (ถ้ามี)
+        UpdateBossState();
 
         // 3) ถ้าเป็นการกดโดยผู้เล่น ให้สั่ง linked levers ให้ทำงานจากระบบ
         if (isPlayerAction && linkedLevers != null)
@@ -145,6 +158,31 @@ public class Lever : MonoBehaviour, IInteractable
     {
         if (operationCoroutine != null) StopCoroutine(operationCoroutine);
         operationCoroutine = StartCoroutine(ToggleLeverSequence(false));
+    }
+
+    // ฟังก์ชันย่อยสำหรับสั่งบอส (เรียกใช้ทั้งตอน Start และตอนสับ)
+    private void UpdateBossState()
+    {
+        if (bossToControl != null)
+        {
+            if (guardPointTransform != null)
+            {
+                // Lever Active -> ไปเฝ้าจุดนี้, Lever Inactive -> ยกเลิกเฝ้า
+                if (isActive)
+                {
+                    bossToControl.GoToGuardPoint(guardPointTransform.position);
+                }
+                else
+                {
+                    bossToControl.CancelGuardPoint();
+                }
+            }
+            else
+            {
+                // ถ้าไม่มี Guard Point ใส่ไว้ ให้ใช้ Logic เดิม (ถ้าต้องการ)
+                // bossToControl.SetPatrolState(!isActive);
+            }
+        }
     }
 
     // Coroutine สำหรับโหมด Rotation (เหมือนเดิม)
