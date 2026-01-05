@@ -289,11 +289,6 @@ public class DialogManager : MonoBehaviour
         {
             if (dialogBox != null) dialogBox.SetActive(false);
             data.onLineStart?.Invoke();
-            if (data.dialogVoice != null && audioSource != null)
-            {
-                audioSource.clip = data.dialogVoice;
-                audioSource.Play();
-            }
             StartCoroutine(AutoAdvanceCoroutine(0.1f));
             return;
         }
@@ -309,11 +304,6 @@ public class DialogManager : MonoBehaviour
             {
                 // fallback: แสดงข้อความสั้นๆ ใน dialogBox ถ้าไม่มี hintUIElement
                 if (dialogBox != null && !dialogBox.activeSelf) dialogBox.SetActive(true);
-                if (data.dialogVoice != null && audioSource != null)
-                {
-                    audioSource.clip = data.dialogVoice;
-                    audioSource.Play();
-                }
                 data.onLineStart?.Invoke();
                 dialogText.text = data.dialogText;
                 StartCoroutine(AutoAdvanceCoroutine(Mathf.Max(0.1f, data.displayDuration)));
@@ -325,18 +315,12 @@ public class DialogManager : MonoBehaviour
 
         if (dialogBox != null && !dialogBox.activeSelf) dialogBox.SetActive(true);
 
-        if (data.dialogVoice != null && audioSource != null)
-        {
-            audioSource.clip = data.dialogVoice;
-            audioSource.Play();
-        }
-
         data.onLineStart?.Invoke();
 
         if (useTypewriterEffect)
         {
             StopTypewriter();
-            typewriterCoroutine = StartCoroutine(TypewriterEffect(data.dialogText));
+            typewriterCoroutine = StartCoroutine(TypewriterEffect(data));
         }
         else
         {
@@ -374,11 +358,7 @@ public class DialogManager : MonoBehaviour
 
         data.onLineStart?.Invoke();
 
-        if (data.dialogVoice != null && audioSource != null)
-        {
-            audioSource.clip = data.dialogVoice;
-            audioSource.Play();
-        }
+        // Note: per-letter voice playback handled by TypewriterEffect via VoiceProfile.
 
         float dur = Mathf.Max(0.01f, data.displayDuration);
         float t = 0f;
@@ -447,17 +427,101 @@ public class DialogManager : MonoBehaviour
         isTyping = false;
     }
 
-    private IEnumerator TypewriterEffect(string text)
+    private IEnumerator TypewriterEffect(DialogData data)
     {
         isTyping = true;
         dialogText.text = "";
-        foreach (char c in text)
+
+        if (string.IsNullOrEmpty(data.dialogText))
         {
+            isTyping = false;
+            if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
+            yield break;
+        }
+
+        char[] characters = data.dialogText.ToCharArray();
+        for (int i = 0; i < characters.Length; i++)
+        {
+            char c = characters[i];
             dialogText.text += c;
+
+            // If a VoiceProfile is assigned, play the mapped letter sound (cuts previous clip)
+            if (data.currentVoice != null)
+            {
+                PlayLetterSound(c, data);
+            }
+            else if (data.typingSound != null && c != ' ')
+            {
+                int freq = Mathf.Max(1, data.playSoundFrequency);
+                if (i % freq == 0)
+                {
+                    PlayTypingSound(data);
+                }
+            }
+
             yield return new WaitForSeconds(typewriterSpeed);
         }
+
         isTyping = false;
         if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
+    }
+
+    private void PlayTypingSound(DialogData data)
+    {
+        if (audioSource == null || data == null || data.typingSound == null) return;
+
+        float originalPitch = audioSource.pitch;
+        if (data.randomizePitch)
+        {
+            audioSource.pitch = Random.Range(data.pitchRange.x, data.pitchRange.y);
+        }
+        else
+        {
+            audioSource.pitch = 1f;
+        }
+
+        audioSource.PlayOneShot(data.typingSound);
+
+        audioSource.pitch = originalPitch;
+    }
+
+    // Play a letter-mapped sound from the VoiceProfile (cuts previous clip immediately)
+    private void PlayLetterSound(char c, DialogData data)
+    {
+        AudioSource src = audioSource != null ? audioSource : GetComponent<AudioSource>();
+        if (src == null || data == null) return;
+
+        // ---------------------------------------------------------
+        // Case 1: VoiceProfile present -> play A-Z mapped sound (cuts previous clip)
+        // ---------------------------------------------------------
+        if (data.currentVoice != null && data.currentVoice.alphabetSounds != null && data.currentVoice.alphabetSounds.Length > 0)
+        {
+            int index = char.ToUpper(c) - 65;
+            if (index < 0 || index >= 26) index = 26;
+
+            if (index < data.currentVoice.alphabetSounds.Length)
+            {
+                AudioClip clip = data.currentVoice.alphabetSounds[index];
+                if (clip != null)
+                {
+                    src.clip = clip;
+                    src.pitch = 1f;
+                    src.Play();
+                }
+            }
+        }
+        // ---------------------------------------------------------
+        // Case 2: No VoiceProfile -> fallback to typingSound (one-shot, respects pitch randomization)
+        // ---------------------------------------------------------
+        else if (data.typingSound != null)
+        {
+            if (data.randomizePitch)
+                src.pitch = Random.Range(data.pitchRange.x, data.pitchRange.y);
+            else
+                src.pitch = 1f;
+
+            src.PlayOneShot(data.typingSound);
+        }
     }
 
     private IEnumerator AutoAdvanceCoroutine(float delayTime = -1f)

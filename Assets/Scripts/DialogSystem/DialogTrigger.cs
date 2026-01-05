@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Events;
 using System.Collections;
 
@@ -8,7 +9,25 @@ public class DialogData
 {
     [TextArea(2, 5)]
     public string dialogText;
-    public AudioClip dialogVoice;
+    [Header("Audio Settings")]
+    [FormerlySerializedAs("dialogVoice")]
+    public VoiceProfile currentVoice; // ลากไฟล์ Voice Profile ที่สร้างในข้อ 1 มาใส่ตรงนี้
+
+    // --- ส่วนที่เพิ่มใหม่สำหรับ Typewriter Sound ---
+    [Header("Typewriter Sound Settings")]
+    [Tooltip("เสียง Blip ที่จะดังตอนตัวอักษรเด้งขึ้นมา")]
+    public AudioClip typingSound;
+
+    [Tooltip("เล่นเสียงทุกๆ กี่ตัวอักษร (1=ทุกตัว, 2=ทุกๆ 2 ตัว เพื่อไม่ให้หนวกหูเกินไป)")]
+    [Range(1, 5)]
+    public int playSoundFrequency = 2;
+
+    [Tooltip("สุ่มความสูงต่ำของเสียงเพื่อให้ดูมีชีวิตชีวา (True = สไตล์ Undertale)")]
+    public bool randomizePitch = true;
+
+    [Tooltip("ช่วงความแปรปรวนของ Pitch (เช่น 0.8 ถึง 1.2)")]
+    public Vector2 pitchRange = new Vector2(0.9f, 1.1f);
+    // ------------------------------------------
 
     [Header("Camera Control")]
     public Transform focusTarget;
