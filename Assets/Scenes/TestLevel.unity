@@ -189,11 +189,17 @@ MonoBehaviour:
   - {fileID: 728836607}
   - {fileID: 1533972293}
   interactPrompt: {fileID: 1460490343}
+  returnKey: 113
   progressPanel: {fileID: 2091507826}
   progressText: {fileID: 1320402529}
   progressBar: {fileID: 800844438}
   craftingEffect: {fileID: 0}
   craftingSound: {fileID: 0}
+  craftCompleteSfx: {fileID: 0}
+  craftCompleteVolume: 1
+  onPickup:
+    m_PersistentCalls:
+      m_Calls: []
   gameManager: {fileID: 0}
 --- !u!212 &3324452
 SpriteRenderer:
@@ -395,7 +401,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -713,6 +720,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 147364327}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 8, y: 9, z: 0}
@@ -722,6 +734,9 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
+  isLocked: 0
+  requiredKeyID: 
 --- !u!4 &147364327
 Transform:
   m_ObjectHideFlags: 0
@@ -2357,7 +2372,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2798,6 +2813,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 340665057}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 10, y: 9, z: 0}
@@ -2807,6 +2827,9 @@ MonoBehaviour:
   rotationSpeed: 0
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
+  isLocked: 0
+  requiredKeyID: 
 --- !u!4 &340665057
 Transform:
   m_ObjectHideFlags: 0
@@ -3171,6 +3194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 395634901}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: -3.95, y: 4, z: 0}
@@ -3180,6 +3208,9 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 90
   isRotationMode: 1
+  isAnimMode: 0
+  isLocked: 0
+  requiredKeyID: 
 --- !u!61 &395634900
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4090,12 +4121,18 @@ MonoBehaviour:
   crosshair: {fileID: 288623611}
   crosshairSprite: {fileID: 288623610}
   playerMovement: {fileID: 459519735}
+  maxRopeLength: 20
+  minRopeLength: 2
+  ropeAdjustSpeed: 5
   ropeRenderer: {fileID: 459519732}
   ropeLayerMask:
     serializedVersion: 2
     m_Bits: 128
   ropeMaxCastDistance: 20
+  ropeStandardDistance: 5
   respectGameManagerState: 1
+  shootAnimationDuration: 0.5
+  shootRopeTriggerName: ShootRope
 --- !u!232 &459519734
 DistanceJoint2D:
   m_ObjectHideFlags: 0
@@ -4133,12 +4170,17 @@ MonoBehaviour:
   airControl: 0.5
   maxAirSpeed: 2
   swingForce: 4
+  stompCheck: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 1152
   rayLength: 0.1
+  jumpForce: 0
   wallCheckDistance: 0.2
   wallCheckRadius: 0.55
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
   ladderLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -4146,8 +4188,17 @@ MonoBehaviour:
   playerLayerNumber: 10
   groundLayerNumber: 9
   wallLayerNumber: 11
+  firePoint: {fileID: 0}
+  firePointOffsetRight: {x: 0.5, y: 0}
+  firePointOffsetLeft: {x: -0.5, y: 0}
+  respawnDialogDelay: 1
+  craftingAnimatorBool: IsCrafting
+  jumpSfx: {fileID: 0}
+  jumpSfxVolume: 1
+  walkSfx: {fileID: 0}
   isSwinging: 0
   ropeHook: {x: 0, y: 0}
+  isClimbing: 0
 --- !u!114 &459519736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4270,7 +4321,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4334,18 +4385,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fea803446702d4c40baa23aca7696a67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceToPush: 0.8
+  detectionDistance: 1.5
   boxMask:
     serializedVersion: 2
     m_Bits: 1539
   pushKey: 101
+  detectionWidth: 0.8
+  detectionHeight: 1.2
+  minDistanceToBox: 0.3
   pushIndicator: {fileID: 0}
-  raycastColor: {r: 1, g: 0, b: 0, a: 1}
-  showDebugRay: 1
+  gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  showDebugGizmos: 1
   audioSource: {fileID: 0}
   grabSound: {fileID: 0}
   releaseSound: {fileID: 0}
   maintainLastDirection: 1
+  onPickup:
+    m_PersistentCalls:
+      m_Calls: []
+  anim: {fileID: 0}
 --- !u!114 &459519743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4364,6 +4422,7 @@ MonoBehaviour:
   maxShootingRange: 10
   shootCooldown: 3
   trajectoryLine: {fileID: 836488544}
+  trajectoryAimFactor: 1
   trajectoryPoints: 20
   trajectoryTimeStep: 0.1
   colliderLayers:
@@ -4744,6 +4803,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fef5fe9ec7cb921458da6f9ea3015fd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onSlowApplied:
+    m_PersistentCalls:
+      m_Calls: []
+  headCollider: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  groundCheckDistance: 1
+  wallCheckDistance: 0.5
+  deathEffectPrefab: {fileID: 0}
+  deathDuration: 2
   enemyName: 
   maxHealth: 100
   moveSpeed: 2
@@ -4754,12 +4824,11 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 128
+  currentHealth: 0
   fakeDollLayer:
     serializedVersion: 2
     m_Bits: 512
   possessRange: 1
-  wallCheckDistance: 0.5
-  groundCheckDistance: 1
   chaseCooldown: 2
   possessedDollPrefab: {fileID: 5425856077105691806, guid: 330b94865ba8ee340b990c40e968426b, type: 3}
 --- !u!50 &596999884
@@ -4849,7 +4918,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4942,17 +5011,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7abde79f2aeeb0e44b231d5ae68f5cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mode: 0
   handle: {fileID: 610823161}
   activeRotation: 90
   inactiveRotation: 45
+  rotationSpeed: 5
+  linkedLevers: []
+  puzzleManager: {fileID: 0}
+  leverAnimator: {fileID: 0}
+  activateTriggerName: Activate
+  deactivateTriggerName: Deactivate
+  animationDuration: 0.5
   isActive: 0
   platform: {fileID: 395634899}
-  interactionRange: 0.9
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  showDebugRange: 1
-  interactionUI: {fileID: 0}
+  activatePrompt: '[E] to Activate'
+  deactivatePrompt: '[E] to Deactivate'
 --- !u!61 &610823163
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5578,7 +5651,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8191,7 +8264,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -8688,6 +8762,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultCheckpoint: {fileID: 0}
   showCheckpointDebugInfo: 1
+  resetToLastCheckpoint: 1
   currentState: 0
   player: {fileID: 459519741}
   playerController: {fileID: 0}
@@ -8704,7 +8779,9 @@ MonoBehaviour:
     totalCrafted: 0
     lastCraftTime: 0
     lastToolUsed: 0
+  dialogIDToPlayOnRespawn: 
   showDebugInfo: 1
+  previousState: 0
 --- !u!4 &1143092532
 Transform:
   m_ObjectHideFlags: 0
@@ -8938,11 +9015,17 @@ MonoBehaviour:
   iconHolder: {fileID: 1697102871}
   itemIcons: []
   interactPrompt: {fileID: 78495006}
+  returnKey: 113
   progressPanel: {fileID: 1356979023}
   progressText: {fileID: 265749484}
   progressBar: {fileID: 876405338}
   craftingEffect: {fileID: 0}
   craftingSound: {fileID: 0}
+  craftCompleteSfx: {fileID: 0}
+  craftCompleteVolume: 1
+  onPickup:
+    m_PersistentCalls:
+      m_Calls: []
   gameManager: {fileID: 0}
 --- !u!212 &1187265824
 SpriteRenderer:
@@ -9570,6 +9653,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1254969017}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: 17.44, y: -1.79, z: 0}
@@ -9579,6 +9667,9 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 90
   isRotationMode: 0
+  isAnimMode: 0
+  isLocked: 0
+  requiredKeyID: 
 --- !u!61 &1254969020
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9830,7 +9921,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -11159,6 +11251,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 273b55415e935fb4faa3694ae5d0bc6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onSlowApplied:
+    m_PersistentCalls:
+      m_Calls: []
+  headCollider: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  groundCheckDistance: 1
+  wallCheckDistance: 0.5
+  deathEffectPrefab: {fileID: 0}
+  deathDuration: 2
   enemyName: 
   maxHealth: 100
   moveSpeed: 2
@@ -11169,15 +11272,13 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 0
-  chaseCooldown: 1
+  currentHealth: 0
+  chaseMemoryDuration: 2
   usePatrolRange: 0
   patrolLeftOffset: -3
   patrolRightOffset: 3
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  wallCheckDistance: 0.5
-  groundCheckDistance: 1
+  attackCooldown: 2
+  attackDuration: 1
 --- !u!50 &1459741115
 Rigidbody2D:
   serializedVersion: 5
@@ -11265,7 +11366,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11324,6 +11425,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fef5fe9ec7cb921458da6f9ea3015fd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onSlowApplied:
+    m_PersistentCalls:
+      m_Calls: []
+  headCollider: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  groundCheckDistance: 1
+  wallCheckDistance: 0.5
+  deathEffectPrefab: {fileID: 0}
+  deathDuration: 2
   enemyName: 
   maxHealth: 100
   moveSpeed: 2
@@ -11334,12 +11446,11 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 0
+  currentHealth: 0
   fakeDollLayer:
     serializedVersion: 2
     m_Bits: 0
   possessRange: 1
-  wallCheckDistance: 0.5
-  groundCheckDistance: 1
   chaseCooldown: 2
   possessedDollPrefab: {fileID: 0}
 --- !u!1 &1460490343
@@ -11403,7 +11514,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -13744,6 +13856,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  platformAnimator: {fileID: 0}
+  openAnimationName: PlatformOpen
+  closeAnimationName: PlatformClose
+  idleCloseAnimationName: PlatformIdleClose
+  idleOpenAnimationName: PlatformIdleOpen
   platform: {fileID: 1861404738}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 1.76, y: 5, z: 0}
@@ -13753,6 +13870,9 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
+  isAnimMode: 0
+  isLocked: 0
+  requiredKeyID: 
 --- !u!61 &1861404737
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14753,13 +14873,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a5cb9ca4fca4145a86ce8fc69e9a4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 0
   itemType: 0
   itemAmount: 1
-  interactionDistance: 2
+  keyID: 
+  itemID: 
   itemVisual: {fileID: 0}
   collectEffect: {fileID: 0}
   collectSound: {fileID: 0}
-  interactPrompt: {fileID: 0}
 --- !u!1 &2084248515
 GameObject:
   m_ObjectHideFlags: 0

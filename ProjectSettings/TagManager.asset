@@ -70,8 +70,17 @@ TagManager:
   - name: Background6
     uniqueID: 922651323
     locked: 0
+  - name: Cloud
+    uniqueID: 3336057791
+    locked: 0
+  - name: Roof
+    uniqueID: 1072846573
+    locked: 0
   - name: Background7
     uniqueID: 2493553053
+    locked: 0
+  - name: Player
+    uniqueID: 2436084343
     locked: 0
   - name: Background8
     uniqueID: 2560520295
