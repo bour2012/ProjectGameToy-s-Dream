@@ -13,6 +13,8 @@ TagManager:
   - EnemyProjectile
   - LaserBlocker
   - BossFireBarrier
+  - Glue
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -35,8 +37,8 @@ TagManager:
   - NoPush
   - EnemyFly
   - Platform
-  - 
-  - 
+  - Laser
+  - Glue
   - 
   - 
   - 

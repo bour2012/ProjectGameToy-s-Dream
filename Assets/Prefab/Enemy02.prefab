@@ -150,6 +150,7 @@ MonoBehaviour:
   deathType: 2
   showGizmo: 0
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!1 &4116548785231377065
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +380,7 @@ MonoBehaviour:
     m_Bits: 576
   obstacleLayers:
     serializedVersion: 2
-    m_Bits: 1152
+    m_Bits: 1049728
   currentHealth: 0
   fakeDollLayer:
     serializedVersion: 2

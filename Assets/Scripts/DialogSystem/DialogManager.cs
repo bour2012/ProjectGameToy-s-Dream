@@ -1,41 +1,50 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DialogManager : MonoBehaviour
 {
     public static DialogManager Instance;
 
-    [Header("UI")]
+    // ... (ตัวแปร Header อื่นๆ เหมือนเดิม) ...
+    [Header("UI Components")]
     public GameObject dialogBox;
     public TextMeshProUGUI dialogText;
+    public CanvasGroup fadePanelCanvasGroup;
 
     [Header("Audio")]
     public AudioSource audioSource;
 
     [Header("Camera")]
-    [Tooltip("ลาก VCam พิเศษสำหรับ Dialog (VCam_DialogFocus) มาใส่ที่นี่")]
     public CinemachineCamera dialogCamera;
-    [Tooltip("Priority ที่จะใช้เมื่อกล้อง Dialog ทำงาน")]
     [SerializeField] private int dialogCameraPriority = 100;
 
-    private DialogTrigger currentOriginator;
+    // [เพิ่มใหม่] ค่าความคลาดเคลื่อนที่ยอมรับได้ว่า "กล้องถึงแล้ว" (หน่วย Unity Unit ต่อเฟรม)
+    [SerializeField] private float cameraMovementThreshold = 0.01f;
+
+    private CinemachinePositionComposer positionComposer;
 
     [Header("Text Animation")]
     public bool useTypewriterEffect = false;
     public float typewriterSpeed = 0.05f;
-    private Coroutine typewriterCoroutine;
 
+    private float defaultLensSize;
+    private Coroutine zoomCoroutine;
+    private Coroutine typewriterCoroutine;
+    private DialogTrigger currentOriginator;
     private DialogData[] currentSequence;
     private int currentIndex = 0;
     private bool isDialogActive = false;
-    private bool isShowingHint = false;
-    private bool shouldFreezePlayer;
     private bool isTyping = false;
+    private bool isTransitioning = false;
+    private bool isShowingHint = false;
     private bool autoAdvance = false;
     private float autoAdvanceDelay = 2f;
+
+    // [เพิ่มใหม่] ตัวแปรเช็คว่ากำลังรอกล้องอยู่ไหม
+    private bool isWaitingForCamera = false;
 
     void Awake()
     {
@@ -44,72 +53,54 @@ public class DialogManager : MonoBehaviour
 
     private void Start()
     {
-        FindDialogComponents();
-        if (dialogBox != null)
-        {
-            dialogBox.SetActive(false);
-        }
-        // ทำให้แน่ใจว่ากล้อง Dialog ไม่ทำงานตอนเริ่มเกม
+        // ... (Start เดิม) ...
         if (dialogCamera != null)
         {
+            positionComposer = dialogCamera.GetComponent<CinemachinePositionComposer>();
             dialogCamera.Priority = 0;
-        }
-    }
 
-    private void FindDialogComponents()
-    {
-        if (dialogBox == null || dialogText == null)
-        {
-            GameObject canvas = GameObject.Find("MainCanvas");
-            if (canvas != null)
-            {
-                dialogBox = canvas.transform.Find("DialogBox").gameObject;
-                dialogText = dialogBox.transform.Find("DialogText").GetComponent<TextMeshProUGUI>();
-            }
+            if (dialogCamera.Lens.Orthographic)
+                defaultLensSize = dialogCamera.Lens.OrthographicSize;
             else
-            {
-                Debug.LogError("MainCanvas not found in the scene!");
-            }
+                defaultLensSize = dialogCamera.Lens.FieldOfView;
+        }
+
+        if (dialogBox != null) dialogBox.SetActive(false);
+
+        if (fadePanelCanvasGroup != null)
+        {
+            fadePanelCanvasGroup.alpha = 0;
+            fadePanelCanvasGroup.blocksRaycasts = false;
         }
     }
 
     private void Update()
     {
-        if (isShowingHint) return;
+        // [แก้ไข] เพิ่มเงื่อนไข isWaitingForCamera ห้ามกดข้ามถ้ารอกล้องอยู่
+        if (isTransitioning || isWaitingForCamera) return;
+        if (isTransitioning || isWaitingForCamera || isShowingHint) return;
+
         if (!isDialogActive) return;
 
         if (Input.GetMouseButtonDown(0))
         {
             if (isTyping)
             {
-                if (typewriterCoroutine != null)
-                {
-                    StopCoroutine(typewriterCoroutine);
-                    typewriterCoroutine = null;
-                }
+                StopTypewriter();
                 if (currentSequence != null && currentIndex < currentSequence.Length)
-                {
                     dialogText.text = currentSequence[currentIndex].dialogText;
-                }
-                isTyping = false;
             }
             else
             {
                 NextDialog();
             }
         }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            EndDialog();
-        }
     }
 
+    // ... (StartDialogSequence เดิม) ...
     public void StartDialogSequence(DialogData[] sequence, DialogTrigger originator, bool freezePlayer, bool autoNext = false, float delay = 2f)
     {
-        
         if (sequence == null || sequence.Length == 0 || isDialogActive) return;
-
-        this.shouldFreezePlayer = freezePlayer;
 
         currentOriginator = originator;
         currentSequence = sequence;
@@ -118,191 +109,425 @@ public class DialogManager : MonoBehaviour
         autoAdvanceDelay = delay;
         isDialogActive = true;
 
-        ShowCurrentDialog();
+        if (freezePlayer && GameManager.Instance != null)
+        {
+            GameManager.Instance.StartDialogState();
+        }
+
+        StartCoroutine(ProcessCurrentDialogStep());
     }
 
-    private void ShowCurrentDialog()
+    private IEnumerator ProcessCurrentDialogStep()
     {
         if (currentSequence == null || currentIndex >= currentSequence.Length)
         {
             EndDialog();
-            return;
-        }
-
-        DialogData currentData = currentSequence[currentIndex];
-        if (currentData == null)
-        {
-            Debug.LogError($"Found a NULL DialogData at index {currentIndex}. Skipping.");
-            NextDialog();
-            return;
-        }
-
-        if (currentData.isHint)
-        {
-            StartCoroutine(ShowHintCoroutine(currentData));
-        }
-        else
-        {
-            ShowNormalDialog(currentData);
-        }
-    }
-
-    private void ShowNormalDialog(DialogData currentData)
-    {
-        // --- ส่วนจัดการกล้อง ---
-        if (dialogCamera != null)
-        {
-            if (currentData.focusTarget != null)
-            {
-                // ถ้ามี Target: ให้กล้อง Dialog ทำงาน
-                dialogCamera.Follow = currentData.focusTarget;
-                dialogCamera.LookAt = currentData.focusTarget;
-                dialogCamera.Priority = dialogCameraPriority;
-            }
-            else
-            {
-                // ถ้าไม่มี Target: ปล่อยให้กล้อง Gameplay ปกติทำงาน
-                dialogCamera.Priority = 0;
-            }
-        }
-
-        // --- ส่วนจัดการ UI และ Text ---
-        if (!dialogBox.activeSelf)
-        {
-            dialogBox.SetActive(true);
-
-            // ถ้าถูกตั้งค่าให้หยุดผู้เล่น ให้สั่งหยุด "ตอนนี้"
-            if (shouldFreezePlayer && GameManager.Instance != null)
-            {
-                GameManager.Instance.StartDialogState();
-            }
-        }
-
-        if (useTypewriterEffect)
-        {
-            if (typewriterCoroutine != null)
-            {
-                StopCoroutine(typewriterCoroutine);
-            }
-            typewriterCoroutine = StartCoroutine(TypewriterEffect(currentData.dialogText));
-        }
-        else
-        {
-            dialogText.text = currentData.dialogText;
-            if (autoAdvance)
-            {
-                StartCoroutine(AutoAdvanceCoroutine());
-            }
-        }
-
-        // Invoke per-line start event (if assigned)
-        if (currentData.onLineStart != null)
-        {
-            currentData.onLineStart.Invoke();
-        }
-
-        // --- ส่วนจัดการเสียงและอื่นๆ ---
-        if (currentData.dialogVoice != null && audioSource != null)
-        {
-            audioSource.clip = currentData.dialogVoice;
-            audioSource.Play();
-        }
-
-    }
-
-    private IEnumerator ShowHintCoroutine(DialogData hintData)
-    {
-        isShowingHint = true;
-
-        if (hintData.hintUIElement == null)
-        {
-            Debug.LogError("Hint UI Element is not assigned in DialogData!");
-            isShowingHint = false;
-            NextDialog();
             yield break;
         }
 
-        if (dialogBox.activeSelf) { dialogBox.SetActive(false); }
+        DialogData data = currentSequence[currentIndex];
 
-        TextMeshProUGUI hintText = hintData.hintUIElement.GetComponent<TextMeshProUGUI>();
-        if (hintText != null) { hintText.text = hintData.dialogText; }
-
-        hintData.hintUIElement.SetActive(true);
-
-        if (hintData.displayDuration > 0)
+        // ... (ส่วน Zoom เดิม) ...
+        if (data.changeZoom)
         {
-            yield return new WaitForSeconds(hintData.displayDuration);
-            if (hintData.hintUIElement != null) { hintData.hintUIElement.SetActive(false); }
+            if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+            zoomCoroutine = StartCoroutine(ZoomLensRoutine(data.targetLensSize, data.zoomDuration));
         }
 
+        if (data.useFadeCut && fadePanelCanvasGroup != null)
+        {
+            isTransitioning = true;
+            if (dialogBox != null) dialogBox.SetActive(false);
+
+            yield return StartCoroutine(FadeRoutine(1f, data.fadeDuration));
+
+            UpdateCameraTarget(data);
+
+            // ถ้า Fade ดำ เราไม่จำเป็นต้องรอกล้องวิ่ง เพราะคนมองไม่เห็นอยู่แล้ว
+            // แต่ถ้าระบบ Cinemachine ตัด Hard Cut ตอน Fade ก็ไม่มีปัญหา
+
+            float waitTime = data.fadeHoldDuration > 0f ? data.fadeHoldDuration : 0.5f;
+            yield return new WaitForSecondsRealtime(waitTime);
+
+            yield return StartCoroutine(FadeRoutine(0f, data.fadeDuration));
+
+            // รอเพิ่มหลังจอใส
+            yield return new WaitForSecondsRealtime(0.5f);
+
+            isTransitioning = false;
+        }
+        else
+        {
+            // ถ้าไม่ Fade ให้ย้ายกล้อง และเช็คว่าจะรอไหม
+            UpdateCameraTarget(data);
+
+            //// [เพิ่มใหม่] ส่วนเช็คการรอกล้อง
+            if (data.focusTarget != null && data.waitForCamera && dialogCamera != null)
+            {
+                // ซ่อนกล่องข้อความก่อน
+                if (dialogBox != null) dialogBox.SetActive(false);
+
+                // ล็อกอินพุต
+                isWaitingForCamera = true;
+
+                // รอจนกว่ากล้องจะนิ่ง
+                yield return StartCoroutine(WaitForCameraToStabilize());
+
+                // ปลดล็อก
+                isWaitingForCamera = false;
+            }
+        }
+
+        ShowDialogUI(data);
+    }
+
+    // [เพิ่มใหม่] ฟังก์ชันรอกล้องหยุดขยับ
+    private IEnumerator WaitForCameraToStabilize()
+    {
+        float timeout = 5.0f; // กันเหนียวเผื่อกล้องติดบัค ไม่ยอมหยุด จะได้ไม่ค้างตลอดกาล
+        float timer = 0f;
+
+        // รอเฟรมแรกให้ Cinemachine เริ่มคำนวณก่อน
+        yield return null;
+
+        Vector3 lastPos = dialogCamera.transform.position;
+
+        // เงื่อนไข: ถ้ากล้องขยับน้อยกว่า Threshold ติดต่อกัน หรือ หมดเวลา Timeout
+        while (timer < timeout)
+        {
+            timer += Time.deltaTime;
+
+            float distanceMoved = Vector3.Distance(dialogCamera.transform.position, lastPos);
+
+            // ถ้าขยับน้อยมาก (ถือว่าถึงแล้ว/หยุดแล้ว)
+            if (distanceMoved < cameraMovementThreshold)
+            {
+                // เช็คซ้ำอีกนิดเผื่อเป็นแค่จังหวะสะดุด (Optional)
+                yield return null;
+                if (Vector3.Distance(dialogCamera.transform.position, lastPos) < cameraMovementThreshold)
+                {
+                  
+                    break; // ออกจาก Loop รอ
+                }
+            }
+
+            lastPos = dialogCamera.transform.position;
+            yield return null;
+        }
+
+    }
+
+    // ... (ZoomLensRoutine เดิม) ...
+    private IEnumerator ZoomLensRoutine(float targetValue, float duration)
+    {
+        if (dialogCamera == null) yield break;
+        var lensSettings = dialogCamera.Lens;
+        float startValue = lensSettings.Orthographic ? lensSettings.OrthographicSize : lensSettings.FieldOfView;
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+            t = Mathf.SmoothStep(0f, 1f, t);
+            float currentValue = Mathf.Lerp(startValue, targetValue, t);
+
+            if (lensSettings.Orthographic) lensSettings.OrthographicSize = currentValue;
+            else lensSettings.FieldOfView = currentValue;
+
+            dialogCamera.Lens = lensSettings;
+            yield return null;
+        }
+        if (lensSettings.Orthographic) lensSettings.OrthographicSize = targetValue;
+        else lensSettings.FieldOfView = targetValue;
+        dialogCamera.Lens = lensSettings;
+    }
+
+    // ... (UpdateCameraTarget เดิม) ...
+    private void UpdateCameraTarget(DialogData data)
+    {
+        if (dialogCamera == null) return;
+
+        if (data.focusTarget != null)
+        {
+            // เช็คว่า Target เปลี่ยนไหม หรือเป็นตัวเดิม (เพื่อ Reset Damping ถ้าจำเป็น)
+            bool isNewTarget = dialogCamera.Follow != data.focusTarget;
+
+            dialogCamera.Follow = data.focusTarget;
+            // ถ้าเป็น 2D ปกติไม่ต้อง LookAt แต่ถ้า 3D อาจจะต้องใช้
+            // dialogCamera.LookAt = data.focusTarget; 
+
+            if (positionComposer != null)
+            {
+                // ถ้าเปลี่ยนเป้าหมาย และต้องการให้กล้องเริ่มวิ่งใหม่
+                if (isNewTarget)
+                {
+                    // บางกรณีอาจต้องสั่ง Reset การคำนวณของ Cinemachine
+                    // dialogCamera.PreviousStateIsValid = false; 
+                }
+
+                positionComposer.Damping.x = data.cameraSmoothness;
+                positionComposer.Damping.y = data.cameraSmoothness;
+                positionComposer.Damping.z = data.cameraSmoothness;
+            }
+
+            dialogCamera.Priority = dialogCameraPriority;
+        }
+        else
+        {
+            dialogCamera.Priority = 0;
+        }
+    }
+
+    // ... (ShowDialogUI, FadeRoutine, NextDialog, EndDialog, Typewriter เหมือนเดิม) ...
+    // ... Copy ฟังก์ชันที่เหลือจากโค้ดเก่ามาวางต่อได้เลยครับ ไม่มีการเปลี่ยนแปลง ...
+
+    private void ShowDialogUI(DialogData data)
+    {
+        // เหมือนเดิม 100%
+        bool shouldHideUI = string.IsNullOrWhiteSpace(data.dialogText) || data.useFadeCut;
+        if (shouldHideUI)
+        {
+            if (dialogBox != null) dialogBox.SetActive(false);
+            data.onLineStart?.Invoke();
+            StartCoroutine(AutoAdvanceCoroutine(0.1f));
+            return;
+        }
+
+        if (data.isHint)
+        {
+            if (dialogBox != null) dialogBox.SetActive(false); // ซ่อน dialog ปกติ
+            if (data.hintUIElement != null)
+            {
+                StartCoroutine(ShowHintRoutine(data));
+            }
+            else
+            {
+                // fallback: แสดงข้อความสั้นๆ ใน dialogBox ถ้าไม่มี hintUIElement
+                if (dialogBox != null && !dialogBox.activeSelf) dialogBox.SetActive(true);
+                data.onLineStart?.Invoke();
+                dialogText.text = data.dialogText;
+                StartCoroutine(AutoAdvanceCoroutine(Mathf.Max(0.1f, data.displayDuration)));
+            }
+            return;
+        }
+
+
+
+        if (dialogBox != null && !dialogBox.activeSelf) dialogBox.SetActive(true);
+
+        data.onLineStart?.Invoke();
+
+        if (useTypewriterEffect)
+        {
+            StopTypewriter();
+            typewriterCoroutine = StartCoroutine(TypewriterEffect(data));
+        }
+        else
+        {
+            dialogText.text = data.dialogText;
+            if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
+        }
+    }
+
+    private IEnumerator ShowHintRoutine(DialogData data)
+    {
+        var hint = data.hintUIElement;
+        if (hint == null)
+        {
+            NextDialog();
+            yield break;
+        }
+        isShowingHint = true;
+        // หา TextMeshPro ใน hint (รวม inactive ลูกด้วย) แล้วเซ็ตข้อความ
+        var hintText = hint.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+        if (hintText != null)
+        {
+            hintText.text = data.dialogText;
+        }
+
+        // ถ้ามี CanvasGroup ให้แน่ใจว่าแสดงผลได้
+        var cg = hint.GetComponent<CanvasGroup>();
+        if (cg != null)
+        {
+            cg.alpha = 1f;
+            cg.interactable = true;
+            cg.blocksRaycasts = true;
+        }
+
+        hint.SetActive(true);
+
+        data.onLineStart?.Invoke();
+
+        // Note: per-letter voice playback handled by TypewriterEffect via VoiceProfile.
+
+        float dur = Mathf.Max(0.01f, data.displayDuration);
+        float t = 0f;
+        while (t < dur && isDialogActive)
+        {
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        // ปิด hint แล้วไปประโยคถัดไป
+        hint.SetActive(false);
         isShowingHint = false;
         NextDialog();
+    }
+    private IEnumerator FadeRoutine(float targetAlpha, float duration)
+    {
+        float startAlpha = fadePanelCanvasGroup.alpha;
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.unscaledDeltaTime;
+            fadePanelCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
+            yield return null;
+        }
+        fadePanelCanvasGroup.alpha = targetAlpha;
     }
 
     private void NextDialog()
     {
+        // [แก้ไข] เพิ่มเงื่อนไข isWaitingForCamera
+        if (isTransitioning || isWaitingForCamera) return;
+
         currentIndex++;
-        ShowCurrentDialog();
+        StartCoroutine(ProcessCurrentDialogStep());
     }
 
+    // ... ฟังก์ชันที่เหลือ (EndDialog, StopTypewriter, TypewriterEffect, AutoAdvanceCoroutine) เหมือนเดิม
     public void EndDialog()
     {
-        if (!isDialogActive) return;
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.EndDialogState();
-        }
+        if (fadePanelCanvasGroup != null) fadePanelCanvasGroup.alpha = 0;
+        isTransitioning = false;
+        isWaitingForCamera = false; // [เพิ่ม] รีเซ็ตค่า
+
         isDialogActive = false;
         if (dialogBox != null) dialogBox.SetActive(false);
-        if (audioSource != null) audioSource.Stop();
 
-        // เมื่อจบ Dialog ต้องลด Priority ของกล้อง Dialog ลงเสมอ
         if (dialogCamera != null)
         {
             dialogCamera.Priority = 0;
+            var lensSettings = dialogCamera.Lens;
+            if (lensSettings.Orthographic) lensSettings.OrthographicSize = defaultLensSize;
+            else lensSettings.FieldOfView = defaultLensSize;
+            dialogCamera.Lens = lensSettings;
         }
+        if (GameManager.Instance != null) GameManager.Instance.EndDialogState();
+        currentOriginator?.InvokeCompletionEvent();
+    }
 
+    private void StopTypewriter()
+    {
         if (typewriterCoroutine != null)
         {
             StopCoroutine(typewriterCoroutine);
             typewriterCoroutine = null;
         }
-
-        if (currentOriginator != null)
-        {
-            currentOriginator.InvokeCompletionEvent();
-        }
-
-        currentSequence = null;
-        currentIndex = 0;
-        currentOriginator = null;
+        isTyping = false;
     }
 
-    private IEnumerator TypewriterEffect(string text)
+    private IEnumerator TypewriterEffect(DialogData data)
     {
         isTyping = true;
         dialogText.text = "";
 
-        foreach (char c in text)
+        if (string.IsNullOrEmpty(data.dialogText))
         {
+            isTyping = false;
+            if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
+            yield break;
+        }
+
+        char[] characters = data.dialogText.ToCharArray();
+        for (int i = 0; i < characters.Length; i++)
+        {
+            char c = characters[i];
             dialogText.text += c;
+
+            // If a VoiceProfile is assigned, play the mapped letter sound (cuts previous clip)
+            if (data.currentVoice != null)
+            {
+                PlayLetterSound(c, data);
+            }
+            else if (data.typingSound != null && c != ' ')
+            {
+                int freq = Mathf.Max(1, data.playSoundFrequency);
+                if (i % freq == 0)
+                {
+                    PlayTypingSound(data);
+                }
+            }
+
             yield return new WaitForSeconds(typewriterSpeed);
         }
 
         isTyping = false;
-        typewriterCoroutine = null;
-        if (autoAdvance)
+        if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
+    }
+
+    private void PlayTypingSound(DialogData data)
+    {
+        if (audioSource == null || data == null || data.typingSound == null) return;
+
+        float originalPitch = audioSource.pitch;
+        if (data.randomizePitch)
         {
-            StartCoroutine(AutoAdvanceCoroutine());
+            audioSource.pitch = Random.Range(data.pitchRange.x, data.pitchRange.y);
+        }
+        else
+        {
+            audioSource.pitch = 1f;
+        }
+
+        audioSource.PlayOneShot(data.typingSound);
+
+        audioSource.pitch = originalPitch;
+    }
+
+    // Play a letter-mapped sound from the VoiceProfile (cuts previous clip immediately)
+    private void PlayLetterSound(char c, DialogData data)
+    {
+        AudioSource src = audioSource != null ? audioSource : GetComponent<AudioSource>();
+        if (src == null || data == null) return;
+
+        // ---------------------------------------------------------
+        // Case 1: VoiceProfile present -> play A-Z mapped sound (cuts previous clip)
+        // ---------------------------------------------------------
+        if (data.currentVoice != null && data.currentVoice.alphabetSounds != null && data.currentVoice.alphabetSounds.Length > 0)
+        {
+            int index = char.ToUpper(c) - 65;
+            if (index < 0 || index >= 26) index = 26;
+
+            if (index < data.currentVoice.alphabetSounds.Length)
+            {
+                AudioClip clip = data.currentVoice.alphabetSounds[index];
+                if (clip != null)
+                {
+                    src.clip = clip;
+                    src.pitch = 1f;
+                    src.Play();
+                }
+            }
+        }
+        // ---------------------------------------------------------
+        // Case 2: No VoiceProfile -> fallback to typingSound (one-shot, respects pitch randomization)
+        // ---------------------------------------------------------
+        else if (data.typingSound != null)
+        {
+            if (data.randomizePitch)
+                src.pitch = Random.Range(data.pitchRange.x, data.pitchRange.y);
+            else
+                src.pitch = 1f;
+
+            src.PlayOneShot(data.typingSound);
         }
     }
 
-    private IEnumerator AutoAdvanceCoroutine()
+    private IEnumerator AutoAdvanceCoroutine(float delayTime = -1f)
     {
-        yield return new WaitForSeconds(autoAdvanceDelay);
-        if (isDialogActive && !isTyping)
-        {
-            NextDialog();
-        }
+        float waitTime = (delayTime >= 0f) ? delayTime : autoAdvanceDelay;
+        yield return new WaitForSeconds(waitTime);
+        if (isDialogActive && !isTyping) NextDialog();
     }
 }

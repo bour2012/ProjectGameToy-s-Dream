@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 // ========================================
 // Boss Controller (Main Script)
@@ -91,6 +92,15 @@ public class BossController : Enemy
     // internal flag to track final-phase grounded state
     private bool finalPhaseGroundedActive = false;
 
+    [Header("Level Transition")]
+    [Tooltip("Delay (seconds) after glue meter fills before triggering level transition. Use to allow dialog to finish.")]
+    public float levelTransitionDelay = 3f;
+    [Tooltip("If assigned, Boss will trigger this DialogTrigger and wait until it completes before transitioning levels.")]
+    public DialogTrigger transitionDialogTrigger;
+
+    [Tooltip("If true and a DialogTrigger is assigned, wait for the dialog to finish instead of using the numeric delay.")]
+    public bool waitForDialogCompletion = true;
+
     // Public properties for State Machine
     [HideInInspector] public bool isCurrentlyFalling = false;
     [HideInInspector] public bool isInvincible = false;
@@ -100,6 +110,8 @@ public class BossController : Enemy
 
     private AudioSource audioSource;
     private SpriteRenderer bossSprite;
+    // Cached reference to LevelManager for performance (avoid repeated Find calls)
+    private LevelManager levelManager;
     private BossPhaseData currentPhaseData;
     // Position lock while accumulating glue to avoid being displaced by projectile collisions
     private Vector2 lastFixedPosition;
@@ -112,6 +124,24 @@ public class BossController : Enemy
     [Tooltip("ความเร็วที่บอสบินกลับตำแหน่งเริ่มต้น (หน่วย Unity units/second)")]
     public float returnToStartSpeed = 3f;
     private bool isReturningToStart = false;
+
+    [Header("Patrol Settings")]
+    //public float moveSpeed = 3f;
+    public float returnSpeed = 5f;
+    [Header("Patrol Area")]
+    [Tooltip("ระยะทางที่บินออกไปจากจุดเริ่มต้น (แกน X)")]
+    public float patrolRangeX = 5f;
+    [Tooltip("ความถี่ในการบินไปมา (ยิ่งเยอะยิ่งบินเร็ว)")]
+    public float patrolFrequency = 1f;
+
+    private Vector3 patrolStartPosition;
+    private bool isPatrolling = true; // เริ่มต้นให้บินลาดตระเวนเลยหรือไม่?
+    private bool isManualControlled = false; // when true another component is moving the boss
+    
+    // Guard point control
+    private bool isGuardingPoint = false;
+    private Vector3 guardTargetPoint;
+    private BossHarassment harassmentScript; // reference to harassment behavior
 
     [System.Serializable]
     public class BossPhaseData
@@ -148,6 +178,8 @@ public class BossController : Enemy
         if (rb != null) rb.gravityScale = 0;
         audioSource = GetComponent<AudioSource>();
         bossSprite = GetComponentInChildren<SpriteRenderer>();
+        // find harassment script (used to disable attack behavior when guarding)
+        harassmentScript = GetComponent<BossHarassment>();
 
         if (phases == null || phases.Length == 0)
         {
@@ -194,6 +226,13 @@ public class BossController : Enemy
             glueMeter.Show();
         }
 
+        // Cache LevelManager instance to avoid repeated FindFirstObjectByType calls
+        levelManager = FindFirstObjectByType<LevelManager>();
+        if (levelManager == null && showDebugLogs) Debug.LogWarning($"[{bossName}] LevelManager not found in scene (BossController cached reference)");
+
+        // cache patrol start position (use transform so editor placement is respected)
+        patrolStartPosition = transform.position;
+
         EnterPhase(0);
     }
 
@@ -233,8 +272,54 @@ public class BossController : Enemy
             glueAccumulationTimer -= Time.deltaTime;
             if (glueAccumulationTimer <= 0f)
             {
-                if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation timed out, reset.");
-                ResetGlueAccumulation();
+                if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation timed out.");
+                // ResetGlueAccumulation();
+                // NOTE: glue reset is now performed by LevelManager during level transitions
+            }
+        }
+
+        // --- Movement Logic ---
+        if (!isCurrentlyFalling && !isGroundedFromFall && !isReturningToStart && !isManualControlled)
+        {
+            // Guard point behavior: boss moves to a designated guard point and stays there
+            if (isGuardingPoint)
+            {
+                if (Vector3.Distance(transform.position, guardTargetPoint) > 0.1f)
+                {
+                    Vector3 direction = (guardTargetPoint - transform.position).normalized;
+                    SetFacingDirection(direction);
+                    transform.position = Vector3.MoveTowards(transform.position, guardTargetPoint, returnSpeed * Time.deltaTime);
+                }
+                else
+                {
+                    // arrived: force face left and disable harassment while guarding
+                    if (bossSprite != null)
+                    {
+                        bossSprite.flipX = false; // flip to left; invert if your art faces left by default
+                    }
+                    if (harassmentScript != null && harassmentScript.enabled)
+                    {
+                        harassmentScript.enabled = false;
+                        if (showDebugLogs) Debug.Log($"[{bossName}] Harassment disabled while guarding.");
+                    }
+                }
+            }
+            else if (isPatrolling)
+            {
+                float offset = Mathf.Sin(Time.time * patrolFrequency) * patrolRangeX;
+                float nextX = patrolStartPosition.x + offset;
+                float dirX = nextX - transform.position.x;
+                SetFacingDirection(new Vector2(dirX, 0f));
+                transform.position = patrolStartPosition + new Vector3(offset, 0f, 0f);
+            }
+            else
+            {
+                if (Vector3.Distance(transform.position, patrolStartPosition) > 0.01f)
+                {
+                    Vector3 direction = (patrolStartPosition - transform.position).normalized;
+                    SetFacingDirection(direction);
+                    transform.position = Vector3.MoveTowards(transform.position, patrolStartPosition, returnSpeed * Time.deltaTime);
+                }
             }
         }
     }
@@ -416,7 +501,20 @@ public class BossController : Enemy
     {
         if (finalPhaseGroundedActive) return; // do nothing in final grounded phase
         if (isCurrentlyFalling) return; // when already falling, glue does nothing
+        if (levelManager.IsTransitioning) return;
         if (Time.time - lastGlueHitTime < glueHitCooldown) return;
+
+        // If a level transition is active, ignore glue hits until transition completes.
+        if (levelManager == null)
+        {
+            // fallback - try to find and cache
+            levelManager = FindFirstObjectByType<LevelManager>();
+        }
+        if (levelManager != null && levelManager.IsTransitioning)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Ignoring glue hit while level transition in progress.");
+            return;
+        }
 
         lastGlueHitTime = Time.time;
 
@@ -431,26 +529,20 @@ public class BossController : Enemy
         if (glueMeter != null)
             glueMeter.SetCurrentGlue(currentGlueHitCount);
 
-        // if reached required count -> trigger fall behaviour
+        // if reached required count -> schedule level transition (no fall)
         if (!glueFullTriggered && currentGlueHitCount >= phases[currentPhaseIndex].requiredGlueHits)
         {
             glueFullTriggered = true;
+
+            // Move animator to idle state (do not trigger a fall)
             if (animator != null)
             {
-                animator.SetBool("Fall",true);
+                try { animator.SetTrigger("GoToIdle"); } catch { }
+                try { animator.ResetTrigger("FlyToAttack"); } catch { }
             }
+
+            // Optionally play a sound to indicate glue full
             PlaySound(fallSound);
-
-            // Apply gravity so boss will fall down naturally
-            if (rb != null)
-            {
-                // ensure body is dynamic so gravity affects it
-                rb.bodyType = RigidbodyType2D.Dynamic;
-                rb.gravityScale = fallGravityScale;
-            }
-
-            // Mark falling state immediately so AI and movement systems stop
-            isCurrentlyFalling = true;
 
             // Reset and pause the attack AI to prevent it remembering/continuing attacks
             var ai = GetComponent<BossAttackAI>();
@@ -460,15 +552,12 @@ public class BossController : Enemy
                 ai.PauseForSummons(true);
             }
 
-            // Ensure animator transitions to idle/fall properly
-            if (animator != null)
-            {
-                try { animator.SetTrigger("GoToIdle"); } catch { }
-                try { animator.ResetTrigger("FlyToAttack"); } catch { }
-            }
+            if (showDebugLogs) Debug.Log($"[{bossName}] Glue full -> scheduling level transition in {levelTransitionDelay:F1}s");
 
-            // DO NOT reset glue here: wait until the boss lands on ground and the grounded duration completes
-            if (showDebugLogs) Debug.Log($"[{bossName}] Glue full -> Fall triggered (gravity enabled)");
+            levelManager.MonitorBossGlueMeter();
+            // Start delayed level transition so dialog or other actions can complete first
+            //levelTriggerLevelTransition();
+            //StartCoroutine(DelayedLevelTransition());
         }
     }
 
@@ -485,7 +574,7 @@ public class BossController : Enemy
             groundedCoroutine = null;
         }
 
-        RecoverFromFall();
+        //RecoverFromFall();
     }
 
     //private IEnumerator TemporarilyInvincible(float duration)
@@ -516,6 +605,52 @@ public class BossController : Enemy
         groundedCoroutine = StartCoroutine(GroundedRoutine());
     }
 
+    private System.Collections.IEnumerator DelayedLevelTransition()
+    {
+        // If configured to wait for dialog and a DialogTrigger is assigned, start it and wait for completion
+        if (waitForDialogCompletion && transitionDialogTrigger != null)
+        {
+            bool completed = false;
+            UnityAction onComplete = () => { completed = true; };
+
+            // Attach listener
+            transitionDialogTrigger.onDialogComplete.AddListener(onComplete);
+
+            // Trigger the dialog sequence
+            transitionDialogTrigger.TriggerDialog();
+
+            // Wait until dialog triggers completion event
+            while (!completed)
+            {
+                yield return null;
+            }
+
+            // Clean up listener
+            transitionDialogTrigger.onDialogComplete.RemoveListener(onComplete);
+        }
+        else
+        {
+            // Wait the configured delay (allows dialog or other events to finish)
+            float waited = 0f;
+            while (waited < levelTransitionDelay)
+            {
+                waited += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        // Trigger LevelManager transition if present (use cached reference when possible)
+        if (levelManager == null)
+        {
+            levelManager = FindFirstObjectByType<LevelManager>();
+        }
+        if (levelManager != null)
+        {
+            if (showDebugLogs) Debug.Log($"[{bossName}] Executing level transition now.");
+            levelManager.TriggerLevelTransition();
+        }
+    }
+
     private IEnumerator GroundedRoutine()
     {
         // stay on ground for configured duration
@@ -527,71 +662,210 @@ public class BossController : Enemy
         }
 
         groundedCoroutine = null;
-        RecoverFromFall();
+        //RecoverFromFall();
     }
 
-    private void RecoverFromFall()
-    {
-        // boss recovers and returns to flying
-        isCurrentlyFalling = false;
-        isGroundedFromFall = false;
+    //private void RecoverFromFall()
+    //{
+    //    // boss recovers and returns to flying
+    //    isCurrentlyFalling = false;
+    //    isGroundedFromFall = false;
 
-        // reset glue and effects
-        ResetGlueAccumulation();
+    //    // reset glue and effects
+    //    //ResetGlueAccumulation(); // Disabled: glue reset should occur on level change via LevelManager
 
-        // restore physics for flight
-        if (rb != null)
-        {
-            animator.SetBool("Fall", false);
-            rb.bodyType = RigidbodyType2D.Dynamic;
-            rb.gravityScale = 0f;
-            rb.linearVelocity = Vector2.zero;
-            // start moving back to starting position smoothly
-            isReturningToStart = true;
-            if (showDebugLogs) Debug.Log($"[{bossName}] Recovering: returning to start {startingPosition}");
-        }
+    //    // restore physics for flight
+    //    if (rb != null)
+    //    {
+    //        animator.SetBool("Fall", false);
+    //        rb.bodyType = RigidbodyType2D.Dynamic;
+    //        rb.gravityScale = 0f;
+    //        rb.linearVelocity = Vector2.zero;
+    //        // start moving back to starting position smoothly
+    //        isReturningToStart = true;
+    //        if (showDebugLogs) Debug.Log($"[{bossName}] Recovering: returning to start {startingPosition}");
+    //    }
 
-        // Let animations / AI resume normally. Do not automatically trigger another animation here;
-        // the Attack AI or Animator controller can decide next state.
+    //    // Let animations / AI resume normally. Do not automatically trigger another animation here;
+    //    // the Attack AI or Animator controller can decide next state.
 
-        // Ensure AI is unpaused and reset so it can resume its attack loop when back in flight
-        var ai = GetComponent<BossAttackAI>();
-        if (ai != null)
-        {
-            ai.ResetAIState();
-            ai.OnPhaseChanged(currentPhaseIndex); // re-select the correct sequence
-            ai.PauseForSummons(false);
-        }
-        // ensure any stomp indicator is removed on recovery
-        if (stompIndicatorInstance != null)
-        {
-            Destroy(stompIndicatorInstance);
-            stompIndicatorInstance = null;
-            stompIndicatorTimer = 0f;
-        }
+    //    // Ensure AI is unpaused and reset so it can resume its attack loop when back in flight
+    //    var ai = GetComponent<BossAttackAI>();
+    //    if (ai != null)
+    //    {
+    //        ai.ResetAIState();
+    //        ai.OnPhaseChanged(currentPhaseIndex); // re-select the correct sequence
+    //        ai.PauseForSummons(false);
+    //    }
+    //    // ensure any stomp indicator is removed on recovery
+    //    if (stompIndicatorInstance != null)
+    //    {
+    //        Destroy(stompIndicatorInstance);
+    //        stompIndicatorInstance = null;
+    //        stompIndicatorTimer = 0f;
+    //    }
 
-        if (showDebugLogs) Debug.Log($"[{bossName}] Recovered from fall and resumed flight");
-    }
+    //    if (showDebugLogs) Debug.Log($"[{bossName}] Recovered from fall and resumed flight");
+    //}
 
     /// <summary>
     /// Reset glue accumulation and related UI/effects immediately.
     /// </summary>
     public void ResetGlueAccumulation()
     {
+        
         currentGlueHitCount = 0;
         glueAccumulationTimer = 0f;
         glueFullTriggered = false;
 
-        if (glueMeter != null)
-            glueMeter.SetCurrentGlue(0);
-
+        // 2. รีเซ็ต UI และ Effect
+        if (glueMeter != null) glueMeter.SetCurrentGlue(0);
         if (glueAccumulationEffect != null)
         {
             glueAccumulationEffect.Stop();
             glueAccumulationEffect.Clear();
         }
 
-        if (showDebugLogs) Debug.Log($"[{bossName}] Glue accumulation reset");
+        if (showDebugLogs) Debug.Log($"[{bossName}] Glue Reset -> Returning to Start Position.");
+
+
+        isCurrentlyFalling = false;
+        isGroundedFromFall = false;
+        isGuardingPoint = false; // ยกเลิกการเฝ้าจุดทันที
+
+        // B. สั่งบินกลับ
+        isReturningToStart = true;
+
+        // C. ตั้งค่า Patrol ให้เริ่มที่ "จุดเกิด" (ไม่ใช่จุดที่ยืนอยู่)
+        isPatrolling = true;
+
+        // 🔥 แก้ตรงนี้: ใช้ startingPosition (จุดเกิดแรกสุด) เสมอ
+        // (ห้ามใช้ transform.position หรือคำนวณ Sin offset ตรงนี้ เพราะจะทำให้จุดเพี้ยน)
+      
+
+        // D. ยกเลิกการนับเวลานอน
+        if (groundedCoroutine != null)
+        {
+            StopCoroutine(groundedCoroutine);
+            groundedCoroutine = null;
+        }
+
+        // E. รีเซ็ตฟิสิกส์
+        if (rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        // F. คืนค่าอนิเมชั่น
+        currentSpeedMultiplier = 1f;
+        if (animator != null)
+        {
+            animator.speed = 1f;
+            animator.SetBool("Fall", false);
+        }
+
+        // G. รีเซ็ต Harassment
+        TakeManualControl(false);
+        if (harassmentScript != null)
+        {
+            harassmentScript.enabled = true;
+            harassmentScript.ResetAI();
+        }
+        patrolStartPosition = startingPosition;
+    }
+
+    // ฟังก์ชันนี้จะถูกเรียกจาก Lever หรือระบบอื่นๆ เพื่อเปิด/ปิดโหมดลาดตระเวน
+    public void SetPatrolState(bool active)
+    {
+        if (isGuardingPoint) return; // ถ้าเฝ้าจุดอยู่ อย่าเพิ่งสนใจ Patrol state จากภายนอก
+        isPatrolling = active;
+    }
+    
+    // วาดเส้นให้เห็นระยะในหน้า Scene
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Vector3 startPos = (Application.isPlaying ? patrolStartPosition : transform.position);
+        Gizmos.DrawLine(startPos - Vector3.right * patrolRangeX, startPos + Vector3.right * patrolRangeX);
+        
+        if (isGuardingPoint)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(guardTargetPoint, 0.5f);
+            Gizmos.DrawLine(transform.position, guardTargetPoint);
+        }
+    }
+
+    // New API: send the boss to guard a specific world point
+    public void GoToGuardPoint(Vector3 point)
+    {
+        isGuardingPoint = true;
+        isPatrolling = false;
+        guardTargetPoint = point;
+        // disable harassment immediately so boss stops aggressive behavior while moving to guard
+        if (harassmentScript != null && harassmentScript.enabled)
+        {
+            harassmentScript.enabled = false;
+            if (showDebugLogs) Debug.Log($"[{bossName}] Moving to Guard Point & Harassment Disabled.");
+        }
+        else if (showDebugLogs)
+        {
+            Debug.Log($"[{bossName}] Moving to Guard Point.");
+        }
+    }
+
+    // Cancel guarding and resume patrol (smoothly)
+    public void CancelGuardPoint()
+    {
+        isGuardingPoint = false;
+        isPatrolling = true;
+        // re-enable harassment when canceling guard
+        if (harassmentScript != null && !harassmentScript.enabled)
+        {
+            harassmentScript.enabled = true;
+        }
+
+        float currentOffset = Mathf.Sin(Time.time * patrolFrequency) * patrolRangeX;
+        patrolStartPosition = transform.position - new Vector3(currentOffset, 0f, 0f);
+        if (showDebugLogs) Debug.Log($"[{bossName}] Cancelled Guard Point. Harassment Enabled. Resuming Patrol.");
+    }
+
+    /// <summary>
+    /// Flip / face the boss sprite according to horizontal direction.
+    /// Positive X => face right; Negative X => face left.
+    /// This uses SpriteRenderer.flipX. Adjust if your art faces left by default.
+    /// </summary>
+    public void SetFacingDirection(Vector2 direction)
+    {
+        if (bossSprite == null) return;
+        if (Mathf.Abs(direction.x) < 0.001f) return;
+        // If direction.x > 0 => moving right => don't flip. If < 0 => moving left => flip.
+        bossSprite.flipX = direction.x > 0f;
+    }
+
+    /// <summary>
+    /// Allow external components to take manual control of boss movement.
+    /// When manual control is enabled, BossController will not run its patrol/return movement.
+    /// </summary>
+    public void TakeManualControl(bool manual)
+    {
+        isManualControlled = manual;
+        // if manual control starts, stop internal patrolling
+        if (manual)
+        {
+            isPatrolling = false;
+        }
+        else
+        {
+            // when releasing manual control, resume patrolling and reset patrol start
+            isPatrolling = true;
+            // compute patrol center so resuming the sinusoidal patrol does not cause a sudden teleport
+            // currentOffset = sin(t)*range => patrolStart = currentPosition - offset
+            float currentOffset = Mathf.Sin(Time.time * patrolFrequency) * patrolRangeX;
+            patrolStartPosition = transform.position - new Vector3(currentOffset, 0f, 0f);
+        }
     }
 
     public override void TakeDamage(float damage)
@@ -812,8 +1086,8 @@ public class BossController : Enemy
             }
         }
 
-        // Update startingPosition so the boss will use this point as its "home" when recovering from fall
-        if (rb != null) startingPosition = rb.position; else startingPosition = transform.position;
+        //// Update startingPosition so the boss will use this point as its "home" when recovering from fall
+        //if (rb != null) startingPosition = rb.position; else startingPosition = transform.position;
     }
 
     /// <summary>
