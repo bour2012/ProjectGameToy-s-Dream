@@ -137,7 +137,7 @@ MonoBehaviour:
   headCollider: {fileID: 3827656043758538455}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 1048705
+    m_Bits: 1048704
   groundCheckDistance: 1
   wallCheckDistance: 0.5
   deathEffectPrefab: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
@@ -162,6 +162,7 @@ MonoBehaviour:
   patrolRightOffset: 3
   attackCooldown: 2
   attackDuration: 1
+  rayOffsetX: 0.5
 --- !u!70 &6014697536698065424
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

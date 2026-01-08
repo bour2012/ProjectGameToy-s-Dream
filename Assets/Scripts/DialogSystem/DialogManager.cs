@@ -32,6 +32,10 @@ public class DialogManager : MonoBehaviour
 
     private float defaultLensSize;
     private Coroutine zoomCoroutine;
+    // เก็บค่า Zoom ล่าสุดที่ควรจะเป็น (ไม่รีเซ็ตเมื่อประโยคถัดไปไม่มี changeZoom)
+    private float currentTargetLensSize;
+    // ค่าเริ่มต้นเผื่ออยาก Reset ตอนจบ Dialog ทั้งหมด
+    private float initialLensSize;
     private Coroutine typewriterCoroutine;
     private DialogTrigger currentOriginator;
     private DialogData[] currentSequence;
@@ -63,6 +67,11 @@ public class DialogManager : MonoBehaviour
                 defaultLensSize = dialogCamera.Lens.OrthographicSize;
             else
                 defaultLensSize = dialogCamera.Lens.FieldOfView;
+
+            // เก็บค่าเริ่มต้นและตั้งค่า target ให้เริ่มจากค่าปัจจุบันของเลนส์
+            initialLensSize = defaultLensSize;
+            var lens = dialogCamera.Lens;
+            currentTargetLensSize = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
         }
 
         if (dialogBox != null) dialogBox.SetActive(false);
@@ -109,6 +118,13 @@ public class DialogManager : MonoBehaviour
         autoAdvanceDelay = delay;
         isDialogActive = true;
 
+        // ตั้ง current target ให้เริ่มจากค่ากล้องตอนเริ่ม dialog
+        if (dialogCamera != null)
+        {
+            var lens = dialogCamera.Lens;
+            currentTargetLensSize = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
+        }
+
         if (freezePlayer && GameManager.Instance != null)
         {
             GameManager.Instance.StartDialogState();
@@ -127,12 +143,15 @@ public class DialogManager : MonoBehaviour
 
         DialogData data = currentSequence[currentIndex];
 
-        // ... (ส่วน Zoom เดิม) ...
+        // ถ้า Data บอกให้เปลี่ยนค่า Zoom -> อัปเดต target ค่า Zoom ล่าสุด
         if (data.changeZoom)
         {
-            if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
-            zoomCoroutine = StartCoroutine(ZoomLensRoutine(data.targetLensSize, data.zoomDuration));
+            currentTargetLensSize = data.targetLensSize;
         }
+
+        // เรียก Coroutine เพื่อเลื่อนไปยัง currentTargetLensSize (ถ้ามี)
+        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+        zoomCoroutine = StartCoroutine(ZoomLensRoutine(currentTargetLensSize, data.zoomDuration));
 
         if (data.useFadeCut && fadePanelCanvasGroup != null)
         {
@@ -407,11 +426,8 @@ public class DialogManager : MonoBehaviour
 
         if (dialogCamera != null)
         {
+            // ปรับ Priority ลง แต่ไม่รีเซ็ตค่าเลนส์ — เก็บค่า Zoom ล่าสุดไว้
             dialogCamera.Priority = 0;
-            var lensSettings = dialogCamera.Lens;
-            if (lensSettings.Orthographic) lensSettings.OrthographicSize = defaultLensSize;
-            else lensSettings.FieldOfView = defaultLensSize;
-            dialogCamera.Lens = lensSettings;
         }
         if (GameManager.Instance != null) GameManager.Instance.EndDialogState();
         currentOriginator?.InvokeCompletionEvent();

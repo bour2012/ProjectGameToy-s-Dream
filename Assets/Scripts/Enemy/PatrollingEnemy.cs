@@ -27,6 +27,11 @@ public class PatrollingEnemy : Enemy
     public float attackCooldown = 2f;
     public float attackDuration = 1f;
 
+    [Header("Collision Check Settings")]
+    //public float wallCheckDistance = 0.6f;   // ระยะเช็คกำแพง (ปรับใน Inspector ได้)
+    //public float groundCheckDistance = 0.6f; // ระยะเช็คพื้น (ปรับใน Inspector ได้)
+    public float rayOffsetX = 0.5f;          // จุดปล่อยแสงห่างจากตัวเท่าไหร่
+
     // Private variables
     private bool movingRight = true;
     private float lastSeenTimer = 0f;
@@ -295,10 +300,20 @@ public class PatrollingEnemy : Enemy
     protected override void Chase(GameObject target)
     {
         if (target == null) return;
-        float directionX = Mathf.Sign(target.transform.position.x - transform.position.x);
-        if (rb != null) rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);
-        else transform.position += Vector3.right * (directionX * step);
 
+        float directionX = Mathf.Sign(target.transform.position.x - transform.position.x);
+        FlipSprite(directionX);
+
+        if (!CanMoveInDirection(directionX))
+        {
+            StopHorizontalMovement();
+            return;
+        }
+
+        if (rb != null)
+            rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);
+        else
+            transform.position += Vector3.right * (step * directionX);
     }
 
     private bool CanMoveInDirection(float direction)
@@ -306,13 +321,23 @@ public class PatrollingEnemy : Enemy
         Bounds bounds = col.bounds;
         Vector2 dirVec = (direction > 0) ? Vector2.right : Vector2.left;
 
-        // เช็คกำแพง (เพิ่มระยะเล็นน้อย 0.2f -> 0.5f)
+        // 1. เช็คกำแพง (เหมือนเดิม)
         Vector2 wallCheckOrigin = new Vector2(direction > 0 ? bounds.max.x : bounds.min.x, bounds.center.y);
         RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, dirVec, 0.5f, obstacleLayers);
 
-        // เช็คพื้น (ยื่นจุดเช็คออกไปข้างหน้าตัวละครเล็กน้อย)
-        Vector2 groundCheckOrigin = new Vector2(direction > 0 ? bounds.max.x + 0.2f : bounds.min.x - 0.2f, bounds.min.y);
-        RaycastHit2D groundHit = Physics2D.Raycast(groundCheckOrigin, Vector2.down, 0.5f, groundLayer);
+        // 2. เช็คพื้น (แก้ตรงนี้!)
+        // เปลี่ยนจุดเริ่มจาก "เท้า" (min.y) ขึ้นมาที่ "เอว" (center.y) แทน
+        // เพื่อให้มั่นใจว่าเส้น Raycast จะพุ่ง "ทะลุ" พื้นแน่นอน ไม่ใช่เริ่มที่ผิวพื้น
+        Vector2 groundCheckOrigin = new Vector2(direction > 0 ? bounds.max.x + 0.2f : bounds.min.x - 0.2f, bounds.center.y);
+
+        // ยิงลงมายาวเท่ากับ "ครึ่งตัว + ระยะเช็คเพิ่ม" (bounds.extents.y + 1f)
+        float checkDistance = bounds.extents.y + 1f;
+        RaycastHit2D groundHit = Physics2D.Raycast(groundCheckOrigin, Vector2.down, checkDistance, groundLayer);
+
+        // --- เพิ่มบรรทัดนี้เพื่อดูเส้นจริงในหน้า Scene ---
+        Debug.DrawRay(wallCheckOrigin, dirVec * 0.5f, Color.red); // เส้นแดง = เช็คกำแพง
+        Debug.DrawRay(groundCheckOrigin, Vector2.down * checkDistance, Color.green); // เส้นเขียว = เช็คพื้น
+        // ---------------------------------------------
 
         return (wallHit.collider == null && groundHit.collider != null);
     }

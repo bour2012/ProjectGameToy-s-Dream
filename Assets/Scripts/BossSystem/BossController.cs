@@ -784,19 +784,19 @@ public class BossController : Enemy
     }
     
     // วาดเส้นให้เห็นระยะในหน้า Scene
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Vector3 startPos = (Application.isPlaying ? patrolStartPosition : transform.position);
-        Gizmos.DrawLine(startPos - Vector3.right * patrolRangeX, startPos + Vector3.right * patrolRangeX);
+    //void OnDrawGizmosSelected()
+    //{
+    //    Gizmos.color = Color.yellow;
+    //    Vector3 startPos = (Application.isPlaying ? patrolStartPosition : transform.position);
+    //    Gizmos.DrawLine(startPos - Vector3.right * patrolRangeX, startPos + Vector3.right * patrolRangeX);
         
-        if (isGuardingPoint)
-        {
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(guardTargetPoint, 0.5f);
-            Gizmos.DrawLine(transform.position, guardTargetPoint);
-        }
-    }
+    //    if (isGuardingPoint)
+    //    {
+    //        Gizmos.color = Color.magenta;
+    //        Gizmos.DrawWireSphere(guardTargetPoint, 0.5f);
+    //        Gizmos.DrawLine(transform.position, guardTargetPoint);
+    //    }
+    //}
 
     // New API: send the boss to guard a specific world point
     public void GoToGuardPoint(Vector3 point)

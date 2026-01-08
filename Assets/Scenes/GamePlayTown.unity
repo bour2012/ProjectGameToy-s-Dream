@@ -1001,9 +1001,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogBox: {fileID: 758838057}
   dialogText: {fileID: 466563668}
+  fadePanelCanvasGroup: {fileID: 0}
   audioSource: {fileID: 0}
   dialogCamera: {fileID: 0}
   dialogCameraPriority: 100
+  cameraMovementThreshold: 0.01
   useTypewriterEffect: 1
   typewriterSpeed: 0.015
 --- !u!114 &457222212
@@ -3517,6 +3519,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1201762659}
   - component: {fileID: 1201762658}
+  - component: {fileID: 1201762660}
   m_Layer: 0
   m_Name: SpriteSheet_NPC01_0
   m_TagString: Untagged
@@ -3594,6 +3597,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1201762660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1201762657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdfcf89b25f22cb449fe36f317d89216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frames:
+  - {fileID: -3586413048405998927, guid: 62d8e59ba3aca8448b551658517a788a, type: 3}
+  - {fileID: -608260028084364971, guid: 62d8e59ba3aca8448b551658517a788a, type: 3}
+  - {fileID: -7424491836740269253, guid: 62d8e59ba3aca8448b551658517a788a, type: 3}
+  fps: 5
 --- !u!1 &1244870321
 GameObject:
   m_ObjectHideFlags: 0

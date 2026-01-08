@@ -117,7 +117,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 5
 --- !u!114 &-1691168997855635869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,10 +133,13 @@ MonoBehaviour:
   points: []
   moveSpeed: 0
   modeLoop: 0
+  loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
   modeDestroyed: 1
   modeShoot: 0
+  shootContinuous: 0
+  continuousShootInterval: 0.5
   modeAnim: 0
   timeDelay: 0.5
   swingSpeed: 2
@@ -147,6 +150,11 @@ MonoBehaviour:
   travelTime: 10
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
+  respawnOnDisappear: 1
+  shootStaggerMode: 0
+  staggerInterval: 0.25
+  randomSpread: 1
+  manualOrder: 0
   anim: {fileID: 0}
 --- !u!61 &3990934837418368455
 BoxCollider2D:
