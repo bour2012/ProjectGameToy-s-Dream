@@ -15,6 +15,7 @@ TagManager:
   - BossFireBarrier
   - Glue
   - Bullet
+  - DarkZone
   layers:
   - Default
   - TransparentFX
