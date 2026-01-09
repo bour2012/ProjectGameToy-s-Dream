@@ -109,10 +109,10 @@ TextureImporter:
       name: SpriteSheet_NPC05_Happy_0
       rect:
         serializedVersion: 2
-        x: 167
-        y: 16
-        width: 693
-        height: 746
+        x: 0
+        y: 0
+        width: 960
+        height: 960
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,10 +131,10 @@ TextureImporter:
       name: SpriteSheet_NPC05_Happy_1
       rect:
         serializedVersion: 2
-        x: 1127
-        y: 17
-        width: 693
-        height: 746
+        x: 960
+        y: 0
+        width: 960
+        height: 960
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,10 +153,10 @@ TextureImporter:
       name: SpriteSheet_NPC05_Happy_2
       rect:
         serializedVersion: 2
-        x: 2087
+        x: 1920
         y: 0
-        width: 694
-        height: 762
+        width: 960
+        height: 960
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -175,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: ae722d4e3d995ce4dabe2294e5d391a7
     internalID: 0
     vertices: []
     indices: 
@@ -183,7 +183,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":960.0,"y":960.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       SpriteSheet_NPC05_Happy_0: 6100566130637528142
       SpriteSheet_NPC05_Happy_1: 2727621432076542258

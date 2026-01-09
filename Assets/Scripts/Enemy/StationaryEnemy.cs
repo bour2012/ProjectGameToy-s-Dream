@@ -6,6 +6,7 @@ public class StationaryEnemy : Enemy
     public float possessRange = 0.5f;
 
     public float chaseCooldown = 2f;
+    public float dist = 0.5f;
 
     private float chaseTimer;
     private bool isReturningBlocked = false;
@@ -22,7 +23,9 @@ public class StationaryEnemy : Enemy
 
     protected override void Update()
     {
-        // ตรวจจับตุ๊กตาปลอม
+        base.Update(); // บรรทัดนี้สำคัญสุด! มันจะจัดการเรื่อง Animation และเรียก Patrol ให้เอง
+
+        // 1. ตรวจจับตุ๊กตา (Logic เดิม)
         Collider2D dollCol = Physics2D.OverlapCircle(transform.position, possessRange, fakeDollLayer);
         if (dollCol != null)
         {
@@ -34,60 +37,48 @@ public class StationaryEnemy : Enemy
             }
         }
 
-        // หาเป้าหมาย
+        // 2. Logic การไล่ล่า
         GameObject target = DetectAndLockTarget();
+
         if (target != null)
         {
-            //  เช็กว่ามีกำแพงบังหรือไม่
-            if (HasLineOfSight(target))
-            {
-                isChasing = true;
-                isReturningBlocked = false;
-                Chase(target);
-                chaseTimer = 0f;
-            }
-            else
-            {
-                // ผู้เล่นอยู่หลังกำแพง → เหมือนตรวจไม่เจอ
-                target = null;
-            }
+            // เจอเป้าหมาย -> สั่งวิ่งไล่
+            isChasing = true;
+            Chase(target);
+            chaseTimer = 0f;
         }
-
-        if (target == null)
+        else
         {
+            // ไม่เจอเป้าหมาย
             if (isChasing)
             {
+                // นับถอยหลัง Cooldown (ช่วงนี้ตัวจะยืนนิ่ง และ Animation จะเป็น Idle เพราะเราแก้ Enemy.cs แล้ว)
                 chaseTimer += Time.deltaTime;
                 if (chaseTimer >= chaseCooldown)
                 {
-                    isChasing = false;
-                    //currentTarget = null; // ปลดล็อกเป้าหมายเมื่อหยุดไล่ล่า
+                    isChasing = false; // พอเป็น false ปุ๊บ base.Update ในรอบหน้าจะสั่ง Patrol เดินกลับบ้านเอง
                 }
             }
-            else
-            {
-                if (isReturningBlocked)
-                {
-                    Vector3 direction = (initialPosition - transform.position).normalized;
-                    float distance = Vector3.Distance(transform.position, initialPosition);
-                    RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
-                    if (hit.collider == null)
-                    {
-                        isReturningBlocked = false;
-                    }
-                }
-
-                if (!isReturningBlocked && Vector3.Distance(transform.position, initialPosition) > 0.1f)
-                {
-                    Patrol();
-                }
-            }
+            // *** ลบ Else ที่สั่ง Patrol หรือเดินกลับบ้านตรงนี้ออกให้หมด! ***
+            // ปล่อยให้ base.Update() จัดการเองครับ
         }
     }
+
+
+
 
  
     protected override void Patrol()
     {
+        // 1. เช็คว่าถึงบ้านหรือยัง?
+        float distToHome = Vector3.Distance(transform.position, initialPosition);
+
+        if (distToHome < dist)
+        {
+            return;
+        }
+
+
         Vector3 direction = (initialPosition - transform.position).normalized;
         float step = moveSpeed * Time.deltaTime;
 
@@ -95,7 +86,7 @@ public class StationaryEnemy : Enemy
     transform.position + Vector3.up * 0.5f,
     transform.position,
     transform.position + Vector3.down * 0.5f
-};
+        };
 
         bool blocked = false;
         foreach (var origin in origins)
@@ -124,7 +115,6 @@ public class StationaryEnemy : Enemy
 
 
 
-
     public void Possess(CraftedObject doll)
     {
         if (currentPossessedDoll != null) return;
@@ -141,6 +131,50 @@ public class StationaryEnemy : Enemy
         //var possessedScript = currentPossessedDoll.GetComponent<CraftedObject>();
         //possessedScript.SetupPossession(originalEnemy, originalDoll, this);
     }
+    //public void Possess(CraftedObject doll)
+    //{
+    //    // 1. เช็คว่าถึงบ้านหรือยัง?
+    //    float distToHome = Vector3.Distance(transform.position, initialPosition);
+
+    //    if (distToHome < dist)
+    //    {
+    //        // ถึงบ้านแล้ว ไม่ต้องเดินต่อ
+    //        Debug.Log("Stopppp");
+    //        return;
+    //    }
+
+    //    // 2. ตรวจสอบสิ่งกีดขวางขากลับ (Logic เดิมของคุณ)
+    //    Vector3 direction = (initialPosition - transform.position).normalized;
+
+    //    // ยิง Ray เช็คทาง
+    //    bool blocked = false;
+    //    Vector2[] origins = {
+    //        transform.position + Vector3.up * 0.5f,
+    //        transform.position,
+    //        transform.position + Vector3.down * 0.5f
+    //    };
+
+    //    foreach (var origin in origins)
+    //    {
+    //        RaycastHit2D hit = Physics2D.Raycast(origin, direction, distToHome, obstacleLayers);
+    //        if (hit.collider != null)
+    //        {
+    //            blocked = true;
+    //            break;
+    //        }
+    //    }
+
+    //    // 3. ถ้าทางสะดวก ก็เดินกลับ
+    //    if (!blocked)
+    //    {
+    //        float step = moveSpeed * Time.deltaTime;
+    //        transform.position = Vector3.MoveTowards(transform.position, initialPosition, step);
+
+    //        // พลิกหน้าหันไปทางจุดเกิด
+    //        float moveDirection = Mathf.Sign(direction.x);
+    //        FlipSprite(moveDirection);
+    //    }
+    //}
 
     // เรียกจาก PossessedDollObject เมื่อถูกทำลาย
     public void ReleasePossession(Vector3 releasePosition)

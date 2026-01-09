@@ -3,23 +3,24 @@ using System.Collections;
 
 public class PatrollingEnemy : Enemy
 {
-    // ▼▼▼ เพิ่ม State "Returning" ▼▼▼
-    private enum State { Idle, Patrolling, Chasing, Attacking, Returning , Stuck }
+    private enum State { Idle, Patrolling, Chasing, Attacking, Returning, Stuck }
     private State currentState = State.Idle;
-    // ▲▲▲ สิ้นสุดส่วนที่เพิ่ม ▲▲▲
+
+    [Header("Visual Settings")]
+    public Transform modelTransform;
 
     [Header("Behavior Settings")]
     public float chaseMemoryDuration = 2f;
     public bool usePatrolRange = false;
-    public float maxChaseHeightDifference = 2f; // สูง/ต่ำ เกินนี้จะไม่ไล่
+    public float maxChaseHeightDifference = 2f;
 
     [Header("Stuck Detection")]
-    public float stuckThreshold = 0.1f; // ระยะเคลื่อนที่ขั้นต่ำ
-    public float stuckWaitTime = 1.5f; // ติดอยู่นานเท่าไหร่ถึงจะเลิกเดิน
+    public float stuckThreshold = 0.1f;
+    public float stuckWaitTime = 1.5f;
     private Vector3 lastPosition;
     private float stuckTimer = 0f;
 
-    [Header("Patrol Offset (If UsePatrolRange is True)")]
+    [Header("Patrol Offset")]
     public float patrolLeftOffset = -3f;
     public float patrolRightOffset = 3f;
 
@@ -28,11 +29,8 @@ public class PatrollingEnemy : Enemy
     public float attackDuration = 1f;
 
     [Header("Collision Check Settings")]
-    //public float wallCheckDistance = 0.6f;   // ระยะเช็คกำแพง (ปรับใน Inspector ได้)
-    //public float groundCheckDistance = 0.6f; // ระยะเช็คพื้น (ปรับใน Inspector ได้)
-    public float rayOffsetX = 0.5f;          // จุดปล่อยแสงห่างจากตัวเท่าไหร่
+    public float rayOffsetX = 0.5f;
 
-    // Private variables
     private bool movingRight = true;
     private float lastSeenTimer = 0f;
     private Vector3 patrolStartPos;
@@ -41,29 +39,42 @@ public class PatrollingEnemy : Enemy
     private bool isEngaged = false;
     private float step;
     private Collider2D col;
+    private float currentFacingDirection = 1f;
+
     protected override void Start()
     {
         base.Start();
         patrolStartPos = transform.position;
-        currentState = State.Idle; // เริ่มต้นที่ Idle
+        currentState = State.Idle;
         col = GetComponent<Collider2D>();
+
+        if (modelTransform != null)
+            currentFacingDirection = Mathf.Sign(modelTransform.localScale.x);
+    }
+
+    protected void LateUpdate()
+    {
+        if (modelTransform != null)
+        {
+            Vector3 scale = modelTransform.localScale;
+            scale.x = Mathf.Abs(scale.x) * (currentFacingDirection < 0 ? 1f : -1f);
+            modelTransform.localScale = scale;
+        }
     }
 
     protected override void Update()
     {
-        // 1. ตรวจสอบสถานะพื้นก่อน
+    
         isGrounded = IsGrounded();
 
-        // 2. อัปเดต Cooldown
         if (attackTimer > 0)
         {
             attackTimer -= Time.deltaTime;
         }
 
-        // 3. คำนวณ step
         step = moveSpeed * Time.deltaTime;
         CheckIfStuck();
-        // --- State Machine Logic ---
+
         switch (currentState)
         {
             case State.Idle: HandleIdleState(); break;
@@ -73,20 +84,17 @@ public class PatrollingEnemy : Enemy
             case State.Returning: HandleReturnState(); break;
             case State.Stuck: HandleStuckState(); break;
         }
+        HandleAnimation();
     }
-
-    // --- State Handlers ---
 
     private void HandleIdleState()
     {
-        // หยุดนิ่งและมองหาเป้าหมาย
         StopHorizontalMovement();
         GameObject target = DetectAndLockTarget();
         if (target != null)
         {
             currentState = State.Chasing;
         }
-        // ถ้าไม่เจอ ก็จะ Patrolling ในเฟรมถัดไป
         else if (isGrounded)
         {
             currentState = State.Patrolling;
@@ -111,6 +119,7 @@ public class PatrollingEnemy : Enemy
             StopHorizontalMovement();
         }
     }
+
     private void CheckIfStuck()
     {
         if (currentState == State.Chasing || currentState == State.Returning)
@@ -131,6 +140,7 @@ public class PatrollingEnemy : Enemy
             stuckTimer = 0;
         }
     }
+
     private void HandleChaseState()
     {
         GameObject target = DetectAndLockTarget();
@@ -139,20 +149,18 @@ public class PatrollingEnemy : Enemy
         {
             float heightDiff = Mathf.Abs(target.transform.position.y - transform.position.y);
 
-            // 1. ตรวจสอบว่าเป้าหมายอยู่สูงหรือต่ำเกินไปหรือไม่
             if (heightDiff > maxChaseHeightDifference)
             {
                 StopHorizontalMovement();
-                FaceTarget(target); // ยืนจ้องแทน
+                FaceTarget(target);
                 return;
             }
 
-            // 2. ตรวจสอบว่าติดกำแพงหรือตกเหวหรือไม่
             float directionX = Mathf.Sign(target.transform.position.x - transform.position.x);
             if (stuckTimer >= stuckWaitTime || !CanMoveInDirection(directionX))
             {
                 StopHorizontalMovement();
-                FaceTarget(target); // ยืนจ้อง
+                FaceTarget(target);
                 return;
             }
 
@@ -181,15 +189,15 @@ public class PatrollingEnemy : Enemy
             }
         }
     }
+
     private void HandleStuckState()
     {
         StopHorizontalMovement();
-        // รอสักพัก หรือจนกว่าเป้าหมายจะหลุดระยะ
         if (stuckTimer <= 0) currentState = State.Idle;
     }
+
     private void HandleAttackState()
     {
-        // Coroutine จะจัดการเปลี่ยน State กลับไปเป็น Chasing เมื่อโจมตีเสร็จ
         StopHorizontalMovement();
     }
 
@@ -204,40 +212,31 @@ public class PatrollingEnemy : Enemy
 
         float distanceToHome = Vector2.Distance(transform.position, patrolStartPos);
 
-        // ถ้ากลับถึงบ้านแล้ว (ระยะห่างน้อยกว่า 0.5)
         if (distanceToHome <= 0.5f)
         {
             currentState = State.Patrolling;
             return;
         }
 
-        // คำนวณทิศทางกลับบ้าน
         float direction = Mathf.Sign(patrolStartPos.x - transform.position.x);
 
-        // ตรวจสอบว่าทางกลับบ้านโดนตัดขาดหรือไม่
         if (!CanMoveInDirection(direction) || stuckTimer >= stuckWaitTime)
         {
-            // ไม่ต้องรีเซ็ต patrolStartPos; ให้มันหยุดเดิน (Idle) หรือพยายาม Patrol เท่าที่พื้นที่อำนวย
             StopHorizontalMovement();
-
-            // ถ้าติดอยู่นาน ให้ลองเปลี่ยนไป Patrol ดู เผื่อว่าทิศทาง Patrol ปกติจะไปได้
             if (stuckTimer >= stuckWaitTime)
             {
                 currentState = State.Patrolling;
-                stuckTimer = 0f; // รีเซ็ตตัวนับติดขัด
+                stuckTimer = 0f;
             }
             return;
         }
 
-        // การเคลื่อนที่กลับบ้าน
-        FlipSprite(direction);
+        FlipModel(direction);
         if (rb != null)
             rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
         else
             transform.position += Vector3.right * (direction * step);
     }
-
-    // --- End State Handlers ---
 
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -259,12 +258,11 @@ public class PatrollingEnemy : Enemy
     {
         isAttacking = true;
         if (animator != null) animator.SetTrigger("Attack");
-        Debug.Log($"{enemyName} is attacking {target.name}");
         yield return new WaitForSeconds(attackDuration);
 
         attackTimer = attackCooldown;
         isAttacking = false;
-        currentState = State.Chasing; // กลับไปสถานะไล่ล่า (เพื่อเช็คระยะอีกครั้ง)
+        currentState = State.Chasing;
     }
 
     private void FaceTarget(GameObject target)
@@ -272,13 +270,14 @@ public class PatrollingEnemy : Enemy
         float directionX = target.transform.position.x - transform.position.x;
         float moveDirection = Mathf.Sign(directionX);
         movingRight = moveDirection > 0;
-        FlipSprite(moveDirection);
+        FlipModel(moveDirection);
     }
 
     protected override void Patrol()
     {
         float direction = movingRight ? 1f : -1f;
-        FlipSprite(direction);
+        FlipModel(direction);
+
         if (!CanMoveInDirection(direction))
         {
             movingRight = !movingRight;
@@ -297,12 +296,18 @@ public class PatrollingEnemy : Enemy
         }
     }
 
+    private void FlipModel(float direction)
+    {
+        if (Mathf.Abs(direction) < 0.01f) return;
+        currentFacingDirection = direction;
+    }
+
     protected override void Chase(GameObject target)
     {
         if (target == null) return;
 
         float directionX = Mathf.Sign(target.transform.position.x - transform.position.x);
-        FlipSprite(directionX);
+        FlipModel(directionX);
 
         if (!CanMoveInDirection(directionX))
         {
@@ -321,23 +326,12 @@ public class PatrollingEnemy : Enemy
         Bounds bounds = col.bounds;
         Vector2 dirVec = (direction > 0) ? Vector2.right : Vector2.left;
 
-        // 1. เช็คกำแพง (เหมือนเดิม)
         Vector2 wallCheckOrigin = new Vector2(direction > 0 ? bounds.max.x : bounds.min.x, bounds.center.y);
         RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, dirVec, 0.5f, obstacleLayers);
 
-        // 2. เช็คพื้น (แก้ตรงนี้!)
-        // เปลี่ยนจุดเริ่มจาก "เท้า" (min.y) ขึ้นมาที่ "เอว" (center.y) แทน
-        // เพื่อให้มั่นใจว่าเส้น Raycast จะพุ่ง "ทะลุ" พื้นแน่นอน ไม่ใช่เริ่มที่ผิวพื้น
         Vector2 groundCheckOrigin = new Vector2(direction > 0 ? bounds.max.x + 0.2f : bounds.min.x - 0.2f, bounds.center.y);
-
-        // ยิงลงมายาวเท่ากับ "ครึ่งตัว + ระยะเช็คเพิ่ม" (bounds.extents.y + 1f)
         float checkDistance = bounds.extents.y + 1f;
         RaycastHit2D groundHit = Physics2D.Raycast(groundCheckOrigin, Vector2.down, checkDistance, groundLayer);
-
-        // --- เพิ่มบรรทัดนี้เพื่อดูเส้นจริงในหน้า Scene ---
-        Debug.DrawRay(wallCheckOrigin, dirVec * 0.5f, Color.red); // เส้นแดง = เช็คกำแพง
-        Debug.DrawRay(groundCheckOrigin, Vector2.down * checkDistance, Color.green); // เส้นเขียว = เช็คพื้น
-        // ---------------------------------------------
 
         return (wallHit.collider == null && groundHit.collider != null);
     }

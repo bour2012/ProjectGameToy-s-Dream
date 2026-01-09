@@ -64,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
 
     private SpriteRenderer playerSprite;
     private Rigidbody2D rBody;
+    private float originalGravityScale;
     private Animator animator;
     private AudioSource audioSource;
     private AudioSource walkAudioSource;
@@ -85,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();
         playerCollider = GetComponent<Collider2D>();
         // Prepare AudioSource for SFX playback
+        originalGravityScale = rBody != null ? rBody.gravityScale : 1f;
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -721,7 +723,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isClimbing)
         {
-            rBody.gravityScale = 1f;
+            rBody.gravityScale = originalGravityScale;
         }
         else
         {
@@ -832,7 +834,7 @@ public class PlayerMovement : MonoBehaviour
         isOnLadder = false;
         isClimbing = false;
         currentLadder = null;
-        rBody.gravityScale = 1f;
+        rBody.gravityScale = originalGravityScale;
 
         // เปิดการชนกับพื้นกลับมา
         Physics2D.IgnoreLayerCollision(playerLayerNumber, groundLayerNumber, false);

@@ -15,18 +15,18 @@ public class LadderTop : MonoBehaviour
     private bool isPlayerOnLadder = false; // ตรวจสอบว่าผู้เล่นอยู่ใกล้บันไดหรือไม่
 
     private Rigidbody2D playerRb;         // Reference ไปยัง Rigidbody2D ของผู้เล่น
+    //private float savedGravity;
 
 
-
-    public PlayerMovement playerMovement;
+    public PlayerMovement playerMovement;
 
     private void Start()
 
     {
 
         // ตั้งค่า Trigger ให้กับ Collider
-
-        Collider2D col = GetComponent<Collider2D>();
+        //savedGravity = playerRb.gravityScale;
+        Collider2D col = GetComponent<Collider2D>();
 
         if (col != null)
 
@@ -150,7 +150,7 @@ public class LadderTop : MonoBehaviour
 
             {
 
-                playerRb.gravityScale = 1f; // คืนค่าแรงโน้มถ่วงปกติ
+                playerRb.gravityScale = 2; // คืนค่าแรงโน้มถ่วงปกติ
 
             }
 

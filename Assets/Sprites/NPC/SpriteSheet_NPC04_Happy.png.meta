@@ -112,10 +112,10 @@ TextureImporter:
       name: SpriteSheet_NPC04_Happy_0
       rect:
         serializedVersion: 2
-        x: 89
-        y: 3
-        width: 455
-        height: 308
+        x: 0
+        y: 0
+        width: 640
+        height: 640
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,10 +134,10 @@ TextureImporter:
       name: SpriteSheet_NPC04_Happy_1
       rect:
         serializedVersion: 2
-        x: 731
-        y: 15
-        width: 454
-        height: 296
+        x: 640
+        y: 0
+        width: 640
+        height: 640
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,10 +156,10 @@ TextureImporter:
       name: SpriteSheet_NPC04_Happy_2
       rect:
         serializedVersion: 2
-        x: 1371
-        y: 16
-        width: 454
-        height: 295
+        x: 1280
+        y: 0
+        width: 640
+        height: 640
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,33 +174,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: SpriteSheet_NPC04_Happy_3
-      rect:
-        serializedVersion: 2
-        x: 497
-        y: 3
-        width: 17
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 24fde6894ab297ca0800000000000000
-      internalID: -6018731441071923390
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9618b44a900f43e4dad983ddfc94ba6d
     internalID: 0
     vertices: []
     indices: 
@@ -208,12 +186,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":640.0,"y":640.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       SpriteSheet_NPC04_Happy_0: -1012294994570237886
       SpriteSheet_NPC04_Happy_1: 8628609367658262517
       SpriteSheet_NPC04_Happy_2: 637906558791694146
-      SpriteSheet_NPC04_Happy_3: -6018731441071923390
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -77,7 +77,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 2208703988740019828, guid: b014609e7c6d8fb4ca297b42a436fd10, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -135,9 +135,13 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: 0.5773587}
-      - {x: -0.5, y: -0.28866667}
-      - {x: 0.5, y: -0.28866667}
+    - - {x: 0.24184096, y: 0.23171146}
+      - {x: 0.043122023, y: 0.3444982}
+      - {x: -0.30627802, y: 0.17954937}
+      - {x: -0.29301432, y: -0.22829531}
+      - {x: -0.076173924, y: -0.35316926}
+      - {x: 0.11824043, y: -0.3176888}
+      - {x: 0.29301432, y: 0.004561484}
   m_UseDelaunayMesh: 0
 --- !u!114 &1096811300187413495
 MonoBehaviour:
@@ -154,4 +158,4 @@ MonoBehaviour:
   deathType: 5
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  destroyOnAnyHit: 1
+  destroyOnAnyHit: 0

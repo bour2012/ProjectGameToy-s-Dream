@@ -36,7 +36,7 @@ public class Rope : MonoBehaviour
     private bool wasSwingingLastFrame = false;
     private Transform attachedTarget; // เก็บวัตถุที่เชือกเกี่ยว
     private Vector2 localHitOffset;   // เก็บ offset จากตำแหน่ง anchor ของวัตถุ
-
+    private float savedGravity;
     // Integration with GlueShooting
     private GlueShooting glueShootingScript;
     [Tooltip("ระยะเวลาที่ Animation 'ยิงเชือก' เล่นก่อนที่เชือกจะพุ่งออกไป")]
@@ -53,6 +53,7 @@ public class Rope : MonoBehaviour
         ropeHingeAnchorRb = ropeHingeAnchor.GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
         animator = GetComponentInParent<Animator>();
+      
         // หา GlueShooting script
         glueShootingScript = GetComponent<GlueShooting>();
     }
@@ -236,7 +237,7 @@ public class Rope : MonoBehaviour
                     transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 1f), ForceMode2D.Impulse);
                     var playerRb = transform.GetComponent<Rigidbody2D>();
                     Vector2 preSwingVelocity = playerRb.linearVelocity;
-
+                    savedGravity = playerRb.gravityScale;
                     // เพิ่มตำแหน่งปลายเชือก
                     ropePositions.Add(hit.point);
 
@@ -401,7 +402,7 @@ public class Rope : MonoBehaviour
         // คืนค่า gravity เป็นปกติ
         if (playerRb != null)
         {
-            playerRb.gravityScale = 1f;
+            playerRb.gravityScale = savedGravity;
 
         }
 

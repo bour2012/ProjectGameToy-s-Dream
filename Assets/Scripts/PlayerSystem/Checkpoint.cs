@@ -4,8 +4,8 @@ public class Checkpoint : MonoBehaviour
 {
     public enum CheckpointMode
     {
-        OverrideInventory, // µÑé§¤èÒäÍà·ÁãËÁè·Ñé§ËÁ´
-        AddToInventory     // ºÇ¡à¾ÔèÁ¨Ò¡¢Í§·ÕèÁÕÍÂÙè
+        OverrideInventory, // ï¿½ï¿½é§¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        AddToInventory     // ï¿½Ç¡ï¿½ï¿½ï¿½ï¿½ï¿½Ò¡ï¿½Í§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     }
 
     [Header("Checkpoint Settings")]
@@ -13,13 +13,13 @@ public class Checkpoint : MonoBehaviour
     public CheckpointMode mode = CheckpointMode.OverrideInventory;
 
     [Header("Item Settings")]
-    [Tooltip("ÊÓËÃÑºâËÁ´ Override: ¨Ð 'µÑé§¤èÒ' ¨Ó¹Ç¹äÍà·Áà»ç¹¤èÒ¹Õé")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ñºï¿½ï¿½ï¿½ï¿½ Override: ï¿½ï¿½ 'ï¿½ï¿½é§¤ï¿½ï¿½' ï¿½Ó¹Ç¹ï¿½ï¿½ï¿½ï¿½ï¿½ç¹¤ï¿½Ò¹ï¿½ï¿½")]
     public int overrideGlueCount = 3;
-    [Tooltip("ÊÓËÃÑºâËÁ´ Override: ¨Ð 'µÑé§¤èÒ' ¨Ó¹Ç¹äÍà·Áà»ç¹¤èÒ¹Õé")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ñºï¿½ï¿½ï¿½ï¿½ Override: ï¿½ï¿½ 'ï¿½ï¿½é§¤ï¿½ï¿½' ï¿½Ó¹Ç¹ï¿½ï¿½ï¿½ï¿½ï¿½ç¹¤ï¿½Ò¹ï¿½ï¿½")]
     public int overrideThreadCount = 2;
-    [Tooltip("ÊÓËÃÑºâËÁ´ Add: ¨Ð 'ºÇ¡à¾ÔèÁ' äÍà·ÁµÒÁ¨Ó¹Ç¹¹Õé (ãËé¤ÃÑé§à´ÕÂÇ)")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ñºï¿½ï¿½ï¿½ï¿½ Add: ï¿½ï¿½ 'ï¿½Ç¡ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¹Ç¹ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
     public int bonusGlueAmount = 0;
-    [Tooltip("ÊÓËÃÑºâËÁ´ Add: ¨Ð 'ºÇ¡à¾ÔèÁ' äÍà·ÁµÒÁ¨Ó¹Ç¹¹Õé (ãËé¤ÃÑé§à´ÕÂÇ)")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ñºï¿½ï¿½ï¿½ï¿½ Add: ï¿½ï¿½ 'ï¿½Ç¡ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¹Ç¹ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)")]
     public int bonusThreadAmount = 0;
 
     [Header("Visual Settings")]
@@ -34,7 +34,7 @@ public class Checkpoint : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip activationSound;
 
-    // àÃÒäÁèµéÍ§¡ÒÃ Header("Item Defaults") ·Õè«éÓ«éÍ¹ÍÕ¡µèÍä»
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í§ï¿½ï¿½ï¿½ Header("Item Defaults") ï¿½ï¿½ï¿½ï¿½Ó«ï¿½Í¹ï¿½Õ¡ï¿½ï¿½ï¿½ï¿½
     // public int glueCount = 3;
     // public int threadCount = 2;
 
@@ -51,7 +51,7 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // àÃÒ¨ÐàÃÕÂ¡ ActivateCheckpoint() ·Õè¹Õè·Õèà´ÕÂÇ
+        // ï¿½ï¿½Ò¨ï¿½ï¿½ï¿½ï¿½Â¡ ActivateCheckpoint() ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (other.CompareTag("Player"))
         {
             ActivateCheckpoint();
@@ -62,18 +62,13 @@ public class Checkpoint : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        // 1. "´èÒ¹µÃÇ¨" ÍÂÙèµÃ§¹Õé: ¶éÒà¤Âà»Ô´ãªé§Ò¹áÅéÇ ËÃ×ÍËÒ GameManager äÁèà¨Í ¡çäÁèµéÍ§·ÓÍÐäÃµèÍ
+        // 1. à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸šà¸§à¹ˆà¸²à¹€à¸„à¸¢à¸—à¸³à¸‡à¸²à¸™à¹„à¸›à¹à¸¥à¹‰à¸§à¸«à¸£à¸·à¸­à¸¢à¸±à¸‡
         if (isActivated || GameManager.Instance == null) return;
 
-        // 2. µÑé§¤èÒÊ¶Ò¹Ð·Ñ¹·Õ à¾×èÍ»éÍ§¡Ñ¹¡ÒÃàÃÕÂ¡«éÓ
-
-        //Debug.Log($"Checkpoint '{checkpointID}' activated!");
-
-        // 3. ºÍ¡ GameManager ãËéµÑé§¤èÒ Checkpoint ¹Õéà»ç¹µÑÇÅèÒÊØ´
-        // ¡ÒÃ·Óáºº¹Õé¨Ð·ÓãËé GameManager "¶èÒÂÃÙ»" ¨Ó¹Ç¹äÍà·Á»Ñ¨¨ØºÑ¹äÇéâ´ÂÍÑµâ¹ÁÑµÔ
-        GameManager.Instance.SetActiveCheckpoint(this);
-
-        // 4. á¨¡äÍà·ÁµÒÁâËÁ´·ÕèàÅ×Í¡
+        // ---------------------------------------------------------
+        // â˜… à¹à¸à¹‰à¸•à¸£à¸‡à¸™à¸µà¹‰: à¸¢à¹‰à¸²à¸¢à¸à¸²à¸£à¹à¸ˆà¸à¹„à¸­à¹€à¸—à¸¡à¸¡à¸²à¸—à¸³à¹€à¸›à¹‡à¸™à¸ªà¸´à¹ˆà¸‡à¹à¸£à¸à¸ªà¸¸à¸”! â˜…
+        // à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰ Inventory à¸‚à¸­à¸‡à¸œà¸¹à¹‰à¹€à¸¥à¹ˆà¸™à¸¡à¸µà¸‚à¸­à¸‡à¸„à¸£à¸š à¸à¹ˆà¸­à¸™à¸—à¸µà¹ˆà¸ˆà¸°à¸—à¸³à¸à¸²à¸£ Save
+        // ---------------------------------------------------------
         switch (mode)
         {
             case CheckpointMode.OverrideInventory:
@@ -83,8 +78,15 @@ public class Checkpoint : MonoBehaviour
                 ApplyBonusItems();
                 break;
         }
+
+        // 2. à¸žà¸­à¹à¸ˆà¸à¸‚à¸­à¸‡à¹€à¸ªà¸£à¹‡à¸ˆ à¸„à¹ˆà¸­à¸¢à¸šà¸­à¸ GameManager à¹ƒà¸«à¹‰à¸•à¸±à¹‰à¸‡à¸„à¹ˆà¸² Checkpoint à¸¥à¹ˆà¸²à¸ªà¸¸à¸”
+        // GameManager à¸ˆà¸°à¸—à¸³à¸à¸²à¸£ Snapshot (à¸–à¹ˆà¸²à¸¢à¸£à¸¹à¸›) à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸µà¹ˆà¸¡à¸µà¸‚à¸­à¸‡à¸„à¸£à¸šà¹à¸¥à¹‰à¸§à¹€à¸à¹‡à¸šà¹„à¸§à¹‰
+        GameManager.Instance.SetActiveCheckpoint(this);
+        
+        // (à¸šà¸£à¸£à¸—à¸±à¸”à¸™à¸µà¹‰ SaveItemSnapshot à¸­à¸²à¸ˆà¸ˆà¸°à¹„à¸¡à¹ˆà¸ˆà¸³à¹€à¸›à¹‡à¸™à¹à¸¥à¹‰à¸§à¸–à¹‰à¸² SetActiveCheckpoint à¸—à¸³à¸‡à¸²à¸™à¸–à¸¹à¸
+        // à¹à¸•à¹ˆà¹ƒà¸ªà¹ˆà¹„à¸§à¹‰à¸à¸±à¸™à¹€à¸«à¸™à¸µà¸¢à¸§à¸à¹‡à¹„à¸”à¹‰à¸„à¸£à¸±à¸š à¹à¸•à¹ˆà¸•à¹‰à¸­à¸‡à¸­à¸¢à¸¹à¹ˆà¸«à¸¥à¸±à¸‡à¹à¸ˆà¸à¸‚à¸­à¸‡à¹€à¸ªà¸¡à¸­)
         GameManager.Instance.SaveItemSnapshot();
-        // 5. àÅè¹àÍ¿à¿¡µì·Ñé§ËÁ´
+        // 5. ï¿½ï¿½ï¿½ï¿½Í¿à¿¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (checkpointAnimator != null) checkpointAnimator.SetTrigger("Activate");
         if (activationEffect != null) activationEffect.Play();
         if (audioSource != null && activationSound != null) audioSource.PlayOneShot(activationSound);
@@ -134,9 +136,9 @@ public class Checkpoint : MonoBehaviour
     public bool IsActivated() => isActivated;
     public string GetCheckpointID() => checkpointID;
 
-    // ... (ÊèÇ¹ OnDrawGizmos àËÁ×Í¹à´ÔÁ) ...
+    // ... (ï¿½ï¿½Ç¹ OnDrawGizmos ï¿½ï¿½ï¿½ï¿½Í¹ï¿½ï¿½ï¿½) ...
 
-// áÊ´§ Gizmo ã¹ Scene View
+// ï¿½Ê´ï¿½ Gizmo ï¿½ Scene View
 private void OnDrawGizmos()
     {
         if (showGizmo)
@@ -144,12 +146,12 @@ private void OnDrawGizmos()
             Color gizmoColor = isActivated ? activeColor : inactiveColor;
             Gizmos.color = gizmoColor;
 
-            // ÇÒ´äÍ¤Í¹ Checkpoint
+            // ï¿½Ò´ï¿½Í¤Í¹ Checkpoint
             Gizmos.DrawWireSphere(transform.position, 0.5f);
             Gizmos.color = new Color(gizmoColor.r, gizmoColor.g, gizmoColor.b, 0.3f);
             Gizmos.DrawSphere(transform.position, 0.5f);
 
-            // ÇÒ´ÅÙ¡ÈÃªÕé¢Öé¹
+            // ï¿½Ò´ï¿½Ù¡ï¿½Ãªï¿½ï¿½ï¿½ï¿½
             Vector3 arrowTop = transform.position + Vector3.up * 0.8f;
             Vector3 arrowLeft = transform.position + new Vector3(-0.2f, 0.4f, 0);
             Vector3 arrowRight = transform.position + new Vector3(0.2f, 0.4f, 0);
@@ -163,7 +165,7 @@ private void OnDrawGizmos()
 
     private void OnDrawGizmosSelected()
     {
-        // áÊ´§¢éÍÁÙÅ Checkpoint àÁ×èÍàÅ×Í¡
+        // ï¿½Ê´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Checkpoint ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¡
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(transform.position, Vector3.one);
     }

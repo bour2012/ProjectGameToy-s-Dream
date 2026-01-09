@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
     public HashSet<string> playedDialogIDs = new HashSet<string>();
 
     private const string PLAYED_DIALOGS_KEY = "PlayedDialogIDs"; // กุญแจสำหรับ PlayerPrefs
-
+    private const string BONUS_TRIGGERED_KEY = "TriggeredBonusIDs";
     [Header("Debug")]
     public bool showDebugInfo = true;
 
@@ -502,23 +502,41 @@ public class GameManager : MonoBehaviour
     {
         if (ItemManager.Instance == null) return;
 
-        checkpointItemSnapshot = new Dictionary<ItemManager.ItemType, int>();
-        foreach (ItemManager.ItemType itemType in System.Enum.GetValues(typeof(ItemManager.ItemType)))
-        {
-            checkpointItemSnapshot[itemType] = ItemManager.Instance.GetItemCount(itemType);
-        }
-        Debug.Log($"<color=cyan>[GameManager] Item snapshot saved.</color>");
+        // 1. บันทึกจำนวนไอเทมลง PlayerPrefs โดยตรง
+        PlayerPrefs.SetInt("Saved_Glue", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Glue));
+        PlayerPrefs.SetInt("Saved_Thread", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Thread));
+
+        // 2. บันทึกรายการ Checkpoint ที่เคยแจกของไปแล้ว (กันปั๊มของ)
+        string dataToSave = string.Join(",", triggeredBonusCheckpointIDs);
+        PlayerPrefs.SetString(BONUS_TRIGGERED_KEY, dataToSave);
+
+        PlayerPrefs.Save();
+        Debug.Log($"<color=cyan>[GameManager] Saved Inventory & Bonus History to Disk.</color>");
     }
 
     private void RestoreItemsFromSnapshot()
     {
-        if (ItemManager.Instance == null || checkpointItemSnapshot == null) return;
+        if (ItemManager.Instance == null) return;
 
-        foreach (var item in checkpointItemSnapshot)
+        // 1. โหลดประวัติ Checkpoint ที่เคยได้โบนัส
+        if (PlayerPrefs.HasKey(BONUS_TRIGGERED_KEY))
         {
-            ItemManager.Instance.SetItemCount(item.Key, item.Value);
+            string savedData = PlayerPrefs.GetString(BONUS_TRIGGERED_KEY);
+            string[] ids = savedData.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+            triggeredBonusCheckpointIDs = new HashSet<string>(ids);
         }
-        Debug.Log($"<color=cyan>[GameManager] Items restored from snapshot.</color>");
+
+        // 2. โหลดจำนวนไอเทม
+        if (PlayerPrefs.HasKey("Saved_Glue") || PlayerPrefs.HasKey("Saved_Thread"))
+        {
+            int glue = PlayerPrefs.GetInt("Saved_Glue", 0); // ค่า Default 0 หรือค่าเริ่มต้นที่คุณต้องการ
+            int thread = PlayerPrefs.GetInt("Saved_Thread", 0);
+
+            ItemManager.Instance.SetItemCount(ItemManager.ItemType.Glue, glue);
+            ItemManager.Instance.SetItemCount(ItemManager.ItemType.Thread, thread);
+
+            Debug.Log($"<color=cyan>[GameManager] Restored Items: Glue={glue}, Thread={thread}</color>");
+        }
     }
 
     #endregion
@@ -531,10 +549,13 @@ public class GameManager : MonoBehaviour
         InitializeCheckpointSystem();
         CollectAllCheckpoints();
 
+        // 1. กู้คืนไอเทมและประวัติโบนัสก่อนเป็นอันดับแรก
+        RestoreItemsFromSnapshot();
+
         bool checkpointIsSet = false;
 
-        // 1. ถ้าอยู่ในโหมดดีบัก -> พยายามโหลด Checkpoint ที่บันทึกไว้
-        if (resetToLastCheckpoint && PlayerPrefs.HasKey("LastCheckpoint"))
+        // 2. โหลดตำแหน่ง Checkpoint
+        if (PlayerPrefs.HasKey("LastCheckpoint")) // ตัดเงื่อนไข resetToLastCheckpoint ออกเพื่อให้ทำงานเสมอเมื่อตาย
         {
             string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
             foreach (Checkpoint checkpoint in allCheckpoints)
@@ -542,9 +563,9 @@ public class GameManager : MonoBehaviour
                 if (checkpoint != null && checkpoint.GetCheckpointID() == checkpointID)
                 {
                     SetActiveCheckpoint(checkpoint);
-                    checkpoint.ActivateCheckpoint();
+                    checkpoint.ActivateCheckpoint(); // สั่ง Activate เพื่อให้ effect ทำงาน (แต่ของจะไม่เพิ่มซ้ำเพราะเราโหลด History มาแล้วในข้อ 1)
                     checkpointIsSet = true;
-                    Debug.Log($"<color=lime>[Debug Mode] Checkpoint loaded from save: {checkpointID}</color>");
+                    Debug.Log($"<color=lime>Checkpoint loaded: {checkpointID}</color>");
                     break;
                 }
             }
@@ -613,26 +634,34 @@ public class GameManager : MonoBehaviour
                 //ClearCheckpointSaveData();
                 //Debug.Log("<color=yellow>[Normal Mode] Cleared saved checkpoint data.</color>");
             }
-
-            if (defaultCheckpoint != null)
+            if (!checkpointIsSet && defaultCheckpoint != null)
             {
                 SetActiveCheckpoint(defaultCheckpoint);
                 defaultCheckpoint.ActivateCheckpoint();
-                Debug.Log("<color=yellow>Using default checkpoint.</color>");
             }
+            //if (defaultCheckpoint != null)
+            //{
+            //    SetActiveCheckpoint(defaultCheckpoint);
+            //    defaultCheckpoint.ActivateCheckpoint();
+            //    Debug.Log("<color=yellow>Using default checkpoint.</color>");
+            //}
         }
 
-        // --- ส่วนย้ายผู้เล่นและโหลดไอเทม (ทำงานเหมือนเดิม) ---
         if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        if (player != null && currentActiveCheckpoint != null)
+
+        if (player != null)
         {
-            player.position = currentActiveCheckpoint.GetSpawnPosition();
-            if (playerDeath != null)
-                playerDeath.Respawn(currentActiveCheckpoint.GetSpawnPosition());
-        }
-        else if (player != null)
-        {
-            player.position = defaultSpawnPosition;
+            // ถ้ามี Checkpoint ให้เกิดที่ Checkpoint
+            if (currentActiveCheckpoint != null)
+            {
+                player.position = currentActiveCheckpoint.GetSpawnPosition();
+                if (playerDeath != null) playerDeath.Respawn(currentActiveCheckpoint.GetSpawnPosition());
+            }
+            // ถ้าไม่มี ให้เกิดจุดเริ่มต้น scene (หรือค่าที่เซฟไว้ใน PlayerPrefs ถ้าต้องการแม่นยำกว่านี้)
+            else
+            {
+                player.position = defaultSpawnPosition;
+            }
         }
 
         if (ItemManager.Instance != null)
@@ -640,7 +669,6 @@ public class GameManager : MonoBehaviour
             ItemManager.Instance.UpdateUI();
         }
 
-        RestoreItemsFromSnapshot();
         ChangeState(GameState.Normal, "Reset state after reload scene");
     }
 
@@ -805,15 +833,21 @@ public class GameManager : MonoBehaviour
             currentActiveCheckpoint.DeactivateCheckpoint();
         }
         currentActiveCheckpoint = checkpoint;
-        SaveItemSnapshot();
 
-        // บันทึก ID สำหรับการ Respawn ครั้งต่อไป
+        // บันทึก ID Checkpoint
         if (checkpoint != null)
         {
             PlayerPrefs.SetString("LastCheckpoint", checkpoint.GetCheckpointID());
-            PlayerPrefs.Save();
-            Debug.Log($"Active checkpoint set to: {checkpoint.GetCheckpointID()}");
+            // บันทึกตำแหน่ง XYZ ด้วยเผื่อจำเป็น
+            PlayerPrefs.SetFloat("CheckpointX", checkpoint.transform.position.x);
+            PlayerPrefs.SetFloat("CheckpointY", checkpoint.transform.position.y);
+            PlayerPrefs.SetFloat("CheckpointZ", checkpoint.transform.position.z);
         }
+
+        // *** สำคัญ: เรียก SaveItemSnapshot ตรงนี้ เพื่อบันทึก Item และ Bonus History ทันที ***
+        SaveItemSnapshot();
+
+        Debug.Log($"Active checkpoint set & saved: {checkpoint?.GetCheckpointID()}");
     }
 
     public Vector3 GetCurrentSpawnPosition()
@@ -1340,6 +1374,14 @@ public class GameManager : MonoBehaviour
                 playerDeath.Respawn(defaultSpawnPosition);
             Debug.Log($"Player position reset to default: {defaultSpawnPosition}");
         }
+
+        // Clear PlayerPrefs
+        ClearCheckpointSaveData();
+        PlayerPrefs.DeleteKey("Saved_Glue");   // ลบตัวนี้
+        PlayerPrefs.DeleteKey("Saved_Thread"); // ลบตัวนี้
+        PlayerPrefs.DeleteKey(BONUS_TRIGGERED_KEY); // ลบประวัติโบนัส
+
+        PlayerPrefs.Save();
 
         // Reset Repair Progress
         foreach (var progress in repairProgresses)

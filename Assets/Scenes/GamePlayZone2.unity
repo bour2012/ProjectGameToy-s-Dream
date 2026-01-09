@@ -499,6 +499,8 @@ MonoBehaviour:
   - {fileID: 56951860}
   - {fileID: 633295010}
   puzzleManager: {fileID: 1907867833}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -1037,11 +1039,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 41979792}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 58.04, y: -91.86, z: 0}
@@ -1051,7 +1054,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 1
   requiredKeyID: Key03
   requireLeverAndPlayerNearby: 0
@@ -1590,6 +1592,8 @@ MonoBehaviour:
   linkedLevers:
   - {fileID: 633295010}
   puzzleManager: {fileID: 1907867833}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -4760,11 +4764,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 257242501}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -10.3985, y: -41.48, z: 0}
@@ -4774,7 +4779,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -5451,11 +5455,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 282657330}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -87.02, y: -45.61, z: 0}
@@ -5465,7 +5470,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -7322,6 +7326,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -8108,11 +8114,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 434955830}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 32.33, y: -83.06, z: 0}
@@ -8122,7 +8129,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -9301,11 +9307,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 539933841}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 95.73, y: -83.7, z: 0}
@@ -9315,7 +9322,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -11165,6 +11171,8 @@ MonoBehaviour:
   linkedLevers:
   - {fileID: 15737250}
   puzzleManager: {fileID: 1907867833}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -13189,6 +13197,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -13479,11 +13489,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4311636104808577214, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.2
+      value: 13.14
       objectReference: {fileID: 0}
     - target: {fileID: 4311636104808577214, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.7
+      value: 7.42
       objectReference: {fileID: 0}
     - target: {fileID: 4311636104808577214, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -13552,11 +13562,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1950711917461033821, guid: 742d5d9e1fb31ef4a8d10bcf74cfd601, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 56.91
+      value: 56.41
       objectReference: {fileID: 0}
     - target: {fileID: 1950711917461033821, guid: 742d5d9e1fb31ef4a8d10bcf74cfd601, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.23
+      value: -1.67
       objectReference: {fileID: 0}
     - target: {fileID: 1950711917461033821, guid: 742d5d9e1fb31ef4a8d10bcf74cfd601, type: 3}
       propertyPath: m_LocalPosition.z
@@ -13791,6 +13801,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -14849,8 +14861,8 @@ Transform:
   m_GameObject: {fileID: 803318114}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -27.1024, y: -61.8875, z: 0}
-  m_LocalScale: {x: 24.806807, y: 3.8222938, z: 1}
+  m_LocalPosition: {x: -16.3692, y: -59.2877, z: 0}
+  m_LocalScale: {x: 46.274124, y: 9.02176, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 419910460}
@@ -15436,11 +15448,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 839037233}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -8.82, y: -33.72, z: 0}
@@ -15450,7 +15463,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -19180,11 +19192,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1029162356}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -7.409, y: -87.37, z: 0}
@@ -19194,7 +19207,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -19976,11 +19988,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1065269685}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -3.8, y: -35.06, z: 0}
@@ -19990,7 +20003,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -20792,11 +20804,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1129396452}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 32.04, y: -58.3, z: 0}
@@ -20806,7 +20819,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 1
   requiredKeyID: Key02
   requireLeverAndPlayerNearby: 0
@@ -20890,8 +20902,8 @@ Transform:
   m_GameObject: {fileID: 1130654023}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -11.46, y: 3.0815, z: 0}
-  m_LocalScale: {x: 0.49646583, y: 3.2268853, z: 1}
+  m_LocalPosition: {x: -11.46, y: 3.2412, z: 0}
+  m_LocalScale: {x: 0.49646583, y: 3.3517656, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 141038344}
@@ -21065,6 +21077,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -21680,7 +21694,11 @@ MonoBehaviour:
   dialogID: Trigger_Dialog09
   dialogSequence:
   - dialogText: 'Son : You foolish human! There''s no way you''ll get through!'
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 1429394119}
     waitForCamera: 1
     cameraSmoothness: 20
@@ -21710,7 +21728,11 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - dialogText: 
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
     cameraSmoothness: 1
@@ -21728,7 +21750,11 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   - dialogText: 'Son : How about a taste of this!?'
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
     cameraSmoothness: 1
@@ -22612,11 +22638,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1198401888}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -57.48, y: -36.73, z: 0}
@@ -22626,7 +22653,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -24098,11 +24124,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1260244616}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -82.63, y: -40.87, z: 0}
@@ -24112,7 +24139,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -24380,7 +24406,7 @@ Transform:
   m_GameObject: {fileID: 1263809444}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 11.06, y: -68.48, z: 0}
+  m_LocalPosition: {x: 9.58, y: -68.48, z: 0}
   m_LocalScale: {x: 1.6324099, y: 0.42499998, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -24786,6 +24812,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -27898,6 +27926,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -29175,11 +29205,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1458844065}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -35.58, y: -31.13, z: 0}
@@ -29189,7 +29220,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -31229,7 +31259,11 @@ MonoBehaviour:
   dialogID: Trigger_Dialog09
   dialogSequence:
   - dialogText: 'Son : You foolish human! There''s no way you''ll get through!'
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 1497108621}
     waitForCamera: 0
     cameraSmoothness: 1
@@ -31259,7 +31293,11 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - dialogText: 'Son : How about a taste of this!?'
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
     cameraSmoothness: 1
@@ -31277,7 +31315,11 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   - dialogText: 'Son : (Attack!)'
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
     cameraSmoothness: 1
@@ -31307,7 +31349,11 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - dialogText: 'Son : !!'
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
     cameraSmoothness: 1
@@ -31327,7 +31373,11 @@ MonoBehaviour:
   - dialogText: 'Son : Hahaha! If you want the key, come and get it upstairs!
 
 '
-    dialogVoice: {fileID: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
     cameraSmoothness: 1
@@ -34371,11 +34421,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1722150770}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -47.42, y: -37.86, z: 0}
@@ -34385,7 +34436,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -34812,11 +34862,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1727618870}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -5.13, y: -47.40947, z: 0}
@@ -34826,7 +34877,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 1
   requiredKeyID: Key01
   requireLeverAndPlayerNearby: 0
@@ -35572,11 +35622,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1758011885}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -8.82, y: -36.28, z: 0}
@@ -35586,7 +35637,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -37092,6 +37142,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 19
       objectReference: {fileID: 0}
+    - target: {fileID: 7751511937683659091, guid: 47208897213b5794abe033c544cf5203, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7751511937683659091, guid: 47208897213b5794abe033c544cf5203, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.21
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -37126,7 +37184,7 @@ Transform:
   m_GameObject: {fileID: 1856427287}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 37.11, y: -53.38, z: 0}
+  m_LocalPosition: {x: 37.07, y: -49.21, z: 0}
   m_LocalScale: {x: 1.0251361, y: 0.9844455, z: 1.2042}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37226,11 +37284,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1856427288}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 37.11, y: -48.73, z: 0}
@@ -37240,7 +37299,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -37372,11 +37430,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1141107843004056670, guid: 47208897213b5794abe033c544cf5203, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 34.01
+      value: 34.09
       objectReference: {fileID: 0}
     - target: {fileID: 1141107843004056670, guid: 47208897213b5794abe033c544cf5203, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -51.12
+      value: -50.85
       objectReference: {fileID: 0}
     - target: {fileID: 1141107843004056670, guid: 47208897213b5794abe033c544cf5203, type: 3}
       propertyPath: m_LocalPosition.z
@@ -37678,11 +37736,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1884951854}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 58.04, y: -91.86, z: 0}
@@ -37692,7 +37751,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -38939,6 +38997,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
@@ -39629,11 +39689,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1962747910}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -3.67, y: -30.82, z: 0}
@@ -39643,7 +39704,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -40191,11 +40251,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1993341142}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 25.86, y: -53.39, z: 0}
@@ -40205,7 +40266,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -41015,8 +41075,8 @@ Transform:
   m_GameObject: {fileID: 2020390460}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 14.1066, y: -51.0967, z: 0}
-  m_LocalScale: {x: 7.855097, y: 15.140137, z: 1}
+  m_LocalPosition: {x: 14.1066, y: -51.2088, z: 0}
+  m_LocalScale: {x: 7.855097, y: 15.36421, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 419910460}
@@ -41390,11 +41450,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 2051403076}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -21.78, y: -94.3, z: 0}
@@ -41404,7 +41465,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -41950,6 +42010,8 @@ MonoBehaviour:
   rotationSpeed: 5
   linkedLevers: []
   puzzleManager: {fileID: 0}
+  bossToControl: {fileID: 0}
+  guardPointTransform: {fileID: 0}
   leverAnimator: {fileID: 0}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
