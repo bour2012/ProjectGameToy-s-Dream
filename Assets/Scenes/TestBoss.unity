@@ -3273,6 +3273,8 @@ MonoBehaviour:
   wallCheckDistance: 0.5
   deathEffectPrefab: {fileID: 0}
   deathDuration: 2
+  deathSound: {fileID: 0}
+  deathSoundVolume: 1
   enemyName: 
   maxHealth: 100
   moveSpeed: 2
@@ -4991,11 +4993,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 542230345}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -143.08, y: -46.74, z: 0}
@@ -5005,7 +5008,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -6511,11 +6513,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 749444797}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -123, y: -42.3, z: 0}
@@ -6525,7 +6528,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 1
@@ -7769,6 +7771,107 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4311636104808577214, guid: 725e317e5b56c20479040e05b651d5b0, type: 3}
   m_PrefabInstance: {fileID: 995964093}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &862264915
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -105.3101
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -66.53565
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2309038190778824349, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228473728202503190, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228473728202503190, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228473728202503190, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228473728202503190, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228473728202503190, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228473728202503190, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8458480300036665674, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_Name
+      value: Firework
+      objectReference: {fileID: 0}
+    - target: {fileID: 8458480300036665674, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8091e80c7cbedbb4bac696e680624e68, type: 3}
 --- !u!1 &878664512
 GameObject:
   m_ObjectHideFlags: 0
@@ -9522,11 +9625,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1011421579}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -142.0244, y: -45.45, z: 0}
@@ -9536,7 +9640,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -10167,11 +10270,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1075793691}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -137.7, y: -46.85, z: 0}
@@ -10181,7 +10285,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -11370,11 +11473,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1187709231}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -156.8, y: -48.27, z: 0}
@@ -11384,7 +11488,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -15852,11 +15955,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1618909530}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -146.86, y: -45.29, z: 0}
@@ -15866,7 +15970,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -16628,11 +16731,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1698262503}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -138.2, y: -42.3, z: 0}
@@ -16642,7 +16746,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 1
@@ -17958,11 +18061,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 1879568560}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -138.2, y: -42.3, z: 0}
@@ -17972,7 +18076,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 1
@@ -18785,11 +18888,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 2005785092}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -137.99, y: -54.61, z: 0}
@@ -18799,7 +18903,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -18984,11 +19087,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a1771b5af8a1c429961937b1762ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimMode: 0
   platformAnimator: {fileID: 0}
-  openAnimationName: PlatformOpen
-  closeAnimationName: PlatformClose
-  idleCloseAnimationName: PlatformIdleClose
-  idleOpenAnimationName: PlatformIdleOpen
+  activateTriggerName: Open
+  deactivateTriggerName: Close
+  idleOpenStateName: IdleOpen
+  idleCloseStateName: IdleClose
   platform: {fileID: 2007629951}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -134.39, y: -55.63, z: 0}
@@ -18998,7 +19102,6 @@ MonoBehaviour:
   rotationSpeed: 50
   startRotation: 0
   isRotationMode: 0
-  isAnimMode: 0
   isLocked: 0
   requiredKeyID: 
   requireLeverAndPlayerNearby: 0
@@ -20194,3 +20297,4 @@ SceneRoots:
   - {fileID: 1899388961}
   - {fileID: 1919974776}
   - {fileID: 904099107}
+  - {fileID: 862264915}

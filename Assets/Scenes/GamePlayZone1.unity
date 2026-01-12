@@ -3076,7 +3076,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -7940,7 +7940,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -8799,7 +8799,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 4787720
+    m_Bits: 4787208
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -12434,7 +12434,7 @@ Transform:
   m_GameObject: {fileID: 200130854}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -24.888298, y: -12.789999, z: 0}
+  m_LocalPosition: {x: -24.888298, y: -13.15, z: 0}
   m_LocalScale: {x: 3.2590253, y: 0.8608519, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22819,7 +22819,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -26676,7 +26676,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -30936,7 +30936,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -33311,7 +33311,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -37317,7 +37317,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -44180,6 +44180,7 @@ MonoBehaviour:
   prefabToSpawn: {fileID: 2573702397075836111, guid: b426ee2bb0b43ca40beedeef3905bfc5, type: 3}
   spawnPoint: {fileID: 1921302757}
   repeatSpawn: 0
+  spawnWaitDestruction: 0
   spawnInterval: 2
   destroyDelay: 5
 --- !u!61 &667455719
@@ -55026,7 +55027,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -68857,7 +68858,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -70247,6 +70248,7 @@ MonoBehaviour:
   prefabToSpawn: {fileID: 2573702397075836111, guid: cf28be8095c819946bd9c8542db2efad, type: 3}
   spawnPoint: {fileID: 1737506572}
   repeatSpawn: 0
+  spawnWaitDestruction: 0
   spawnInterval: 2
   destroyDelay: 5
 --- !u!61 &1140464082
@@ -73111,7 +73113,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -83878,7 +83880,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -84327,7 +84329,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -84526,7 +84528,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -93977,7 +93979,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -99229,7 +99231,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -103392,7 +103394,7 @@ Transform:
   m_GameObject: {fileID: 1668124047}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 22.550842, y: -18.98364, z: 0}
+  m_LocalPosition: {x: 22.550842, y: -19.42, z: 0}
   m_LocalScale: {x: 1.0412, y: 1.0412, z: 1.0412}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -103967,6 +103969,7 @@ MonoBehaviour:
   prefabToSpawn: {fileID: 3469051024466254926, guid: 843f954efcb36e945a75acebb021fd21, type: 3}
   spawnPoint: {fileID: 1746353058}
   repeatSpawn: 1
+  spawnWaitDestruction: 1
   spawnInterval: 5
   destroyDelay: 5
 --- !u!61 &1674614108
@@ -107062,6 +107065,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1945920010}
     m_Modifications:
+    - target: {fileID: 1302802849567439580, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: eeea010201413e44c99deb02a3d1bb77, type: 2}
     - target: {fileID: 2592376929119044878, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: m_Name
       value: Enemy01
@@ -107106,13 +107113,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7384096261996816119, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
+      propertyPath: m_FlipX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8854236734645776330, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
+      propertyPath: m_Constraints
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 9094772734244229833, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: moveSpeed
       value: 2.3
       objectReference: {fileID: 0}
     - target: {fileID: 9094772734244229833, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: detectionRange
-      value: 1.5
+      value: 0.27
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -107723,6 +107738,7 @@ MonoBehaviour:
   prefabToSpawn: {fileID: 3469051024466254926, guid: 843f954efcb36e945a75acebb021fd21, type: 3}
   spawnPoint: {fileID: 567931502}
   repeatSpawn: 1
+  spawnWaitDestruction: 1
   spawnInterval: 5
   destroyDelay: 3
 --- !u!61 &1730646244
@@ -114821,7 +114837,7 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 16777151
+    m_Bits: 16776639
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -131305,7 +131321,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2357058354585990780, guid: 843f954efcb36e945a75acebb021fd21, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -87.65
+      value: -87.74
       objectReference: {fileID: 0}
     - target: {fileID: 2357058354585990780, guid: 843f954efcb36e945a75acebb021fd21, type: 3}
       propertyPath: m_LocalPosition.y

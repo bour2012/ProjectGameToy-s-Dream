@@ -56,6 +56,10 @@ public class PlayerMovement : MonoBehaviour
     public bool isSwinging;
     public Vector2 ropeHook;
 
+    [Header("Effects")]
+    [Tooltip("Prefab ของ Particle Effect ที่จะแสดงเมื่อเหยียบหัวศัตรู")]
+    public GameObject stompEffectPrefab;
+
     // Ladder variables
     private bool isOnLadder = false;
     public bool isClimbing = false;
@@ -427,6 +431,16 @@ public class PlayerMovement : MonoBehaviour
             {
                 enemy.OnStomped(this); // เรียกฟังก์ชัน OnStomped ของศัตรู
                 Debug.Log("Stomped on enemy head!");
+
+                if (stompEffectPrefab != null)
+                {
+                    // hit.point คือจุดที่ BoxCast กระทบกับ Collider (จุดปะทะจริง)
+                    GameObject effect = Instantiate(stompEffectPrefab, hit.point, Quaternion.identity);
+
+                    // ทำลาย Effect ทิ้งหลังจาก 1 วินาที (ป้องกันขยะล้นเกม)
+                    // (ปรับเลข 1f ตามความยาวของ Animation Particle ของคุณ)
+                    Destroy(effect, 1f);
+                }
             }
         }
 

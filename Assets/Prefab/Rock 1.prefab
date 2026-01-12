@@ -170,10 +170,13 @@ MonoBehaviour:
   points: []
   moveSpeed: 0
   modeLoop: 0
+  loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
   modeDestroyed: 1
   modeShoot: 0
+  shootContinuous: 0
+  continuousShootInterval: 0.5
   modeAnim: 0
   timeDelay: 2
   swingSpeed: 2
@@ -184,6 +187,11 @@ MonoBehaviour:
   travelTime: 10
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
+  respawnOnDisappear: 1
+  shootStaggerMode: 0
+  staggerInterval: 0.25
+  randomSpread: 1
+  manualOrder: 0
   anim: {fileID: 0}
 --- !u!1 &2648408420176068841
 GameObject:
@@ -261,7 +269,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 15
-  m_Sprite: {fileID: 6529909481953654932, guid: a2f2a3f2d3644fe48aaafb0de8ca9ddb, type: 3}
+  m_Sprite: {fileID: 1338603833586857640, guid: eee23196698064f4a9cdff9c54682ab4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -320,6 +328,7 @@ MonoBehaviour:
   deathType: 0
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  destroyOnAnyHit: 0
 --- !u!58 &3669108044255456061
 CircleCollider2D:
   m_ObjectHideFlags: 0

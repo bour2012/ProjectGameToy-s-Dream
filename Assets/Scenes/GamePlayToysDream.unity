@@ -3065,6 +3065,7 @@ Transform:
   - {fileID: 1068194897}
   - {fileID: 583322791}
   - {fileID: 1316438158}
+  - {fileID: 627594128}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &119433811
@@ -20747,11 +20748,11 @@ Transform:
   m_GameObject: {fileID: 627594126}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 72.69431, y: -1.66, z: 0.6}
+  m_LocalPosition: {x: 162.29433, y: -11.96, z: 0.6}
   m_LocalScale: {x: 0.64056, y: 0.64056, z: 0.64056}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2058116214}
+  m_Father: {fileID: 118965514}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &627594129
 BoxCollider2D:
@@ -20787,7 +20788,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.7894108, y: 0.12007141}
+  m_Offset: {x: 0.7894108, y: 0.43723488}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -20797,7 +20798,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.0004113, y: 12.589857}
+  m_Size: {x: 1.0004113, y: 11.95553}
   m_EdgeRadius: 0
 --- !u!114 &627594130
 MonoBehaviour:
@@ -20819,8 +20820,8 @@ MonoBehaviour:
   idleCloseStateName: IdleClose
   platform: {fileID: 627594128}
   pivotPosition: {x: 0, y: 0, z: 0}
-  upPosition: {x: 162.2943, y: -6.9, z: 1.68}
-  downPosition: {x: 162.2943, y: -11.13635, z: 1.68}
+  upPosition: {x: 162.2943, y: -6.9, z: 0.6}
+  downPosition: {x: 162.2943, y: -11.96, z: 0.6}
   speed: 2
   openRotationAngle: 0
   rotationSpeed: 50
@@ -67930,7 +67931,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 627594128}
   - {fileID: 444148734}
   - {fileID: 399109400}
   - {fileID: 858375736}

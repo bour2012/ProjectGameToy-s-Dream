@@ -18,13 +18,21 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     [Tooltip("ระยะยิง Raycast ด้านข้างเพื่อตรวจจับกำแพง")]
     [SerializeField] protected float wallCheckDistance = 0.5f;
 
-    protected Animator animator; // [เพิ่ม] มีอยู่แล้วแต่ไม่ได้ใช้ ตอนนี้ได้ใช้แล้ว
+    protected Animator animator;
 
     [Header("Effects")]
     [Tooltip("Prefab ของ Particle Effect ที่จะเล่นตอนตาย")]
     public GameObject deathEffectPrefab;
     [Tooltip("ระยะเวลาที่เอฟเฟกต์จะเล่นก่อนที่ Object จะถูกทำลาย (วินาที)")]
     public float deathDuration = 2f;
+
+    // ▼▼▼ [เพิ่ม] ส่วนตั้งค่าเสียง ▼▼▼
+    [Header("Audio")]
+    [Tooltip("เสียงที่จะเล่นตอนตาย")]
+    public AudioClip deathSound;
+    [Range(0f, 1f)]
+    public float deathSoundVolume = 1f;
+    // ▲▲▲ [สิ้นสุดส่วนเพิ่ม] ▲▲▲
 
     [Header("Basic Stats")]
     public string enemyName;
@@ -45,7 +53,6 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected GameObject currentTarget;
     protected SpriteRenderer spriteRenderer;
 
-    // [เพิ่ม] ชื่อ Parameter ใน Animator (ต้องตรงกับใน Unity)
     protected const string ANIM_IS_MOVING = "IsMoving";
     protected const string ANIM_HIT = "Hit";
     protected const string ANIM_DIE = "Die";
@@ -55,7 +62,6 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         originalSpeed = moveSpeed;
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        //animator = GetComponent<Animator>();
         animator = GetComponentInChildren<Animator>();
     }
 
@@ -64,76 +70,41 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         currentHealth = maxHealth;
         initialPosition = transform.position;
     }
-    //protected virtual void Update()
-    //{
-    //    isGrounded = IsGrounded();
 
-    //    // 1. เรียกใช้ฟังก์ชัน Animation ที่เราแยกออกมา
-    //    HandleAnimation();
-
-    //    // 2. Logic การเดินแบบโง่ๆ ของตัวแม่ (ตัวลูกจะไม่ใช้ส่วนนี้)
-    //    if (!isChasing)
-    //    {
-    //        if (isGrounded) Patrol();
-    //        else StopHorizontalMovement();
-    //    }
-    //}
     protected void HandleAnimation()
     {
         if (animator == null) return;
 
         bool isMoving = false;
-
-        // เช็คว่ามี Rigidbody ไหม?
         if (rb != null)
         {
-            // ★ วิธีใหม่: เช็คความเร็วจากแกน X ของ Rigidbody โดยตรง
-            // วิธีนี้เสถียรที่สุดสำหรับตัวที่เดินด้วยฟิสิกส์
             isMoving = Mathf.Abs(rb.linearVelocity.x) > 0.1f;
         }
         else
         {
-            // (เผื่อไว้) ถ้าไม่มี Rigidbody ค่อยใช้วิธีเช็คตำแหน่งแบบเดิม
             float actualSpeed = (transform.position - lastPosition).magnitude / Time.deltaTime;
             isMoving = actualSpeed > 0.1f;
             lastPosition = transform.position;
         }
-
-        // ส่งค่าเข้า Animator
         animator.SetBool(ANIM_IS_MOVING, isMoving);
     }
+
     protected virtual void Update()
     {
         isGrounded = IsGrounded();
 
-        // [เพิ่ม] อัปเดต Animation เดิน/วิ่ง
-        // ตรวจสอบว่ามีความเร็วในแกน X หรือไม่ ถ้ามีแสดงว่าเดินอยู่
-
-
-        if (animator != null && rb != null) // && rb != null ลบ rb ออกได้ถ้าไม่ได้ใช้ Velocity
+        if (animator != null && rb != null)
         {
-            // คำนวณความเร็วจากระยะทางที่เปลี่ยนไปจริงๆ
             float actualSpeed = (transform.position - lastPosition).magnitude / Time.deltaTime;
-
-            // --- [แก้ไข] ลบ || isChasing ออกครับ ---
-            // ให้เช็คแค่ Speed อย่างเดียว ถ้าตัวขยับ = เดิน, ถ้าตัวนิ่ง = หยุด
             bool isMoving = actualSpeed > 0.1f;
-
             animator.SetBool(ANIM_IS_MOVING, isMoving);
-
             lastPosition = transform.position;
         }
 
         if (!isChasing)
         {
-            if (isGrounded)
-            {
-                Patrol();
-            }
-            else
-            {
-                StopHorizontalMovement();
-            }
+            if (isGrounded) Patrol();
+            else StopHorizontalMovement();
         }
     }
 
@@ -148,7 +119,6 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected virtual bool IsGrounded()
     {
         RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
-
 #if UNITY_EDITOR
         Debug.DrawRay(transform.position, Vector2.down * groundCheckDistance, groundHit.collider ? Color.magenta : Color.gray);
 #endif
@@ -198,7 +168,6 @@ public abstract class Enemy : MonoBehaviour, ISlowable
             yield return null;
         }
         moveSpeed = targetSpeed;
-
         yield return new WaitForSeconds(duration);
         moveSpeed = originalSpeed;
     }
@@ -223,28 +192,22 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         }
 
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
-
         foreach (var hit in hits)
         {
             GameObject candidate = hit.gameObject;
-
             if (HasLineOfSight(candidate))
             {
                 currentTarget = candidate;
                 return currentTarget;
             }
         }
-
         return null;
     }
 
     public virtual void TakeDamage(float damage)
     {
         currentHealth -= damage;
-
-        // [เพิ่ม] เล่น Animation เจ็บ
         if (animator != null) animator.SetTrigger(ANIM_HIT);
-
         Debug.Log($"{enemyName} took {damage} damage! HP left: {currentHealth}");
         if (currentHealth <= 0) Die();
     }
@@ -256,7 +219,13 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         // 1. สั่งเล่น Animation ตาย
         if (animator != null) animator.SetTrigger(ANIM_DIE);
 
-        // 2. ปิดระบบฟิสิกส์และการชนทันที (สำคัญมาก: กันศพกระเด็น และกันผู้เล่นเหยียบซ้ำ)
+        // ▼▼▼ [เพิ่ม] เล่นเสียงตายที่ตำแหน่งนี้ ▼▼▼
+        if (deathSound != null)
+        {
+            AudioSource.PlayClipAtPoint(deathSound, transform.position, deathSoundVolume);
+        }
+
+        // 2. ปิดระบบฟิสิกส์
         this.enabled = false;
         foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
         {
@@ -270,73 +239,33 @@ public abstract class Enemy : MonoBehaviour, ISlowable
             rb.angularVelocity = 0f;
         }
 
-        // 3. เริ่มขั้นตอนการรอ (เรียกฟังก์ชันด้านล่าง)
+        // 3. เริ่มขั้นตอนการรอ Destroy
         StartCoroutine(DieSequence());
     }
 
-    // ฟังก์ชันลำดับเหตุการณ์ (Coroutine)
     private IEnumerator DieSequence()
     {
         // รอเวลาให้ Animation เล่นจนจบ
-        // (*** สำคัญ: คุณต้องตั้งค่า deathDuration ใน Inspector ให้เท่ากับเวลาของท่าตายด้วยนะครับ ***)
         yield return new WaitForSeconds(deathDuration);
 
-        // พอรอเสร็จ ค่อยเสก Effect (เช่น ควันระเบิด)
+        // พอรอเสร็จ ค่อยเสก Effect
         if (deathEffectPrefab != null)
         {
             Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
         }
 
-        // แล้วค่อยทำลายตัวละครทิ้ง
         Destroy(gameObject);
     }
-    //protected virtual void Die()
-    //{
-    //    Debug.Log($"{enemyName} has been defeated!");
-
-    //    // [เพิ่ม] เล่น Animation ตาย
-    //    if (animator != null) animator.SetTrigger(ANIM_DIE);
-
-
-
-    //    this.enabled = false;
-    //    foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
-    //    {
-    //        col.enabled = false;
-    //    }
-    //    if (TryGetComponent<Rigidbody2D>(out var rb))
-    //    {
-    //        rb.linearVelocity = Vector2.zero;
-    //        rb.bodyType = RigidbodyType2D.Kinematic;
-
-    //        rb.angularVelocity = 0f; // หยุดการหมุน
-    //    }
-    //    if (deathEffectPrefab != null)
-    //    {
-    //        Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-    //    }
-
-    //    // [แก้ไข] เปลี่ยนจาก Destroy ทันที เป็นรอเวลา (เพื่อให้ Animation เล่นจบ)
-    //    // ถ้า deathDuration น้อยไป Animation อาจเล่นไม่จบ ให้ปรับใน Inspector
-    //    Destroy(gameObject, deathDuration);
-    //}
 
     protected virtual void Patrol() { }
 
     protected bool HasLineOfSight(GameObject target)
     {
         if (target == null) return false;
-
         Vector2 direction = (target.transform.position - transform.position).normalized;
         float distance = Vector2.Distance(transform.position, target.transform.position);
-
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, obstacleLayers);
-
-        if (hit.collider != null)
-        {
-            return false;
-        }
-
+        if (hit.collider != null) return false;
         return true;
     }
 
@@ -345,16 +274,15 @@ public abstract class Enemy : MonoBehaviour, ISlowable
         float directionX = target.transform.position.x - transform.position.x;
         float moveDirection = Mathf.Sign(directionX);
         FlipSprite(moveDirection);
-
         transform.position += Vector3.right * moveDirection * moveSpeed * Time.deltaTime;
     }
 
     protected GameObject DetectTarget()
     {
+        // (Logic เดิม)
         if (currentTarget != null)
         {
             float dist = Vector2.Distance(transform.position, currentTarget.transform.position);
-
             if (((1 << currentTarget.layer) & detectionLayers) != 0 &&
                 dist <= detectionRange &&
                 HasLineOfSight(currentTarget))
@@ -366,9 +294,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
                 currentTarget = null;
             }
         }
-
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRange, detectionLayers);
-
         foreach (var hit in hits)
         {
             GameObject candidate = hit.gameObject;
@@ -378,7 +304,6 @@ public abstract class Enemy : MonoBehaviour, ISlowable
                 return currentTarget;
             }
         }
-
         return null;
     }
 
@@ -394,9 +319,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
             Debug.Log($"{enemyName} was stomped!");
             player.BounceAfterStomp();
 
-            // [เพิ่ม] เล่น Animation ตาย (กรณีถูกเหยียบ)
-            if (animator != null) animator.SetTrigger(ANIM_DIE);
-
+            // [หมายเหตุ] ฟังก์ชัน Die() ด้านบนมีการเล่นเสียงแล้ว ดังนั้นเรียก Die() เฉยๆ ก็จะมีเสียงครับ
             Die();
         }
     }
