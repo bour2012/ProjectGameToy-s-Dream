@@ -16123,7 +16123,7 @@ MonoBehaviour:
   platform: {fileID: 340665056}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &244454900
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -26895,7 +26895,7 @@ MonoBehaviour:
   platform: {fileID: 147364326}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &398506208
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -34966,6 +34966,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 14.1
       objectReference: {fileID: 0}
+    - target: {fileID: 2605084227717049825, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2842588201188864771, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_Name
       value: SettingPlayer
@@ -37618,7 +37622,7 @@ MonoBehaviour:
   platform: {fileID: 158860088}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &567911095
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -42345,7 +42349,7 @@ MonoBehaviour:
   platform: {fileID: 506081976}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &643515929
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -63132,7 +63136,7 @@ MonoBehaviour:
   platform: {fileID: 1375817934}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &999727585
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -70650,7 +70654,7 @@ MonoBehaviour:
   platform: {fileID: 1109814699}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &1142361819
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -76464,11 +76468,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  godModeKey: 291
+  godModeSpeed: 10
   defaultCheckpoint: {fileID: 365757839}
   showCheckpointDebugInfo: 0
   resetToLastCheckpoint: 1
   currentState: 0
   player: {fileID: 0}
+  playerMovement: {fileID: 0}
   playerController: {fileID: 0}
   repairProgresses:
   - repairId: 
@@ -82672,7 +82679,7 @@ MonoBehaviour:
   platform: {fileID: 1514433076}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &1355994636
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -107066,9 +107073,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 1945920010}
     m_Modifications:
     - target: {fileID: 1302802849567439580, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1302802849567439580, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: eeea010201413e44c99deb02a3d1bb77, type: 2}
+      objectReference: {fileID: 22100000, guid: 22ad8f91e400b9540bf78b86071df120, type: 2}
     - target: {fileID: 2592376929119044878, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: m_Name
       value: Enemy01
@@ -107128,6 +107139,10 @@ PrefabInstance:
     - target: {fileID: 9094772734244229833, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
       propertyPath: detectionRange
       value: 0.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 9094772734244229833, guid: d8a9f38059180194fb399df7298ffd71, type: 3}
+      propertyPath: isSpecialState
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -108428,7 +108443,7 @@ MonoBehaviour:
   platform: {fileID: 564200905}
   triggerLayers:
     serializedVersion: 2
-    m_Bits: 67136
+    m_Bits: 66624
 --- !u!61 &1742076196
 BoxCollider2D:
   m_ObjectHideFlags: 0

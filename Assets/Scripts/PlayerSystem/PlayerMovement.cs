@@ -4,6 +4,10 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour
 {
 
+    [Header("God Mode Settings")] // [GOD MODE] เพิ่มส่วนนี้
+    public float godModeSpeed = 10f;
+    private bool isGodMode = false;
+
 
     [Header("Movement Settings")]
     public float speed = 3f;              // ความเร็วเดินบนพื้น
@@ -29,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ladder Settings")]
     public LayerMask ladderLayer = 8;     // Layer สำหรับบันได
     public float climbSpeed = 3f;         // ความเร็วปีนบันได
-    public int playerLayerNumber = 10;    // Layer number ของ Player
+    public int playerLayerNumber = 6;    // Layer number ของ Player
     public int groundLayerNumber = 9;     // Layer number ของ Ground
     public int wallLayerNumber = 11;      // Layer number ของกำแพง
 
@@ -113,57 +117,31 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // รับ Input
+        // 1. ตรวจสอบ Dialog ก่อน (สำคัญที่สุด)
         if (GameManager.Instance != null)
         {
             GameState state = GameManager.Instance.currentState;
             if (state == GameState.InDialog)
             {
-                // Entering dialog: suppress input and force idle animation/sounds.
-                if (!suppressInputUntilRelease)
-                {
-                    suppressInputUntilRelease = true;
-                    // clear movement and audio immediately
-                    horizontalInput = 0f;
-                    if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
-                    if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
-                    if (animator != null)
-                    {
-                        animator.SetFloat("Speed", 0f);
-                        animator.SetBool("IsJumping", false);
-                        //animator.SetBool("IsClimbing", false);
-                        animator.SetBool("IsSwinging", false);
-                        // also clear crafting flag
-                        animator.SetBool(craftingAnimatorBool, false);
-                    }
-                }
-
-                // Don't process input while in dialog
+                HandleDialogInputSuppression();
                 return;
             }
             else
             {
-                // If we are out of dialog but still suppressing, keep suppressing until player releases movement keys
-                if (suppressInputUntilRelease)
-                {
-                    float rawH = Input.GetAxisRaw("Horizontal");
-                    if (Mathf.Abs(rawH) < 0.01f)
-                    {
-                        suppressInputUntilRelease = false; // key released -> allow input again
-                    }
-                    else
-                    {
-                        // still holding movement key -> keep suppressing (don't process inputs yet)
-                        horizontalInput = 0f;
-                        if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
-                        if (animator != null) animator.SetFloat("Speed", 0f);
-                        return;
-                    }
-                }
+                if (CheckInputReleaseAfterDialog()) return;
             }
         }
 
-     
+        // [GOD MODE] 2. ตรวจสอบ God Mode
+        // ถ้าอยู่ในโหมดเทพ ให้บินได้และข้าม Logic การเดินปกติไปเลย
+        if (isGodMode)
+        {
+            HandleGodModeMovement();
+            FlipCharacter(); // ยังหันหน้าซ้ายขวาได้
+            return;
+        }
+
+
 
         // Check crafting state and disable input while crafting
         bool isCraftingState = GameManager.Instance != null && GameManager.Instance.currentState == GameState.Crafting;
@@ -231,6 +209,8 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isGodMode) return;
+
         if (GameManager.Instance != null)
         {
             GameState state = GameManager.Instance.currentState;
@@ -286,6 +266,105 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
+    #region GodMode
+
+    public void SetGodMode(bool enable)
+    {
+        Debug.Log($"[PlayerMovement] God Mode Received: {enable}");
+        isGodMode = enable;
+
+        if (rBody != null)
+        {
+            if (isGodMode)
+            {
+                // เปิดโหมดเทพ: ปิดแรงโน้มถ่วง, หยุดความเร็วตกค้าง
+                rBody.gravityScale = 0;
+                rBody.linearVelocity = Vector2.zero;
+
+                gameObject.tag = "Untagged";
+                gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+                // ทำให้ทะลุกำแพง (ปิด Collider หรือเปลี่ยนเป็น Trigger)
+                // แนะนำใช้ isTrigger เพื่อให้ยัง Detect Area ได้แต่ไม่ชน
+                if (playerCollider != null) playerCollider.isTrigger = true;
+                if (playerSprite != null) playerSprite.color = new Color(1, 1, 1, 0.5f); // โปร่งแสง
+            }
+            else
+            {
+                // ปิดโหมดเทพ: คืนค่าแรงโน้มถ่วง
+                rBody.gravityScale = originalGravityScale;
+                if (playerCollider != null) playerCollider.isTrigger = false;
+
+                gameObject.tag = "Player";
+                gameObject.layer = playerLayerNumber;
+                if (playerSprite != null) playerSprite.color = Color.white;
+                // คืนค่า Collider
+
+            }
+        }
+    }
+
+    void HandleGodModeMovement()
+    {
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical"); // W/S สำหรับบินขึ้นลง
+
+        Vector2 move = new Vector2(h, v).normalized * godModeSpeed;
+
+        if (rBody != null)
+        {
+            rBody.linearVelocity = move;
+        }
+
+        // ตั้งค่า Animation เป็น Idle หรือบิน (ตามต้องการ)
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", 0f); // ให้ดูเหมือนลอยๆ
+            animator.SetBool("IsJumping", true); // หรือใช้ท่ากระโดดค้างไว้
+        }
+    }
+
+
+    void HandleDialogInputSuppression()
+    {
+        if (!suppressInputUntilRelease)
+        {
+            suppressInputUntilRelease = true;
+            horizontalInput = 0f;
+            if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
+            if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
+            if (animator != null)
+            {
+                animator.SetFloat("Speed", 0f);
+                animator.SetBool("IsJumping", false);
+                animator.SetBool("IsSwinging", false);
+                animator.SetBool(craftingAnimatorBool, false);
+            }
+        }
+    }
+
+    bool CheckInputReleaseAfterDialog()
+    {
+        if (suppressInputUntilRelease)
+        {
+            float rawH = Input.GetAxisRaw("Horizontal");
+            if (Mathf.Abs(rawH) < 0.01f)
+            {
+                suppressInputUntilRelease = false;
+            }
+            else
+            {
+                horizontalInput = 0f;
+                if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
+                if (animator != null) animator.SetFloat("Speed", 0f);
+                return true; // ยังกดค้างอยู่ ให้ return ออกไป
+            }
+        }
+        return false;
+    }
+
+
+    #endregion
     private IEnumerator CheckAndPlayRespawnDialogCoroutine()
     {
         // 1. หน่วงเวลา (เหมือนเดิม)
@@ -633,6 +712,13 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateAnimations()
     {
+
+        if (isGodMode)
+        {
+            animator.SetBool("IsJumping", true); // ท่าลอยตัว
+            return;
+        }
+
         animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
 
         animator.SetFloat("yVelocity", rBody.linearVelocity.y);
@@ -839,6 +925,7 @@ public class PlayerMovement : MonoBehaviour
     void ExitLadder()
     {
         if (!isClimbing && !isOnLadder) return;
+        if (isGodMode) return;
 
         if (GameManager.Instance != null)
         {

@@ -10,6 +10,10 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     [Header("Head Collider")]
     public Collider2D headCollider;
 
+    [Header("Special Animation Settings")]
+    [Tooltip("ถ้าติ๊กถูก จะสั่งให้ Animator เล่นท่าพิเศษ (Parameter: IsSpecial)")]
+    public bool isSpecialState = false;
+
     [Header("Environment Checks")]
     [Tooltip("Layer ของพื้น (ต้องตั้งค่าในคลาสลูกด้วย)")]
     [SerializeField] protected LayerMask groundLayer;
@@ -56,6 +60,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected const string ANIM_IS_MOVING = "IsMoving";
     protected const string ANIM_HIT = "Hit";
     protected const string ANIM_DIE = "Die";
+    protected const string ANIM_IS_SPECIAL = "IsSpecial";
 
     protected virtual void Awake()
     {
@@ -87,11 +92,19 @@ public abstract class Enemy : MonoBehaviour, ISlowable
             lastPosition = transform.position;
         }
         animator.SetBool(ANIM_IS_MOVING, isMoving);
+
+        if (isSpecialState)
+        {
+            animator.SetTrigger(ANIM_IS_SPECIAL);
+            isSpecialState = false;
+        }
     }
 
     protected virtual void Update()
     {
         isGrounded = IsGrounded();
+
+        //HandleAnimation();
 
         if (animator != null && rb != null)
         {

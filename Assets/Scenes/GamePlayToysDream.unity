@@ -36862,11 +36862,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  godModeKey: 291
+  godModeSpeed: 10
   defaultCheckpoint: {fileID: 963019930}
   showCheckpointDebugInfo: 0
   resetToLastCheckpoint: 1
   currentState: 0
   player: {fileID: 0}
+  playerMovement: {fileID: 721006046}
   playerController: {fileID: 0}
   repairProgresses:
   - repairId: 
