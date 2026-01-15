@@ -18,12 +18,17 @@ public enum GameState
     Dead,
     UsingLever,        // กำลังใช้งาน Lever
     ClimbingLadder,
-    InDialog
+    InDialog,
+    GodMode
 }
 
 public class GameManager : MonoBehaviour
 
 {
+
+    [Header("God Mode Settings")]
+    public KeyCode godModeKey = KeyCode.F10; // ปุ่มเปิด/ปิด God Mode
+    public float godModeSpeed = 10f;
 
     [Header("Checkpoint Settings")]
     [Tooltip("Checkpoint เริ่มต้น (ถ้าไม่มีจะใช้ตำแหน่งเริ่มต้นของ Player)")]
@@ -51,6 +56,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Player Reference")]
     public Transform player;
+    public PlayerMovement playerMovement;
     public PlayerController playerController;
 
     [Header("Repair Progress Tracking")]
@@ -130,9 +136,11 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        HandleGodModeInput();
         HandleGlobalInput();
         HandleCheckpointInput();
         HandleDebugResetInput();
+       
         if (showDebugInfo) DisplayDebugInfo();
     }
 
@@ -209,8 +217,8 @@ public class GameManager : MonoBehaviour
         if (player == null)
             player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-        if (playerController == null && player != null)
-            playerController = player.GetComponent<PlayerController>();
+        if (playerMovement == null && player != null)
+            playerMovement = player.GetComponent<PlayerMovement>();
     }
 
     void SetupReferences()
@@ -366,6 +374,10 @@ public class GameManager : MonoBehaviour
 
     public bool CanChangeToState(GameState targetState)
     {
+
+        if (targetState == GameState.GodMode) return true;
+        if (currentState == GameState.GodMode && targetState == GameState.Normal) return true;
+
         switch (currentState)
         {
             case GameState.Normal:
@@ -412,6 +424,9 @@ public class GameManager : MonoBehaviour
                 // ตอนตาย ห้ามเปลี่ยนสถานะ ยกเว้น Respawning
                 return targetState == GameState.Normal;
 
+            case GameState.GodMode:
+                return targetState == GameState.Normal; // จาก GodMode กลับไป Normal ได้เท่านั้น
+
 
             default:
                 return false;
@@ -425,9 +440,11 @@ public class GameManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Normal:
-                EnablePlayerControl(true);
+                playerMovement.SetGodMode(false);
                 break;
-
+            case GameState.GodMode:
+                playerMovement.SetGodMode(true); // <--- เปิด God Mode ที่ตัวผู้เล่น
+                break;
             case GameState.RepairingGlue:
             case GameState.RepairingThread:
             case GameState.Crafting:
@@ -469,6 +486,37 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region GodMode
+
+    void HandleGodModeInput()
+    {
+        if (Input.GetKeyDown(godModeKey))
+        {
+            ToggleGodMode();
+        }
+    }
+
+    public void ToggleGodMode()
+    {
+        if (currentState == GameState.GodMode)
+        {
+            // ปิด God Mode กลับสู่สถานะปกติ
+            ChangeState(GameState.Normal, "Deactivated God Mode");
+            playerMovement.SetGodMode(false);
+        }
+        else
+        {
+            currentState = GameState.GodMode;
+
+            if (playerMovement != null)
+            {
+                playerMovement.SetGodMode(true); // <--- ต้องเรียกบรรทัดนี้ ไม่งั้น Player ไม่รู้เรื่องครับ
+              
+            }
+        }
+    }
+
+    #endregion
 
     #region Persistence Public Methods
 

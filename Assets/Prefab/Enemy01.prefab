@@ -253,6 +253,8 @@ MonoBehaviour:
   wallCheckDistance: 0.5
   deathEffectPrefab: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
   deathDuration: 2
+  deathSound: {fileID: 8300000, guid: f6e7c1330782cd6419604f764ee1c931, type: 3}
+  deathSoundVolume: 0.5
   enemyName: 
   maxHealth: 100
   moveSpeed: 3

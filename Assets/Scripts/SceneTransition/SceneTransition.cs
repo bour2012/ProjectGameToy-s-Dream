@@ -14,6 +14,9 @@ public class SceneTransition : MonoBehaviour, IInteractable
     [Tooltip("ถ้าติ๊ก, ผู้เล่นต้องกดปุ่มเพื่อเปลี่ยนซีน. ถ้าไม่ติ๊ก, ผู้เล่นจะเปลี่ยนซีนทันทีที่เดินเข้ามา")]
     public bool requireButtonPress = true;
 
+    public bool modeChengTime = false;
+    public float changTime ;
+
     [Header("UI Settings (Optional)")]
     [Tooltip("ข้อความที่จะแสดงบน UI Prompt (จะทำงานเมื่อ requireButtonPress เป็น true)")]
     [TextArea] public string interactionPromptText = "[E] to Enter";
@@ -26,6 +29,16 @@ public class SceneTransition : MonoBehaviour, IInteractable
         if (transition != null && transition.gameObject != null)
         {
             transition.gameObject.SetActive(true);
+        }
+    }
+
+    private void Update()
+    {
+        if (modeChengTime)
+        {
+            changTime -= Time.deltaTime;
+            if (changTime <= 0)
+                SceneManager.LoadScene(nextSceneName);
         }
     }
 

@@ -51,6 +51,7 @@ public class TrashCraftingSystem : MonoBehaviour
     private int currentItemIndex = 0;
     private Vector3 originalUIScale;
     private GameObject currentCraftedObject;
+    private Coroutine uiAnimationCoroutine;
 
     [System.Serializable]
     public class CraftableItem
@@ -236,18 +237,28 @@ public class TrashCraftingSystem : MonoBehaviour
     {
         if (isCrafting) return;
 
+    
+        if (uiAnimationCoroutine != null)
+        {
+            StopCoroutine(uiAnimationCoroutine);
+            uiAnimationCoroutine = null;
+        }
+ 
+
         if (show && gameManager.currentState == GameState.Normal)
         {
             if (craftingUIContainer != null)
             {
-                craftingUIContainer.SetActive(true);
-                StartCoroutine(UIAppearAnimation());
+                craftingUIContainer.SetActive(true); // เปิด Object ทันที
+                // เก็บ Coroutine ใส่ตัวแปร
+                uiAnimationCoroutine = StartCoroutine(UIAppearAnimation());
             }
             UpdateInteractPrompt();
         }
         else
         {
-            StartCoroutine(UIDisappearAnimation());
+            // เก็บ Coroutine ใส่ตัวแปร
+            uiAnimationCoroutine = StartCoroutine(UIDisappearAnimation());
         }
     }
 
@@ -576,6 +587,7 @@ public class TrashCraftingSystem : MonoBehaviour
         if (craftingUIContainer == null) yield break;
 
         craftingUIContainer.transform.localScale = Vector3.zero;
+
         float time = 0;
         while (time < 0.3f)
         {
@@ -602,7 +614,7 @@ public class TrashCraftingSystem : MonoBehaviour
             yield return null;
         }
 
-        if (craftingUIContainer != null)
+        if (craftingUIContainer != null && !isPlayerNear)
         {
             craftingUIContainer.SetActive(false);
         }

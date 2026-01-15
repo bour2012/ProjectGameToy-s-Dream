@@ -318,6 +318,7 @@ GameObject:
   m_Component:
   - component: {fileID: 143936575}
   - component: {fileID: 143936574}
+  - component: {fileID: 143936576}
   m_Layer: 0
   m_Name: SpriteSheet_NPC02_Happy_0
   m_TagString: Untagged
@@ -390,11 +391,33 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 147.99, y: -15.98, z: 0}
-  m_LocalScale: {x: 0.72224015, y: 0.72224015, z: 0.72224015}
+  m_LocalScale: {x: 0.7222401, y: 0.72224015, z: 0.7222401}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &143936576
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143936573}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f8489e97b9475294d8bdf102d30552d3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &150809173 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
@@ -1493,6 +1516,7 @@ MonoBehaviour:
   walkSfx: {fileID: 0}
   isSwinging: 0
   ropeHook: {x: 0, y: 0}
+  stompEffectPrefab: {fileID: 0}
   isClimbing: 0
 --- !u!114 &457222219
 MonoBehaviour:
@@ -1657,6 +1681,7 @@ GameObject:
   m_Component:
   - component: {fileID: 461705039}
   - component: {fileID: 461705038}
+  - component: {fileID: 461705040}
   m_Layer: 0
   m_Name: SpriteSheet_NPC04_Happy_0
   m_TagString: Untagged
@@ -1734,6 +1759,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &461705040
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461705037}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 526080e647dd57c4ca5474f1ffbaa1ce, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &466563666
 GameObject:
   m_ObjectHideFlags: 0
@@ -3718,6 +3765,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1105535751}
   - component: {fileID: 1105535750}
+  - component: {fileID: 1105535752}
   m_Layer: 0
   m_Name: SpriteSheet_NPC05_Happy_0
   m_TagString: Untagged
@@ -3795,6 +3843,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1105535752
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1105535749}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8b57922dc53038c48a614161153725df, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1107770297
 GameObject:
   m_ObjectHideFlags: 0
@@ -3875,6 +3945,8 @@ MonoBehaviour:
   transition: {fileID: 1027866019}
   nextSceneName: GamePlayZone2
   requireButtonPress: 1
+  modeChengTime: 0
+  changTime: 0
   interactionPromptText: '[E] to Enter'
 --- !u!61 &1143351600
 BoxCollider2D:
@@ -4181,6 +4253,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1164289012}
   - component: {fileID: 1164289011}
+  - component: {fileID: 1164289013}
   m_Layer: 0
   m_Name: SpriteSheet_NPC06_Happy_0
   m_TagString: Untagged
@@ -4231,7 +4304,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_Sprite: {fileID: -3439139629317011572, guid: 5daa5d10f8dbcc141978148c1076c710, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -4253,11 +4326,33 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 153.57, y: -18.24, z: 0}
-  m_LocalScale: {x: 0.39348558, y: 0.39348558, z: 0.39348558}
+  m_LocalScale: {x: 0.3934856, y: 0.39348558, z: 0.3934856}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1164289013
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1164289010}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c383ae85e25a04141aa404de1a698a1d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1201762657
 GameObject:
   m_ObjectHideFlags: 0
@@ -5125,7 +5220,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7738385
+      value: 2.7738435
       objectReference: {fileID: 0}
     - target: {fileID: 3902534689289002104, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: Lens.FieldOfView
@@ -7748,6 +7843,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2118503252}
   - component: {fileID: 2118503251}
+  - component: {fileID: 2118503253}
   m_Layer: 0
   m_Name: SpriteSheet_NPC03_Happy_0
   m_TagString: Untagged
@@ -7825,6 +7921,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &2118503253
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118503250}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d0a5eb15c4a3f054a8f7cb859d1bfaaf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
