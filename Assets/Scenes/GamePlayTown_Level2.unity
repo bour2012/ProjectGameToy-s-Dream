@@ -11826,7 +11826,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1290895825
 Transform:
   m_ObjectHideFlags: 0
@@ -12984,7 +12984,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7738385
+      value: 2.7738397
       objectReference: {fileID: 0}
     - target: {fileID: 3902534689289002104, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: Lens.FieldOfView
@@ -13212,11 +13212,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 225.79
+      value: 225.76
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.82
+      value: 6.77
       objectReference: {fileID: 0}
     - target: {fileID: 6302583053544631121, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_RenderPostProcessing
