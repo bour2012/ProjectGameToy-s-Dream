@@ -1,14 +1,15 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.Events;
+using System.Collections;
 using TMPro;
 using Unity.Cinemachine;
-using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogManager : MonoBehaviour
 {
     public static DialogManager Instance;
 
-    // ... (ตัวแปร Header อื่นๆ เหมือนเดิม) ...
     [Header("UI Components")]
     public GameObject dialogBox;
     public TextMeshProUGUI dialogText;
@@ -20,8 +21,6 @@ public class DialogManager : MonoBehaviour
     [Header("Camera")]
     public CinemachineCamera dialogCamera;
     [SerializeField] private int dialogCameraPriority = 100;
-
-    // [เพิ่มใหม่] ค่าความคลาดเคลื่อนที่ยอมรับได้ว่า "กล้องถึงแล้ว" (หน่วย Unity Unit ต่อเฟรม)
     [SerializeField] private float cameraMovementThreshold = 0.01f;
 
     private CinemachinePositionComposer positionComposer;
@@ -32,9 +31,7 @@ public class DialogManager : MonoBehaviour
 
     private float defaultLensSize;
     private Coroutine zoomCoroutine;
-    // เก็บค่า Zoom ล่าสุดที่ควรจะเป็น (ไม่รีเซ็ตเมื่อประโยคถัดไปไม่มี changeZoom)
     private float currentTargetLensSize;
-    // ค่าเริ่มต้นเผื่ออยาก Reset ตอนจบ Dialog ทั้งหมด
     private float initialLensSize;
     private Coroutine typewriterCoroutine;
     private DialogTrigger currentOriginator;
@@ -46,8 +43,6 @@ public class DialogManager : MonoBehaviour
     private bool isShowingHint = false;
     private bool autoAdvance = false;
     private float autoAdvanceDelay = 2f;
-
-    // [เพิ่มใหม่] ตัวแปรเช็คว่ากำลังรอกล้องอยู่ไหม
     private bool isWaitingForCamera = false;
 
     void Awake()
@@ -57,7 +52,6 @@ public class DialogManager : MonoBehaviour
 
     private void Start()
     {
-        // ... (Start เดิม) ...
         if (dialogCamera != null)
         {
             positionComposer = dialogCamera.GetComponent<CinemachinePositionComposer>();
@@ -68,7 +62,6 @@ public class DialogManager : MonoBehaviour
             else
                 defaultLensSize = dialogCamera.Lens.FieldOfView;
 
-            // เก็บค่าเริ่มต้นและตั้งค่า target ให้เริ่มจากค่าปัจจุบันของเลนส์
             initialLensSize = defaultLensSize;
             var lens = dialogCamera.Lens;
             currentTargetLensSize = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
@@ -85,8 +78,6 @@ public class DialogManager : MonoBehaviour
 
     private void Update()
     {
-        // [แก้ไข] เพิ่มเงื่อนไข isWaitingForCamera ห้ามกดข้ามถ้ารอกล้องอยู่
-        if (isTransitioning || isWaitingForCamera) return;
         if (isTransitioning || isWaitingForCamera || isShowingHint) return;
 
         if (!isDialogActive) return;
@@ -96,6 +87,7 @@ public class DialogManager : MonoBehaviour
             if (isTyping)
             {
                 StopTypewriter();
+                // ถ้ากดข้าม ให้โชว์ข้อความทั้งหมดทันที (รวมถึง Tag สีด้วย)
                 if (currentSequence != null && currentIndex < currentSequence.Length)
                     dialogText.text = currentSequence[currentIndex].dialogText;
             }
@@ -106,7 +98,6 @@ public class DialogManager : MonoBehaviour
         }
     }
 
-    // ... (StartDialogSequence เดิม) ...
     public void StartDialogSequence(DialogData[] sequence, DialogTrigger originator, bool freezePlayer, bool autoNext = false, float delay = 2f)
     {
         if (sequence == null || sequence.Length == 0 || isDialogActive) return;
@@ -118,7 +109,6 @@ public class DialogManager : MonoBehaviour
         autoAdvanceDelay = delay;
         isDialogActive = true;
 
-        // ตั้ง current target ให้เริ่มจากค่ากล้องตอนเริ่ม dialog
         if (dialogCamera != null)
         {
             var lens = dialogCamera.Lens;
@@ -143,13 +133,11 @@ public class DialogManager : MonoBehaviour
 
         DialogData data = currentSequence[currentIndex];
 
-        // ถ้า Data บอกให้เปลี่ยนค่า Zoom -> อัปเดต target ค่า Zoom ล่าสุด
         if (data.changeZoom)
         {
             currentTargetLensSize = data.targetLensSize;
         }
 
-        // เรียก Coroutine เพื่อเลื่อนไปยัง currentTargetLensSize (ถ้ามี)
         if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
         zoomCoroutine = StartCoroutine(ZoomLensRoutine(currentTargetLensSize, data.zoomDuration));
 
@@ -162,37 +150,23 @@ public class DialogManager : MonoBehaviour
 
             UpdateCameraTarget(data);
 
-            // ถ้า Fade ดำ เราไม่จำเป็นต้องรอกล้องวิ่ง เพราะคนมองไม่เห็นอยู่แล้ว
-            // แต่ถ้าระบบ Cinemachine ตัด Hard Cut ตอน Fade ก็ไม่มีปัญหา
-
             float waitTime = data.fadeHoldDuration > 0f ? data.fadeHoldDuration : 0.5f;
             yield return new WaitForSecondsRealtime(waitTime);
 
             yield return StartCoroutine(FadeRoutine(0f, data.fadeDuration));
-
-            // รอเพิ่มหลังจอใส
             yield return new WaitForSecondsRealtime(0.5f);
 
             isTransitioning = false;
         }
         else
         {
-            // ถ้าไม่ Fade ให้ย้ายกล้อง และเช็คว่าจะรอไหม
             UpdateCameraTarget(data);
 
-            //// [เพิ่มใหม่] ส่วนเช็คการรอกล้อง
             if (data.focusTarget != null && data.waitForCamera && dialogCamera != null)
             {
-                // ซ่อนกล่องข้อความก่อน
                 if (dialogBox != null) dialogBox.SetActive(false);
-
-                // ล็อกอินพุต
                 isWaitingForCamera = true;
-
-                // รอจนกว่ากล้องจะนิ่ง
                 yield return StartCoroutine(WaitForCameraToStabilize());
-
-                // ปลดล็อก
                 isWaitingForCamera = false;
             }
         }
@@ -200,43 +174,33 @@ public class DialogManager : MonoBehaviour
         ShowDialogUI(data);
     }
 
-    // [เพิ่มใหม่] ฟังก์ชันรอกล้องหยุดขยับ
     private IEnumerator WaitForCameraToStabilize()
     {
-        float timeout = 5.0f; // กันเหนียวเผื่อกล้องติดบัค ไม่ยอมหยุด จะได้ไม่ค้างตลอดกาล
+        float timeout = 5.0f;
         float timer = 0f;
-
-        // รอเฟรมแรกให้ Cinemachine เริ่มคำนวณก่อน
         yield return null;
 
         Vector3 lastPos = dialogCamera.transform.position;
 
-        // เงื่อนไข: ถ้ากล้องขยับน้อยกว่า Threshold ติดต่อกัน หรือ หมดเวลา Timeout
         while (timer < timeout)
         {
             timer += Time.deltaTime;
-
             float distanceMoved = Vector3.Distance(dialogCamera.transform.position, lastPos);
 
-            // ถ้าขยับน้อยมาก (ถือว่าถึงแล้ว/หยุดแล้ว)
             if (distanceMoved < cameraMovementThreshold)
             {
-                // เช็คซ้ำอีกนิดเผื่อเป็นแค่จังหวะสะดุด (Optional)
                 yield return null;
                 if (Vector3.Distance(dialogCamera.transform.position, lastPos) < cameraMovementThreshold)
                 {
-                  
-                    break; // ออกจาก Loop รอ
+                    break;
                 }
             }
 
             lastPos = dialogCamera.transform.position;
             yield return null;
         }
-
     }
 
-    // ... (ZoomLensRoutine เดิม) ...
     private IEnumerator ZoomLensRoutine(float targetValue, float duration)
     {
         if (dialogCamera == null) yield break;
@@ -261,34 +225,21 @@ public class DialogManager : MonoBehaviour
         dialogCamera.Lens = lensSettings;
     }
 
-    // ... (UpdateCameraTarget เดิม) ...
     private void UpdateCameraTarget(DialogData data)
     {
         if (dialogCamera == null) return;
 
         if (data.focusTarget != null)
         {
-            // เช็คว่า Target เปลี่ยนไหม หรือเป็นตัวเดิม (เพื่อ Reset Damping ถ้าจำเป็น)
             bool isNewTarget = dialogCamera.Follow != data.focusTarget;
-
             dialogCamera.Follow = data.focusTarget;
-            // ถ้าเป็น 2D ปกติไม่ต้อง LookAt แต่ถ้า 3D อาจจะต้องใช้
-            // dialogCamera.LookAt = data.focusTarget; 
 
             if (positionComposer != null)
             {
-                // ถ้าเปลี่ยนเป้าหมาย และต้องการให้กล้องเริ่มวิ่งใหม่
-                if (isNewTarget)
-                {
-                    // บางกรณีอาจต้องสั่ง Reset การคำนวณของ Cinemachine
-                    // dialogCamera.PreviousStateIsValid = false; 
-                }
-
                 positionComposer.Damping.x = data.cameraSmoothness;
                 positionComposer.Damping.y = data.cameraSmoothness;
                 positionComposer.Damping.z = data.cameraSmoothness;
             }
-
             dialogCamera.Priority = dialogCameraPriority;
         }
         else
@@ -297,12 +248,8 @@ public class DialogManager : MonoBehaviour
         }
     }
 
-    // ... (ShowDialogUI, FadeRoutine, NextDialog, EndDialog, Typewriter เหมือนเดิม) ...
-    // ... Copy ฟังก์ชันที่เหลือจากโค้ดเก่ามาวางต่อได้เลยครับ ไม่มีการเปลี่ยนแปลง ...
-
     private void ShowDialogUI(DialogData data)
     {
-        // เหมือนเดิม 100%
         bool shouldHideUI = string.IsNullOrWhiteSpace(data.dialogText) || data.useFadeCut;
         if (shouldHideUI)
         {
@@ -314,14 +261,13 @@ public class DialogManager : MonoBehaviour
 
         if (data.isHint)
         {
-            if (dialogBox != null) dialogBox.SetActive(false); // ซ่อน dialog ปกติ
+            if (dialogBox != null) dialogBox.SetActive(false);
             if (data.hintUIElement != null)
             {
                 StartCoroutine(ShowHintRoutine(data));
             }
             else
             {
-                // fallback: แสดงข้อความสั้นๆ ใน dialogBox ถ้าไม่มี hintUIElement
                 if (dialogBox != null && !dialogBox.activeSelf) dialogBox.SetActive(true);
                 data.onLineStart?.Invoke();
                 dialogText.text = data.dialogText;
@@ -330,10 +276,7 @@ public class DialogManager : MonoBehaviour
             return;
         }
 
-
-
         if (dialogBox != null && !dialogBox.activeSelf) dialogBox.SetActive(true);
-
         data.onLineStart?.Invoke();
 
         if (useTypewriterEffect)
@@ -357,14 +300,12 @@ public class DialogManager : MonoBehaviour
             yield break;
         }
         isShowingHint = true;
-        // หา TextMeshPro ใน hint (รวม inactive ลูกด้วย) แล้วเซ็ตข้อความ
         var hintText = hint.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
         if (hintText != null)
         {
             hintText.text = data.dialogText;
         }
 
-        // ถ้ามี CanvasGroup ให้แน่ใจว่าแสดงผลได้
         var cg = hint.GetComponent<CanvasGroup>();
         if (cg != null)
         {
@@ -374,10 +315,7 @@ public class DialogManager : MonoBehaviour
         }
 
         hint.SetActive(true);
-
         data.onLineStart?.Invoke();
-
-        // Note: per-letter voice playback handled by TypewriterEffect via VoiceProfile.
 
         float dur = Mathf.Max(0.01f, data.displayDuration);
         float t = 0f;
@@ -387,11 +325,11 @@ public class DialogManager : MonoBehaviour
             yield return null;
         }
 
-        // ปิด hint แล้วไปประโยคถัดไป
         hint.SetActive(false);
         isShowingHint = false;
         NextDialog();
     }
+
     private IEnumerator FadeRoutine(float targetAlpha, float duration)
     {
         float startAlpha = fadePanelCanvasGroup.alpha;
@@ -407,28 +345,19 @@ public class DialogManager : MonoBehaviour
 
     private void NextDialog()
     {
-        // [แก้ไข] เพิ่มเงื่อนไข isWaitingForCamera
         if (isTransitioning || isWaitingForCamera) return;
-
         currentIndex++;
         StartCoroutine(ProcessCurrentDialogStep());
     }
 
-    // ... ฟังก์ชันที่เหลือ (EndDialog, StopTypewriter, TypewriterEffect, AutoAdvanceCoroutine) เหมือนเดิม
     public void EndDialog()
     {
         if (fadePanelCanvasGroup != null) fadePanelCanvasGroup.alpha = 0;
         isTransitioning = false;
-        isWaitingForCamera = false; // [เพิ่ม] รีเซ็ตค่า
-
+        isWaitingForCamera = false;
         isDialogActive = false;
         if (dialogBox != null) dialogBox.SetActive(false);
-
-        if (dialogCamera != null)
-        {
-            // ปรับ Priority ลง แต่ไม่รีเซ็ตค่าเลนส์ — เก็บค่า Zoom ล่าสุดไว้
-            dialogCamera.Priority = 0;
-        }
+        if (dialogCamera != null) dialogCamera.Priority = 0;
         if (GameManager.Instance != null) GameManager.Instance.EndDialogState();
         currentOriginator?.InvokeCompletionEvent();
     }
@@ -443,10 +372,13 @@ public class DialogManager : MonoBehaviour
         isTyping = false;
     }
 
+    // --------------------------------------------------------------------------------
+    // ส่วนที่แก้ไขเพื่อแก้ปัญหา Tag สีโผล่
+    // --------------------------------------------------------------------------------
     private IEnumerator TypewriterEffect(DialogData data)
     {
         isTyping = true;
-        dialogText.text = "";
+        dialogText.text = ""; // ล้างข้อความเก่า
 
         if (string.IsNullOrEmpty(data.dialogText))
         {
@@ -455,13 +387,39 @@ public class DialogManager : MonoBehaviour
             yield break;
         }
 
-        char[] characters = data.dialogText.ToCharArray();
-        for (int i = 0; i < characters.Length; i++)
+        // แปลงข้อความทั้งหมดเป็น String ปกติเพื่อเช็ค Tag ได้ง่าย
+        string fullText = data.dialogText;
+
+        for (int i = 0; i < fullText.Length; i++)
         {
-            char c = characters[i];
+            // 1. ตรวจสอบว่าตัวอักษรนี้เป็นจุดเริ่มต้นของ Tag หรือไม่ (<)
+            if (fullText[i] == '<')
+            {
+                // มองหาจุดจบของ Tag (>)
+                int closeIndex = fullText.IndexOf('>', i);
+
+                // ถ้าเจอจุดจบ แสดงว่าเป็น Tag จริงๆ
+                if (closeIndex != -1)
+                {
+                    // ดึงข้อความทั้งก้อน Tag ออกมา (เช่น <color=red>)
+                    string tag = fullText.Substring(i, closeIndex - i + 1);
+
+                    // เติม Tag ลงไปใน Text ทันที (เพื่อให้ Unity รู้ว่าต้องเปลี่ยนสี)
+                    dialogText.text += tag;
+
+                    // กระโดดข้าม Index ไปที่ตัวสุดท้ายของ Tag เลย (ไม่ต้องรอพิมพ์ทีละตัว)
+                    i = closeIndex;
+
+                    // ข้ามการเล่นเสียงและการรอเวลาใน Loop นี้
+                    continue;
+                }
+            }
+
+            // 2. ถ้าไม่ใช่ Tag ก็พิมพ์ตัวอักษรปกติ
+            char c = fullText[i];
             dialogText.text += c;
 
-            // If a VoiceProfile is assigned, play the mapped letter sound (cuts previous clip)
+            // เล่นเสียงเฉพาะตอนพิมพ์ตัวอักษรปกติ (ไม่เล่นตอนใส่ Tag)
             if (data.currentVoice != null)
             {
                 PlayLetterSound(c, data);
@@ -469,7 +427,8 @@ public class DialogManager : MonoBehaviour
             else if (data.typingSound != null && c != ' ')
             {
                 int freq = Mathf.Max(1, data.playSoundFrequency);
-                if (i % freq == 0)
+                // เช็คว่าตัวนี้ควรเล่นเสียงไหม
+                if (dialogText.text.Length % freq == 0)
                 {
                     PlayTypingSound(data);
                 }
@@ -481,6 +440,7 @@ public class DialogManager : MonoBehaviour
         isTyping = false;
         if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
     }
+    // --------------------------------------------------------------------------------
 
     private void PlayTypingSound(DialogData data)
     {
@@ -495,21 +455,15 @@ public class DialogManager : MonoBehaviour
         {
             audioSource.pitch = 1f;
         }
-
         audioSource.PlayOneShot(data.typingSound);
-
         audioSource.pitch = originalPitch;
     }
 
-    // Play a letter-mapped sound from the VoiceProfile (cuts previous clip immediately)
     private void PlayLetterSound(char c, DialogData data)
     {
         AudioSource src = audioSource != null ? audioSource : GetComponent<AudioSource>();
         if (src == null || data == null) return;
 
-        // ---------------------------------------------------------
-        // Case 1: VoiceProfile present -> play A-Z mapped sound (cuts previous clip)
-        // ---------------------------------------------------------
         if (data.currentVoice != null && data.currentVoice.alphabetSounds != null && data.currentVoice.alphabetSounds.Length > 0)
         {
             int index = char.ToUpper(c) - 65;
@@ -526,9 +480,6 @@ public class DialogManager : MonoBehaviour
                 }
             }
         }
-        // ---------------------------------------------------------
-        // Case 2: No VoiceProfile -> fallback to typingSound (one-shot, respects pitch randomization)
-        // ---------------------------------------------------------
         else if (data.typingSound != null)
         {
             if (data.randomizePitch)

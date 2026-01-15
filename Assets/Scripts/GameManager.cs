@@ -131,6 +131,7 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        FindPlayerReferences();
         ApplyCheckpointAndItemsAfterReload();
     }
 
@@ -145,7 +146,30 @@ public class GameManager : MonoBehaviour
     }
 
     #region Played Dialogs Persistence
+    private void FindPlayerReferences()
+    {
+        // ค้นหา GameObject ที่มี Tag "Player"
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
 
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+            playerMovement = playerObj.GetComponent<PlayerMovement>();
+            playerController = playerObj.GetComponent<PlayerController>();
+
+            // หา PlayerDeathSystem ด้วย (เห็นคุณใช้ในโค้ดอื่น)
+            playerDeath = playerObj.GetComponent<PlayerDeathSystem>();
+
+            // อัปเดต defaultSpawnPosition ใหม่จาก Player ตัวใหม่
+            defaultSpawnPosition = player.position;
+
+            Debug.Log("[GameManager] Found new Player references.");
+        }
+        else
+        {
+            Debug.LogError("[GameManager] CRITICAL: Player with tag 'Player' not found in this scene!");
+        }
+    }
     /// <summary>
     /// โหลดรายชื่อ Dialog ID ที่เคยเล่นแล้วจาก PlayerPrefs
     /// </summary>
@@ -1388,14 +1412,15 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F2))
         {
+            ClearPlayedDialogsHistory();
             DebugResetAll();
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.F3))
         {
             ClearPlayedDialogsHistory();
             // (Optional) เพิ่ม Debug Log เพื่อให้รู้ว่าทำงานแล้ว
-            Debug.LogWarning("[GameManager] ประวัติ Dialog ถูกล้างด้วยปุ่มลัด (X)!");
+            Debug.LogWarning("[GameManager] ประวัติ Dialog ถูกล้างด้วยปุ่มลัด (F3)!");
         }
     }
 

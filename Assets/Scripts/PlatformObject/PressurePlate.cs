@@ -6,6 +6,19 @@ public class PressurePlate : MonoBehaviour
     public LayerMask triggerLayers; // กำหนด LayerMask สำหรับ Object ที่จะตรวจสอบ
     private int objectsOnPlate = 0;
 
+    [Header("Audio Settings")]
+    public AudioSource audioSource;   // ตัวเล่นเสียง (ลากมาใส่ หรือปล่อยว่างเพื่อให้โค้ดหาเอง)
+    public AudioClip activateSound;   // ไฟล์เสียงตอนเหยียบ
+
+    private void Start()
+    {
+        // ถ้าลืมลาก AudioSource มาใส่ โค้ดจะพยายามหาจากในตัวมันเองให้
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
+
     void OnTriggerEnter2D(Collider2D other)
     {
         // ตรวจสอบว่า Object ที่เข้ามาอยู่ใน Layer ที่กำหนดหรือไม่
@@ -14,6 +27,9 @@ public class PressurePlate : MonoBehaviour
             objectsOnPlate++;
             platform.Toggle(true); // เปิดแพลตฟอร์ม
             Debug.Log("Pressure Plate Activated: Open");
+
+            // --- เล่นเสียงตรงนี้ ---
+            PlaySound(activateSound);
         }
     }
 
@@ -27,7 +43,19 @@ public class PressurePlate : MonoBehaviour
             {
                 platform.Toggle(false); // ปิดแพลตฟอร์ม
                 Debug.Log("Pressure Plate Deactivated: Close");
+
+                // ถ้าอยากให้มีเสียงตอน "ปล่อย" ด้วย ให้เพิ่ม PlaySound(deactivateSound) ตรงนี้ครับ
             }
+        }
+    }
+
+    // ฟังก์ชันช่วยเล่นเสียง (กัน Error กรณีลืมใส่เสียง)
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            // ใช้ PlayOneShot เพื่อให้เสียงเล่นทับกันได้ (กรณีเหยียบรัวๆ)
+            audioSource.PlayOneShot(clip);
         }
     }
 

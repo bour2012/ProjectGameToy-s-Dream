@@ -7,6 +7,8 @@ public class ObjectFader : MonoBehaviour
 
     [Header("ความเร็วในการ จาง/โผล่")]
     public float fadeSpeed = 10f;
+    public bool modeAnim = false;
+    public Animator anim;
 
     // เราจะคุม SpriteRenderer (เผื่อปุ่มมีหลายชิ้น เช่น กรอบปุ่ม + ตัวอักษร)
     private SpriteRenderer[] sprites;
@@ -28,11 +30,15 @@ public class ObjectFader : MonoBehaviour
 
     void Update()
     {
+        if (!modeAnim)
         // คำนวณค่า Alpha ให้ค่อยๆ เปลี่ยน (Smooth)
-        currentAlpha = Mathf.Lerp(currentAlpha, targetAlpha, Time.deltaTime * fadeSpeed);
-        
-        // อัปเดตค่า Alpha ให้กับ Sprite ทุกชิ้น
-        SetAlpha(currentAlpha);
+        {
+            currentAlpha = Mathf.Lerp(currentAlpha, targetAlpha, Time.deltaTime * fadeSpeed);
+
+            // อัปเดตค่า Alpha ให้กับ Sprite ทุกชิ้น
+            SetAlpha(currentAlpha);
+        }
+    
     }
 
     // ฟังก์ชันช่วยวนลูปปรับสี
@@ -51,9 +57,16 @@ public class ObjectFader : MonoBehaviour
     // เมื่อเดินเข้า
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (!modeAnim)
         {
-            targetAlpha = 1f; // สั่งให้โผล่
+            if (other.CompareTag("Player"))
+            {
+                targetAlpha = 1f; // สั่งให้โผล่
+            }
+        }
+        else
+        {
+            anim.SetTrigger("Active");
         }
     }
 

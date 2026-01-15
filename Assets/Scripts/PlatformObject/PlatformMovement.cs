@@ -143,6 +143,7 @@ public class PlatformMovement : MonoBehaviour
         }
         if (modeShoot)
         {
+
             //if (spawnPoint != null)
             //{
             //    Debug.Log($"SpawnPoint ชื่อ: {spawnPoint.name} | พ่อชื่อ: {spawnPoint.parent.name} | Active: {spawnPoint.gameObject.activeInHierarchy}");
@@ -186,6 +187,13 @@ public class PlatformMovement : MonoBehaviour
 
     private System.Collections.IEnumerator ShootPlatformRoutine(bool markDone = true)
     {
+
+
+        if (anim != null)
+        {
+            anim.SetTrigger("Shoot");
+        }
+
         // Validate required settings
         if (platformPrefab == null || spawnPoint == null || targetPoint == null)
         {
@@ -375,6 +383,7 @@ public class PlatformMovement : MonoBehaviour
                     // เพิ่มแรงกระเด้งขึ้นข้างบน
                     rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
 
+                    anim.SetTrigger("Jump");
                     Debug.Log("JUMPPP");
                 }
             }
