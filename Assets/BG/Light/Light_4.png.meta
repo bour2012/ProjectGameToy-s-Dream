@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 95ab2baf1b0bf6542a3bf64dfbfa7c1c
+guid: 573c0c9de0b298646ae747f76912a9d6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7960189210273521103
-    second: fore2_0
-  - first:
-      213: -3009248059555265785
-    second: fore2_1
+      213: -5373538262005998543
+    second: Light_4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fore2_0
+      name: Light_4_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 2060
-        height: 802
+        y: 29
+        width: 415
+        height: 413
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fcd104f69e5487e60800000000000000
-      internalID: 7960189210273521103
+      spriteID: 13c9922cb6b5d65b0800000000000000
+      internalID: -5373538262005998543
       vertices: []
       indices: 
       edges: []
@@ -128,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 59d6cf106f1de9946908caeabf50b606
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -138,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      fore2_0: 7960189210273521103
-      fore2_1: -3009248059555265785
+      Light_4_0: -5373538262005998543
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
