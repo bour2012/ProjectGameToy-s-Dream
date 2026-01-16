@@ -41,7 +41,7 @@ public class SceneTransition : MonoBehaviour, IInteractable
                 SceneManager.LoadScene(nextSceneName);
         }
     }
-
+   
     #region IInteractable Implementation
 
     /// <summary>
@@ -89,6 +89,7 @@ public class SceneTransition : MonoBehaviour, IInteractable
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ClearCheckpointSaveData();
+            GameManager.Instance.ClearPlayedDialogsHistory();
         }
 
         transition.SetTrigger("End");
