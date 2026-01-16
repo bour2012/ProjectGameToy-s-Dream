@@ -76,7 +76,7 @@ public class PlatformMovement : MonoBehaviour
 
     private Vector3 startPosition; // เก็บตำแหน่งเริ่มต้นของ platform
     [Header("Animation Settings")]
-    public Animator anim;   
+    public Animator anim;
 
     private void Start()
     {
@@ -118,20 +118,20 @@ public class PlatformMovement : MonoBehaviour
             }
         }
         if (!modeLoop && !modeSwing)
-        { 
-                // For non-loop mode, move only when canMove OR when triggeredLoop (started by collider)
-                if ((canMove || triggeredLoop) && pointIndex < points.Length)
+        {
+            // For non-loop mode, move only when canMove OR when triggeredLoop (started by collider)
+            if ((canMove || triggeredLoop) && pointIndex < points.Length)
+            {
+
+                transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
+
+                if (Vector2.Distance(transform.position, points[pointIndex].position) < 0.01f)
                 {
-
-                    transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
-
-                    if (Vector2.Distance(transform.position, points[pointIndex].position) < 0.01f)
-                    {
-                        pointIndex += 1;
-                    }
-
+                    pointIndex += 1;
                 }
-            
+
+            }
+
         }
         if (modeSwing)
         {
@@ -185,14 +185,20 @@ public class PlatformMovement : MonoBehaviour
     //    }
     //}
 
+
+    public void AnimationShoot()
+    {
+        anim.SetTrigger("Shoot");
+    }
+
     private System.Collections.IEnumerator ShootPlatformRoutine(bool markDone = true)
     {
 
 
-        if (anim != null)
-        {
-            anim.SetTrigger("Shoot");
-        }
+        //if (anim != null)
+        //{
+        //    anim.SetTrigger("Shoot");
+        //}
 
         // Validate required settings
         if (platformPrefab == null || spawnPoint == null || targetPoint == null)
