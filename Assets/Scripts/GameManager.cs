@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
             LoadPlayedDialogs();
             InitializeManager();
             //InitializeCheckpointSystem();
-            //SetupCheckpointSystem();
+            SetupCheckpointSystem();
         }
         else
         {
@@ -778,26 +778,49 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     private void CollectAllCheckpoints()
     {
         allCheckpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
 
-        // เรียงตามตำแหน่ง X (จากซ้ายไปขวา)
+        // เรียงตาม ID (String) แทนการเรียงตามระยะทาง X
+        // ถ้า ID เป็น "01", "02", "03" มันจะเรียงถูกต้องแน่นอนไม่ว่าวางอยู่ตรงไหนของฉาก
         System.Array.Sort(allCheckpoints, (a, b) =>
-            a.transform.position.x.CompareTo(b.transform.position.x));
+            string.Compare(a.GetCheckpointID(), b.GetCheckpointID()));
 
+        // (Debug) เช็คผลลัพธ์
         if (showCheckpointDebugInfo)
         {
-            Debug.Log($"พบ Checkpoint ทั้งหมด {allCheckpoints.Length} จุด:");
+            Debug.Log($"เรียง Checkpoint ตาม ID ({allCheckpoints.Length} จุด):");
             for (int i = 0; i < allCheckpoints.Length; i++)
             {
-                //Debug.Log($"  [{i}] {allCheckpoints[i].GetCheckpointID()} - Pos: {allCheckpoints[i].transform.position}");
+                Debug.Log($" [{i}] ID: {allCheckpoints[i].GetCheckpointID()}");
             }
         }
 
-        // หา Index ของ Checkpoint ปัจจุบัน
         UpdateCurrentCheckpointIndex();
     }
+
+    //private void CollectAllCheckpoints()
+    //{
+    //    allCheckpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
+
+    //    // เรียงตามตำแหน่ง X (จากซ้ายไปขวา)
+    //    System.Array.Sort(allCheckpoints, (a, b) =>
+    //        a.transform.position.x.CompareTo(b.transform.position.x));
+
+    //    if (showCheckpointDebugInfo)
+    //    {
+    //        Debug.Log($"พบ Checkpoint ทั้งหมด {allCheckpoints.Length} จุด:");
+    //        for (int i = 0; i < allCheckpoints.Length; i++)
+    //        {
+    //            //Debug.Log($"  [{i}] {allCheckpoints[i].GetCheckpointID()} - Pos: {allCheckpoints[i].transform.position}");
+    //        }
+    //    }
+
+    //    // หา Index ของ Checkpoint ปัจจุบัน
+    //    UpdateCurrentCheckpointIndex();
+    //}
 
     private void NavigateToPreviousCheckpoint()
     {
