@@ -31,6 +31,10 @@ public class GameManager : MonoBehaviour
     public float godModeSpeed = 10f;
 
     [Header("Checkpoint Settings")]
+    [Tooltip("ใส่ ID ของ Checkpoint ที่ต้องการให้เป็นจุดเริ่มต้น (เช่น '01' หรือ 'Start')")]
+    public string defaultStartCheckpointID = "01"; 
+
+    [Header("Checkpoint Settings")]
     [Tooltip("Checkpoint เริ่มต้น (ถ้าไม่มีจะใช้ตำแหน่งเริ่มต้นของ Player)")]
     public Checkpoint defaultCheckpoint;
 
@@ -620,6 +624,27 @@ public class GameManager : MonoBehaviour
     {
         InitializeCheckpointSystem();
         CollectAllCheckpoints();
+
+        if (defaultCheckpoint == null && allCheckpoints.Length > 0)
+        {
+            // พยายามหา Checkpoint ที่มี ID ตรงกับที่เราตั้งไว้ใน defaultStartCheckpointID
+            foreach (var cp in allCheckpoints)
+            {
+                if (cp.GetCheckpointID() == defaultStartCheckpointID)
+                {
+                    defaultCheckpoint = cp;
+                    Debug.Log($"<color=cyan>[GameManager] Re-assigned Default Checkpoint to ID: {defaultStartCheckpointID}</color>");
+                    break;
+                }
+            }
+
+            // ถ้าหาไม่เจอจริงๆ ให้ใช้ตัวแรกสุดของฉากเป็น Default ไปเลย (กันเหนียว)
+            if (defaultCheckpoint == null)
+            {
+                defaultCheckpoint = allCheckpoints[0];
+                Debug.LogWarning($"[GameManager] Could not find ID '{defaultStartCheckpointID}'. Using first checkpoint ({allCheckpoints[0].GetCheckpointID()}) as default.");
+            }
+        }
 
         // 1. กู้คืนไอเทมและประวัติโบนัสก่อนเป็นอันดับแรก
         RestoreItemsFromSnapshot();
@@ -1471,11 +1496,37 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Player position reset to default: {defaultSpawnPosition}");
         }
 
-        // Clear PlayerPrefs
+
+
+        // ล้างรายการ Checkpoint ที่เคยได้โบนัสไปแล้ว
+        triggeredBonusCheckpointIDs.Clear();
+
+        // ล้างรายการ Item ในฉากที่เก็บไปแล้ว (ถ้ามีระบบเก็บของตามฉาก)
+        collectedItemIDs.Clear();
+
+        // ล้างข้อมูลในไฟล์เซฟ (Disk)
         ClearCheckpointSaveData();
-        PlayerPrefs.DeleteKey("Saved_Glue");   // ลบตัวนี้
-        PlayerPrefs.DeleteKey("Saved_Thread"); // ลบตัวนี้
-        PlayerPrefs.DeleteKey(BONUS_TRIGGERED_KEY); // ลบประวัติโบนัส
+        PlayerPrefs.DeleteKey("Saved_Glue");
+        PlayerPrefs.DeleteKey("Saved_Thread");
+        PlayerPrefs.DeleteKey(BONUS_TRIGGERED_KEY);
+
+        // รีเซ็ตจำนวนไอเทมในตัวผู้เล่นให้เป็น 0 ทันที (ไม่ต้องรอโหลด)
+        if (ItemManager.Instance != null)
+        {
+            ItemManager.Instance.SetItemCount(ItemManager.ItemType.Glue, 0);
+            ItemManager.Instance.SetItemCount(ItemManager.ItemType.Thread, 0);
+            ItemManager.Instance.UpdateUI();
+        }
+
+        PlayerPrefs.SetInt("GlueCount", 0);
+        PlayerPrefs.SetInt("ThreadCount", 0);
+        PlayerPrefs.Save();
+
+        //// Clear PlayerPrefs
+        //ClearCheckpointSaveData();
+        //PlayerPrefs.DeleteKey("Saved_Glue");   // ลบตัวนี้
+        //PlayerPrefs.DeleteKey("Saved_Thread"); // ลบตัวนี้
+        //PlayerPrefs.DeleteKey(BONUS_TRIGGERED_KEY); // ลบประวัติโบนัส
 
         PlayerPrefs.Save();
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class PlatformController : MonoBehaviour
 {
     [Header("Animation Settings")]
-    [Tooltip("ติ๊กถูกเพื่อใช้ Animator ขยับ Platform")]
+    [Tooltip("ติ๊กถูกเพื่อสั่ง Play Animation (แต่การเคลื่อนที่ยังใช้ Script คุมเหมือนเดิม)")]
     public bool isAnimMode = false;
     public Animator platformAnimator;
 
@@ -23,7 +23,6 @@ public class PlatformController : MonoBehaviour
     public Transform platform;
     private Rigidbody2D platformRb2D;
     private RigidbodyType2D initialBodyType;
-    private bool animatorIsDrivingMotion = false;
     private RigidbodyConstraints2D defaultConstraints;
 
     [Header("Movement Settings")]
@@ -109,12 +108,14 @@ public class PlatformController : MonoBehaviour
         }
         else
         {
+            // --- จุดที่คุณต้องการ: ตั้งค่า Default Position ถ้าไม่ได้กรอกมา ---
             if (Mathf.Approximately(downPosition.x, 0f) &&
                 Mathf.Approximately(downPosition.y, 0f) &&
                 Mathf.Approximately(downPosition.z, 0f))
             {
                 downPosition = platform.position;
             }
+            // --------------------------------------------------------
         }
 
         if (useParentingMode)
@@ -124,11 +125,9 @@ public class PlatformController : MonoBehaviour
             glueObjects = new HashSet<GameObject>();
         }
 
-        // Setup Start Animation
+        // Setup Start Animation (แค่เล่น Visual เริ่มต้น)
         if (isAnimMode && platformAnimator != null)
         {
-            platformRb2D.bodyType = RigidbodyType2D.Kinematic;
-            animatorIsDrivingMotion = true;
             if (isActive) platformAnimator.Play(idleOpenStateName);
             else platformAnimator.Play(idleCloseStateName);
         }
@@ -198,22 +197,11 @@ public class PlatformController : MonoBehaviour
         bool prevActive = isActive;
         isActive = state;
 
-        // ▼▼▼ ส่วนที่แก้กลับมาเช็คแบบเดิม และทำงานควบคู่ (ไม่ Return) ▼▼▼
+        // สั่ง Animation (ถ้ามี) แต่ปล่อยให้ Physics ทำงานต่อ
         if (isAnimMode && platformAnimator != null && prevActive != isActive)
         {
             if (isActive) platformAnimator.SetTrigger(activateTriggerName);
             else platformAnimator.SetTrigger(deactivateTriggerName);
-
-            platformRb2D.bodyType = RigidbodyType2D.Kinematic;
-            animatorIsDrivingMotion = true;
-            // ไม่ใส่ return เพื่อให้โค้ดด้านล่าง (Unfreeze) ทำงานต่อได้ ถ้าจำเป็น
-        }
-
-        // คืนค่า Physics เมื่อไม่ใช้ Anim
-        if (animatorIsDrivingMotion && !isAnimMode)
-        {
-            platformRb2D.bodyType = initialBodyType;
-            animatorIsDrivingMotion = false;
         }
 
         UnfreezePlatform();
@@ -236,73 +224,60 @@ public class PlatformController : MonoBehaviour
         if (activationDelay > 0f) yield return new WaitForSeconds(activationDelay);
 
         pendingActivation = false;
-        bool prevActive = isActive; // เช็คสถานะก่อนเปลี่ยน
+        bool prevActive = isActive;
         isActive = true;
 
-        // ▼▼▼ ส่วน Animation ใน Coroutine (เช็คเงื่อนไขเหมือนเดิม) ▼▼▼
+        // สั่ง Animation (ถ้ามี)
         if (isAnimMode && platformAnimator != null && prevActive != isActive)
         {
             platformAnimator.SetTrigger(activateTriggerName);
-
-            platformRb2D.bodyType = RigidbodyType2D.Kinematic;
-            animatorIsDrivingMotion = true;
-            yield break; // ใน Coroutine ใช้ yield break เพื่อจบการทำงานส่วนนี้
-        }
-
-        if (animatorIsDrivingMotion && !isAnimMode)
-        {
-            platformRb2D.bodyType = initialBodyType;
-            animatorIsDrivingMotion = false;
         }
 
         UnfreezePlatform();
     }
 
-    // ▼▼▼ FixedUpdate แบบทำงานควบคู่ (Alongside) ▼▼▼
     void FixedUpdate()
     {
         if (platformRb2D == null) return;
 
-        // 1. การหมุน (Rotation) จะทำงานเสมอถ้าเปิดโหมดไว้ (ไม่สนว่า Animation เล่นอยู่หรือไม่)
-        // เพราะ user บอกว่าจะทำควบคู่กัน
         if (isRotationMode)
         {
             RotatePlatform();
         }
-
-        // 2. การเคลื่อนที่ (Movement) จะทำก็ต่อเมื่อ:
-        // - ไม่ได้เปิดโหมด Animation (isAnimMode = false)
-        // - และไม่ได้เปิดโหมดหมุน (เพราะถ้าหมุนอยู่ ปกติจะอยู่กับที่)
-        if (!isAnimMode && !animatorIsDrivingMotion && !isRotationMode)
+        else
         {
+            // --- แก้ไขตรงนี้ ---
+            // ตัดเงื่อนไข !isAnimMode ออก เพื่อให้ขยับได้เสมอแม้จะเล่น Animation อยู่
+            // ตราบใดที่ไม่ใช่โหมดหมุน มันจะขยับ Position
             MovePlatform();
         }
     }
-    // ▲▲▲▲▲▲
 
     private void MovePlatform()
     {
         Vector2 current = platformRb2D.position;
         Vector2 target = isActive ? new Vector2(upPosition.x, upPosition.y) : new Vector2(downPosition.x, downPosition.y);
+
+        // ใช้ MoveTowards เพื่อเคลื่อนที่ตาม Speed ที่ตั้งไว้ใน Script
         Vector2 newPosition = Vector2.MoveTowards(current, target, speed * Time.deltaTime);
 
         if (Vector2.Distance(newPosition, target) < 0.02f) newPosition = target;
         platformRb2D.MovePosition(newPosition);
 
+        // ถ้าถึงจุดหมายปลายทางแล้ว (กรณีปิด) ให้ Freeze ไว้กันไหล
         if (!isActive && Vector3.Distance(newPosition, downPosition) < 0.01f) FreezePlatform();
     }
 
     private void RotatePlatform()
     {
         float targetRotation = isActive ? openRotationAngle : startRotation;
-        // Use the existing 'speed' value when in rotation mode; otherwise use 'rotationSpeed'
         float rotSpeed = isRotationMode ? speed : rotationSpeed;
         currentRotation = Mathf.MoveTowards(currentRotation, targetRotation, rotSpeed * Time.deltaTime);
         platform.RotateAround(pivotPosition, Vector3.forward, currentRotation - platform.eulerAngles.z);
     }
 
-    // Parenting System (เหมือนเดิม)
     #region Parenting System
+    // (ส่วนนี้เหมือนเดิม ไม่มีการเปลี่ยนแปลง)
     void OnTriggerEnter2D(Collider2D other) { if (!useParentingMode) return; HandleTriggerEnter(other.gameObject); }
     void OnTriggerExit2D(Collider2D other) { if (!useParentingMode) return; HandleTriggerExit(other.gameObject); }
     void OnCollisionEnter2D(Collision2D col) { if (!useParentingMode) return; HandleCollisionEnter(col); }
