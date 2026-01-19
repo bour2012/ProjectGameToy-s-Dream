@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+
 public class SceneTransition : MonoBehaviour, IInteractable
 {
     [Header("Transition Settings")]
@@ -11,21 +12,34 @@ public class SceneTransition : MonoBehaviour, IInteractable
     private bool isTransitioning = false;
 
     [Header("Mode Settings")]
-    [Tooltip("ถ้าติ๊ก, ผู้เล่นต้องกดปุ่มเพื่อเปลี่ยนซีน. ถ้าไม่ติ๊ก, ผู้เล่นจะเปลี่ยนซีนทันทีที่เดินเข้ามา")]
+    [Tooltip("ถ้าติ๊ก, ผู้เล่นต้องกดปุ่มเพื่อเปลี่ยนซีน")]
     public bool requireButtonPress = true;
 
     public bool modeChengTime = false;
-    public float changTime ;
+    public float changTime;
+
+    // ▼▼▼ เพิ่มใหม่: ส่วนตั้งค่าเงื่อนไขการล็อค ▼▼▼
+    [Header("Lock Condition (Optional)")]
+    [Tooltip("ลาก Lever ที่ต้องการให้ Active ก่อนถึงจะผ่านได้มาใส่ (ถ้าปล่อยว่างคือเข้าได้เลย)")]
+    public Lever conditionLever;
+
+    [FormerlySerializedAs("dialogVoice")]
+    public VoiceProfile currentVoice; // ลากไฟล์ Voice Profile ที่สร้างในข้อ 1 มาใส่ตรงนี้
+    [Range(1, 5)] public int soundFreq = 2;
+    public bool randomizePitch = true;
+    public Vector2 pitchRange = new Vector2(0.9f, 1.1f);
+    [Tooltip("ข้อความที่จะแสดงใน Dialog เมื่อประตูยังล็อคอยู่")]
+    [TextArea] public string lockedMessage = "The door is locked. Looks like I need to activate a lever somewhere.";
+    // ▲▲▲ สิ้นสุดส่วนเพิ่มใหม่ ▲▲▲
+
 
     [Header("UI Settings (Optional)")]
-    [Tooltip("ข้อความที่จะแสดงบน UI Prompt (จะทำงานเมื่อ requireButtonPress เป็น true)")]
     [TextArea] public string interactionPromptText = "[E] to Enter";
 
-    // เราไม่ต้องการตัวแปร UI และการตรวจจับผู้เล่นในนี้อีกต่อไป
 
+    private bool hasUnlocked = false;
     void Awake()
     {
-        // ทำให้แน่ใจว่า Animator พร้อมใช้งาน
         if (transition != null && transition.gameObject != null)
         {
             transition.gameObject.SetActive(true);
@@ -40,52 +54,88 @@ public class SceneTransition : MonoBehaviour, IInteractable
             if (changTime <= 0)
                 SceneManager.LoadScene(nextSceneName);
         }
+
+        if (!hasUnlocked && conditionLever != null && conditionLever.isActive)
+        {
+            hasUnlocked = true;
+          
+        }
     }
-   
+
     #region IInteractable Implementation
 
-    /// <summary>
-    /// PlayerInteractor จะเรียกฟังก์ชันนี้เพื่อขอข้อความไปแสดงบน UI
-    /// </summary>
     public string GetInteractText()
     {
-        // จะแสดงข้อความก็ต่อเมื่อตั้งค่าให้ต้องกดปุ่มเท่านั้น
-        // ถ้า requireButtonPress เป็น false, PlayerInteractor จะไม่แสดง UI
+        // ถ้ามี Lever ล็อคอยู่ อาจจะเปลี่ยนข้อความก็ได้ (Option) แต่ใช้ข้อความเดิมก็ได้
         return requireButtonPress ? interactionPromptText : "";
     }
 
-    /// <summary>
-    /// PlayerInteractor จะเรียกฟังก์ชันนี้เมื่อผู้เล่นกดปุ่ม E
-    /// </summary>
     public void Interact()
     {
-        // จะทำงานก็ต่อเมื่อตั้งค่าให้ต้องกดปุ่ม และยังไม่ได้กำลังเปลี่ยนซีน
+     
         if (requireButtonPress && !isTransitioning)
         {
+            bool isLocked = false;
+            if (conditionLever != null)
+            {
+                // ถ้ายังไม่เคยปลดล็อค และ Lever ปัจจุบันก็ยังไม่ Active -> ถือว่าล็อค
+                if (!hasUnlocked && !conditionLever.isActive)
+                {
+                    isLocked = true;
+                }
+            }
+
+            if (isLocked)
+            {
+                ShowLockedDialog();
+                return;
+            }
+
+     
             isTransitioning = true;
             StartCoroutine(LoadScene());
         }
+      
     }
 
     #endregion
 
-    /// <summary>
-    /// ฟังก์ชันนี้สำหรับโหมด "เดินผ่านแล้วเปลี่ยนซีน" โดยอัตโนมัติ
-    /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ถ้า "ไม่ต้อง" กดปุ่ม, เป็น Player, และยังไม่ได้กำลังเปลี่ยนซีน -> เริ่มเปลี่ยนซีนทันที
         if (!requireButtonPress && other.CompareTag("Player") && !isTransitioning)
         {
+            // สำหรับโหมดเดินชน ถ้าติดล็อค จะไม่ให้ผ่าน และไม่โหลดซีน
+            if (conditionLever != null && !conditionLever.isActive)
+            {
+                // (Optional) อาจจะให้โชว์ Dialog ด้วยก็ได้ถ้าต้องการ
+                // ShowLockedDialog(); 
+                return;
+            }
+
             isTransitioning = true;
             StartCoroutine(LoadScene());
         }
     }
 
-    // Coroutine หลักสำหรับจัดการ Animation และการโหลดซีน (เหมือนเดิม)
+
+    private void ShowLockedDialog()
+    {
+        if (DialogManager.Instance != null)
+        {
+            // ส่งทั้งข้อความ และ ค่าเสียงที่ตั้งไว้ใน Inspector ไปให้ DialogManager
+            DialogManager.Instance.ShowAlert(
+                lockedMessage,
+                currentVoice,
+                soundFreq,
+                randomizePitch,
+                pitchRange
+            );
+        }
+    }
+
+
     IEnumerator LoadScene()
     {
-
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ClearCheckpointSaveData();
@@ -104,13 +154,8 @@ public class SceneTransition : MonoBehaviour, IInteractable
 
     IEnumerator ExitGame()
     {
-
         transition.SetTrigger("End");
         yield return new WaitForSeconds(1.5f);
         Application.Quit();
-
     }
-
-   
-  
 }

@@ -1,15 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.Events;
 public class Lever : MonoBehaviour, IInteractable
 {
-    // ▼▼▼ เพิ่มตัวเลือกโหมดการทำงาน ▼▼▼
+    [Header("Multiple Objects Control")]
+    [Tooltip("ใส่สิ่งที่อยากให้เกิดขึ้นตอนคันโยกทำงาน (Active)")]
+    public UnityEvent onActivate;
+
+    [Tooltip("ใส่สิ่งที่อยากให้เกิดขึ้นตอนคันโยกปิด (Inactive)")]
+    public UnityEvent onDeactivate; 
     public enum ControlMode { Rotation, Animation }
     [Header("Control Mode")]
     [Tooltip("เลือกว่าจะควบคุมคันโยกด้วยการหมุน (Rotation) หรือด้วย Animation")]
     public ControlMode mode = ControlMode.Rotation;
-    // ▲▲▲ สิ้นสุดส่วนที่เพิ่ม ▲▲▲
+   
 
     [Header("Lever Settings (Rotation Mode)")]
     [Tooltip("ส่วนคันโยกที่จะหมุน (ใช้ในโหมด Rotation)")]
@@ -99,6 +104,15 @@ public class Lever : MonoBehaviour, IInteractable
 
         // 1) สลับสถานะตัวเอง
         isActive = !isActive;
+
+        if (isActive)
+        {
+            onActivate.Invoke();
+        }
+        else
+        {
+            onDeactivate.Invoke();
+        }
 
         // 2) ถ้ามี platform ที่ผูกไว้โดยตรง ให้สั่งงาน
         if (platform != null)
