@@ -91,7 +91,7 @@ public class TriggerController : MonoBehaviour
                 yield return new WaitUntil(() => currentSpawnedObject == null);
 
                 // (Optional) เพิ่มดีเลย์นิดหน่อยหลังจากตายแล้วค่อยเกิดใหม่ไหม? ถ้าไม่เอาก็เอาบรรทัดล่างนี้ออก
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(1.5f);
             }
             else
             {

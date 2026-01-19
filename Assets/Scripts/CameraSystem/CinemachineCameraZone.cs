@@ -21,7 +21,7 @@ public class CinemachineCameraZone : MonoBehaviour
 
     [Header("Perspective Settings")]
     [Tooltip("มุมมองของกล้องเมื่อเข้า Zone (เฉพาะ Perspective Mode)")]
-    [Range(20f, 100f)]
+    [Range(1f, 100f)]
     [SerializeField] private float zoneFieldOfView = 60f;
 
     [Tooltip("มุมมองเดิมของกล้องเมื่อออกจาก Zone")]

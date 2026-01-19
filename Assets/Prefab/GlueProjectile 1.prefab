@@ -6294,7 +6294,7 @@ MonoBehaviour:
   lifetime: 20
   timeStickToTarget: 7
   groundDestroyDelay: 6
-  stickForce: 40
+  stickForce: 50
   timeGlueStick: 3
   targetLayers:
     serializedVersion: 2
@@ -6307,12 +6307,22 @@ MonoBehaviour:
     m_Bits: 16705
   impactEffect: {fileID: 0}
   splatEffect: {fileID: 2391029681584809641, guid: 4d29aa0a81663ab4a98ac4f45146df2b, type: 3}
+  extraImpactEffect: {fileID: 0}
   burningSprite: {fileID: 21300000, guid: f55b0c72dd6096f44b3586db5354d4ee, type: 3}
   burningEffectPrefab: {fileID: 0}
   burningDamage: 15
   burningRotationTurnSpeed: 720
   shootSound: {fileID: 0}
   impactSound: {fileID: 0}
+  flyingSprite: {fileID: 0}
+  stuckSprite: {fileID: 0}
+  flyingRotationOffset: 0
+  stuckRotationOffset: 0
+  stickySkinDuration: 1
+  spriteSkin: {fileID: 0}
+  bonesRoot: {fileID: 0}
+  rootBone: {fileID: 0}
+  boneRigidbodies: []
 --- !u!114 &1689699059287420981
 MonoBehaviour:
   m_ObjectHideFlags: 0

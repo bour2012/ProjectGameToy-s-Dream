@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.Events;
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class DialogManager : MonoBehaviour
@@ -490,6 +491,42 @@ public class DialogManager : MonoBehaviour
             src.PlayOneShot(data.typingSound);
         }
     }
+    public void ShowAlert(string message, VoiceProfile sound = null, int freq = 2, bool rndPitch = true, Vector2? pRange = null)
+    {
+
+        DialogData tempData = new DialogData();
+
+        tempData.dialogText = message;
+
+        // กำหนดค่า Default เพื่อไม่ให้เกิดบั๊ก
+        tempData.useFadeCut = false;
+        tempData.changeZoom = false;
+        tempData.isHint = false;
+        tempData.waitForCamera = false;
+
+        if (sound != null)
+        {
+            tempData.currentVoice = sound;
+            tempData.playSoundFrequency = freq;
+            tempData.randomizePitch = rndPitch;
+            // ถ้ามีการส่ง pRange มาให้ใช้ค่าที่ส่งมา ถ้าไม่มีให้ใช้ค่ามาตรฐาน (0.9 - 1.1)
+            tempData.pitchRange = pRange ?? new Vector2(0.9f, 1.1f);
+        }
+        // เริ่มระบบโดยส่งข้อมูลจำลองเข้าไป
+        StartDialogSequence(new DialogData[] { tempData }, null, true);
+
+        //DialogData tempData = new DialogData();
+
+
+        //tempData.dialogText = message;
+
+        //tempData.useFadeCut = false;
+        //tempData.changeZoom = false;
+        //tempData.isHint = false;
+
+        //StartDialogSequence(new DialogData[] { tempData }, null, true);
+    }
+
 
     private IEnumerator AutoAdvanceCoroutine(float delayTime = -1f)
     {
