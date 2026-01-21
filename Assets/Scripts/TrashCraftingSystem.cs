@@ -52,6 +52,7 @@ public class TrashCraftingSystem : MonoBehaviour
     private Vector3 originalUIScale;
     private GameObject currentCraftedObject;
     private Coroutine uiAnimationCoroutine;
+    private Coroutine itemSwitchCoroutine; 
 
     [System.Serializable]
     public class CraftableItem
@@ -127,6 +128,11 @@ public class TrashCraftingSystem : MonoBehaviour
         CheckPlayerDistance();
         UpdateProgressUI();
 
+        if (isPlayerNear && !isCrafting && gameManager.currentState == GameState.Normal)
+        {
+            AnimateIdleIcon();
+        }
+
         // รับ Input เฉพาะเมื่ออยู่ในสถานะปกติ
         if (gameManager.currentState == GameState.Normal)
         {
@@ -137,6 +143,27 @@ public class TrashCraftingSystem : MonoBehaviour
             HandleCraftingInput();
         }
     }
+
+    #region Animation Holder
+
+    void AnimateIdleIcon()
+    {
+        // ถ้าไม่มีไอคอน หรือกำลังคราฟอยู่ ไม่ต้องทำ
+        if (craftableItems.Length == 0 || isCrafting) return;
+
+        // เช็คว่ามีไอคอนตัวปัจจุบันอยู่ไหม
+        GameObject currentIcon = itemIcons[currentItemIndex];
+        if (currentIcon != null)
+        {
+            // คำนวณขนาด: เริ่มต้น 1.2 ขยายเข้าออก +/- 0.1 ความเร็ว 4
+            float breatheScale = 1.2f + (Mathf.Sin(Time.time * 4f) * 0.1f);
+
+            // ปรับขนาดไอคอน (เฉพาะตัวลูก ตัวแม่ iconHolder จะได้ไม่ตีกัน)
+            currentIcon.transform.localScale = Vector3.one * breatheScale;
+        }
+    }
+
+    #endregion
 
     #region Game State Management
 
@@ -509,7 +536,10 @@ public class TrashCraftingSystem : MonoBehaviour
 
         currentItemIndex = (currentItemIndex + 1) % craftableItems.Length;
         UpdateItemSelection();
-        StartCoroutine(ItemSwitchAnimation());
+
+        if (itemSwitchCoroutine != null) StopCoroutine(itemSwitchCoroutine);
+        itemSwitchCoroutine = StartCoroutine(ItemSwitchAnimation());
+
     }
 
     void UpdateItemSelection()
@@ -624,14 +654,43 @@ public class TrashCraftingSystem : MonoBehaviour
     {
         if (iconHolder == null) yield break;
 
+        // รีเซ็ตการหมุนให้ตรงเผื่อค้างมาจากของเก่า
+        iconHolder.rotation = Quaternion.identity;
+
+        float duration = 0.2f; // ระยะเวลาอนิเมชั่น
         float time = 0;
-        while (time < 0.2f)
+
+        // ขนาดปกติ และ ขนาดตอนขยายใหญ่สุด (1.3 เท่า)
+        Vector3 baseScale = Vector3.one;
+        Vector3 targetScale = Vector3.one * 1.3f;
+
+        while (time < duration)
         {
             time += Time.deltaTime;
-            iconHolder.rotation = Quaternion.Euler(0, 0, Mathf.Sin(time * 20f) * 10f);
+            float progress = time / duration;
+
+            // ใช้ Sin เพื่อให้ค่าวิ่งจาก 0 -> 1 -> 0 (เด้งขึ้นแล้วหดลง)
+            float curve = Mathf.Sin(progress * Mathf.PI);
+
+            // คำนวณขนาด
+            iconHolder.localScale = Vector3.Lerp(baseScale, targetScale, curve);
+
             yield return null;
         }
-        iconHolder.rotation = Quaternion.identity;
+
+        // จบแล้วให้กลับมาขนาดปกติ 100%
+        iconHolder.localScale = baseScale;
+        itemSwitchCoroutine = null;
+        //if (iconHolder == null) yield break;
+
+        //float time = 0;
+        //while (time < 0.2f)
+        //{
+        //    time += Time.deltaTime;
+        //    iconHolder.rotation = Quaternion.Euler(0, 0, Mathf.Sin(time * 20f) * 10f);
+        //    yield return null;
+        //}
+        //iconHolder.rotation = Quaternion.identity;
     }
 
     #endregion

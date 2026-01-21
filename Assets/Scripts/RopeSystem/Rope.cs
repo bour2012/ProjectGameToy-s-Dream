@@ -25,6 +25,10 @@ public class Rope : MonoBehaviour
 
     [Header("Game Manager Integration")]
     public bool respectGameManagerState = true; // เปิด/ปิดการใช้ GameManager
+    [Header("Audio")]
+    [Tooltip("Sound played once when the player starts swinging (first frame rope attaches)")]
+    public AudioClip swingStartSound;
+    public AudioSource audioSource;
 
     // Private Variables
     private bool ropeAttached;
@@ -56,6 +60,15 @@ public class Rope : MonoBehaviour
       
         // หา GlueShooting script
         glueShootingScript = GetComponent<GlueShooting>();
+
+        //// Ensure AudioSource exists (use prefab/source if present, otherwise create)
+        //audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0f; // 2D
+        }
     }
 
     void Update()
@@ -128,6 +141,11 @@ public class Rope : MonoBehaviour
             {
                 NotifySwingingStart();
                 wasSwingingLastFrame = true;
+                // Play swing-start sound once when beginning to swing
+                if (audioSource != null && swingStartSound != null)
+                {
+                    audioSource.PlayOneShot(swingStartSound);
+                }
             }
 
             if (playerMovement != null)

@@ -37,6 +37,10 @@ public class GlueShooting : MonoBehaviour
     [Header("Game Manager Integration")]
     public bool respectGameManagerState = true;
 
+    [Header("Audio")]
+    public AudioClip switchSound;
+    private AudioSource audioSource;
+
     // Private Variables
     private bool isAiming = false;
     private bool canShoot = true;
@@ -53,6 +57,14 @@ public class GlueShooting : MonoBehaviour
         ropeScript = GetComponent<Rope>();
         mainCamera = Camera.main;
         animator = GetComponentInParent<Animator>();
+        // Ensure local AudioSource exists for UI/feedback SFX
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0f; // 2D
+        }
         if (trajectoryLine != null)
         {
             trajectoryLine.enabled = false;
@@ -149,6 +161,11 @@ public class GlueShooting : MonoBehaviour
         if (isAiming)
         {
             HideAiming();
+        }
+        // Play switch sound
+        if (audioSource != null && switchSound != null)
+        {
+            audioSource.PlayOneShot(switchSound);
         }
     }
 

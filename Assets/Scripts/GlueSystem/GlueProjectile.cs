@@ -51,7 +51,7 @@ public class GlueProjectile : MonoBehaviour
 
     // Private Variables
     private Rigidbody2D rb;
-    private AudioSource audioSource;
+    public AudioSource audioSource;
     private SpriteRenderer spriteRenderer;
     [Header("2D Skin / Bones")]
     public SpriteSkin spriteSkin;
@@ -91,6 +91,7 @@ public class GlueProjectile : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        // Use the AudioSource provided on the glue prefab if present; do not create one here.
         audioSource = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 

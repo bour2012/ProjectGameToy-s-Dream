@@ -48,6 +48,11 @@ public class Lever : MonoBehaviour, IInteractable
     [Header("State")]
     public bool isActive = false;
 
+    [Header("Audio")]
+    [Tooltip("เสียงที่จะเล่นเมื่อสลับคันโยก (ใช้เสียงเดียวกันสำหรับเปิด/ปิด)")]
+    public AudioClip toggleSound;
+    public AudioSource audioSource;
+
     [Header("Controlled Object")]
     public PlatformController platform;
 
@@ -71,6 +76,15 @@ public class Lever : MonoBehaviour, IInteractable
         // ถ้าเป็นโหมด Animation, Animator จะจัดการ Sprite เริ่มต้นเองจาก Default State
         // ตั้งค่าบอสตอนเริ่มเกม
         UpdateBossState();
+
+        //// ให้ Lever มี AudioSource ของตัวเอง (ถ้ายังไม่มี)
+        //audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0f; // 2D sound
+        }
     }
 
     #region IInteractable Implementation
@@ -112,6 +126,12 @@ public class Lever : MonoBehaviour, IInteractable
         else
         {
             onDeactivate.Invoke();
+        }
+
+        // เล่นเสียงเดียวกันสำหรับทั้งเปิดและปิด (ถ้ามี)
+        if (audioSource != null && toggleSound != null)
+        {
+            audioSource.PlayOneShot(toggleSound);
         }
 
         // 2) ถ้ามี platform ที่ผูกไว้โดยตรง ให้สั่งงาน

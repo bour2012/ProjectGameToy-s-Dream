@@ -18,6 +18,9 @@ public class PlatformMovement : MonoBehaviour
     [Tooltip("เมื่อผู้เล่นเหยียบแล้วกระเด้งขึ้น (ใช้กับ bounce)")]
     public bool modeJumped = false;
     [Tooltip("เมื่อชนกับตัว DeadZone แล้ว Platform ถูกทำลาย")]
+    public AudioClip jumpSound;      // ลากไฟล์เสียงมาใส่ตรงนี้
+    public AudioSource audioSource; // ตัวเล่นเสียง
+
     public bool modeDestroyed = false;
     [Tooltip("แพลตฟอร์มยิงออกไปจากจุด spawn สู่ targetPoint")]
     public bool modeShoot = false;
@@ -83,6 +86,13 @@ public class PlatformMovement : MonoBehaviour
         startPosition = transform.position;
         transform.position = startPosition;
         startRotationZ = transform.eulerAngles.z;
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            // ถ้าไม่มีให้เพิ่มเข้าไปให้อัตโนมัติ กันลืม
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
 
     }
 
@@ -390,6 +400,12 @@ public class PlatformMovement : MonoBehaviour
                     rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
 
                     anim.SetTrigger("Jump");
+
+                    if (jumpSound != null && audioSource != null)
+                    {
+                        audioSource.PlayOneShot(jumpSound);
+                    }
+
                     Debug.Log("JUMPPP");
                 }
             }

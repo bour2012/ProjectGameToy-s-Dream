@@ -4961,7 +4961,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1801414243
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -6142,6 +6142,7 @@ GameObject:
   - component: {fileID: 832451096869208223}
   - component: {fileID: 3443039726234833293}
   - component: {fileID: 1855296100544689158}
+  - component: {fileID: 3651323508040404745}
   m_Layer: 22
   m_Name: GlueProjectile
   m_TagString: Glue
@@ -6219,7 +6220,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1801414243
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 13
   m_Sprite: {fileID: 8178912929763907788, guid: 55a49128fc4d291468a2853a685e5e41, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6265,13 +6266,14 @@ MonoBehaviour:
   burningEffectPrefab: {fileID: 0}
   burningDamage: 15
   burningRotationTurnSpeed: 720
-  shootSound: {fileID: 0}
-  impactSound: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: e7b491de47eba3543ac8e0f45c946f07, type: 3}
+  impactSound: {fileID: 8300000, guid: 35957d0faeb0b664f8d2882128b76b0f, type: 3}
   flyingSprite: {fileID: 734702905, guid: 4ba2b51870ca6a9479b563f662dd76ad, type: 3}
   stuckSprite: {fileID: -3534024581961235433, guid: 35e5c6186ca8deb4d8a26f361fb58062, type: 3}
   flyingRotationOffset: 0
   stuckRotationOffset: -90
   stickySkinDuration: 2
+  audioSource: {fileID: 3651323508040404745}
   spriteSkin: {fileID: 0}
   bonesRoot: {fileID: 2360112052342386922}
   rootBone: {fileID: 2169769285464463563}
@@ -6361,6 +6363,103 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3.542036, y: 0.8263353}
   m_EdgeRadius: 0
+--- !u!82 &3651323508040404745
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899959792572343891}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 50
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8250020746496781912
 GameObject:
   m_ObjectHideFlags: 0

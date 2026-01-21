@@ -21,7 +21,7 @@ public class PlayerPush : MonoBehaviour
     [Header("Audio (Optional)")]
     public AudioSource audioSource;
     public AudioClip grabSound;
-    public AudioClip releaseSound;
+    // Removed separate release sound: use grabSound while dragging only
 
     [Header("Direction Settings")]
     public bool maintainLastDirection = true;
@@ -123,6 +123,13 @@ public class PlayerPush : MonoBehaviour
             anim.SetBool("IsIdlePush", true);
             anim.SetBool("IsPush", false);
             anim.SetBool("IsPull", false);
+            // หยุดเสียงลากเมื่อกล่องหยุดนิ่ง
+            if (audioSource != null && audioSource.isPlaying && audioSource.clip == grabSound)
+            {
+                audioSource.Stop();
+                audioSource.loop = false;
+                audioSource.clip = null;
+            }
         }
         else
         {
@@ -138,6 +145,16 @@ public class PlayerPush : MonoBehaviour
 
             anim.SetBool("IsPush", isPushing);
             anim.SetBool("IsPull", isPulling);
+            // เล่นเสียงลากเฉพาะเมื่อกล่องเคลื่อนที่
+            if (audioSource != null && grabSound != null)
+            {
+                if (!audioSource.isPlaying || audioSource.clip != grabSound)
+                {
+                    audioSource.clip = grabSound;
+                    audioSource.loop = true;
+                    audioSource.Play();
+                }
+            }
         }
         //// Debug Log (สามารถลบออกได้)
         //if (showDebugGizmos)
@@ -154,8 +171,14 @@ public class PlayerPush : MonoBehaviour
         playerSprite = GetComponent<SpriteRenderer>();
         playerController = GetComponent<PlayerController>();
 
+        // ให้ `PlayerPush` มี AudioSource ของตัวเอง (สร้างถ้าไม่พบ)
+        audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
-            audioSource = GetComponent<AudioSource>();
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0f; // 2D sound
+        }
 
         //// กำหนดทิศทางเริ่มต้นจาก Sprite
         //if (playerSprite != null)
@@ -456,8 +479,7 @@ public class PlayerPush : MonoBehaviour
             anim.SetBool("IsPush", false);
             anim.SetBool("IsPull", false);
         }
-        // เล่นเสียง
-        PlaySound(grabSound);
+        // เสียงจะถูกควบคุมโดย UpdatePushAnimationByVelocity (เล่นเมื่อมีการเคลื่อนที่)
 
         Debug.Log($"[Push Debug] Successfully started pushing: {targetBox.name}");
     }
@@ -486,7 +508,17 @@ public class PlayerPush : MonoBehaviour
                 joint.connectedBody = null;
             }
 
-            PlaySound(releaseSound);
+            // หยุดเสียงลากเมื่อปล่อย
+            if (audioSource != null)
+            {
+                // หยุดเฉพาะถ้าเป็นคลิปลากปัจจุบัน
+                if (audioSource.isPlaying && audioSource.clip == grabSound)
+                {
+                    audioSource.Stop();
+                    audioSource.loop = false;
+                    audioSource.clip = null;
+                }
+            }
             Debug.Log($"[Push Debug] Successfully stopped pushing: {targetBox.name}");
         }
         else
