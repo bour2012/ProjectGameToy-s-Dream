@@ -13814,6 +13814,7 @@ MonoBehaviour:
   availableColor: {r: 1, g: 1, b: 1, a: 1}
   unavailableColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 0.76862746}
   respectGameManagerState: 1
+  switchSound: {fileID: 0}
 --- !u!114 &457222215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13839,7 +13840,6 @@ MonoBehaviour:
   showDebugGizmos: 1
   audioSource: {fileID: 0}
   grabSound: {fileID: 0}
-  releaseSound: {fileID: 0}
   maintainLastDirection: 1
   onPickup:
     m_PersistentCalls:
@@ -13872,6 +13872,8 @@ MonoBehaviour:
   ropeMaxCastDistance: 4
   ropeStandardDistance: 1.8
   respectGameManagerState: 1
+  swingStartSound: {fileID: 0}
+  audioSource: {fileID: 0}
   shootAnimationDuration: 0.5
   shootRopeTriggerName: ShootRope
 --- !u!232 &457222217
@@ -44556,6 +44558,12 @@ MonoBehaviour:
   requireButtonPress: 1
   modeChengTime: 0
   changTime: 0
+  conditionLever: {fileID: 0}
+  currentVoice: {fileID: 0}
+  soundFreq: 2
+  randomizePitch: 1
+  pitchRange: {x: 0.9, y: 1.1}
+  lockedMessage: The door is locked. Looks like I need to activate a lever somewhere.
   interactionPromptText: '[E] to Enter'
 --- !u!61 &1143351600
 BoxCollider2D:
@@ -47173,6 +47181,103 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &1303403200
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3641076464990016942, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_Name
+      value: PAUSECanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5334616762254752685, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
 --- !u!1 &1304611158
 GameObject:
   m_ObjectHideFlags: 0
@@ -61994,6 +62099,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   godModeKey: 291
   godModeSpeed: 10
+  defaultStartCheckpointID: 01
   defaultCheckpoint: {fileID: 0}
   showCheckpointDebugInfo: 0
   resetToLastCheckpoint: 0
@@ -67941,3 +68047,4 @@ SceneRoots:
   - {fileID: 1813790714}
   - {fileID: 712181085}
   - {fileID: 1608975580}
+  - {fileID: 1303403200}
