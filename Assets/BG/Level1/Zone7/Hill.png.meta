@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 772eac91e10f3904d93c2b9ae38d292c
+guid: 4cbe3d91314136c4caf3fe24c5bcf661
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1222638106976406514
-    second: Crystal_G_0
+      213: 4163216209006283368
+    second: Hill_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crystal_G_0
+      name: Hill_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 0
-        width: 215
-        height: 220
+        x: 10
+        y: 13
+        width: 1163
+        height: 1360
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2fb4f2761eea7f010800000000000000
-      internalID: 1222638106976406514
+      spriteID: 86ac7fc9517b6c930800000000000000
+      internalID: 4163216209006283368
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4a15ba9b35b337b4881dc6b5293dfccd
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crystal_G_0: 1222638106976406514
+      Hill_0: 4163216209006283368
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

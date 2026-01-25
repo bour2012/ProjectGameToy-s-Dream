@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 772eac91e10f3904d93c2b9ae38d292c
+guid: 9e91110387023374e8b19d0cc1a606ab
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1222638106976406514
-    second: Crystal_G_0
+      213: -8496610117576777406
+    second: doorwood_sheet_0
+  - first:
+      213: -2262303767935845555
+    second: doorwood_sheet_1
+  - first:
+      213: 6024152827464059860
+    second: doorwood_sheet_2
+  - first:
+      213: 1834239281614656087
+    second: doorwood_sheet_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,23 +109,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crystal_G_0
+      name: doorwood_sheet_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 0
-        width: 215
-        height: 220
+        x: 0
+        y: 512
+        width: 512
+        height: 512
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2fb4f2761eea7f010800000000000000
-      internalID: 1222638106976406514
+      spriteID: 241a8d27d1af51a80800000000000000
+      internalID: -8496610117576777406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: doorwood_sheet_1
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 512
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4bf72295beaa90e0800000000000000
+      internalID: -2262303767935845555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: doorwood_sheet_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4db09a944171a9350800000000000000
+      internalID: 6024152827464059860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: doorwood_sheet_3
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75295bd88e6847910800000000000000
+      internalID: 1834239281614656087
       vertices: []
       indices: 
       edges: []
@@ -125,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4a15ba9b35b337b4881dc6b5293dfccd
+    spriteID: 8eb46cd3539b2c0478cfeba0be18408d
     internalID: 0
     vertices: []
     indices: 
@@ -133,9 +208,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":512.0,"y":512.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Crystal_G_0: 1222638106976406514
+      doorwood_sheet_0: -8496610117576777406
+      doorwood_sheet_1: -2262303767935845555
+      doorwood_sheet_2: 6024152827464059860
+      doorwood_sheet_3: 1834239281614656087
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
