@@ -1067,6 +1067,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -1770,6 +1772,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -1877,6 +1881,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 0}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -26470,6 +26476,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -30993,6 +31001,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -36139,6 +36149,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 1606132079}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -46560,6 +46572,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -47898,6 +47912,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 469817179}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -64455,6 +64471,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 43158930}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -73063,6 +73081,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 1331906435}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -73798,6 +73818,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -79389,6 +79411,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 1
   shootContinuous: 0
@@ -89035,6 +89059,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 1372229693}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -99971,6 +99997,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 1
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -114181,6 +114209,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -115491,6 +115521,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 1176754978}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -118098,6 +118130,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 469817179}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -118777,8 +118811,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -14.3449, y: 3.1959, z: 0}
-    m_Extent: {x: 17.3004, y: 7.1841, z: 0}
+    m_Center: {x: -14.3453, y: 3.1962, z: 0}
+    m_Extent: {x: 17.3, y: 7.1844, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -118793,6 +118827,7 @@ MonoBehaviour:
   - {x: 0.63752747, y: -3.215846, z: 0}
   - {x: 0.83890533, y: -1.747674, z: 0}
   - {x: 0.27326965, y: -1.079587, z: 0}
+  - {x: 1.0093918, y: -0.896533, z: 0}
   - {x: 2.2053604, y: 8.914003, z: 0}
   - {x: -30.63047, y: 9.629957, z: 0}
 --- !u!4 &1124298714
@@ -120313,6 +120348,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 1
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -125068,6 +125105,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -125395,6 +125434,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -144410,6 +144451,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -144517,6 +144560,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 0}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -148441,6 +148486,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 1376469125}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -163010,6 +163057,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 1
   shootContinuous: 0
@@ -164573,6 +164622,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -165463,6 +165514,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -165616,6 +165669,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 0}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -165933,6 +165988,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -181106,6 +181163,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -183513,6 +183572,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -186177,6 +186238,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 1
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -187017,6 +187080,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 1
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -202368,6 +202433,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -203431,6 +203498,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
+  toggleSound: {fileID: 0}
+  audioSource: {fileID: 0}
   platform: {fileID: 867512368}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -212629,6 +212698,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 0
   shootContinuous: 0
@@ -219912,6 +219983,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 1
   shootContinuous: 0
@@ -228216,6 +228289,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 0
   modeShoot: 1
   shootContinuous: 0
