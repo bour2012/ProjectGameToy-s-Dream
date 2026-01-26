@@ -45,7 +45,7 @@ public class DialogManager : MonoBehaviour
     private bool autoAdvance = false;
     private float autoAdvanceDelay = 2f;
     private bool isWaitingForCamera = false;
-
+    private Coroutine autoAdvanceCoroutine;
     void Awake()
     {
         Instance = this;
@@ -85,6 +85,7 @@ public class DialogManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            StopAutoAdvance();
             if (isTyping)
             {
                 StopTypewriter();
@@ -98,7 +99,14 @@ public class DialogManager : MonoBehaviour
             }
         }
     }
-
+    private void StopAutoAdvance()
+    {
+        if (autoAdvanceCoroutine != null)
+        {
+            StopCoroutine(autoAdvanceCoroutine);
+            autoAdvanceCoroutine = null;
+        }
+    }
     public void StartDialogSequence(DialogData[] sequence, DialogTrigger originator, bool freezePlayer, bool autoNext = false, float delay = 2f)
     {
         if (sequence == null || sequence.Length == 0 || isDialogActive) return;
@@ -256,7 +264,8 @@ public class DialogManager : MonoBehaviour
         {
             if (dialogBox != null) dialogBox.SetActive(false);
             data.onLineStart?.Invoke();
-            StartCoroutine(AutoAdvanceCoroutine(0.1f));
+            StopAutoAdvance();
+            autoAdvanceCoroutine = StartCoroutine(AutoAdvanceCoroutine(0.1f));
             return;
         }
 
@@ -272,7 +281,9 @@ public class DialogManager : MonoBehaviour
                 if (dialogBox != null && !dialogBox.activeSelf) dialogBox.SetActive(true);
                 data.onLineStart?.Invoke();
                 dialogText.text = data.dialogText;
-                StartCoroutine(AutoAdvanceCoroutine(Mathf.Max(0.1f, data.displayDuration)));
+
+                StopAutoAdvance();
+                autoAdvanceCoroutine = StartCoroutine(AutoAdvanceCoroutine(Mathf.Max(0.1f, data.displayDuration)));
             }
             return;
         }
@@ -287,8 +298,8 @@ public class DialogManager : MonoBehaviour
         }
         else
         {
-            dialogText.text = data.dialogText;
-            if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
+            StopAutoAdvance();
+            autoAdvanceCoroutine = StartCoroutine(AutoAdvanceCoroutine());
         }
     }
 
@@ -346,6 +357,7 @@ public class DialogManager : MonoBehaviour
 
     private void NextDialog()
     {
+        StopAutoAdvance();
         if (isTransitioning || isWaitingForCamera) return;
         currentIndex++;
         StartCoroutine(ProcessCurrentDialogStep());
@@ -353,6 +365,7 @@ public class DialogManager : MonoBehaviour
 
     public void EndDialog()
     {
+        StopAutoAdvance();
         if (fadePanelCanvasGroup != null) fadePanelCanvasGroup.alpha = 0;
         isTransitioning = false;
         isWaitingForCamera = false;
@@ -439,7 +452,11 @@ public class DialogManager : MonoBehaviour
         }
 
         isTyping = false;
-        if (autoAdvance) StartCoroutine(AutoAdvanceCoroutine());
+        if (autoAdvance)
+        {
+            StopAutoAdvance(); // กันพลาด
+            autoAdvanceCoroutine = StartCoroutine(AutoAdvanceCoroutine()); // เก็บตัวแปร
+        }
     }
     // --------------------------------------------------------------------------------
 
