@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] CanvasGroup pauseMenuGroup; // เปลี่ยนจาก GameObject เป็น CanvasGroup
-    [SerializeField] GameObject pauseMenu_Help;
+    //[SerializeField] GameObject pauseMenu_Help;
 
     private bool isPaused = false;
 
@@ -18,16 +18,8 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (pauseMenu_Help.activeSelf)
-            {
-                pauseMenu_Help.SetActive(false);
-            }
-            else
-            {
-                // สลับสถานะ (ถ้าจริงเป็นเท็จ ถ้าเท็จเป็นจริง)
-                isPaused = !isPaused;
-                SetPauseState(isPaused);
-            }
+            isPaused = !isPaused;
+            SetPauseState(isPaused);
         }
     }
 
@@ -56,8 +48,25 @@ public class PauseMenu : MonoBehaviour
         SetPauseState(false);
     }
 
-    public void Help()
+    public void Restart()
     {
-        pauseMenu_Help.SetActive(!pauseMenu_Help.activeSelf);
+        // 1. คืนค่าเวลาให้เป็นปกติก่อนรีเซ็ต (สำคัญมาก! ไม่งั้นฉากใหม่จะค้าง)
+        Time.timeScale = 1;
+
+        // 2. เรียกใช้ฟังก์ชัน ManualReset แบบเดียวกับปุ่ม R ใน GameManager
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ManualReset();
+        }
+        else
+        {
+            // กรณีกันเหนียว (Fallback) ถ้าหา GameManager ไม่เจอจริงๆ ให้โหลดฉากเดิม
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
+
+    //public void Help()
+    //{
+    //    pauseMenu_Help.SetActive(!pauseMenu_Help.activeSelf);
+    //}
 }

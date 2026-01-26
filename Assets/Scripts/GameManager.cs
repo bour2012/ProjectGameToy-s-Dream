@@ -947,11 +947,9 @@ public class GameManager : MonoBehaviour
 
     private void NavigateToPreviousCheckpoint()
     {
-        if (allCheckpoints == null || allCheckpoints.Length == 0)
-        {
-            Debug.LogWarning("ไม่มี Checkpoint ใน Scene!");
-            return;
-        }
+        if (allCheckpoints == null || allCheckpoints.Length == 0) return;
+
+        UpdateCurrentCheckpointIndex();
 
         currentCheckpointIndex--;
         if (currentCheckpointIndex < 0)
@@ -962,11 +960,8 @@ public class GameManager : MonoBehaviour
 
     private void NavigateToNextCheckpoint()
     {
-        if (allCheckpoints == null || allCheckpoints.Length == 0)
-        {
-            Debug.LogWarning("ไม่มี Checkpoint ใน Scene!");
-            return;
-        }
+        if (allCheckpoints == null || allCheckpoints.Length == 0) return;
+        UpdateCurrentCheckpointIndex();
 
         currentCheckpointIndex++;
         if (currentCheckpointIndex >= allCheckpoints.Length)
@@ -1052,6 +1047,8 @@ public class GameManager : MonoBehaviour
         }
         currentActiveCheckpoint = checkpoint;
 
+        UpdateCurrentCheckpointIndex();
+
         // บันทึก ID Checkpoint
         if (checkpoint != null)
         {
@@ -1064,6 +1061,8 @@ public class GameManager : MonoBehaviour
 
         // *** สำคัญ: เรียก SaveItemSnapshot ตรงนี้ เพื่อบันทึก Item และ Bonus History ทันที ***
         SaveItemSnapshot();
+
+
 
         Debug.Log($"Active checkpoint set & saved: {checkpoint?.GetCheckpointID()}");
     }

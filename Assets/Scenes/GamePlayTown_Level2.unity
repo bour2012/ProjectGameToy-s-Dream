@@ -59293,9 +59293,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'Son: You did the good job saving our people !'
-    currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
-    typingSound: {fileID: 0}
+  - dialogText: 'The town chief : You did a great job saving our people!'
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
     randomizePitch: 1
     pitchRange: {x: 0.9, y: 1.1}
@@ -59327,9 +59327,9 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'Son: I Thank you from the bottom of my heart'
-    currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
-    typingSound: {fileID: 0}
+  - dialogText: 'The town chief : Thank you from the bottom of my heart!'
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
     randomizePitch: 1
     pitchRange: {x: 0.9, y: 1.1}

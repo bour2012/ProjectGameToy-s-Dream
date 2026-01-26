@@ -27647,7 +27647,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: 
   dialogSequence:
-  - dialogText: "\rBear leader : Oh hero, You're finally arrive !"
+  - dialogText: 'The town chief : Oh hero... You have finally arrived...!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27669,7 +27669,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "\rBear leader : Our village is in dire need of your help !"
+  - dialogText: 'The town chief : Our town needs your help!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27691,7 +27691,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "\rDad : What happen ?"
+  - dialogText: 'Dad : What happened?'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 5
@@ -27713,8 +27713,8 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "\rBear leader : The demon have attack our village and kidnaped the
-      town's people !"
+  - dialogText: "The town chief : The demon has attacked our town and kidnapped the
+      townspeople\u2026"
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27736,7 +27736,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "\rBear leader : You've to go help them"
+  - dialogText: "The town chief : You have to go help them\u2026"
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27758,7 +27758,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "\rBear leader : Please, you're our only hope !"
+  - dialogText: 'The town chief : Please... You are our only hope...!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27780,7 +27780,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "\rDad : Don't worry. I will go and help them now.\r\n"
+  - dialogText: 'Dad : Don''t worry. I will go and help them, right now!'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 5
@@ -27802,7 +27802,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "\rBear leader : Thank you, I'm counting on you hero !"
+  - dialogText: 'The town chief : Thank you...! I''m counting on you, hero!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -42522,7 +42522,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: 
   dialogSequence:
-  - dialogText: 'Son : Finally ! we have arrive !!'
+  - dialogText: 'Son : We have finally arrived!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 5
@@ -42544,7 +42544,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Dad : So, this is the town we have to save then '
+  - dialogText: 'Dad : So this is the town we have to save then.'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 5
@@ -42566,7 +42566,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Son : Yes, let''s go meet the town''s chief'
+  - dialogText: 'Son : Yes! Let''s go meet the town chief!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 5

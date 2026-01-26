@@ -32,6 +32,24 @@ public class MenuButtonHandler : MonoBehaviour
     // ฟังก์ชันนี้จะเอาไปใส่ในปุ่ม OnClick
     public void OnClickPlay()
     {
+
+        // 1. ลบจุดเซฟ (Spawn Point)
+        PlayerPrefs.DeleteKey("LastCheckpoint");
+        PlayerPrefs.DeleteKey("CheckpointX");
+        PlayerPrefs.DeleteKey("CheckpointY");
+        PlayerPrefs.DeleteKey("CheckpointZ");
+
+        // 2. ลบจำนวนไอเทมที่เก็บไว้
+        PlayerPrefs.DeleteKey("Saved_Glue");
+        PlayerPrefs.DeleteKey("Saved_Thread");
+
+        // 3. ลบประวัติ Dialog และ Checkpoint Bonus
+        PlayerPrefs.DeleteKey("PlayedDialogIDs");   // ชื่อ Key จากโค้ด GameManager เก่า
+        PlayerPrefs.DeleteKey("TriggeredBonusIDs"); // ชื่อ Key จากโค้ด GameManager เก่า
+
+        // สั่งบันทึกการลบทันที
+        PlayerPrefs.Save();
+
         // ป้องกันการกดซ้ำถ้า Timeline กำลังเล่นอยู่
         if (sequenceTimeline != null && sequenceTimeline.state == PlayState.Playing) return;
 
