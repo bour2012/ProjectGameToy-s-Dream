@@ -207,21 +207,19 @@ public class Rope : MonoBehaviour
 
     private void HandleInput(Vector2 aimDirection)
     {
-        // คลิกซ้าย - ยิงเชือก (เฉพาะเมื่อเลือก Thread)
+        
         if (Input.GetMouseButton(0))
         {
             if (ropeAttached) return;
 
-            // ตรวจสอบว่าเลือกใช้ Thread หรือไม่
+            
             bool usingThread = (glueShootingScript != null &&
                                glueShootingScript.GetSelectedItem() == ItemManager.ItemType.Thread);
 
             if (!usingThread) return;
 
-            // ตรวจสอบว่าสามารถเริ่มโหนได้หรือไม่
             if (!CanStartSwinging()) return;
 
-            // ตรวจสอบไอเทม Thread
             if (ItemManager.Instance != null && !ItemManager.Instance.HasItem(ItemManager.ItemType.Thread))
             {
                 Debug.Log("Cannot use rope - no thread available");
@@ -235,11 +233,11 @@ public class Rope : MonoBehaviour
             {
                 ropeAttached = true;
 
-                // ถ้าวัตถุสามารถเคลื่อนที่ได้
+            
                 attachedTarget = hit.collider.transform;
                 localHitOffset = (Vector2)hit.point - (Vector2)attachedTarget.position;
 
-                // ใช้ Thread
+                
                 if (ItemManager.Instance != null)
                 {
                     if (!ItemManager.Instance.UseItem(ItemManager.ItemType.Thread))
@@ -256,38 +254,37 @@ public class Rope : MonoBehaviour
                     var playerRb = transform.GetComponent<Rigidbody2D>();
                     Vector2 preSwingVelocity = playerRb.linearVelocity;
                     savedGravity = playerRb.gravityScale;
-                    // เพิ่มตำแหน่งปลายเชือก
+                
                     ropePositions.Add(hit.point);
 
-                    // คำนวณระยะจริงและระยะที่ต้องการ
+                 
                     float actualDistance = Vector2.Distance(playerPosition, hit.point);
                     float targetDistance;
 
-                    // ตรวจสอบว่าระยะอยู่ในช่วงมาตรฐานหรือไม่
                     if (actualDistance < ropeStandardDistance)
                     {
-                        // ถ้าระยะสั้นกว่ามาตรฐาน ให้ใช้ระยะมาตรฐาน
+                     
                         targetDistance = ropeStandardDistance;
                         Debug.Log($"Rope distance extended from {actualDistance:F2} to standard distance {ropeStandardDistance}");
                     }
                     else if (actualDistance == ropeStandardDistance)
                     {
-                        // ถ้าระยะเท่ากับมาตรฐานพอดี ให้ยาว 75%
+                      
                         targetDistance = actualDistance * 0.75f;
                     }
                     else
                     {
-                        // ถ้าระยะเกินมาตรฐาน ให้ใช้ระยะมาตรฐานแทน
+                       
                         targetDistance = ropeStandardDistance;
                         Debug.Log($"Rope distance clamped from {actualDistance:F2} to standard distance {ropeStandardDistance}");
                     }
 
-                    // ทำให้เชือกสั้นลงตามที่คำนวณ
+                    
                     StartCoroutine(SmoothShortenRope(actualDistance, targetDistance, 0.5f));
 
 
 
-                    // เปิดใช้งานเชือกและ anchor
+                    
                     ropeJoint.enabled = true;
                     ropeHingeAnchorSprite.enabled = true;
 
@@ -303,7 +300,7 @@ public class Rope : MonoBehaviour
             }
             else
             {
-                // ยิงไม่โดน - รีเซ็ตเชือก (ไม่เสียไอเทม)
+               
                 ropeRenderer.enabled = false;
                 ropeAttached = false;
                 ropeJoint.enabled = false;
@@ -351,18 +348,18 @@ public class Rope : MonoBehaviour
 
     private void AdjustRopeLength()
     {
-        if (!ropeAttached) return; // ถ้าเชือกไม่ได้เกี่ยวอยู่ ให้ข้ามไป
+        if (!ropeAttached) return; 
 
-        // ตรวจจับการกดปุ่ม W (หดเชือก) และ S (ยืดเชือก)
+     
         if (Input.GetKey(KeyCode.W))
         {
-            // ลดระยะเชือก (หด)
+            
             ropeJoint.distance = Mathf.Max(ropeJoint.distance - ropeAdjustSpeed * Time.deltaTime, minRopeLength);
             if (animator != null) animator.SetBool("IsClimbUpDown", true);
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            // เพิ่มระยะเชือก (ยืด)
+            
             ropeJoint.distance = Mathf.Min(ropeJoint.distance + ropeAdjustSpeed * Time.deltaTime, maxRopeLength);
             if (animator != null) animator.SetBool("IsClimbUpDown", true);
         }

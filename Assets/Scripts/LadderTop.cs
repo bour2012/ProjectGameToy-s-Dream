@@ -104,7 +104,7 @@ public class LadderTop : MonoBehaviour
 
         {
 
-            Debug.Log("Player entered ladder area");
+            //Debug.Log("Player entered ladder area");
 
 
 
@@ -138,7 +138,7 @@ public class LadderTop : MonoBehaviour
 
         {
 
-            Debug.Log("Player exited ladder area");
+            //Debug.Log("Player exited ladder area");
 
 
 

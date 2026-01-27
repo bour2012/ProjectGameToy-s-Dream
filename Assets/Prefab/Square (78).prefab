@@ -138,6 +138,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 1
   modeShoot: 0
   shootContinuous: 0
@@ -153,11 +155,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!61 &3990934837418368455
 BoxCollider2D:
   m_ObjectHideFlags: 0

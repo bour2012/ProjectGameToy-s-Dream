@@ -67,8 +67,8 @@ public class ItemManager : MonoBehaviour
         itemCounts[ItemType.Glue] = glueCount;
         itemCounts[ItemType.Thread] = threadCount;
 
-        if (showDebugInfo)
-            Debug.Log($"ItemManager initialized - Glue: {glueCount}, Thread: {threadCount}");
+        //if (showDebugInfo)
+        //    Debug.Log($"ItemManager initialized - Glue: {glueCount}, Thread: {threadCount}");
     }
 
     #region Key System
@@ -190,8 +190,8 @@ public class ItemManager : MonoBehaviour
 
 
 
-        if (showDebugInfo)
-            Debug.Log($"Set {itemType} count to {count}");
+        //if (showDebugInfo)
+        //    Debug.Log($"Set {itemType} count to {count}");
     }
 
     #endregion

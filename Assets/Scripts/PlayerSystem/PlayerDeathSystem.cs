@@ -481,7 +481,7 @@ public class PlayerDeathSystem : MonoBehaviour
         // เฟดอิน
         StartCoroutine(FadeIn());
 
-        Debug.Log($"Player Respawn ที่ตำแหน่ง: {spawnPosition}");
+        //Debug.Log($"Player Respawn ที่ตำแหน่ง: {spawnPosition}");
     }
 
     private void ResetPlayerMovementState()

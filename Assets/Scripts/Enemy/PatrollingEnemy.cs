@@ -17,7 +17,7 @@ public class PatrollingEnemy : Enemy
     [Header("Stuck Detection")]
     public float stuckThreshold = 0.1f;
     public float stuckWaitTime = 1.5f;
-    private Vector3 lastPosition;
+    private Vector3 stuckCheckPosition;
     private float stuckTimer = 0f;
 
     [Header("Patrol Offset")]
@@ -47,6 +47,7 @@ public class PatrollingEnemy : Enemy
         patrolStartPos = transform.position;
         currentState = State.Idle;
         col = GetComponent<Collider2D>();
+        stuckCheckPosition = transform.position;
 
         if (modelTransform != null)
             currentFacingDirection = Mathf.Sign(modelTransform.localScale.x);
@@ -124,7 +125,7 @@ public class PatrollingEnemy : Enemy
     {
         if (currentState == State.Chasing || currentState == State.Returning)
         {
-            float distanceMoved = Vector3.Distance(transform.position, lastPosition);
+            float distanceMoved = Vector3.Distance(transform.position, stuckCheckPosition);
             if (distanceMoved < stuckThreshold * Time.deltaTime)
             {
                 stuckTimer += Time.deltaTime;
@@ -133,7 +134,7 @@ public class PatrollingEnemy : Enemy
             {
                 stuckTimer = 0;
             }
-            lastPosition = transform.position;
+            stuckCheckPosition = transform.position;
         }
         else
         {

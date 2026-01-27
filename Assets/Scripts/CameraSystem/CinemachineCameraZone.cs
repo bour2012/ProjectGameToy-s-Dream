@@ -68,7 +68,7 @@ public class CinemachineCameraZone : MonoBehaviour
             // ปรับ Field of View สำหรับ Perspective
             zoneCam.Lens.FieldOfView = zoneFieldOfView;
 
-            Debug.Log($"[Camera Zone] ▶ เข้า Zone: {gameObject.name} | Camera: {zoneCam.name} | FOV: {zoneFieldOfView}");
+            //Debug.Log($"[Camera Zone] ▶ เข้า Zone: {gameObject.name} | Camera: {zoneCam.name} | FOV: {zoneFieldOfView}");
         }
     }
 
@@ -88,7 +88,7 @@ public class CinemachineCameraZone : MonoBehaviour
             defaultCam.Lens.FieldOfView = defaultFieldOfView;
         }
 
-        Debug.Log($"[Camera Zone] ◀ ออกจาก Zone: {gameObject.name}");
+        //Debug.Log($"[Camera Zone] ◀ ออกจาก Zone: {gameObject.name}");
     }
 
     // --- Helper Methods ---

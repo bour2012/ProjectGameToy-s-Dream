@@ -194,20 +194,7 @@ public class GlueProjectile : MonoBehaviour
     {
         if (hasStuck) return;
 
-        // Boss fire barrier: glue passing through becomes "burning" (ไฟ)
-        if (other != null && other.CompareTag("BossFireBarrier"))
-        {
-            if (!isBurning)
-            {
-                BecomeBurning();
-            }
-            // don't treat barrier as ground/target; let projectile continue
-            return;
-        }
-
         int layerMask = 1 << other.gameObject.layer;
-
-
 
         if ((layerMask & groundLayers) != 0)
         {
@@ -221,24 +208,11 @@ public class GlueProjectile : MonoBehaviour
         }
         else if ((layerMask & targetLayers) != 0)
         {
-            // If glue is burning and we hit a Boss, apply damage immediately
-            // use InParent in case collider is on child of boss GameObject
-            var boss = other.GetComponentInParent<BossController>();
-            if (isBurning && boss != null)
-            {
-                // apply damage that bypasses falling-only restriction
-                boss.ReceiveEnvironmentalDamage(burningDamage);
-                CreateImpactEffects();
-                PlaySound(impactSound);
-                Destroy(gameObject);
-                return;
-            }
 
             StickToTarget(other, timeStickToTarget);
             targetInside = true;
             currentTarget = other;
             Debug.Log($"Enter: {other.name} at {other.transform.position}");
-            //ApplySlow(other);
             if (RemainingLifetime > timeGlueStick)
             {
                 ApplySlow(other);

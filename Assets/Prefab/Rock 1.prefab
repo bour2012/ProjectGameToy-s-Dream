@@ -173,6 +173,8 @@ MonoBehaviour:
   loopRequiresTrigger: 0
   modeSwing: 0
   modeJumped: 0
+  jumpSound: {fileID: 0}
+  audioSource: {fileID: 0}
   modeDestroyed: 1
   modeShoot: 0
   shootContinuous: 0
@@ -188,11 +190,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!1 &2648408420176068841
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,7 +276,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 5.1, y: 5.01}
+  m_Size: {x: 5.51, y: 5.48}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

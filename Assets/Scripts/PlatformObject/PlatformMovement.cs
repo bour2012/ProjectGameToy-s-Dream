@@ -7,161 +7,110 @@ public class PlatformMovement : MonoBehaviour
     public Transform[] points;
     public float moveSpeed;
     private int pointIndex;
-    private bool canMove = false; // ตัวแปรเช็คว่ากด E หรือยัง
-    private bool isPlayerNear = false; // ผู้เล่นอยู่ใกล้หรือไม่
+    private bool canMove = false;
+    private bool isPlayerNear = false;
+
     [Tooltip("แพลตฟอร์มวิ่งวนลูปตามจุดใน points")]
     public bool modeLoop = false;
-    [Tooltip("ถ้า true = โหมด loop จะเริ่มขยับหลังจากมีการชนด้วย collider (เช่น ผู้เล่นยืนบนแพลตฟอร์ม), ถ้า false = เริ่มขยับทันที")]
+    [Tooltip("ถ้า true = โหมด loop จะเริ่มขยับหลังจากมีการชนด้วย collider")]
     public bool loopRequiresTrigger = false;
     [Tooltip("แพลตฟอร์มแกว่งซ้าย-ขวา")]
     public bool modeSwing = false;
-    [Tooltip("เมื่อผู้เล่นเหยียบแล้วกระเด้งขึ้น (ใช้กับ bounce)")]
+    [Tooltip("เมื่อผู้เล่นเหยียบแล้วกระเด้งขึ้น")]
     public bool modeJumped = false;
-    [Tooltip("เมื่อชนกับตัว DeadZone แล้ว Platform ถูกทำลาย")]
-    public AudioClip jumpSound;      // ลากไฟล์เสียงมาใส่ตรงนี้
-    public AudioSource audioSource; // ตัวเล่นเสียง
+
+    public AudioClip jumpSound;
+    public AudioSource audioSource;
 
     public bool modeDestroyed = false;
     [Tooltip("แพลตฟอร์มยิงออกไปจากจุด spawn สู่ targetPoint")]
     public bool modeShoot = false;
-    [Tooltip("When true, spawn projectiles repeatedly at `continuousShootInterval` without waiting for each to reach the end point.")]
+    [Tooltip("Spawn projectiles repeatedly")]
     public bool shootContinuous = false;
-    [Tooltip("Interval (seconds) between continuous spawns when `shootContinuous` is true.")]
     public float continuousShootInterval = 0.5f;
-    [Tooltip("โหมดใช้ Animator คุมแพลตฟอร์ม (ใช้ร่วมกับ Animator)")]
+    [Tooltip("โหมดใช้ Animator คุมแพลตฟอร์ม")]
     public bool modeAnim = false;
+
     [Header("Destroy Settings")]
-    public float timeDelay = 2f; // กำหนดแรงกระเด้ง
+    public float timeDelay = 2f;
 
     [Header("Swing Settings")]
-    public float swingSpeed = 2f;   // ความเร็วในการแกว่ง
-    public float swingAngle = 30f;  // องศาสูงสุดที่จะแกว่งซ้าย-ขวา
-    public float offset = 0f;       // ใช้เลื่อนจังหวะการแกว่ง (เผื่อมีหลายอันแล้วไม่อยากแกว่งพร้อมกัน)
+    public float swingSpeed = 2f;
+    public float swingAngle = 30f;
+    public float offset = 0f;
 
     [Header("Bounce Settings")]
-    public float bounceForce = 15f; // กำหนดแรงกระเด้ง
+    public float bounceForce = 15f;
 
     [Header("Shooting Settings")]
-    public Transform targetPoint;      // จุดที่อยากให้ Platform ยิงไปหา
-    public float travelTime = 10f;     // แรงยิง
-    public Transform spawnPoint;        // จุดเริ่มต้นที่จะ spawn ใหม่
-    public GameObject platformPrefab;   // Prefab ของ Platform ตัวเอง
-    private bool hasShot = false;      // เช็คว่ากด E ยิงไปแล้วหรือยัง
-    [Tooltip("If true: when a spawned projectile is destroyed mid-flight, immediately respawn it at the spawnPoint.")]
+    public Transform targetPoint;
+    public float travelTime = 10f;
+    public Transform spawnPoint;
+    public GameObject platformPrefab;
+    private bool hasShot = false;
+    [Tooltip("If true: when a spawned projectile is disabled, immediately respawn it at the spawnPoint.")]
     public bool respawnOnDisappear = true;
-    // Track all spawned projectiles so we can clear them if spawn/target disappear
-    private List<GameObject> activeProjectiles = new List<GameObject>();
-    // once triggered by collider, start moving and don't stop checking
+
+    // --- Object Pooling System ---
+    // เก็บทุกกระสุนที่สร้างขึ้นมาเพื่อวนใช้ใหม่
+    private List<GameObject> projectilePool = new List<GameObject>();
     private bool triggeredLoop = false;
 
-    // Helper: ensure spawnPoint and targetPoint are present and active
+    // Optimization: Cache Variables
+    private Rigidbody2D myRb;
+    private float startRotationZ;
+    private Vector3 startPosition;
+
+    [Header("Animation Settings")]
+    public Animator anim;
+
+    // Helper: เช็คความถูกต้องได้เร็วขึ้น
     private bool IsShootingSetupValid
     {
         get
         {
-            bool isSpawnOK = spawnPoint != null && spawnPoint.gameObject.activeInHierarchy;
-            bool isTargetOK = targetPoint != null && targetPoint.gameObject.activeInHierarchy;
-            return isSpawnOK && isTargetOK;
+            return spawnPoint != null && targetPoint != null &&
+                   spawnPoint.gameObject.activeInHierarchy && targetPoint.gameObject.activeInHierarchy;
         }
     }
 
     public enum ShootStaggerMode { Simultaneous, RandomSpread, SiblingStagger, ManualStagger }
-    [Tooltip("How to stagger initial shooting when multiple platforms trigger together")]
     public ShootStaggerMode shootStaggerMode = ShootStaggerMode.Simultaneous;
-    [Tooltip("Interval used by SiblingStagger/ManualStagger (seconds between items)")]
     public float staggerInterval = 0.25f;
-    [Tooltip("Max random delay (seconds) when using RandomSpread mode")]
     public float randomSpread = 1f;
-    [Tooltip("Manual order index when using ManualStagger mode (0 = first)")]
     public int manualOrder = 0;
-
-    private float startRotationZ;
-
-    private Vector3 startPosition; // เก็บตำแหน่งเริ่มต้นของ platform
-    [Header("Animation Settings")]
-    public Animator anim;
 
     private void Start()
     {
         startPosition = transform.position;
-        transform.position = startPosition;
+        // transform.position = startPosition; // Optional reset
         startRotationZ = transform.eulerAngles.z;
 
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            // ถ้าไม่มีให้เพิ่มเข้าไปให้อัตโนมัติ กันลืม
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
+        // Optimization: Cache Component
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
 
+        // Cache Rigidbody ถ้าใช้โหมด Anim
+        myRb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
-        // เงื่อนไขกด E ได้เฉพาะตอนผู้เล่นอยู่ในระยะ
         if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
         {
             canMove = true;
-            Debug.Log("Player pressed E near platform.");
+            // Debug.Log("Player pressed E near platform."); 
         }
 
-        if (modeLoop)
-        {
-            // If loopRequiresTrigger is true, require player presence or an explicit canMove flag to start moving
-            // once triggeredLoop is true the platform will continue to move regardless of later exits
-            if (!loopRequiresTrigger || isPlayerNear || canMove || triggeredLoop)
-            {
-                if (pointIndex < points.Length)
-                {
-                    transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
+        HandleMovement();
+        HandleSwing();
 
-                    if (Vector2.Distance(transform.position, points[pointIndex].position) < 0.01f)
-                    {
-                        pointIndex += 1;
-                    }
-
-                    if (pointIndex == points.Length)
-                    {
-                        pointIndex = 0;
-                    }
-                }
-            }
-        }
-        if (!modeLoop && !modeSwing)
-        {
-            // For non-loop mode, move only when canMove OR when triggeredLoop (started by collider)
-            if ((canMove || triggeredLoop) && pointIndex < points.Length)
-            {
-
-                transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
-
-                if (Vector2.Distance(transform.position, points[pointIndex].position) < 0.01f)
-                {
-                    pointIndex += 1;
-                }
-
-            }
-
-        }
-        if (modeSwing)
-        {
-            // คำนวณมุมแกว่ง: Sin จะให้ค่า -1 ถึง 1
-            float angle = Mathf.Sin((Time.time + offset) * swingSpeed) * swingAngle;
-
-            // ใช้ Quaternion หมุนแกน Z
-            transform.rotation = Quaternion.Euler(0f, 0f, startRotationZ + angle);
-        }
         if (modeShoot)
         {
-
-            //if (spawnPoint != null)
-            //{
-            //    Debug.Log($"SpawnPoint ชื่อ: {spawnPoint.name} | พ่อชื่อ: {spawnPoint.parent.name} | Active: {spawnPoint.gameObject.activeInHierarchy}");
-            //}
-            // If setup is invalid (null or disabled), clear any spawned projectiles immediately
             if (!IsShootingSetupValid)
             {
-                ClearAllProjectiles();
+                // ถ้าจุด Spawn หายไป ให้เคลียร์กระสุนทิ้งให้หมด
+                ClearAndDestroyPool();
                 hasShot = false;
             }
             else
@@ -170,256 +119,298 @@ public class PlatformMovement : MonoBehaviour
                     StartCoroutine(StartShootingWithStagger());
             }
         }
-        if (modeAnim)
-        {
-            Rigidbody2D rb = GetComponent<Rigidbody2D>(); // ต้องมีบรรทัดนี้ก่อนใช้ rb
-            anim.SetFloat("Speed", rb.linearVelocity.y); // ทำอะไรสักอย่างกับ Animator
-        }
-        // ถ้า canMove = true ถึงจะเริ่มเคลื่อนที่
 
+        // Optimization: ใช้ cached Rigidbody แทน GetComponent ทุกเฟรม
+        if (modeAnim && anim != null && myRb != null)
+        {
+            anim.SetFloat("Speed", myRb.linearVelocity.y);
+        }
     }
+
+    // แยกฟังก์ชันออกมาเพื่อให้อ่านง่ายและทำงานเร็ว
+    private void HandleMovement()
+    {
+        bool shouldMove = false;
+
+        if (modeLoop)
+        {
+            if (!loopRequiresTrigger || isPlayerNear || canMove || triggeredLoop)
+                shouldMove = true;
+        }
+        else if (!modeSwing) // Non-loop & Non-swing
+        {
+            if ((canMove || triggeredLoop) && pointIndex < points.Length)
+                shouldMove = true;
+        }
+
+        if (shouldMove && points != null && pointIndex < points.Length)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, points[pointIndex].position, moveSpeed * Time.deltaTime);
+
+            // Optimization: ใช้ sqrMagnitude แทน Distance (เร็วกว่า)
+            if ((transform.position - points[pointIndex].position).sqrMagnitude < 0.0001f)
+            {
+                pointIndex += 1;
+                if (modeLoop && pointIndex >= points.Length)
+                {
+                    pointIndex = 0;
+                }
+            }
+        }
+    }
+
+    private void HandleSwing()
+    {
+        if (modeSwing)
+        {
+            float angle = Mathf.Sin((Time.time + offset) * swingSpeed) * swingAngle;
+            transform.rotation = Quaternion.Euler(0f, 0f, startRotationZ + angle);
+        }
+    }
+
+    // --- Object Pooling Logic ---
+    // ฟังก์ชันสำหรับขอกระสุนจาก Pool
+    private GameObject GetProjectileFromPool()
+    {
+        // 1. หาตัวที่ปิดอยู่ (Inactive) ใน Pool
+        foreach (var p in projectilePool)
+        {
+            if (p != null && !p.activeInHierarchy)
+            {
+                p.transform.position = spawnPoint.position;
+                p.transform.rotation = spawnPoint.rotation;
+                p.SetActive(true);
+
+                Animator pAnim = p.GetComponent<Animator>();
+                if (pAnim != null)
+                {
+                    pAnim.Rebind();
+                    //pAnim.SetTrigger("Shoot"); 
+                }
+                return p;
+            }
+        }
+
+        // 2. ถ้าไม่มีว่างเลย หรือ Pool ยังว่างเปล่า ให้สร้างใหม่
+        if (platformPrefab != null)
+        {
+            GameObject newObj = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
+            newObj.SetActive(true); // บังคับเปิด
+            Animator pAnim = newObj.GetComponent<Animator>();
+            //if (pAnim != null)
+            //{
+            //    pAnim.SetTrigger("Shoot"); // ปลด comment บรรทัดนี้ ถ้าตัวกระสุนต้องใช้ Trigger "Shoot" ด้วย
+            //}
+            projectilePool.Add(newObj);
+            return newObj;
+        }
+
+        return null;
+    }
+
+    private void ReturnProjectileToPool(GameObject p)
+    {
+        if (p != null)
+        {
+            p.SetActive(false); // ปิดการใช้งานแทนการ Destroy
+        }
+    }
+
+    private void ClearAndDestroyPool()
+    {
+        // ใช้เมื่อ Platform หลักโดนทำลาย หรือ Disabled
+        foreach (var p in projectilePool)
+        {
+            if (p != null) Destroy(p);
+        }
+        projectilePool.Clear();
+    }
+
     private void OnDisable()
     {
-        // ทันทีที่ถูกปิด (Disable) ให้ลบกระสุนทิ้งทั้งหมด
-        ClearAllProjectiles();
-        Debug.Log("Platform disabled: Cleared all projectiles.");
+        ClearAndDestroyPool();
+        // Debug.Log("Platform disabled: Cleared pool.");
     }
-    //private void OnTriggerStay2D(Collider2D collision)
-    //{
-    //    if (collision.CompareTag("Player"))
-    //    {
-
-    //            canMove = true;
-    //            Debug.Log("Pressed E while inside trigger.");
-
-    //    }
-    //}
-
 
     public void AnimationShoot()
     {
-        anim.SetTrigger("Shoot");
+        if (anim != null) anim.SetTrigger("Shoot");
     }
 
+    // Coroutine นี้ถูกปรับปรุงให้ใช้ Pooling
     private System.Collections.IEnumerator ShootPlatformRoutine(bool markDone = true)
     {
-
-
-        //if (anim != null)
-        //{
-        //    anim.SetTrigger("Shoot");
-        //}
-
-        // Validate required settings
-        if (platformPrefab == null || spawnPoint == null || targetPoint == null)
+        if (spawnPoint == null || targetPoint == null)
         {
-            Debug.LogWarning("PlatformMovement: Missing shooting settings (platformPrefab/spawnPoint/targetPoint). Aborting shoot.");
             hasShot = false;
             yield break;
         }
 
-        // Create platform projectile
-        GameObject newPlatform = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
-        // remember it so we can clear all later if needed
-        activeProjectiles.Add(newPlatform);
-        float elapsed = 0f;
+        if (anim != null)
+        {
+            anim.SetTrigger("Shoot");
+        }
 
+        float shootDelay = 0.5f;
+
+        if (shootDelay > 0f)
+        {
+            yield return new WaitForSeconds(shootDelay);
+        }
+ 
+
+        if (!IsShootingSetupValid)
+        {
+            hasShot = false;
+            yield break;
+        }
+        // ขอวัตถุจาก Pool แทนการ Instantiate
+        GameObject currentProjectile = GetProjectileFromPool();
+        if (currentProjectile == null) yield break;
+
+        float elapsed = 0f;
         Vector3 startPos = spawnPoint.position;
         Vector3 endPos = targetPoint.position;
 
         while (elapsed < travelTime)
         {
-            // If spawn/target become invalid (null or disabled) while traveling,
-            // destroy this projectile and abort.
+            // เช็คความถูกต้องระหว่างทาง
             if (!IsShootingSetupValid)
             {
-                if (newPlatform != null)
-                {
-                    activeProjectiles.Remove(newPlatform);
-                    Destroy(newPlatform);
-                }
-                ClearAllProjectiles();
+                ReturnProjectileToPool(currentProjectile);
+                ClearAndDestroyPool();
                 yield break;
             }
-            // If the projectile was destroyed mid-flight, optionally respawn immediately at start
-            if (newPlatform == null)
-            {
-                // ensure list doesn't keep null refs
-                activeProjectiles.RemoveAll(x => x == null);
 
-                if (respawnOnDisappear)
+            // ถ้าวัตถุถูก Deactive ไปโดยสคริปต์อื่น หรือหายไป
+            if (currentProjectile == null || !currentProjectile.activeInHierarchy)
+            {
+                if (respawnOnDisappear && IsShootingSetupValid)
                 {
-                    // Recreate a fresh instance at the spawn point and restart its travel
-                    if (platformPrefab != null && spawnPoint != null)
+                    // กรณีนี้เราดึงตัวเดิมหรือตัวใหม่จาก Pool มาเริ่มใหม่
+                    // แต่เพื่อความง่าย เราแค่เช็คว่าถ้าตัวเดิมยังอยู่แต่ปิดไป ให้เปิดใหม่
+                    // หรือถ้าตัวเดิม Null (โดน Destroy จริงๆ) ให้ขอใหม่
+                    if (currentProjectile == null)
                     {
-                        newPlatform = Instantiate(platformPrefab, spawnPoint.position, spawnPoint.rotation);
-                        activeProjectiles.Add(newPlatform);
-                        startPos = spawnPoint.position;
-                        elapsed = 0f; // restart travel so it begins at the spawn point
+                        currentProjectile = GetProjectileFromPool();
                     }
                     else
                     {
-                        // Can't respawn correctly, abort
-                        Debug.LogWarning("PlatformMovement: Cannot respawn projectile because prefab/spawnPoint is missing.");
-                        break;
+                        currentProjectile.transform.position = spawnPoint.position;
+                        currentProjectile.SetActive(true);
                     }
+
+                    startPos = spawnPoint.position;
+                    elapsed = 0f;
                 }
                 else
                 {
-                    // Not allowed to respawn: abort the travel loop
                     break;
                 }
             }
 
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / travelTime);
-            if (newPlatform != null)
-                newPlatform.transform.position = Vector3.Lerp(startPos, endPos, t); // เคลื่อนจาก start → target
+
+            if (currentProjectile != null)
+                currentProjectile.transform.position = Vector3.Lerp(startPos, endPos, t);
 
             yield return null;
         }
 
-        // ถ้ายังมี projectile อยู่ ให้ทำลายเมื่อถึงเป้าหมาย
-        if (newPlatform != null)
-        {
-            // remove from tracking before destroying
-            activeProjectiles.Remove(newPlatform);
-            Destroy(newPlatform);
-        }
+        // เมื่อถึงเป้าหมาย ส่งกลับเข้า Pool (ซ่อนไว้)
+        ReturnProjectileToPool(currentProjectile);
 
-        // If markDone is true we treat this as a single-shot flow and allow re-shooting
         if (markDone)
         {
-            // รออีก 2 วินาทีแล้วรีเซ็ตยิงใหม่ได้
             yield return new WaitForSeconds(2f);
             hasShot = false;
         }
     }
 
-    // Destroy and clear all projectiles this platform spawned
-    private void ClearAllProjectiles()
-    {
-        if (activeProjectiles == null || activeProjectiles.Count == 0)
-            return;
-
-        for (int i = activeProjectiles.Count - 1; i >= 0; --i)
-        {
-            GameObject go = activeProjectiles[i];
-            if (go != null)
-                Destroy(go);
-        }
-        activeProjectiles.Clear();
-    }
-
     private void OnDestroy()
     {
-        ClearAllProjectiles();
+        ClearAndDestroyPool();
     }
 
-    // Wrapper: compute initial delay according to selected stagger mode, then start ShootPlatformRoutine
     private System.Collections.IEnumerator StartShootingWithStagger()
     {
-        // mark scheduled so we don't schedule again
         hasShot = true;
-
         float delay = 0f;
+
         switch (shootStaggerMode)
         {
-            case ShootStaggerMode.Simultaneous:
-                delay = 0f;
-                break;
-            case ShootStaggerMode.RandomSpread:
-                delay = Random.Range(0f, randomSpread);
-                break;
-            case ShootStaggerMode.SiblingStagger:
-                // use sibling index to stagger items under same parent
-                int idx = transform.GetSiblingIndex();
-                delay = idx * staggerInterval;
-                break;
-            case ShootStaggerMode.ManualStagger:
-                delay = manualOrder * staggerInterval;
-                break;
+            case ShootStaggerMode.Simultaneous: delay = 0f; break;
+            case ShootStaggerMode.RandomSpread: delay = Random.Range(0f, randomSpread); break;
+            case ShootStaggerMode.SiblingStagger: delay = transform.GetSiblingIndex() * staggerInterval; break;
+            case ShootStaggerMode.ManualStagger: delay = manualOrder * staggerInterval; break;
         }
 
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay);
+        if (delay > 0f) yield return new WaitForSeconds(delay);
 
-        // If continuous mode is requested, start a looping spawn coroutine that does not wait
         if (shootContinuous)
         {
             StartCoroutine(ContinuousSpawn());
             yield break;
         }
 
-        // Actually perform the single shooting (wait until it finishes and mark hasShot false there)
         yield return StartCoroutine(ShootPlatformRoutine(true));
     }
 
     private System.Collections.IEnumerator ContinuousSpawn()
     {
-        // keep spawning until something clears `hasShot` (for now it remains true while continuous shooting is active)
         while (hasShot)
         {
-            // If spawn/target are missing or disabled, clear and stop continuous spawning
             if (!IsShootingSetupValid)
             {
-                ClearAllProjectiles();
+                ClearAndDestroyPool();
                 yield break;
             }
 
-            // spawn a projectile but don't mark done when it finishes
             StartCoroutine(ShootPlatformRoutine(false));
-            yield return new WaitForSeconds(Mathf.Max(0.01f, continuousShootInterval));
+
+            // ป้องกัน Interval เป็น 0 ซึ่งจะทำให้เกมค้าง
+            float interval = Mathf.Max(0.02f, continuousShootInterval);
+            yield return new WaitForSeconds(interval);
         }
     }
-    public void ShootToTarget()
-    {
-      
-        
-    }
 
+    public void ShootToTarget() { }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            isPlayerNear = true; // ผู้เล่นเข้ามาใกล้
-            Debug.Log("Player is near platform.");
+            isPlayerNear = true;
 
-
-            // ถ้า Player มาชน
             if (modeJumped)
             {
-                Rigidbody2D rb = collision.gameObject.GetComponent<Rigidbody2D>();
-                if (rb != null)
+                Rigidbody2D rbPlayer = collision.gameObject.GetComponent<Rigidbody2D>();
+                if (rbPlayer != null)
                 {
-                    // ล้างแรง Y เดิม เพื่อให้กระเด้งแน่นอน
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+                    rbPlayer.linearVelocity = new Vector2(rbPlayer.linearVelocity.x, 0f);
+                    rbPlayer.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
 
-                    // เพิ่มแรงกระเด้งขึ้นข้างบน
-                    rb.AddForce(Vector2.up * bounceForce, ForceMode2D.Impulse);
-
-                    anim.SetTrigger("Jump");
+                    if (anim != null) anim.SetTrigger("Jump");
 
                     if (jumpSound != null && audioSource != null)
                     {
                         audioSource.PlayOneShot(jumpSound);
                     }
-
-                    Debug.Log("JUMPPP");
                 }
             }
-            // If loopRequiresTrigger is set, mark triggeredLoop so movement continues even after exit
+
             if (loopRequiresTrigger)
             {
                 triggeredLoop = true;
                 canMove = true;
             }
         }
+
+        // Optimization check
         if (collision.gameObject.layer == LayerMask.NameToLayer("DeadZone"))
         {
-            Destroy(gameObject,timeDelay);
-            Debug.Log("Platform destroyed by DeadZone.");
+            Destroy(gameObject, timeDelay);
         }
     }
 
@@ -427,13 +418,7 @@ public class PlatformMovement : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            isPlayerNear = false; // ผู้เล่นออกไป
-            Debug.Log("Player left platform area.");
-
-            // do not clear triggeredLoop — once triggered we keep moving. Only clear isPlayerNear.
+            isPlayerNear = false;
         }
     }
-
-
-
 }

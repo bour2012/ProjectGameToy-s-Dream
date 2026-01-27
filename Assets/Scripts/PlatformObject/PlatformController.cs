@@ -13,17 +13,26 @@ public class PlatformController : MonoBehaviour
     public string activateTriggerName = "Open";
     public string deactivateTriggerName = "Close";
 
-    [Header("State Names (Start Only)")]
-    public string idleOpenStateName = "IdleOpen";
-    public string idleCloseStateName = "IdleClose";
+    //[Header("State Names (Start Only)")]
+    //[Tooltip("ชื่อ State ใน Animator ต้องตรงเป๊ะ (ถ้าไม่มีให้เว้นว่างไว้)")]
+    //public string idleOpenStateName = "IdleOpen";
+    //[Tooltip("ชื่อ State ใน Animator ต้องตรงเป๊ะ (ถ้าไม่มีให้เว้นว่างไว้)")]
+    //public string idleCloseStateName = "IdleClose";
 
     private bool isActive = false;
+
+    // --- Optimization: Cache Animator Hashes ---
+    private int activateTriggerID;
+    private int deactivateTriggerID;
+    private int idleOpenStateID;
+    private int idleCloseStateID;
 
     [Header("Physics Settings")]
     public Transform platform;
     private Rigidbody2D platformRb2D;
     private RigidbodyType2D initialBodyType;
     private RigidbodyConstraints2D defaultConstraints;
+    private Collider2D platformCollider; // Cache Collider
 
     [Header("Movement Settings")]
     public Vector3 pivotPosition;
@@ -56,6 +65,9 @@ public class PlatformController : MonoBehaviour
     private HashSet<GameObject> glueObjects = new HashSet<GameObject>();
     private Dictionary<GameObject, ParentedObjectData> parentedObjects = new Dictionary<GameObject, ParentedObjectData>();
     private HashSet<GameObject> objectsOnPlatform = new HashSet<GameObject>();
+
+    // --- Optimization: Cache Player ---
+    private Transform cachedPlayerTransform;
 
     [System.Serializable]
     public class ParentedObjectData
@@ -97,9 +109,17 @@ public class PlatformController : MonoBehaviour
             Debug.LogError("Platform ต้องมี Rigidbody2D component!");
             return;
         }
+
+        // Cache Collider
+        platformCollider = platform.GetComponent<Collider2D>();
+
         initialBodyType = platformRb2D.bodyType;
         defaultConstraints = platformRb2D.constraints;
         FreezePlatform();
+
+        // --- Optimization: Find Player Once ---
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null) cachedPlayerTransform = playerObj.transform;
 
         if (isRotationMode)
         {
@@ -108,14 +128,12 @@ public class PlatformController : MonoBehaviour
         }
         else
         {
-            // --- จุดที่คุณต้องการ: ตั้งค่า Default Position ถ้าไม่ได้กรอกมา ---
             if (Mathf.Approximately(downPosition.x, 0f) &&
                 Mathf.Approximately(downPosition.y, 0f) &&
                 Mathf.Approximately(downPosition.z, 0f))
             {
                 downPosition = platform.position;
             }
-            // --------------------------------------------------------
         }
 
         if (useParentingMode)
@@ -125,11 +143,30 @@ public class PlatformController : MonoBehaviour
             glueObjects = new HashSet<GameObject>();
         }
 
-        // Setup Start Animation (แค่เล่น Visual เริ่มต้น)
+        // --- Optimization: Convert Strings to Hashes ---
         if (isAnimMode && platformAnimator != null)
         {
-            if (isActive) platformAnimator.Play(idleOpenStateName);
-            else platformAnimator.Play(idleCloseStateName);
+            activateTriggerID = Animator.StringToHash(activateTriggerName);
+            deactivateTriggerID = Animator.StringToHash(deactivateTriggerName);
+
+            //// ป้องกัน Error โดยเช็คว่าชื่อไม่ว่างเปล่าก่อนแปลง Hash
+            //if (!string.IsNullOrEmpty(idleOpenStateName))
+            //    idleOpenStateID = Animator.StringToHash(idleOpenStateName);
+
+            //if (!string.IsNullOrEmpty(idleCloseStateName))
+            //    idleCloseStateID = Animator.StringToHash(idleCloseStateName);
+
+            //// --- Fix: Check before Play ---
+            //if (isActive)
+            //{
+            //    if (!string.IsNullOrEmpty(idleOpenStateName))
+            //        platformAnimator.Play(idleOpenStateID);
+            //}
+            //else
+            //{
+            //    if (!string.IsNullOrEmpty(idleCloseStateName))
+            //        platformAnimator.Play(idleCloseStateID);
+            //}
         }
     }
 
@@ -197,11 +234,10 @@ public class PlatformController : MonoBehaviour
         bool prevActive = isActive;
         isActive = state;
 
-        // สั่ง Animation (ถ้ามี) แต่ปล่อยให้ Physics ทำงานต่อ
         if (isAnimMode && platformAnimator != null && prevActive != isActive)
         {
-            if (isActive) platformAnimator.SetTrigger(activateTriggerName);
-            else platformAnimator.SetTrigger(deactivateTriggerName);
+            if (isActive) platformAnimator.SetTrigger(activateTriggerID);
+            else platformAnimator.SetTrigger(deactivateTriggerID);
         }
 
         UnfreezePlatform();
@@ -212,12 +248,21 @@ public class PlatformController : MonoBehaviour
         float checkInterval = 0.1f;
         while (true)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
+            // --- Optimization: Use Cached Player ---
+            // ถ้าหาไม่เจอตอน Start ให้ลองหาใหม่ (เผื่อ Player เกิดทีหลัง)
+            if (cachedPlayerTransform == null)
             {
-                float dist = Vector2.Distance(playerObj.transform.position, transform.position);
-                if (dist <= playerProximityRadius) break;
+                GameObject p = GameObject.FindGameObjectWithTag("Player");
+                if (p != null) cachedPlayerTransform = p.transform;
             }
+
+            if (cachedPlayerTransform != null)
+            {
+                // ใช้ sqrMagnitude เร็วกว่า Distance
+                float distSqr = (cachedPlayerTransform.position - transform.position).sqrMagnitude;
+                if (distSqr <= (playerProximityRadius * playerProximityRadius)) break;
+            }
+
             yield return new WaitForSeconds(checkInterval);
         }
 
@@ -227,10 +272,9 @@ public class PlatformController : MonoBehaviour
         bool prevActive = isActive;
         isActive = true;
 
-        // สั่ง Animation (ถ้ามี)
         if (isAnimMode && platformAnimator != null && prevActive != isActive)
         {
-            platformAnimator.SetTrigger(activateTriggerName);
+            platformAnimator.SetTrigger(activateTriggerID);
         }
 
         UnfreezePlatform();
@@ -246,9 +290,6 @@ public class PlatformController : MonoBehaviour
         }
         else
         {
-            // --- แก้ไขตรงนี้ ---
-            // ตัดเงื่อนไข !isAnimMode ออก เพื่อให้ขยับได้เสมอแม้จะเล่น Animation อยู่
-            // ตราบใดที่ไม่ใช่โหมดหมุน มันจะขยับ Position
             MovePlatform();
         }
     }
@@ -258,26 +299,36 @@ public class PlatformController : MonoBehaviour
         Vector2 current = platformRb2D.position;
         Vector2 target = isActive ? new Vector2(upPosition.x, upPosition.y) : new Vector2(downPosition.x, downPosition.y);
 
-        // ใช้ MoveTowards เพื่อเคลื่อนที่ตาม Speed ที่ตั้งไว้ใน Script
+    
         Vector2 newPosition = Vector2.MoveTowards(current, target, speed * Time.deltaTime);
 
-        if (Vector2.Distance(newPosition, target) < 0.02f) newPosition = target;
-        platformRb2D.MovePosition(newPosition);
+   
+        if ((target - newPosition).sqrMagnitude < 0.000001f)
+        {
+         
+            newPosition = target;
 
-        // ถ้าถึงจุดหมายปลายทางแล้ว (กรณีปิด) ให้ Freeze ไว้กันไหล
-        if (!isActive && Vector3.Distance(newPosition, downPosition) < 0.01f) FreezePlatform();
+          
+            if (!isActive) FreezePlatform();
+        }
+
+     
+        platformRb2D.MovePosition(newPosition);
     }
 
     private void RotatePlatform()
     {
         float targetRotation = isActive ? openRotationAngle : startRotation;
+
+        // --- Optimization: Check angle ---
+        if (Mathf.Abs(currentRotation - targetRotation) < 0.01f) return;
+
         float rotSpeed = isRotationMode ? speed : rotationSpeed;
         currentRotation = Mathf.MoveTowards(currentRotation, targetRotation, rotSpeed * Time.deltaTime);
         platform.RotateAround(pivotPosition, Vector3.forward, currentRotation - platform.eulerAngles.z);
     }
 
     #region Parenting System
-    // (ส่วนนี้เหมือนเดิม ไม่มีการเปลี่ยนแปลง)
     void OnTriggerEnter2D(Collider2D other) { if (!useParentingMode) return; HandleTriggerEnter(other.gameObject); }
     void OnTriggerExit2D(Collider2D other) { if (!useParentingMode) return; HandleTriggerExit(other.gameObject); }
     void OnCollisionEnter2D(Collision2D col) { if (!useParentingMode) return; HandleCollisionEnter(col); }
@@ -300,7 +351,11 @@ public class PlatformController : MonoBehaviour
     void HandleCollisionEnter(Collision2D col)
     {
         Vector2 contact = col.contacts[0].point;
-        Vector2 top = new Vector2(transform.position.x, transform.position.y + GetComponent<Collider2D>().bounds.size.y / 2);
+
+        // Use cached collider
+        float boundsY = (platformCollider != null) ? platformCollider.bounds.size.y : 1f;
+        Vector2 top = new Vector2(transform.position.x, transform.position.y + boundsY / 2);
+
         if (contact.y >= top.y - 0.1f) HandleTriggerEnter(col.gameObject);
     }
 

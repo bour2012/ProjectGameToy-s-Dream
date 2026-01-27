@@ -59,7 +59,7 @@ public class PushableBox : MonoBehaviour
                 return;
             }
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
-            Debug.Log($"[PushableBox] '{gameObject.name}' Locked.");
+            //Debug.Log($"[PushableBox] '{gameObject.name}' Locked.");
         }
     }
 }

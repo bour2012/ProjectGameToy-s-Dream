@@ -305,13 +305,13 @@ public class TrashCraftingSystem : MonoBehaviour
     {
         if (!isPlayerNear) return;
 
-        // สลับไอเทมด้วย Q
+      
         if (Input.GetKeyDown(KeyCode.Q))
         {
             SwitchItem();
         }
 
-        // เริ่มการประดิษฐ์ด้วยการกด E
+       
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryStartCrafting();
@@ -336,27 +336,25 @@ public class TrashCraftingSystem : MonoBehaviour
     {
         if (isCrafting || gameManager == null || currentItemIndex >= craftableItems.Length) return;
 
-        // ตรวจสอบสถานะเกม
+        
         if (gameManager.currentState != GameState.Normal)
         {
-            Debug.LogWarning("Cannot start crafting - Game is not in Normal state.");
+            
             return;
         }
 
         CraftableItem currentItem = craftableItems[currentItemIndex];
-
-        // ตรวจสอบไอเทมที่จำเป็น
+       
         if (ItemManager.Instance != null)
         {
             int itemCount = ItemManager.Instance.GetItemCount(currentItem.requiredItemType);
             if (itemCount < currentItem.requiredAmount)
             {
-                Debug.Log($"Cannot craft - need {currentItem.requiredAmount} {currentItem.requiredItemType} (have: {itemCount})");
+           
                 return;
             }
         }
 
-        // ขอเริ่มการประดิษฐ์ผ่าน GameManager
         CraftTool tool = currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
         if (gameManager.StartCrafting(trashId, tool))
         {
@@ -365,7 +363,7 @@ public class TrashCraftingSystem : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Cannot start crafting {trashId} - GameManager denied request");
+         
         }
     }
 
@@ -485,24 +483,20 @@ public class TrashCraftingSystem : MonoBehaviour
 
         if (itemToCreate.prefab != null)
         {
-            // สร้างวัตถุในตำแหน่งของกองขยะ
+           
             GameObject craftedObj = Instantiate(itemToCreate.prefab, transform.position, transform.rotation);
 
-            // เพิ่ม CraftedObject component
             CraftedObject craftedComponent = craftedObj.GetComponent<CraftedObject>();
             if (craftedComponent == null)
             {
                 craftedComponent = craftedObj.AddComponent<CraftedObject>();
             }
 
-            // ตั้งค่า CraftedObject (pass shared UI refs, but DO NOT reparent them)
+    
             craftedComponent.Initialize(itemToCreate, this, craftingUIContainer, progressPanel, interactPrompt, returnKey, interactionDistance);
 
-            // เก็บ reference
+        
             currentCraftedObject = craftedObj;
-
-            // We use the shared `craftingEffect` for completion VFX (so it's consistent when crafting
-            // completes or when trash returns). If you still want per-item spawnEffect, enable here.
 
             Debug.Log($"Created {itemToCreate.itemName} at {transform.position}");
         }

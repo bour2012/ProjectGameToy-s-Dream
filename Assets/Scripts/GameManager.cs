@@ -587,7 +587,10 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetString(BONUS_TRIGGERED_KEY, dataToSave);
 
         PlayerPrefs.Save();
-        Debug.Log($"<color=cyan>[GameManager] Saved Inventory & Bonus History to Disk.</color>");
+        if (showDebugInfo)
+        {
+            Debug.Log($"<color=cyan>[GameManager] Saved Inventory & Bonus History to Disk.</color>");
+        }
     }
 
     private void RestoreItemsFromSnapshot()
@@ -718,154 +721,7 @@ public class GameManager : MonoBehaviour
 
         ChangeState(GameState.Normal, "Reset state after reload scene");
     }
-    //private void ApplyCheckpointAndItemsAfterReload()
-    //{
-    //    InitializeCheckpointSystem();
-    //    CollectAllCheckpoints();
-
-    //    if (defaultCheckpoint == null && allCheckpoints.Length > 0)
-    //    {
-    //        // พยายามหา Checkpoint ที่มี ID ตรงกับที่เราตั้งไว้ใน defaultStartCheckpointID
-    //        foreach (var cp in allCheckpoints)
-    //        {
-    //            if (cp.GetCheckpointID() == defaultStartCheckpointID)
-    //            {
-    //                defaultCheckpoint = cp;
-    //                Debug.Log($"<color=cyan>[GameManager] Re-assigned Default Checkpoint to ID: {defaultStartCheckpointID}</color>");
-    //                break;
-    //            }
-    //        }
-
-    //        // ถ้าหาไม่เจอจริงๆ ให้ใช้ตัวแรกสุดของฉากเป็น Default ไปเลย (กันเหนียว)
-    //        if (defaultCheckpoint == null)
-    //        {
-    //            defaultCheckpoint = allCheckpoints[0];
-    //            Debug.LogWarning($"[GameManager] Could not find ID '{defaultStartCheckpointID}'. Using first checkpoint ({allCheckpoints[0].GetCheckpointID()}) as default.");
-    //        }
-    //    }
-
-    //    // 1. กู้คืนไอเทมและประวัติโบนัสก่อนเป็นอันดับแรก
-    //    RestoreItemsFromSnapshot();
-
-    //    bool checkpointIsSet = false;
-
-    //    // 2. โหลดตำแหน่ง Checkpoint
-    //    if (PlayerPrefs.HasKey("LastCheckpoint")) // ตัดเงื่อนไข resetToLastCheckpoint ออกเพื่อให้ทำงานเสมอเมื่อตาย
-    //    {
-    //        string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
-    //        foreach (Checkpoint checkpoint in allCheckpoints)
-    //        {
-    //            if (checkpoint != null && checkpoint.GetCheckpointID() == checkpointID)
-    //            {
-    //                SetActiveCheckpoint(checkpoint);
-    //                checkpoint.ActivateCheckpoint(); // สั่ง Activate เพื่อให้ effect ทำงาน (แต่ของจะไม่เพิ่มซ้ำเพราะเราโหลด History มาแล้วในข้อ 1)
-    //                checkpointIsSet = true;
-    //                Debug.Log($"<color=lime>Checkpoint loaded: {checkpointID}</color>");
-    //                break;
-    //            }
-    //        }
-    //    }
-
-    //    // 2. ถ้าไม่ได้ตั้งค่า Checkpoint (เพราะอยู่นอกโหมดดีบัก หรือไม่มีเซฟ) -> ให้ใช้ Default
-    //    if (!checkpointIsSet)
-    //    {
-    //        if (!resetToLastCheckpoint)
-    //        {
-
-
-    //            //// ค้นหา Checkpoint แรกในฉากใหม่
-    //            //if (allCheckpoints != null && allCheckpoints.Length > 0)
-    //            //{
-    //            //    // เรียงลำดับ Checkpoints ตาม ID
-    //            //    System.Array.Sort(allCheckpoints, (a, b) =>
-    //            //        string.Compare(a.GetCheckpointID(), b.GetCheckpointID()));
-
-    //            //    // ใช้ Checkpoint แรก (ID น้อยที่สุด) เป็นจุดเริ่มต้น
-    //            //    Checkpoint firstCheckpoint = allCheckpoints[0];
-    //            //    SetActiveCheckpoint(firstCheckpoint);
-    //            //    firstCheckpoint.ActivateCheckpoint();
-
-    //            //    Debug.Log($"<color=yellow>Starting at first checkpoint: {firstCheckpoint.GetCheckpointID()}</color>");
-
-    //            //    // ย้ายผู้เล่นไปยังตำแหน่ง Checkpoint แรก
-    //            //    if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
-    //            //    if (player != null)
-    //            //    {
-    //            //        player.position = firstCheckpoint.GetSpawnPosition();
-    //            //        if (playerDeath != null)
-    //            //        {
-    //            //            playerDeath.Respawn(firstCheckpoint.GetSpawnPosition());
-    //            //        }
-    //            //    }
-    //            //}
-    //            //else
-    //            //{
-    //            //    Debug.LogWarning("No checkpoints found in the scene!");
-    //            //    // ถ้าไม่มี Checkpoint ให้ใช้ตำแหน่งเริ่มต้นของ Player
-    //            //    if (player != null)
-    //            //    {
-    //            //        player.position = defaultSpawnPosition;
-    //            //    }
-    //            //}
-
-
-    //            foreach (Checkpoint checkpoint in allCheckpoints)
-    //            {
-    //                string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
-    //                if (checkpoint != null && checkpoint.GetCheckpointID() == checkpointID)
-    //                {
-    //                    SetActiveCheckpoint(checkpoint);
-    //                    checkpoint.ActivateCheckpoint();
-    //                    checkpointIsSet = true;
-    //                    Debug.Log($"<color=lime>[Debug Mode] Checkpoint loaded from save: {checkpointID}</color>");
-    //                    break;
-    //                }
-    //            }
-
-
-
-
-    //            //// ถ้าอยู่ในโหมดปกติ ให้ล้างเซฟเก่าทิ้งเพื่อความแน่นอน
-    //            //ClearCheckpointSaveData();
-    //            //Debug.Log("<color=yellow>[Normal Mode] Cleared saved checkpoint data.</color>");
-    //        }
-    //        if (!checkpointIsSet && defaultCheckpoint != null)
-    //        {
-    //            SetActiveCheckpoint(defaultCheckpoint);
-    //            defaultCheckpoint.ActivateCheckpoint();
-    //        }
-    //        //if (defaultCheckpoint != null)
-    //        //{
-    //        //    SetActiveCheckpoint(defaultCheckpoint);
-    //        //    defaultCheckpoint.ActivateCheckpoint();
-    //        //    Debug.Log("<color=yellow>Using default checkpoint.</color>");
-    //        //}
-    //    }
-
-    //    if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
-
-    //    if (player != null)
-    //    {
-    //        // ถ้ามี Checkpoint ให้เกิดที่ Checkpoint
-    //        if (currentActiveCheckpoint != null)
-    //        {
-    //            player.position = currentActiveCheckpoint.GetSpawnPosition();
-    //            if (playerDeath != null) playerDeath.Respawn(currentActiveCheckpoint.GetSpawnPosition());
-    //        }
-    //        // ถ้าไม่มี ให้เกิดจุดเริ่มต้น scene (หรือค่าที่เซฟไว้ใน PlayerPrefs ถ้าต้องการแม่นยำกว่านี้)
-    //        else
-    //        {
-    //            player.position = defaultSpawnPosition;
-    //        }
-    //    }
-
-    //    if (ItemManager.Instance != null)
-    //    {
-    //        ItemManager.Instance.UpdateUI();
-    //    }
-
-    //    ChangeState(GameState.Normal, "Reset state after reload scene");
-    //}
+ 
 
 
 
@@ -1041,6 +897,12 @@ public class GameManager : MonoBehaviour
 
     public void SetActiveCheckpoint(Checkpoint checkpoint)
     {
+
+        if (currentActiveCheckpoint == checkpoint)
+        {
+            return;
+        }
+
         if (currentActiveCheckpoint != null && currentActiveCheckpoint != checkpoint)
         {
             currentActiveCheckpoint.DeactivateCheckpoint();
@@ -1057,14 +919,19 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetFloat("CheckpointX", checkpoint.transform.position.x);
             PlayerPrefs.SetFloat("CheckpointY", checkpoint.transform.position.y);
             PlayerPrefs.SetFloat("CheckpointZ", checkpoint.transform.position.z);
+            SaveItemSnapshot();
+
+            if (showCheckpointDebugInfo) // เช็คตัวแปร debug ก่อน Log
+            {
+                Debug.Log($"Active checkpoint set & saved: {checkpoint.GetCheckpointID()}");
+            }
         }
 
         // *** สำคัญ: เรียก SaveItemSnapshot ตรงนี้ เพื่อบันทึก Item และ Bonus History ทันที ***
-        SaveItemSnapshot();
+ 
 
 
 
-        Debug.Log($"Active checkpoint set & saved: {checkpoint?.GetCheckpointID()}");
     }
 
     public Vector3 GetCurrentSpawnPosition()

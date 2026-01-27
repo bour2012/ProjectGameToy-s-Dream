@@ -185,9 +185,6 @@ public class GlueShooting : MonoBehaviour
         Vector2 startPoint = firePoint != null ? firePoint.position : transform.position;
         Vector2 endPoint = mouseWorldPos;
         Vector2 displacement = endPoint - startPoint;
-
-        // ... (จำกัดระยะทางเหมือนเดิม) ...
-
         Vector2 gravity = Physics2D.gravity;
 
 
@@ -201,8 +198,6 @@ public class GlueShooting : MonoBehaviour
         }
 
         float initialVelocityY = (displacement.y / timeX) - (0.5f * gravity.y * timeX);
-
-        // การคำนวณความเร็วแกน X แบบใหม่ จะได้ทิศทางที่ถูกต้องเองโดยอัตโนมัติ
         float initialVelocityX = displacement.x / timeX;
 
         Vector2 calculatedVelocity = new Vector2(initialVelocityX, initialVelocityY);

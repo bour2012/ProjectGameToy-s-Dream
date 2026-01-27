@@ -97,7 +97,7 @@ public class Checkpoint : MonoBehaviour
     private void ApplyOverrideItems()
     {
         if (ItemManager.Instance == null) return;
-        Debug.Log($"Overriding inventory: Glue -> {overrideGlueCount}, Thread -> {overrideThreadCount}");
+        //Debug.Log($"Overriding inventory: Glue -> {overrideGlueCount}, Thread -> {overrideThreadCount}");
         ItemManager.Instance.SetItemCount(ItemManager.ItemType.Glue, overrideGlueCount);
         ItemManager.Instance.SetItemCount(ItemManager.ItemType.Thread, overrideThreadCount);
     }
