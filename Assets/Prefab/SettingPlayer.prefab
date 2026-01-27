@@ -562,7 +562,7 @@ Transform:
   m_GameObject: {fileID: 2096666592065691518}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 506.178, y: 153.10948, z: -25.403538}
+  m_LocalPosition: {x: 172.8751, y: 196.29384, z: -25.403538}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -609,9 +609,9 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 45
+  field of view: 38.3
   orthographic: 0
-  orthographic size: 4.5
+  orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -1573,7 +1573,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1684,7 +1684,7 @@ Transform:
   m_GameObject: {fileID: 2904849290922289491}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.75292, z: -25.403538}
+  m_LocalPosition: {x: 0, y: 4.7529397, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
