@@ -39,6 +39,7 @@ public class DialogManager : MonoBehaviour
     private DialogData[] currentSequence;
     private int currentIndex = 0;
     private bool isDialogActive = false;
+    public bool IsDialogActive => isDialogActive;
     private bool isTyping = false;
     private bool isTransitioning = false;
     private bool isShowingHint = false;
@@ -98,6 +99,34 @@ public class DialogManager : MonoBehaviour
                 NextDialog();
             }
         }
+    }
+    public void ForceStopDialog()
+    {
+        StopAllCoroutines();
+        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        if (autoAdvanceCoroutine != null) StopCoroutine(autoAdvanceCoroutine);
+
+        isDialogActive = false;
+        isTyping = false;
+        isTransitioning = false;   // <--- ตัวการที่ทำให้กดไม่ได้
+        isWaitingForCamera = false; // <--- ตัวการที่ทำให้กดไม่ได้
+        isShowingHint = false;     // <--- ตัวการที่ทำให้กดไม่ได้
+
+        if (dialogBox != null) dialogBox.SetActive(false);
+
+        // ถ้ามีการ Fade ค้างไว้ ต้องเคลียร์ให้ใสเหมือนเดิม
+        if (fadePanelCanvasGroup != null)
+        {
+            fadePanelCanvasGroup.alpha = 0;
+            fadePanelCanvasGroup.blocksRaycasts = false;
+        }
+
+        // 4. คืนค่ากล้อง
+        if (dialogCamera != null) dialogCamera.Priority = 0;
+
+        // 5. คืนค่า Game Manager (ปลดล็อคตัวละคร)
+        if (GameManager.Instance != null) GameManager.Instance.EndDialogState();
     }
     private void StopAutoAdvance()
     {

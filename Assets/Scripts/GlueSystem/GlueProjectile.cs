@@ -67,7 +67,7 @@ public class GlueProjectile : MonoBehaviour
     private RigidbodyType2D mainInitialBodyType;
     private Dictionary<Rigidbody2D, RigidbodyType2D> boneInitialBodyTypes = new Dictionary<Rigidbody2D, RigidbodyType2D>();
     private Dictionary<Rigidbody2D, RigidbodyConstraints2D> boneInitialConstraints = new Dictionary<Rigidbody2D, RigidbodyConstraints2D>();
-
+    private bool hasPlayedImpactSound = false;
     private bool hasStuck = false;               // ป้องกัน trigger ซ้ำ
     private bool hasSlowed = false;              // ป้องกัน slow ซ้ำ
     private bool hasSlowedHard = false;              // ป้องกัน slow ซ้ำ
@@ -265,8 +265,8 @@ public class GlueProjectile : MonoBehaviour
         //    Debug.Log($"[Frame {Time.frameCount}] Target EXIT glue: {other.name}");
         //}
     }
- 
 
+ 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -344,8 +344,7 @@ public class GlueProjectile : MonoBehaviour
         Rigidbody2D anchor = FindNearestBone(contactPoint);
         SetStickyMode(anchor);
         CreateImpactEffects();
-        PlaySound(impactSound);
-
+        PlayImpactSoundOnce();
         transform.SetParent(ground.transform);
         //isOnGround = true;
 
@@ -374,9 +373,9 @@ public class GlueProjectile : MonoBehaviour
               Rigidbody2D anchor = FindNearestBone(contactPoint);
               SetStickyMode(anchor);
         }
-      
+
         //CreateImpactEffects();
-        PlaySound(impactSound);
+        PlayImpactSoundOnce();
 
         int targetLayerMask = 1 << target.gameObject.layer;
         int layerMask = 1 << target.gameObject.layer;
@@ -820,7 +819,13 @@ public class GlueProjectile : MonoBehaviour
             Destroy(extra, 3f);
         }
     }
+    private void PlayImpactSoundOnce()
+    {
+        if (hasPlayedImpactSound) return; // ถ้าเคยเล่นแล้ว ให้จบการทำงานทันที
 
+        PlaySound(impactSound);
+        hasPlayedImpactSound = true; // จำไว้ว่าเล่นแล้ว
+    }
     private void PlaySound(AudioClip clip)
     {
         if (audioSource != null && clip != null)
