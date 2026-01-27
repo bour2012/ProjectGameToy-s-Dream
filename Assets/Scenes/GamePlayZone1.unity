@@ -17662,8 +17662,8 @@ Transform:
   m_GameObject: {fileID: 105321941}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -19.625362, y: 3.72114, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -19.6629, y: 3.72114, z: 0}
+  m_LocalScale: {x: 1.0085, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 466862667}
@@ -32118,8 +32118,8 @@ Transform:
   m_GameObject: {fileID: 286368201}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -46.1732, y: 9.89, z: 0}
-  m_LocalScale: {x: 8.597978, y: 6.01996, z: 1}
+  m_LocalPosition: {x: -46.361, y: 9.89, z: 0}
+  m_LocalScale: {x: 8.973709, y: 6.01996, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1694092555}
@@ -80746,8 +80746,8 @@ Transform:
   m_GameObject: {fileID: 707016747}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -41.9384, y: 27.0589, z: 0}
-  m_LocalScale: {x: 1.6922966, y: 3.2410698, z: 1}
+  m_LocalPosition: {x: -43.171, y: 29.391, z: 0}
+  m_LocalScale: {x: 2.235482, y: 7.9197497, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1512521275}
@@ -126793,7 +126793,7 @@ MonoBehaviour:
   defaultCheckpoint: {fileID: 365757839}
   showCheckpointDebugInfo: 0
   resetToLastCheckpoint: 1
-  debugGameGM: 1
+  debugGameGM: 0
   currentState: 0
   player: {fileID: 0}
   playerMovement: {fileID: 0}
