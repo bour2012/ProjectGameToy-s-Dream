@@ -91,6 +91,19 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: Standalone
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: 12
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -109,10 +122,10 @@ TextureImporter:
       name: SpriteSheet_NPC01_0
       rect:
         serializedVersion: 2
-        x: 98
-        y: 11
-        width: 438
-        height: 572
+        x: 0
+        y: 0
+        width: 640
+        height: 640
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,20 +144,20 @@ TextureImporter:
       name: SpriteSheet_NPC01_1
       rect:
         serializedVersion: 2
-        x: 739
-        y: 12
-        width: 437
-        height: 573
+        x: 640
+        y: 0
+        width: 640
+        height: 640
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 55956f62ab60f87f0800000000000000
-      internalID: -608260028084364971
+      spriteID: cb7878b911b0eaf4987d7a0466ae6943
+      internalID: -807411370
       vertices: []
       indices: 
       edges: []
@@ -153,20 +166,20 @@ TextureImporter:
       name: SpriteSheet_NPC01_2
       rect:
         serializedVersion: 2
-        x: 1379
-        y: 11
-        width: 438
-        height: 573
+        x: 1280
+        y: 0
+        width: 640
+        height: 640
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b3b0f49d208e6f890800000000000000
-      internalID: -7424491836740269253
+      spriteID: 29dfbfa9d54aa924282732860e373c83
+      internalID: 1330936405
       vertices: []
       indices: 
       edges: []
@@ -175,7 +188,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: de17437f89feef84d9518b35202d1a20
     internalID: 0
     vertices: []
     indices: 
@@ -183,11 +196,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":640.0,"y":640.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       SpriteSheet_NPC01_0: -3586413048405998927
-      SpriteSheet_NPC01_1: -608260028084364971
-      SpriteSheet_NPC01_2: -7424491836740269253
+      SpriteSheet_NPC01_1: -807411370
+      SpriteSheet_NPC01_2: 1330936405
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

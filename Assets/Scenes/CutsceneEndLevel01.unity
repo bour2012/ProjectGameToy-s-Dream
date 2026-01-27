@@ -6439,8 +6439,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1801414243
-  m_SortingLayer: 10
+  m_SortingLayerID: -1858882953
+  m_SortingLayer: 11
   m_SortingOrder: 3
   m_Sprite: {fileID: 2727621432076542258, guid: a3c4a44043303484db855faddee70a64, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -11178,6 +11178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   godModeKey: 291
   godModeSpeed: 10
+  defaultStartCheckpointID: 01
   defaultCheckpoint: {fileID: 0}
   showCheckpointDebugInfo: 0
   resetToLastCheckpoint: 0
@@ -11905,8 +11906,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1801414243
-  m_SortingLayer: 10
+  m_SortingLayerID: -1858882953
+  m_SortingLayer: 11
   m_SortingOrder: 4
   m_Sprite: {fileID: -4964097606555399869, guid: 5daa5d10f8dbcc141978148c1076c710, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -18313,8 +18314,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1801414243
-  m_SortingLayer: 10
+  m_SortingLayerID: -1858882953
+  m_SortingLayer: 11
   m_SortingOrder: 3
   m_Sprite: {fileID: 8628609367658262517, guid: 499be80e7f4190c49b7e8f16a5351148, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -19860,6 +19861,12 @@ MonoBehaviour:
   requireButtonPress: 0
   modeChengTime: 1
   changTime: 10
+  conditionLever: {fileID: 0}
+  currentVoice: {fileID: 0}
+  soundFreq: 2
+  randomizePitch: 1
+  pitchRange: {x: 0.9, y: 1.1}
+  lockedMessage: The door is locked. Looks like I need to activate a lever somewhere.
   interactionPromptText: '[E] to Enter'
 --- !u!4 &1166151700
 Transform:
@@ -26729,6 +26736,12 @@ MonoBehaviour:
   requireButtonPress: 1
   modeChengTime: 0
   changTime: 0
+  conditionLever: {fileID: 0}
+  currentVoice: {fileID: 0}
+  soundFreq: 2
+  randomizePitch: 1
+  pitchRange: {x: 0.9, y: 1.1}
+  lockedMessage: The door is locked. Looks like I need to activate a lever somewhere.
   interactionPromptText: '[E] to Enter'
 --- !u!1 &1536094266
 GameObject:
@@ -29137,6 +29150,7 @@ MonoBehaviour:
   availableColor: {r: 1, g: 1, b: 1, a: 1}
   unavailableColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 0.76862746}
   respectGameManagerState: 1
+  switchSound: {fileID: 0}
 --- !u!114 &1653006905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29162,7 +29176,6 @@ MonoBehaviour:
   showDebugGizmos: 1
   audioSource: {fileID: 0}
   grabSound: {fileID: 0}
-  releaseSound: {fileID: 0}
   maintainLastDirection: 1
   onPickup:
     m_PersistentCalls:
@@ -29195,6 +29208,8 @@ MonoBehaviour:
   ropeMaxCastDistance: 4
   ropeStandardDistance: 1.8
   respectGameManagerState: 1
+  swingStartSound: {fileID: 0}
+  audioSource: {fileID: 0}
   shootAnimationDuration: 0.5
   shootRopeTriggerName: ShootRope
 --- !u!232 &1653006907
@@ -29415,7 +29430,7 @@ SpriteRenderer:
   m_Size: {x: 6.4, y: 6.421875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1659104665
@@ -33036,8 +33051,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1801414243
-  m_SortingLayer: 10
+  m_SortingLayerID: -1858882953
+  m_SortingLayer: 11
   m_SortingOrder: 3
   m_Sprite: {fileID: 1128405275450506670, guid: ba0ff367b7143e545b9210e22a11b694, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -33975,8 +33990,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1801414243
-  m_SortingLayer: 10
+  m_SortingLayerID: -1858882953
+  m_SortingLayer: 11
   m_SortingOrder: 3
   m_Sprite: {fileID: 7585913921916903569, guid: 6af779ce5df49b2498d92083433c4afd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -34311,7 +34326,7 @@ SpriteRenderer:
   m_Size: {x: 77.039665, y: 8.84}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1908932102
