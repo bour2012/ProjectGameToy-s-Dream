@@ -945,6 +945,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetFloat("CheckpointX", checkpoint.transform.position.x);
             PlayerPrefs.SetFloat("CheckpointY", checkpoint.transform.position.y);
             PlayerPrefs.SetFloat("CheckpointZ", checkpoint.transform.position.z);
+            //SaveItemSnapshot();
             SaveItemSnapshot();
 
             if (showCheckpointDebugInfo) // เช็คตัวแปร debug ก่อน Log
@@ -954,8 +955,7 @@ public class GameManager : MonoBehaviour
         }
 
         // *** สำคัญ: เรียก SaveItemSnapshot ตรงนี้ เพื่อบันทึก Item และ Bonus History ทันที ***
- 
-
+  
 
 
     }
@@ -1001,12 +1001,12 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetFloat("CheckpointY", currentActiveCheckpoint.transform.position.y);
             PlayerPrefs.SetFloat("CheckpointZ", currentActiveCheckpoint.transform.position.z);
 
-            // บันทึกจำนวนไอเทมด้วย
-            if (ItemManager.Instance != null)
-            {
-                PlayerPrefs.SetInt("Saved_Glue", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Glue));
-                PlayerPrefs.SetInt("Saved_Thread", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Thread));
-            }
+            //// บันทึกจำนวนไอเทมด้วย
+            //if (ItemManager.Instance != null)
+            //{
+            //    PlayerPrefs.SetInt("Saved_Glue", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Glue));
+            //    PlayerPrefs.SetInt("Saved_Thread", ItemManager.Instance.GetItemCount(ItemManager.ItemType.Thread));
+            //}
         }
         // กรณีที่ currentActiveCheckpoint กลายเป็น "ซาก" (Missing) แต่อยากให้จำค่าเดิม
         // เราจะไม่ไปลบค่า PlayerPrefs ทิ้ง ปล่อยให้มันจำค่าเดิมที่มีใน Disk ไปเลย
