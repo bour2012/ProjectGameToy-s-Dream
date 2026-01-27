@@ -6248,7 +6248,7 @@ MonoBehaviour:
   lifetime: 20
   timeStickToTarget: 7
   groundDestroyDelay: 6
-  stickForce: 60
+  stickForce: 40
   timeGlueStick: 3
   targetLayers:
     serializedVersion: 2
