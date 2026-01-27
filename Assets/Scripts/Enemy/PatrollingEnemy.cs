@@ -65,7 +65,7 @@ public class PatrollingEnemy : Enemy
 
     protected override void Update()
     {
-    
+
         isGrounded = IsGrounded();
 
         if (attackTimer > 0)
@@ -146,6 +146,15 @@ public class PatrollingEnemy : Enemy
     {
         GameObject target = DetectAndLockTarget();
 
+        if (target == null || !target.activeInHierarchy)
+        {
+            isChasing = false;
+            isEngaged = false;
+            // กลับไปเดินลาดตระเวน หรือกลับจุดเดิม
+            currentState = usePatrolRange ? State.Returning : State.Patrolling;
+            return;
+        }
+
         if (target != null)
         {
             float heightDiff = Mathf.Abs(target.transform.position.y - transform.position.y);
@@ -157,17 +166,17 @@ public class PatrollingEnemy : Enemy
                 return;
             }
 
-            float directionX = Mathf.Sign(target.transform.position.x - transform.position.x);
-            if (stuckTimer >= stuckWaitTime || !CanMoveInDirection(directionX))
-            {
-                StopHorizontalMovement();
-                FaceTarget(target);
-                return;
-            }
+            float distanceX = Mathf.Abs(target.transform.position.x - transform.position.x);
+            bool isTooClose = distanceX < 0.5f;
 
             isChasing = true;
             lastSeenTimer = 0f;
-            FaceTarget(target);
+
+            // หันหน้า (FaceTarget) เฉพาะเมื่อเป้าหมายยังอยู่และไม่ใกล้เกินไป
+            if (!isTooClose)
+            {
+                FaceTarget(target);
+            }
 
             if (isEngaged && attackTimer <= 0)
             {
@@ -176,7 +185,14 @@ public class PatrollingEnemy : Enemy
             }
             else if (!isEngaged)
             {
-                Chase(target);
+                if (isTooClose)
+                {
+                    StopHorizontalMovement();
+                }
+                else
+                {
+                    Chase(target);
+                }
             }
         }
         else
@@ -268,6 +284,7 @@ public class PatrollingEnemy : Enemy
 
     private void FaceTarget(GameObject target)
     {
+        if (target == null) return;
         float directionX = target.transform.position.x - transform.position.x;
         float moveDirection = Mathf.Sign(directionX);
         movingRight = moveDirection > 0;
