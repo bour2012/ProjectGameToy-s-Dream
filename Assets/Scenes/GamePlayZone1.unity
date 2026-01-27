@@ -658,7 +658,7 @@ SpriteRenderer:
   m_Size: {x: 4.16, y: 1.72}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &7603449
@@ -1084,11 +1084,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &10529268
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1789,11 +1789,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &19479819
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3958,8 +3958,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 43158927}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 186.36, y: 57.09, z: 0}
@@ -17102,6 +17100,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -19631,8 +19633,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 1019276601}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 147364327}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 7.63, y: 9, z: 0}
@@ -20651,8 +20651,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 158860090}
   pivotPosition: {x: -13.61824, y: -4, z: 0}
   upPosition: {x: -16.35, y: -4.79, z: 0}
@@ -23975,7 +23973,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &196579976
@@ -26387,11 +26385,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &218827162
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -28370,7 +28368,7 @@ SpriteRenderer:
   m_Size: {x: 4.16, y: 1.72}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &242703225
@@ -30912,11 +30910,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &273550383
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -35965,8 +35963,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 1606132079}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -36207,6 +36205,10 @@ PrefabInstance:
     - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
       propertyPath: m_SortingOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -36707,7 +36709,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!60 &340274670 stripped
@@ -36751,8 +36753,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 1209027401}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 340665057}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 12.5344, y: 9, z: 0}
@@ -46404,11 +46404,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &391482905
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -46781,8 +46781,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 395634901}
   pivotPosition: {x: -2.1709, y: 3.3043, z: 0}
   upPosition: {x: -3.95, y: 4, z: 0}
@@ -47727,8 +47725,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 469817179}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -56964,8 +56962,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 469817177}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 178.93, y: 57.09, z: 0}
@@ -60019,8 +60015,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 506081974}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: -44.9853, y: -27.54, z: 0}
@@ -61414,7 +61408,7 @@ Transform:
   m_GameObject: {fileID: 526361292}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.389328, y: 12.17034, z: -10}
+  m_LocalPosition: {x: -0.08930969, y: 12.17034, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -64208,8 +64202,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 43158930}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -64884,8 +64878,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 564200903}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 202.76, y: 64.25, z: 0}
@@ -66450,6 +66442,10 @@ PrefabInstance:
     - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
       propertyPath: m_Color.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -72355,6 +72351,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -72652,7 +72652,7 @@ Transform:
   m_GameObject: {fileID: 609644263}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.920807, y: 13.5830765, z: -10}
+  m_LocalPosition: {x: 3.22081, y: 13.5830765, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -72764,6 +72764,7 @@ GameObject:
   - component: {fileID: 610823164}
   - component: {fileID: 610823163}
   - component: {fileID: 610823162}
+  - component: {fileID: 610823165}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -72818,8 +72819,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 1331906435}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -72924,6 +72925,103 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!82 &610823165
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 610823160}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.3
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &614804950
 GameObject:
   m_ObjectHideFlags: 0
@@ -73572,11 +73670,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 618532227}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 618532227}
 --- !u!1 &618905421
 GameObject:
   m_ObjectHideFlags: 0
@@ -76393,7 +76491,7 @@ Transform:
   m_GameObject: {fileID: 656287174}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.7982178, y: 12.683531, z: -10}
+  m_LocalPosition: {x: -3.9982147, y: 12.683531, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -78742,7 +78840,7 @@ SpriteRenderer:
   m_Size: {x: 4.16, y: 1.72}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &676155055
@@ -79165,11 +79263,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 681727368}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 0
+  anim: {fileID: 948335709}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 948335709}
 --- !u!4 &681727368
 Transform:
   m_ObjectHideFlags: 0
@@ -82539,7 +82637,7 @@ Transform:
   m_GameObject: {fileID: 743709025}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.7454834, y: 10.694887, z: -10}
+  m_LocalPosition: {x: 0.34547424, y: 10.694887, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -88686,8 +88784,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 1372229693}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -99168,6 +99266,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -99641,11 +99743,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &864119328
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -99998,8 +100100,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 867512366}
   pivotPosition: {x: 185.5068, y: 49.3487, z: 0}
   upPosition: {x: 183.27, y: 50.09, z: 0}
@@ -105950,7 +106050,7 @@ Transform:
   m_GameObject: {fileID: 938261486}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.157028, y: 16.680971, z: -10}
+  m_LocalPosition: {x: 4.9570465, y: 16.680971, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -109153,7 +109253,7 @@ Transform:
   m_GameObject: {fileID: 992666929}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.27320862, y: 0.11478233, z: -10}
+  m_LocalPosition: {x: 0.07321167, y: 0.11478233, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -113613,11 +113713,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1043904051
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -114908,8 +115008,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 1176754978}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -117194,8 +117294,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1109814697}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: -43.45597, y: -7.15, z: 0}
@@ -117517,8 +117615,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 469817179}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -119752,11 +119850,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1148644324
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -122118,8 +122216,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1176754976}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: -31.50543, y: 0.76, z: 0}
@@ -122935,7 +123031,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1190397365
@@ -124509,11 +124605,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 1214344415}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 1214344415}
 --- !u!50 &1214344417
 Rigidbody2D:
   serializedVersion: 5
@@ -124639,7 +124735,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1218103531
@@ -124838,11 +124934,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1219047348
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -126676,12 +126772,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bgmAudioSource: {fileID: 0}
+  sceneBGM: {fileID: 0}
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 00
   defaultCheckpoint: {fileID: 365757839}
   showCheckpointDebugInfo: 0
   resetToLastCheckpoint: 1
+  debugGameGM: 1
   currentState: 0
   player: {fileID: 0}
   playerMovement: {fileID: 0}
@@ -137653,8 +137752,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 916578040}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1331906438}
   pivotPosition: {x: -2.449, y: 3.7416, z: 0}
   upPosition: {x: 0, y: 0, z: 0}
@@ -143277,7 +143374,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1346756258
@@ -143951,11 +144048,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1354441507
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -145838,8 +145935,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1372229691}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: -6.030258, y: 15.66743, z: 0}
@@ -146507,8 +146602,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1375817932}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: 204.73, y: 64.25, z: 0}
@@ -146793,8 +146886,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1376469123}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: -20.19042, y: 2.68, z: 0}
@@ -147001,7 +147092,7 @@ Transform:
   m_GameObject: {fileID: 1377839627}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5237274, y: 11.710585, z: -10}
+  m_LocalPosition: {x: 0.8237152, y: 11.710585, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -147969,8 +148060,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 1376469125}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -148226,7 +148317,7 @@ Transform:
   m_GameObject: {fileID: 1400374314}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.63209534, y: 13.063753, z: -10}
+  m_LocalPosition: {x: 0.9320984, y: 13.063753, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -162557,11 +162648,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 1449330797}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 0
+  anim: {fileID: 2010610221}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 2010610221}
 --- !u!1 &1450597163
 GameObject:
   m_ObjectHideFlags: 0
@@ -164122,11 +164213,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1476947268
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -165014,11 +165105,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1492026427
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -165488,11 +165579,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1494048980
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -167429,8 +167520,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1514433074}
   pivotPosition: {x: -2.29, y: 4, z: 0}
   upPosition: {x: -53.39, y: -27.491, z: 0}
@@ -175230,7 +175319,7 @@ Transform:
   m_GameObject: {fileID: 1549833907}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.1498566, y: 14.917377, z: -10}
+  m_LocalPosition: {x: 1.6498566, y: 14.917377, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -179244,8 +179333,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 1275197587}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1606132077}
   pivotPosition: {x: 1.76, y: -1.32, z: 0}
   upPosition: {x: -67.4, y: -25.41046, z: 0}
@@ -180663,11 +180750,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1622885897
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -183071,11 +183158,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1653214669
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -185737,11 +185824,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1686288087
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -186579,11 +186666,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1695851621
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -195950,7 +196037,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1751640170 stripped
@@ -201838,11 +201925,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1837333471
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -202886,8 +202973,8 @@ MonoBehaviour:
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
   isActive: 0
-  toggleSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  toggleSound: {fileID: 8300000, guid: b692c92f88228ce4da347f4cf58435f7, type: 3}
+  audioSource: {fileID: 610823165}
   platform: {fileID: 867512368}
   activatePrompt: '[E] to Activate'
   deactivatePrompt: '[E] to Deactivate'
@@ -203790,8 +203877,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1861404738}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: 1.76, y: 5, z: 0}
@@ -204189,7 +204274,7 @@ SpriteRenderer:
   m_Size: {x: 3.16, y: 0.7}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1864015757
@@ -212103,11 +212188,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!212 &1902946890
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -212977,7 +213062,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1910145188
@@ -214686,7 +214771,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1940634011
@@ -217605,7 +217690,7 @@ SpriteRenderer:
   m_Size: {x: 4.16, y: 1.72}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1985502590
@@ -218706,7 +218791,7 @@ SpriteRenderer:
   m_Size: {x: 3.27, y: 4.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1994526992
@@ -219355,11 +219440,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 2000033122}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 0
+  anim: {fileID: 1709558077}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 1709558077}
 --- !u!1 &2000655792
 GameObject:
   m_ObjectHideFlags: 0
@@ -219547,6 +219632,10 @@ PrefabInstance:
     - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
       propertyPath: m_SortingOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -227661,11 +227750,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 2124469393}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 0
+  anim: {fileID: 1756528523}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 1756528523}
 --- !u!1 &2125701309
 GameObject:
   m_ObjectHideFlags: 0
@@ -227884,6 +227973,10 @@ PrefabInstance:
     - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
       propertyPath: m_SortingOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -229134,6 +229227,10 @@ PrefabInstance:
     - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
       propertyPath: m_SortingOrder
       value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8074451084825951524, guid: 394e5560a0cfd634aaa6a3a79228533d, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

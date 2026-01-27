@@ -25,7 +25,9 @@ public enum GameState
 public class GameManager : MonoBehaviour
 
 {
-
+    [Header("Audio Settings")]
+    public AudioSource bgmAudioSource; // ลาก AudioSource มาใส่ตรงนี้
+    public AudioClip sceneBGM;
     [Header("God Mode Settings")]
     public KeyCode godModeKey = KeyCode.F10; // ปุ่มเปิด/ปิด God Mode
     public float godModeSpeed = 10f;
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviour
     //public bool enableCheckpointNavigation = true; // เปิด/ปิดการใช้ลูกศรสลับ Checkpoint
     [Tooltip("โหมดดีบัก: TRUE = เกิดที่จุดล่าสุด & ใช้ลูกศรซ้าย-ขวาได้ | FALSE = เกิดที่จุดเริ่มต้น & ปิดการใช้ลูกศร")]
     public bool resetToLastCheckpoint = true;
+    public bool debugGameGM = false;
 
     private HashSet<string> collectedItemIDs = new HashSet<string>();
     private HashSet<string> triggeredBonusCheckpointIDs = new HashSet<string>();
@@ -99,6 +102,9 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            if (bgmAudioSource == null) bgmAudioSource = GetComponent<AudioSource>();
+            PlayBGM(sceneBGM);
             LoadPlayedDialogs();
             InitializeManager();
             //InitializeCheckpointSystem();
@@ -106,6 +112,11 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (sceneBGM != null)
+            {
+                
+                Instance.PlayBGM(sceneBGM);
+            }
             Destroy(gameObject);
         }
     }
@@ -141,12 +152,27 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if(!debugGameGM)
         HandleGodModeInput();
+
         HandleGlobalInput();
         HandleCheckpointInput();
         HandleDebugResetInput();
        
         if (showDebugInfo) DisplayDebugInfo();
+    }
+
+    public void PlayBGM(AudioClip music)
+    {
+        // ถ้าไม่มี AudioSource หรือไม่มีเพลงส่งมา ให้จบการทำงาน
+        if (bgmAudioSource == null || music == null) return;
+
+        // "ถ้าเพลงใหม่ เหมือนกับ เพลงที่เล่นอยู่แล้ว ไม่ต้องทำอะไร (เล่นต่อเนื่องไปเลย)"
+        if (bgmAudioSource.clip == music && bgmAudioSource.isPlaying) return;
+
+        // ถ้าเพลงไม่เหมือนกัน หรือเพลงหยุดอยู่ ให้เปลี่ยนและเล่นใหม่
+        bgmAudioSource.clip = music;
+        bgmAudioSource.Play();
     }
 
     #region Played Dialogs Persistence
@@ -877,7 +903,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Debug Navigation (ลูกศรซ้าย-ขวา) - เพิ่มใหม่
-        if (resetToLastCheckpoint)
+        if (resetToLastCheckpoint &&!debugGameGM)
         {
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {

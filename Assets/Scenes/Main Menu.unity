@@ -19439,12 +19439,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bgmAudioSource: {fileID: 695882371}
+  sceneBGM: {fileID: 8300000, guid: 4a796c9ed004477419b85d98243f6a1a, type: 3}
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 00
   defaultCheckpoint: {fileID: 0}
   showCheckpointDebugInfo: 0
   resetToLastCheckpoint: 1
+  debugGameGM: 1
   currentState: 0
   player: {fileID: 0}
   playerMovement: {fileID: 0}
