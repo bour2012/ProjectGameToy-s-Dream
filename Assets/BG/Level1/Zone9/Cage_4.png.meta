@@ -134,8 +134,8 @@ TextureImporter:
       name: Cage_4_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 512
+        y: 741
         width: 1025
         height: 564
       alignment: 0

@@ -116,9 +116,9 @@ TextureImporter:
       name: Sec_Cloud_2_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 0
-        width: 524
+        x: 253
+        y: 186
+        width: 521
         height: 653
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8a2cf9c634e49c742a65ba38854fc661
     internalID: 0
     vertices: []
     indices: 
@@ -146,7 +146,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Sec_Cloud_2_0: 7360881737827016669
   mipmapLimitGroupName: 

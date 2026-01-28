@@ -122,12 +122,12 @@ TextureImporter:
       name: Wall_3_1_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 8
-        width: 1960
-        height: 1967
+        x: 43
+        y: 38
+        width: 1967
+        height: 1972
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -136,6 +136,28 @@ TextureImporter:
       bones: []
       spriteID: b4252162a5306c6a0800000000000000
       internalID: -6429447732304129461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wall_3_1_1
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 36
+        width: 8
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2ba06c0c80809a45833271ee984ecf0
+      internalID: 5192267878945798317
       vertices: []
       indices: 
       edges: []
@@ -152,11 +174,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Wall_3_1_0: -6429447732304129461
       Wall_3_1_1: 5192267878945798317
-      Wall_3_1_2: -8212819408490257832
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

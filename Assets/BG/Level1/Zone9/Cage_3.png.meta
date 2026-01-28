@@ -137,8 +137,8 @@ TextureImporter:
       name: Cage_3_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 440
+        y: 746
         width: 1179
         height: 565
       alignment: 0
@@ -167,7 +167,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Cage_3_0: -759796030021141049
       Cage_3_1: -3056273615529672843
