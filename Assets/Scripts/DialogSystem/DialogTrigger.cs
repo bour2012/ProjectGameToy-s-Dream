@@ -90,14 +90,13 @@ public class DialogTrigger : MonoBehaviour
 
     public enum ConflictStrategy
     {
-        Ignore,     // ไม่ทำอะไรเลย (ถ้ามีคนพูดอยู่ อันนี้จะไม่ทำงาน)
-        Wait,       // รอจนกว่าอันเก่าจบ แล้วค่อยพูด (แนะนำอันนี้)
+        Ignore,     // ไม่ทำอะไรเลย (ถ้ามีคนพูดอยู่ อันนี้จะไม่ทำงาน)      // รอจนกว่าอันเก่าจบ แล้วค่อยพูด (แนะนำอันนี้)
         Interrupt   // ตัดบทอันเก่าทิ้ง แล้วพูดอันนี้ทันที
     }
 
     [Header("Conflict Handling")]
     [Tooltip("ถ้ามี Dialog อื่นเล่นอยู่ จะให้ทำอย่างไร?")]
-    public ConflictStrategy conflictStrategy = ConflictStrategy.Wait;
+    public ConflictStrategy conflictStrategy = ConflictStrategy.Ignore;
 
     [Header("Events")]
     public UnityEvent onDialogComplete;
@@ -133,10 +132,10 @@ public class DialogTrigger : MonoBehaviour
                 case ConflictStrategy.Ignore:
                     yield break; // จบการทำงานไปเลย
 
-                case ConflictStrategy.Wait:
-                    // รอจนกว่า IsDialogActive จะเป็น false
-                    yield return new WaitUntil(() => !DialogManager.Instance.IsDialogActive);
-                    break;
+                //case ConflictStrategy.Wait:
+                //    // รอจนกว่า IsDialogActive จะเป็น false
+                //    yield return new WaitUntil(() => !DialogManager.Instance.IsDialogActive);
+                //    break;
 
                 case ConflictStrategy.Interrupt:
                     // สั่งหยุดอันเก่า

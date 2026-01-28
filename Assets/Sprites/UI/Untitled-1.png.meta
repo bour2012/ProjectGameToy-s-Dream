@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 9ecd01cd31855da41af4afc73bd07238
+guid: f730ed7a099f57d4a9218ee5b8517364
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5289675596460858399
-    second: Untitled Artwork_0
+      213: 9182157284707403512
+    second: Untitled-1_0
+  - first:
+      213: 4726436553962287433
+    second: Untitled-1_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +27,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -52,12 +55,12 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 329, y: 367, z: 314, w: 334}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 8
+  textureType: 7
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -72,7 +75,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -113,13 +116,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Untitled Artwork_0
+      name: Untitled-1_0
       rect:
         serializedVersion: 2
-        x: 184
-        y: 221
-        width: 1678
-        height: 1641
+        x: 44
+        y: 351
+        width: 7
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +131,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f1c1a18dde3b86940800000000000000
-      internalID: 5289675596460858399
+      spriteID: 8f600cab6639d6f70800000000000000
+      internalID: 9182157284707403512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Untitled-1_1
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 69
+        width: 423
+        height: 374
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 941f75c010da79140800000000000000
+      internalID: 4726436553962287433
       vertices: []
       indices: 
       edges: []
@@ -138,19 +163,18 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5c6728de5a4fc2a4c9b3942413a45fc4
-    internalID: 141210265
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Untitled Artwork_0: 5289675596460858399
+      Untitled-1_0: 9182157284707403512
+      Untitled-1_1: 4726436553962287433
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

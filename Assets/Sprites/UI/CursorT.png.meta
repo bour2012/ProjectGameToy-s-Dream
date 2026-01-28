@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9ecd01cd31855da41af4afc73bd07238
+guid: cad89589aa6fcc44ebb124f7c8f15c9c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5289675596460858399
-    second: Untitled Artwork_0
+      213: -4802801144096898626
+    second: CursorT_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +24,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -52,12 +52,12 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 329, y: 367, z: 314, w: 334}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 8
+  textureType: 7
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Untitled Artwork_0
+      name: CursorT_0
       rect:
         serializedVersion: 2
-        x: 184
-        y: 221
-        width: 1678
-        height: 1641
+        x: 31
+        y: 29
+        width: 425
+        height: 408
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f1c1a18dde3b86940800000000000000
-      internalID: 5289675596460858399
+      spriteID: eb1c3474ec5095db0800000000000000
+      internalID: -4802801144096898626
       vertices: []
       indices: 
       edges: []
@@ -138,19 +138,17 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5c6728de5a4fc2a4c9b3942413a45fc4
-    internalID: 141210265
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Untitled Artwork_0: 5289675596460858399
+      CursorT_0: -4802801144096898626
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
