@@ -51364,6 +51364,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 648294127}
     m_Modifications:
+    - target: {fileID: 528254184063157125, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
+      propertyPath: m_Size.x
+      value: 2.0663223
+      objectReference: {fileID: 0}
+    - target: {fileID: 528254184063157125, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
+      propertyPath: m_Size.y
+      value: 1.9411755
+      objectReference: {fileID: 0}
+    - target: {fileID: 528254184063157125, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.53316116
+      objectReference: {fileID: 0}
+    - target: {fileID: 528254184063157125, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.47058773
+      objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
       value: 01
