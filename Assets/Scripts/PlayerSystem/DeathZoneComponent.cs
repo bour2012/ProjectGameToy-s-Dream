@@ -1,59 +1,85 @@
 using UnityEngine;
+
 [System.Serializable]
 public class DeathZoneComponent : MonoBehaviour
 {
     [Header("Death Zone Settings")]
-    [Tooltip("�������ͧ⫹���")]
+    [Tooltip("ประเภทการตายของ Player")]
     public PlayerDeathSystem.DeathType deathType = PlayerDeathSystem.DeathType.InstantDeath;
+
+    [Header("Self Destruct Settings (โหมดทำลายตัวเอง)")]
+    [Tooltip("If true: when ANY object hits this, destroy this object.")]
+    public bool destroyOnAnyHit = false;
+
+    [Tooltip("เปิดใช้งานโหมดทำลายตัวเองเมื่อชนกับ Layer ที่กำหนด")]
+    public bool destroyOnSpecificLayer = false;
+
+    [Tooltip("เลือก Layer ที่เมื่อชนแล้ว Object นี้จะหายไป")]
+    public LayerMask targetLayers;
 
     [Header("Visual Settings")]
     public bool showGizmo = true;
     public Color gizmoColor = Color.red;
-    [Header("Behaviour")]
-    [Tooltip("If true: when any object collides with this DeathZone it will be destroyed (the DeathZone object), otherwise it will kill the player as normal.")]
-    public bool destroyOnAnyHit = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // If configured to self-destruct on any hit, do so and skip player death behavior
-        if (destroyOnAnyHit)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        // ตรวจสอบเงื่อนไขการทำลายตัวเอง (Self Destruct Check)
+        if (CheckSelfDestruct(other.gameObject)) return;
 
+        // Logic ฆ่าผู้เล่น (Player Kill Logic)
         if (other.CompareTag("Player"))
         {
-            PlayerDeathSystem playerDeath = other.GetComponent<PlayerDeathSystem>();
-            if (playerDeath != null)
-            {
-                playerDeath.Die(deathType);
-            }
-            else
-            {
-                Debug.LogWarning("Player missing PlayerDeathSystem component!");
-            }
+            HandlePlayerDeath(other.gameObject);
         }
-   
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // If configured to self-destruct on any hit, do so and skip player death behavior
+        // ตรวจสอบเงื่อนไขการทำลายตัวเอง (Self Destruct Check)
+        if (CheckSelfDestruct(collision.gameObject)) return;
+
+        // Logic ฆ่าผู้เล่น (Player Kill Logic)
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            HandlePlayerDeath(collision.gameObject);
+        }
+    }
+
+    // ฟังก์ชันตรวจสอบว่าจะทำลายตัวเองหรือไม่
+    private bool CheckSelfDestruct(GameObject hitObject)
+    {
+        // 1. กรณีชนอะไรก็หายหมด (destroyOnAnyHit)
         if (destroyOnAnyHit)
         {
             Destroy(gameObject);
-            return;
+            return true;
         }
 
-        if (collision.gameObject.CompareTag("Player"))
+        // 2. กรณีชนเฉพาะ Layer ที่เลือก (destroyOnSpecificLayer)
+        if (destroyOnSpecificLayer)
         {
-            PlayerDeathSystem playerDeath = collision.gameObject.GetComponent<PlayerDeathSystem>();
-            if (playerDeath != null)
+            // เช็คว่า Layer ของของที่มาชน อยู่ใน LayerMask ที่เราเลือกไว้หรือไม่ (Bitwise Operation)
+            if (((1 << hitObject.layer) & targetLayers) != 0)
             {
-                playerDeath.Die(deathType);
+                Destroy(gameObject);
+                return true;
             }
+        }
+
+        return false;
+    }
+
+    // แยก Logic การฆ่าผู้เล่นออกมาเพื่อให้โค้ดสะอาดขึ้น
+    private void HandlePlayerDeath(GameObject playerObj)
+    {
+        PlayerDeathSystem playerDeath = playerObj.GetComponent<PlayerDeathSystem>();
+        if (playerDeath != null)
+        {
+            playerDeath.Die(deathType);
+        }
+        else
+        {
+            Debug.LogWarning("Player missing PlayerDeathSystem component!");
         }
     }
 

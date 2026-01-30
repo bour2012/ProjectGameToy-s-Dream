@@ -156,6 +156,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathType: 5
+  destroyOnAnyHit: 0
+  destroyOnSpecificLayer: 1
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 512
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  destroyOnAnyHit: 0
