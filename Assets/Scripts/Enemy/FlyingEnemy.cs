@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class FlyingEnemy : Enemy
 {
-    private enum State { Idle, Flying, Attacking, Falling, Returning }
+    private enum State { Idle, PreparingAttack, Flying, Attacking, Falling, Returning, FlyingToDoll, Perched }
     private State currentState = State.Idle;
 
     public enum ChaseMode { Normal, Zone }
     public ChaseMode chaseMode = ChaseMode.Normal;
+
 
     [Header("Glue Settings")]
     [Tooltip("จำนวนครั้งที่ต้องโดนกาวก่อนจะร่วง")]
@@ -28,8 +29,7 @@ public class FlyingEnemy : Enemy
     public Transform[] idlePoints;
 
     public float flyingSpeed = 3f;
-    public float attackRange = 8f;
-    public float attackCooldown = 3f;
+
     [Tooltip("ระยะการบินลาดตระเวนในแนวนอน (ซ้าย-ขวา) จากจุดเริ่มต้น")]
     public float flightPatrolRadius = 5f;
     [Tooltip("ความสูงที่บินเหนือผู้เล่น")]
@@ -55,12 +55,52 @@ public class FlyingEnemy : Enemy
     public float avoidanceRadius = 0.5f;
     [Tooltip("แรงในการหักหลบ (ยิ่งเยอะยิ่งหลบไว)")]
     public float avoidanceForce = 5f;
+    [Header("Doll / Nest System")]
+    [Tooltip("Layer ของตุ๊กตาหรือจุดที่ต้องการให้ศัตรูบินไปเกาะ")]
+    public LayerMask dollLayer;
+    [Tooltip("ระยะที่ศัตรูจะมองเห็นตุ๊กตา")]
+    public float dollDetectionRadius = 15f;
+    [Tooltip("ระยะห่างที่จะทำการ Snap เข้าเกาะ")]
+    public float dollSnapDistance = 0.5f;
 
+    private Transform currentDollTarget; // เก็บเป้าหมายตุ๊กตาปัจจุบัน
+    #region Attack Settings
     [Header("Attack Settings")]
+    [Tooltip("ระยะที่เริ่มเตรียมตัวโจมตี")]
+    public float attackRange = 8f;
+
+    [Tooltip("เวลาคูลดาวน์ระหว่างการโจมตี")]
+    public float attackCooldown = 3f;
+
+    [Tooltip("⭐ เวลาเตรียมตัวก่อนยิง (แสดง Telegraph)")]
+    public float attackPrepareTime = 1.2f;
+
+    [Tooltip("⭐ แสดง LineRenderer เป็นเลเซอร์เตือนก่อนยิง")]
+    public bool showAttackTelegraph = true;
+
+    [Tooltip("สี Telegraph (เริ่มต้น)")]
+    public Color telegraphStartColor = new Color(1f, 1f, 0f, 0.3f);
+
+    [Tooltip("สี Telegraph (ก่อนยิง)")]
+    public Color telegraphEndColor = new Color(1f, 0f, 0f, 0.8f);
+
     public GameObject projectilePrefab;
     public Transform projectileSpawnPoint;
-    [Tooltip("ความเร็วของกระสุน")]
     public float projectileSpeed = 10f;
+
+    private LineRenderer attackLineRenderer;
+    private float attackTimer;
+    private bool isAttacking = false;
+    private Vector2 lockedAttackTarget; // ⭐ ล็อคเป้าหมายตอน prepare
+    public enum FireRespawnMode { TimeBased, WaitForArrival }
+    [Tooltip("เลือกโหมดการปล่อยกระสุน: TimeBased = ตามคูลดาวน์, WaitForArrival = รอให้กระสุนถึงเป้าก่อนปล่อยใหม่")]
+    public FireRespawnMode fireRespawnMode = FireRespawnMode.TimeBased;
+    [Tooltip("ระยะที่ถือว่ากระสุนถึงเป้าหมาย (ในหน่วยยูนิต)")]
+    public float arrivalThreshold = 0.5f;
+    [Tooltip("เวลาสูงสุดที่จะรอกระสุนมาถึงก่อนยอมให้ยิงใหม่ (s)")]
+    public float projectileMaxArrivalWait = 5f;
+    private bool canFire = true;
+    #endregion
 
     [Header("Loot Drop")]
     [Tooltip("(Optional) ไอเทมที่จะดรอปเมื่อตาย")]
@@ -69,12 +109,11 @@ public class FlyingEnemy : Enemy
     [Header("Debug")]
     public bool showDebugGizmos = true;
     public bool showGlueDebugLogs = true;
-
+ 
     private bool isPlayerInZone = false;
     private GameObject playerInZone;
     private Vector2 flightTargetPosition;
-    private float attackTimer;
-    private bool isAttacking = false;
+
     private float currentSpeed;
 
     // --- [ส่วนที่เพิ่ม 2] ตัวแปรเก็บจุดหมายที่จะบินกลับ ---
@@ -85,7 +124,17 @@ public class FlyingEnemy : Enemy
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
-
+        if (showAttackTelegraph)
+        {
+            attackLineRenderer = gameObject.AddComponent<LineRenderer>();
+            attackLineRenderer.startWidth = 0.1f;
+            attackLineRenderer.endWidth = 0.05f;
+            attackLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            attackLineRenderer.startColor = telegraphStartColor;
+            attackLineRenderer.endColor = telegraphStartColor;
+            attackLineRenderer.enabled = false;
+            attackLineRenderer.sortingOrder = 10;
+        }
         if (chaseMode == ChaseMode.Zone)
         {
             attackCooldown = Random.Range(1.0f, 3.0f);
@@ -100,6 +149,18 @@ public class FlyingEnemy : Enemy
 
     protected override void Update()
     {
+        // ถ้าอยู่ในสถานะร่วง หรือโดนกาวครบ ให้หยุดการทำงานของ states ทั้งหมด
+        // ยกเว้นถ้าอยู่ในจุดเกาะ (Idle) — ในกรณีนั้นปล่อยให้ Idle ทำงานปกติ
+        if ((isCurrentlyFalling || currentGlueHitCount >= requiredGlueHitsToFall) && currentState != State.Idle)
+        {
+            currentState = State.Falling;
+            return;
+        }
+        if (currentState != State.Perched && currentState != State.Falling && currentState != State.FlyingToDoll)
+        {
+            CheckForDoll();
+        }
+
         switch (currentState)
         {
             case State.Idle:
@@ -107,6 +168,9 @@ public class FlyingEnemy : Enemy
                 break;
             case State.Flying:
                 HandleFlyingState();
+                break;
+            case State.PreparingAttack:
+                HandlePreparingAttackState();
                 break;
             case State.Attacking:
                 HandleAttackingState();
@@ -117,8 +181,100 @@ public class FlyingEnemy : Enemy
             case State.Falling:
                 // ไม่ทำอะไร รอ coroutine จัดการ
                 break;
+            case State.FlyingToDoll:
+                HandleFlyingToDollState();
+                break;
+            case State.Perched:
+                HandlePerchedState();
+                break;
         }
     }
+
+    #region CheckForDoll
+    void CheckForDoll()
+    {
+        // ใช้ OverlapCircle หา object ใน Doll Layer
+        Collider2D doll = Physics2D.OverlapCircle(transform.position, dollDetectionRadius, dollLayer);
+
+        if (doll != null)
+        {
+            // ถ้าเจอตุ๊กตา ให้เปลี่ยนเป้าหมายทันที
+            currentDollTarget = doll.transform;
+            currentState = State.FlyingToDoll;
+
+            // ยกเลิกการโจมตีทั้งหมด
+            isAttacking = false;
+            if (attackLineRenderer != null) attackLineRenderer.enabled = false;
+            StopAllCoroutines();
+        }
+    }
+
+    // --- [Logic ใหม่] บินไปหาตุ๊กตา ---
+    void HandleFlyingToDollState()
+    {
+        // ถ้าตุ๊กตาหายไป ให้กลับไป Idle หรือหาที่เกาะใหม่
+        if (currentDollTarget == null)
+        {
+            currentReturnTarget = GetNearestIdlePosition();
+            currentState = State.Returning;
+            return;
+        }
+
+        // ensure physics won't interfere while flying toward a doll
+        rb.gravityScale = 0f;
+        rb.linearVelocity = Vector2.zero;
+
+        currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed * 1.5f, Time.deltaTime * 2f); // บินเร็วกว่าปกตินิดหน่อยเพราะดีใจ
+
+        // บินไปหาตำแหน่งตุ๊กตา
+        Vector2 directionToDoll = (currentDollTarget.position - transform.position).normalized;
+        Vector2 avoidanceVec = GetAvoidanceDirection(directionToDoll); // ยังคงหลบกำแพงอยู่
+        Vector2 finalDirection = (directionToDoll + avoidanceVec).normalized;
+
+        // ถ้าไม่มีสิ่งกีดขวาง ให้พุ่งตรงเลยจะได้แม่นยำ
+        if (avoidanceVec == Vector2.zero)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, currentDollTarget.position, currentSpeed * Time.deltaTime);
+        }
+        else
+        {
+            transform.position += (Vector3)finalDirection * currentSpeed * Time.deltaTime;
+        }
+
+        // หันหน้า
+        if (directionToDoll.x != 0) transform.localScale = new Vector3(Mathf.Sign(directionToDoll.x), 1, 1);
+
+        // เช็คระยะ Snap
+        if (Vector2.Distance(transform.position, currentDollTarget.position) <= dollSnapDistance)
+        {
+            currentState = State.Perched;
+        }
+    }
+
+    // --- [Logic ใหม่] เกาะนิ่งๆ (Snap) ---
+    void HandlePerchedState()
+    {
+        if (currentDollTarget == null)
+        {
+            // ตุ๊กตาหาย/พัง -> บินกลับจุดปกติต่อ
+            currentState = State.Flying;
+            SetNewFlightTarget();
+            return;
+        }
+
+        // Snap ตำแหน่งให้ติดหนึบไปกับตุ๊กตา
+        transform.position = currentDollTarget.position;
+        rb.linearVelocity = Vector2.zero;
+        currentSpeed = 0f;
+
+        // Reset ค่าต่างๆ
+        currentGlueHitCount = 0;
+        attackTimer = 0f;
+        isAttacking = false;
+
+        // *หมายเหตุ* ใน State นี้จะไม่มีการเรียก Attack Logic เลย ทำให้มันไม่โจมตี
+    }
+    #endregion
 
     protected override GameObject DetectAndLockTarget()
     {
@@ -137,17 +293,23 @@ public class FlyingEnemy : Enemy
             if (target != null)
             {
                 currentState = State.Flying;
+                // ensure physics won't keep the enemy sliding if it was pushed while grounded
+                rb.gravityScale = 0f;
+                rb.linearVelocity = Vector2.zero;
                 SetNewFlightTarget();
             }
         }
         else if (chaseMode == ChaseMode.Zone)
         {
-            if (isPlayerInZone && playerInZone != null)
-            {
-                currentTarget = playerInZone;
-                currentState = State.Flying;
-                SetNewFlightTarget();
-            }
+                if (isPlayerInZone && playerInZone != null)
+                {
+                    currentTarget = playerInZone;
+                    currentState = State.Flying;
+                    // ensure physics won't keep the enemy sliding if it was pushed while grounded
+                    rb.gravityScale = 0f;
+                    rb.linearVelocity = Vector2.zero;
+                    SetNewFlightTarget();
+                }
         }
     }
 
@@ -181,6 +343,14 @@ public class FlyingEnemy : Enemy
             return;
         }
 
+        // ensure physics won't keep pushing the enemy after being knocked while grounded
+        rb.gravityScale = 0f;
+        rb.linearVelocity = Vector2.zero;
+
+        // make sure rigidbody isn't still carrying any push impulse
+        rb.gravityScale = 0f;
+        rb.linearVelocity = Vector2.zero;
+
         currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed, Time.deltaTime * 2f);
 
         // 1. คำนวณทิศทางที่ "อยากจะไป" (หาเป้าหมาย)
@@ -207,45 +377,165 @@ public class FlyingEnemy : Enemy
         }
 
         attackTimer += Time.deltaTime;
-        if (attackTimer >= attackCooldown && IsTargetInRange())
+        if (attackTimer >= attackCooldown && IsTargetInRange() && canFire)
         {
-            currentState = State.Attacking;
+            currentState = State.PreparingAttack;
+            attackTimer = 0f;
+            canFire = false; // prevent overlapping prepare coroutines
         }
     }
 
     void HandleAttackingState()
     {
+        // State นี้ใช้ตอนยิงจริงๆ แล้ว (จะถูก coroutine จัดการ)
+    }
+
+
+    void HandlePreparingAttackState()
+    {
         if (!isAttacking)
         {
-            StartCoroutine(AttackSequence());
+            StartCoroutine(PrepareAndAttackSequence());
         }
     }
+
+
+    #region Attack System
+    // ⭐ Coroutine ใหม่: เตรียมตัว -> แสดง Telegraph -> ยิง
+    IEnumerator PrepareAndAttackSequence()
+    {
+        isAttacking = true;
+        currentSpeed = 0f; // หยุดเคลื่อนที่
+
+        // ถ้ากำลังร่วงแล้ว ให้ยกเลิกการเตรียมโจมตี
+        if (isCurrentlyFalling)
+        {
+            isAttacking = false;
+            yield break;
+        }
+
+        // 1. ล็อคเป้าหมาย
+        if (currentTarget != null)
+        {
+            lockedAttackTarget = currentTarget.transform.position;
+        }
+        else
+        {
+            // ถ้าไม่มีเป้าหมาย ยกเลิกการโจมตี
+            isAttacking = false;
+            currentState = State.Flying;
+            yield break;
+        }
+
+        // 2. แสดง Telegraph (เลเซอร์เตือน)
+        if (showAttackTelegraph && attackLineRenderer != null)
+        {
+            attackLineRenderer.enabled = true;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < attackPrepareTime)
+            {
+                // ถ้าถูกกาวหรือร่วงในระหว่างเตรียม ให้ยกเลิก
+                if (isCurrentlyFalling || currentGlueHitCount >= requiredGlueHitsToFall)
+                {
+                    attackLineRenderer.enabled = false;
+                    isAttacking = false;
+                    yield break;
+                }
+
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / attackPrepareTime;
+
+                // อัพเดทตำแหน่งเลเซอร์
+                attackLineRenderer.SetPosition(0, projectileSpawnPoint.position);
+                attackLineRenderer.SetPosition(1, lockedAttackTarget);
+
+                // เปลี่ยนสีจากเหลือง -> แดง
+                Color lerpedColor = Color.Lerp(telegraphStartColor, telegraphEndColor, t);
+                attackLineRenderer.startColor = lerpedColor;
+                attackLineRenderer.endColor = lerpedColor;
+
+                yield return null;
+            }
+
+            attackLineRenderer.enabled = false;
+        }
+        else
+        {
+            // ถ้าไม่มี Telegraph ก็รอตามเวลาปกติ
+            yield return new WaitForSeconds(attackPrepareTime);
+        }
+
+        // 3. ยิงกระสุน (ยิงไปที่ตำแหน่งที่ล็อคไว้)
+        if (isCurrentlyFalling || currentGlueHitCount >= requiredGlueHitsToFall)
+        {
+            isAttacking = false;
+            yield break;
+        }
+        GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
+        Vector2 direction = (lockedAttackTarget - (Vector2)projectileSpawnPoint.position).normalized;
+
+        if (projectile.TryGetComponent<Rigidbody2D>(out var projectileRb))
+        {
+            projectileRb.linearVelocity = direction * projectileSpeed;
+        }
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        // Manage firing mode: either wait until projectile arrives or allow firing after cooldown
+        if (fireRespawnMode == FireRespawnMode.WaitForArrival)
+        {
+            StartCoroutine(WatchProjectileArrival(projectile, lockedAttackTarget));
+        }
+        else
+        {
+            StartCoroutine(ResetCanFireAfterCooldown(attackCooldown));
+        }
+
+        // 4. พักสั้นๆ หลังยิง
+        yield return new WaitForSeconds(0.3f);
+
+        // 5. กลับสู่สถานะบิน
+        currentState = State.Flying;
+        SetNewFlightTarget();
+        isAttacking = false;
+    }
+    #endregion
 
     void HandleReturningState()
     {
         currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed, Time.deltaTime * 2f);
-        
-        // 1. ทิศทางอยากกลับบ้าน
+
+        // 1. คำนวณทิศทางและแรงหลบ
         Vector2 directionToHome = (currentReturnTarget - (Vector2)transform.position).normalized;
-
-        // 2. แรงหลบ
         Vector2 avoidanceVec = GetAvoidanceDirection(directionToHome);
-
-        // 3. รวมทิศทาง
         Vector2 finalDirection = (directionToHome + avoidanceVec).normalized;
 
-        transform.position += (Vector3)finalDirection * currentSpeed * Time.deltaTime;
-
-        if (finalDirection.x != 0)
+        // 2. ใช้ MoveTowards เพื่อให้หยุดสนิทที่จุดหมาย
+        // ถ้าไม่มีแรงหลบ ให้ใช้ MoveTowards เข้าหาจุดหมายโดยตรง
+        if (avoidanceVec == Vector2.zero)
         {
-            transform.localScale = new Vector3(Mathf.Sign(finalDirection.x), 1, 1);
+            transform.position = Vector2.MoveTowards(transform.position, currentReturnTarget, currentSpeed * Time.deltaTime);
+        }
+        else
+        {
+            // ถ้าต้องหลบ ให้ใช้ทิศทางผสม
+            transform.position += (Vector3)finalDirection * currentSpeed * Time.deltaTime;
         }
 
-        // เช็คระยะห่างกับจุดหมายใหม่
-        if (Vector2.Distance(transform.position, currentReturnTarget) < 0.1f)
+        // หันหน้า
+        if (finalDirection.x != 0)
+            transform.localScale = new Vector3(Mathf.Sign(finalDirection.x), 1, 1);
+
+        // 3. ปรับระยะเช็คให้กว้างขึ้นเล็กน้อย และบังคับตำแหน่งเมื่อถึง
+        if (Vector2.Distance(transform.position, currentReturnTarget) < 0.15f)
         {
+            transform.position = currentReturnTarget; // Snap เข้าจุด
+            rb.linearVelocity = Vector2.zero;         // หยุดแรงเฉื่อย Rigidbody
+            currentSpeed = 0f;
             currentState = State.Idle;
-            currentGlueHitCount = 0; // รีเซ็ตเมื่อกลับถึงรัง
+            currentGlueHitCount = 0;
             attackTimer = 0f;
         }
     }
@@ -259,42 +549,67 @@ public class FlyingEnemy : Enemy
             return initialPosition;
         }
 
-        Vector2 nearestPoint = initialPosition;
-        float minDistance = float.MaxValue;
+        Vector2 bestPoint = initialPosition;
+        float minWeightedDistance = float.MaxValue;
 
-        // วนลูปเช็คทุกจุดใน Array
-        foreach (Transform point in idlePoints)
+        List<Vector2> allPoints = new List<Vector2>();
+        foreach (var t in idlePoints) if (t != null) allPoints.Add(t.position);
+        allPoints.Add(initialPosition);
+
+        foreach (Vector2 pointPos in allPoints)
         {
-            if (point == null) continue;
+            float realDist = Vector2.Distance(transform.position, pointPos);
+            float weightedDist = realDist;
 
-            float dist = Vector2.Distance(transform.position, point.position);
-            if (dist < minDistance)
+            // ยิง Raycast เช็คว่ามีกำแพงบังไหม
+            Vector2 direction = (pointPos - (Vector2)transform.position).normalized;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, realDist, obstacleLayer);
+
+            if (hit.collider != null)
             {
-                minDistance = dist;
-                nearestPoint = point.position;
+                // ถ้ามีกำแพงบัง ให้คูณโทษเข้าไป (เช่น ถือว่าไกลขึ้น 5 เท่า)
+                // หรือบวกค่าคงที่เข้าไปเพื่อให้มันไม่อยากไปทางนี้
+                weightedDist = realDist * 5f + 100f;
+            }
+
+            // เลือกจุดที่มีคะแนน (Weighted Distance) น้อยที่สุด
+            if (weightedDist < minWeightedDistance)
+            {
+                minWeightedDistance = weightedDist;
+                bestPoint = pointPos;
             }
         }
-        
-        // เช็คเทียบกับจุดเกิดด้วย (เผื่อจุดเกิดใกล้กว่า)
-        float distToInit = Vector2.Distance(transform.position, initialPosition);
-        if (distToInit < minDistance)
-        {
-            nearestPoint = initialPosition;
-        }
 
-        return nearestPoint;
+        return bestPoint;
     }
 
     IEnumerator AttackSequence()
     {
         isAttacking = true;
 
+        if (isCurrentlyFalling)
+        {
+            isAttacking = false;
+            yield break;
+        }
+
         float shootDelay = Random.Range(0.1f, 0.7f);
         yield return new WaitForSeconds(shootDelay);
+
+        if (isCurrentlyFalling)
+        {
+            isAttacking = false;
+            yield break;
+        }
 
         currentSpeed = 0f;
         yield return new WaitForSeconds(0.5f);
 
+        if (isCurrentlyFalling)
+        {
+            isAttacking = false;
+            yield break;
+        }
         if (currentTarget != null)
         {
             GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
@@ -307,6 +622,16 @@ public class FlyingEnemy : Enemy
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
+            // manage canFire for this attack path as well
+            canFire = false;
+            if (fireRespawnMode == FireRespawnMode.WaitForArrival)
+            {
+                StartCoroutine(WatchProjectileArrival(projectile, currentTarget.transform.position));
+            }
+            else
+            {
+                StartCoroutine(ResetCanFireAfterCooldown(attackCooldown));
+            }
         }
 
         float afterShotWait = Random.Range(0.2f, 0.7f);
@@ -323,21 +648,26 @@ public class FlyingEnemy : Enemy
         Vector2 newTarget = Vector2.zero;
         bool validPositionFound = false;
 
+        // จุดอ้างอิง: ถ้ามีเป้าหมายใช้เป้าหมาย ถ้าไม่มีใช้จุดกลับบ้าน
+        Vector2 basePos = (currentTarget != null) ? (Vector2)currentTarget.transform.position : currentReturnTarget;
+
         for (int i = 0; i < maxPositionAttempts; i++)
         {
-            if (currentTarget != null)
-            {
-                float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
-                float targetY = currentTarget.transform.position.y + Random.Range(hoverHeight * 0.7f, hoverHeight * 1.3f);
-                newTarget = new Vector2(currentTarget.transform.position.x + randomX, targetY);
-            }
-            else
-            {
-                float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
-                newTarget = new Vector2(currentReturnTarget.x + randomX, currentReturnTarget.y);
-            }
+            // สุ่มตำแหน่ง
+            float randomX = Random.Range(-flightPatrolRadius, flightPatrolRadius);
+            float randomY = Random.Range(hoverHeight * 0.7f, hoverHeight * 1.3f);
 
-            if (IsPathClear(transform.position, newTarget))
+            // ถ้าเป็น Zone Mode หรือ Returning ให้ใช้ BasePos เป็นแกนกลาง
+            // แต่ถ้าไล่ล่าผู้เล่น ให้พยายามอยู่เหนือหัวผู้เล่น
+            newTarget = new Vector2(basePos.x + randomX, basePos.y + randomY);
+
+            // 1. เช็คว่าตำแหน่งปลายทาง ไปชนกำแพงไหม (Overlap)
+            Collider2D hitWall = Physics2D.OverlapCircle(newTarget, 0.3f, obstacleLayer);
+
+            // 2. เช็คเส้นทางจากตัวเรา ไปหาจุดนั้น มีกำแพงกั้นไหม (Raycast)
+            bool pathIsClear = IsPathClear(transform.position, newTarget);
+
+            if (hitWall == null && pathIsClear)
             {
                 validPositionFound = true;
                 break;
@@ -350,9 +680,7 @@ public class FlyingEnemy : Enemy
         }
         else
         {
-            if (showGlueDebugLogs)
-                Debug.LogWarning("FlyingEnemy: ไม่พบตำแหน่งที่เหมาะสมในการบิน กำลังกลับรัง");
-            // --- [แก้ไข] คำนวณจุดกลับใหม่ก่อนเปลี่ยน State ---
+            // ถ้าหาทางไปไม่ได้เลย ให้กลับไปจุด Idle ที่ปลอดภัยที่สุด
             currentReturnTarget = GetNearestIdlePosition();
             currentState = State.Returning;
         }
@@ -386,38 +714,47 @@ public class FlyingEnemy : Enemy
 
     private IEnumerator GroundedByGlueSequence(float duration)
     {
-        if (showGlueDebugLogs)
-            Debug.Log($"[{enemyName}] Falling due to glue! (Hit count: {currentGlueHitCount}/{requiredGlueHitsToFall})");
-
+        if (showGlueDebugLogs) Debug.Log($"[{enemyName}] Falling due to glue!");
         isCurrentlyFalling = true;
         currentState = State.Falling;
 
-        // หยุดการโจมตีถ้ากำลังโจมตีอยู่
-        if (isAttacking)
-        {
-            StopCoroutine(nameof(AttackSequence));
-            isAttacking = false;
-        }
+        if (isAttacking) { StopAllCoroutines(); isAttacking = false; }
+        if (attackLineRenderer != null) attackLineRenderer.enabled = false;
 
-        // เปิดแรงโน้มถ่วง
         rb.gravityScale = 1f;
         currentSpeed = 0f;
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.5f, rb.linearVelocity.y); // ลดความเร็วแนวนอน
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.5f, rb.linearVelocity.y);
 
         yield return new WaitForSeconds(duration);
 
-        if (showGlueDebugLogs)
-            Debug.Log($"[{enemyName}] Glue effect ended. Returning to flight.");
-
-        // กลับสู่สถานะบิน
-        rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
-        currentGlueHitCount = 0; // รีเซ็ต counter
+        rb.gravityScale = 0f;
+        yield return new WaitForSeconds(2.0f); // นอนมึน 2 วิ
+
+        // Takeoff
+        float takeoffTimer = 0f;
+        while (takeoffTimer < 1.0f)
+        {
+            transform.position += Vector3.up * flyingSpeed * Time.deltaTime;
+            takeoffTimer += Time.deltaTime;
+            yield return null;
+        }
+
+        // ก่อนจะตัดสินใจบินกลับ ให้เช็คตุ๊กตาก่อนเป็นอันดับแรก
+        currentGlueHitCount = 0;
         isCurrentlyFalling = false;
 
-        // --- [แก้ไข] เมื่อหายจากกาว ให้หาจุดกลับที่ใกล้ที่สุด ---
-        currentReturnTarget = GetNearestIdlePosition();
-        currentState = State.Returning;
+        CheckForDoll(); // ลองหาตุ๊กตาทันทีที่ฟื้น
+        if (currentState == State.FlyingToDoll)
+        {
+            // ถ้าเจอตุ๊กตา ให้ไปหาตุ๊กตาเลย (State เปลี่ยนไปแล้วใน CheckForDoll)
+        }
+        else
+        {
+            // ถ้าไม่เจอ ให้กลับจุดเดิม
+            currentReturnTarget = GetNearestIdlePosition();
+            currentState = State.Returning;
+        }
     }
 
     protected override void Die()
@@ -429,6 +766,29 @@ public class FlyingEnemy : Enemy
         base.Die();
     }
 
+    IEnumerator WatchProjectileArrival(GameObject projectile, Vector2 target)
+    {
+        float timer = 0f;
+        while (projectile != null && timer < projectileMaxArrivalWait)
+        {
+            if (projectile == null) break;
+            try
+            {
+                if (Vector2.Distance(projectile.transform.position, target) <= arrivalThreshold) break;
+            }
+            catch { break; }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        canFire = true;
+    }
+
+    IEnumerator ResetCanFireAfterCooldown(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        canFire = true;
+    }
+
     protected override void Patrol() { }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -436,12 +796,12 @@ public class FlyingEnemy : Enemy
         // ตรวจสอบว่าเป็นกระสุนกาวหรือไม่
         if (other.GetComponent<GlueProjectile>() == null)
             return;
-
-        // ต้องอยู่ใน state ที่บินได้เท่านั้น
-        if (currentState != State.Flying && currentState != State.Attacking && currentState != State.Returning)
+        if (currentState == State.Perched) return;
+        // ถ้าอยู่ในจุดเกาะ (Idle) ให้ละเว้นการนับกาว แต่ยอมรับกาวในทุก state อื่นๆ
+        if (currentState == State.Idle)
         {
             if (showGlueDebugLogs)
-                Debug.Log($"[{enemyName}] Hit by glue but not in valid state ({currentState})");
+                Debug.Log($"[{enemyName}] Hit by glue but currently perched (Idle), ignoring glue");
             return;
         }
             
@@ -477,6 +837,7 @@ public class FlyingEnemy : Enemy
 
     public void OnPlayerEnterZone(GameObject player)
     {
+        if (currentState == State.Perched || currentState == State.FlyingToDoll) return;
         isPlayerInZone = true;
         playerInZone = player;
         currentTarget = player;
@@ -484,6 +845,9 @@ public class FlyingEnemy : Enemy
         if (currentState == State.Idle || currentState == State.Returning)
         {
             currentState = State.Flying;
+            // ensure we clear any push impulse so flight starts cleanly
+            rb.gravityScale = 0f;
+            rb.linearVelocity = Vector2.zero;
             SetNewFlightTarget();
         }
     }
@@ -523,7 +887,8 @@ public class FlyingEnemy : Enemy
             Vector2 toTarget = flightTargetPosition - (Vector2)transform.position;
             Gizmos.DrawRay(transform.position, toTarget.normalized * wallDetectionDistance);
         }
-
+        Gizmos.color = Color.green;
+        DrawCircle(transform.position, dollDetectionRadius, 40);
         // แสดงสถานะกาว
         if (Application.isPlaying && currentGlueHitCount > 0)
         {

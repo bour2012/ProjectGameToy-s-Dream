@@ -251,20 +251,17 @@ public class PlatformMovement : MonoBehaviour
             anim.SetTrigger("Shoot");
         }
 
+        // Delay ก่อนเริ่มยิงเล็กน้อย (ถ้าต้องการ)
         float shootDelay = 0.5f;
-
-        if (shootDelay > 0f)
-        {
-            yield return new WaitForSeconds(shootDelay);
-        }
- 
+        if (shootDelay > 0f) yield return new WaitForSeconds(shootDelay);
 
         if (!IsShootingSetupValid)
         {
             hasShot = false;
             yield break;
         }
-        // ขอวัตถุจาก Pool แทนการ Instantiate
+
+        // ขอวัตถุจาก Pool
         GameObject currentProjectile = GetProjectileFromPool();
         if (currentProjectile == null) yield break;
 
@@ -272,9 +269,10 @@ public class PlatformMovement : MonoBehaviour
         Vector3 startPos = spawnPoint.position;
         Vector3 endPos = targetPoint.position;
 
+        // Loop การเคลื่อนที่
         while (elapsed < travelTime)
         {
-            // เช็คความถูกต้องระหว่างทาง
+            // 1. เช็คความถูกต้องของจุด Spawn/Target
             if (!IsShootingSetupValid)
             {
                 ReturnProjectileToPool(currentProjectile);
@@ -282,14 +280,25 @@ public class PlatformMovement : MonoBehaviour
                 yield break;
             }
 
-            // ถ้าวัตถุถูก Deactive ไปโดยสคริปต์อื่น หรือหายไป
+            // 2. เช็คว่ากระสุนหายไปหรือถูกปิดไประหว่างทางหรือไม่
             if (currentProjectile == null || !currentProjectile.activeInHierarchy)
             {
                 if (respawnOnDisappear && IsShootingSetupValid)
                 {
-                    // กรณีนี้เราดึงตัวเดิมหรือตัวใหม่จาก Pool มาเริ่มใหม่
-                    // แต่เพื่อความง่าย เราแค่เช็คว่าถ้าตัวเดิมยังอยู่แต่ปิดไป ให้เปิดใหม่
-                    // หรือถ้าตัวเดิม Null (โดน Destroy จริงๆ) ให้ขอใหม่
+                    // --- ส่วนที่แก้ไขตามคำขอ ---
+
+                    // คำนวณเวลาที่เหลืออยู่ ว่าจริงๆ แล้วมันควรจะเดินทางอีกกี่วินาทีถึงจะจบ
+                    float remainingTime = travelTime - elapsed;
+
+                    // ถ้ามีเวลาเหลือ ให้รอก่อน (เพื่อไม่ให้เสกใหม่รัวๆ)
+                    if (remainingTime > 0f)
+                    {
+                        yield return new WaitForSeconds(remainingTime);
+                    }
+
+                    // หลังจากรอจนครบเวลาของรอบนั้นแล้ว ค่อยเริ่ม Spawn ใหม่
+
+                    // ดึงตัวเดิมหรือตัวใหม่จาก Pool
                     if (currentProjectile == null)
                     {
                         currentProjectile = GetProjectileFromPool();
@@ -297,18 +306,31 @@ public class PlatformMovement : MonoBehaviour
                     else
                     {
                         currentProjectile.transform.position = spawnPoint.position;
+                        currentProjectile.transform.rotation = spawnPoint.rotation;
                         currentProjectile.SetActive(true);
+
+                        // Reset Animation ถ้าจำเป็น
+                        Animator pAnim = currentProjectile.GetComponent<Animator>();
+                        if (pAnim != null) pAnim.Rebind();
                     }
 
+                    // Reset ค่าต่างๆ เพื่อเริ่ม Loop ใหม่เสมือนยิงนัดใหม่
                     startPos = spawnPoint.position;
+                    // อัปเดต endPos เผื่อเป้าหมายขยับ
+                    endPos = targetPoint.position;
                     elapsed = 0f;
+
+                    // continue จะกระโดดกลับไปที่ start ของ while loop ทันที
+                    continue;
                 }
                 else
                 {
+                    // ถ้าไม่ต้องการให้ Respawn ก็จบการทำงานไปเลย
                     break;
                 }
             }
 
+            // 3. คำนวณการเคลื่อนที่ปกติ
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / travelTime);
 
@@ -318,7 +340,7 @@ public class PlatformMovement : MonoBehaviour
             yield return null;
         }
 
-        // เมื่อถึงเป้าหมาย ส่งกลับเข้า Pool (ซ่อนไว้)
+        // เมื่อถึงเป้าหมาย หรือจบ Loop ตามเวลา
         ReturnProjectileToPool(currentProjectile);
 
         if (markDone)

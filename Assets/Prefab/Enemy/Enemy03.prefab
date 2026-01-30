@@ -81,7 +81,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 12
+  m_SortingOrder: 18
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
@@ -109,32 +109,34 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   headCollider: {fileID: 0}
+  isSpecialState: 0
   groundLayer:
     serializedVersion: 2
-    m_Bits: 2176
+    m_Bits: 1050752
   groundCheckDistance: 1
   wallCheckDistance: 0.5
   deathEffectPrefab: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
   deathDuration: 2
+  deathSound: {fileID: 0}
+  deathSoundVolume: 1
   enemyName: 
   maxHealth: 100
   moveSpeed: 2.5
   detectionRange: 5
   detectionLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 576
   obstacleLayers:
     serializedVersion: 2
-    m_Bits: 2176
+    m_Bits: 1050752
   currentHealth: 0
   chaseMode: 0
   requiredGlueHitsToFall: 3
   glueHitCooldown: 0.5
-  glueFallDuration: 3
+  glueFallDuration: 2.5
   currentGlueHitCount: 0
+  idlePoints: []
   flyingSpeed: 3
-  attackRange: 8
-  attackCooldown: 3
   flightPatrolRadius: 5
   hoverHeight: 3
   rotationSpeed: 5
@@ -143,6 +145,23 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2176
   maxPositionAttempts: 5
+  dangerLayer:
+    serializedVersion: 2
+    m_Bits: 2097152
+  avoidanceDistance: 3
+  avoidanceRadius: 0.5
+  avoidanceForce: 5
+  dollLayer:
+    serializedVersion: 2
+    m_Bits: 16777216
+  dollDetectionRadius: 4.5
+  dollSnapDistance: 0.5
+  attackRange: 8
+  attackCooldown: 3
+  attackPrepareTime: 1.2
+  showAttackTelegraph: 1
+  telegraphStartColor: {r: 1, g: 1, b: 0, a: 0.3}
+  telegraphEndColor: {r: 1, g: 0, b: 0, a: 0.8}
   projectilePrefab: {fileID: 760080139131159738, guid: 3ccc24b9a72985e4b8070727a2fdb981, type: 3}
   projectileSpawnPoint: {fileID: 3719873707518783203}
   projectileSpeed: 4
@@ -259,7 +278,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5899491088542081136
 Transform:
   m_ObjectHideFlags: 0
@@ -331,6 +350,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7751511937683659091}
   - component: {fileID: 6245928998906951344}
+  - component: {fileID: 6517473612658013752}
   m_Layer: 0
   m_Name: Enemy-03_0
   m_TagString: Untagged
@@ -396,10 +416,10 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 1584848327, guid: 16caa59341aee9c40ac3951d66ef4183, type: 3}
+  m_SortingOrder: 17
+  m_Sprite: {fileID: 1747319082038111860, guid: 806becb881f338e4ca740c4c7259dfee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 5.12, y: 5.12}
@@ -408,3 +428,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &6517473612658013752
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7134003482790238440}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c2df40014d8578f499592e1e04b4bc33, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -160,6 +160,6 @@ MonoBehaviour:
   destroyOnSpecificLayer: 1
   targetLayers:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 33554432
   showGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
