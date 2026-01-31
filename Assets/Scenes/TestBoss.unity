@@ -461,6 +461,7 @@ MonoBehaviour:
   delay: 0.5
   autoAdvance: 1
   autoAdvanceDelay: 2.5
+  conflictStrategy: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -933,11 +934,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 116473198}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 1
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!1 &123714279
 GameObject:
   m_ObjectHideFlags: 0
@@ -1049,7 +1050,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!95 &124527268
 Animator:
   serializedVersion: 7
@@ -1107,11 +1108,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 124527268}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 124527268}
 --- !u!50 &124527270
 Rigidbody2D:
   serializedVersion: 5
@@ -1237,7 +1238,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &124527273
@@ -1322,11 +1323,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 126514598}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 1
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!1 &129346814
 GameObject:
   m_ObjectHideFlags: 0
@@ -1346,7 +1347,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!50 &129346815
 Rigidbody2D:
   serializedVersion: 5
@@ -1649,7 +1650,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &133810379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3010,7 +3011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &349344664
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3321,7 +3322,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &406562125
 Transform:
   m_ObjectHideFlags: 0
@@ -4173,7 +4174,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &447755631
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5004,8 +5005,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 542230345}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -143.08, y: -46.74, z: 0}
@@ -5483,7 +5482,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!95 &570127376
 Animator:
   serializedVersion: 7
@@ -5541,11 +5540,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 570127376}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 570127376}
 --- !u!50 &570127378
 Rigidbody2D:
   serializedVersion: 5
@@ -5671,7 +5670,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &570127381
@@ -6217,7 +6216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &712158109
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6351,7 +6350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &714830505
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6659,7 +6658,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &749444796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6676,8 +6675,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 749444797}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -123, y: -42.3, z: 0}
@@ -6860,7 +6857,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!95 &802923420
 Animator:
   serializedVersion: 7
@@ -6918,11 +6915,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   platformPrefab: {fileID: 0}
   respawnOnDisappear: 1
+  anim: {fileID: 802923420}
   shootStaggerMode: 0
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 802923420}
 --- !u!50 &802923422
 Rigidbody2D:
   serializedVersion: 5
@@ -7048,7 +7045,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &802923425
@@ -7182,7 +7179,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &807264800
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7515,7 +7512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &843992851
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8117,7 +8114,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4019485406932222969, guid: 893781a0ef9046649940843985601701, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4571246943338388445, guid: 893781a0ef9046649940843985601701, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9436,8 +9433,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1011421579}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -142.0244, y: -45.45, z: 0}
@@ -9960,8 +9955,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1075793691}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -137.7, y: -46.85, z: 0}
@@ -10754,11 +10747,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 1146714542}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 1
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!1 &1158167138
 GameObject:
   m_ObjectHideFlags: 0
@@ -11007,7 +11000,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!50 &1187709227
 Rigidbody2D:
   serializedVersion: 5
@@ -11106,8 +11099,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1187709231}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -156.8, y: -48.27, z: 0}
@@ -11525,12 +11516,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bgmAudioSource: {fileID: 0}
+  sceneBGM: {fileID: 0}
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 01
   defaultCheckpoint: {fileID: 0}
   showCheckpointDebugInfo: 1
   resetToLastCheckpoint: 1
+  debugGameGM: 0
   currentState: 0
   player: {fileID: 1091149616006774543}
   playerMovement: {fileID: 0}
@@ -13137,6 +13131,7 @@ MonoBehaviour:
   delay: 0.5
   autoAdvance: 1
   autoAdvanceDelay: 2.5
+  conflictStrategy: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -13414,7 +13409,7 @@ SpriteRenderer:
   m_Size: {x: 5.2, y: 3.73}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1485837524
@@ -13936,7 +13931,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1602334188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14140,7 +14135,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!251 &1612992744
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -14566,7 +14561,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1617841796
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14702,7 +14697,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1618909529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14719,8 +14714,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1618909530}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -146.86, y: -45.29, z: 0}
@@ -15495,8 +15488,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1698262503}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -138.2, y: -42.3, z: 0}
@@ -15878,7 +15869,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1754679704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16049,7 +16040,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1772742773
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16434,7 +16425,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!251 &1858058736
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -16865,8 +16856,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 1879568560}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -138.2, y: -42.3, z: 0}
@@ -17192,7 +17181,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1894942133
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17735,7 +17724,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!50 &2005785088
 Rigidbody2D:
   serializedVersion: 5
@@ -17834,8 +17823,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 2005785092}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -137.99, y: -54.61, z: 0}
@@ -18033,8 +18020,6 @@ MonoBehaviour:
   platformAnimator: {fileID: 0}
   activateTriggerName: Open
   deactivateTriggerName: Close
-  idleOpenStateName: IdleOpen
-  idleCloseStateName: IdleClose
   platform: {fileID: 2007629951}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -134.39, y: -55.63, z: 0}
@@ -18132,7 +18117,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2024291828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18333,7 +18318,7 @@ SpriteRenderer:
   m_Size: {x: 77.039665, y: 8.84}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &2024301934
@@ -18519,7 +18504,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &2065803669
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -18837,11 +18822,11 @@ MonoBehaviour:
   spawnPoint: {fileID: 2123420930}
   platformPrefab: {fileID: 7846474533407316298, guid: bd2882fb2f8b845489309cdaf7edd9d0, type: 3}
   respawnOnDisappear: 1
+  anim: {fileID: 0}
   shootStaggerMode: 1
   staggerInterval: 0.25
   randomSpread: 1
   manualOrder: 0
-  anim: {fileID: 0}
 --- !u!1 &2123903133
 GameObject:
   m_ObjectHideFlags: 0
@@ -18860,7 +18845,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!251 &2123903134
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -19213,6 +19198,10 @@ PrefabInstance:
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
       value: 4.75292
+      objectReference: {fileID: 0}
+    - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -25.403538
       objectReference: {fileID: 0}
     - target: {fileID: 5158328026089379270, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: field of view

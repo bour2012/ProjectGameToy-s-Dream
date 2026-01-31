@@ -6,6 +6,13 @@ using TMPro;
 
 public class TrashCraftingSystem : MonoBehaviour
 {
+    [Header("Respawn Settings (กำหนดจุดเกิดใหม่)")]
+    [Tooltip("ถ้าติ๊กถูก จะบังคับให้ขยะกลับมาเกิดที่จุด respawnTarget เสมอ")]
+    public bool useSpecificRespawnPoint = false;
+    [Tooltip("ระยะห่างที่ให้ลอยเหนือจุดเกิด (แกน Y)")]
+    public float spawnHeightOffset = 1.0f;
+    [Tooltip("ลาก GameObject ที่ต้องการให้ขยะไปเกิดตรงนั้นมาใส่ (เช่น Empty Object บน Platform)")]
+    public Transform respawnTarget;
     [Header("Crafting Settings")]
     public float interactionDistance = 3f;
     public LayerMask playerLayer = 1;
@@ -749,11 +756,23 @@ public class TrashCraftingSystem : MonoBehaviour
         StartCoroutine(ReturnToTrashRoutine(position));
     }
 
-    IEnumerator ReturnToTrashRoutine(Vector3 position)
+    IEnumerator ReturnToTrashRoutine(Vector3 destructionPosition)
     {
         // move pile to destroyed position
-        transform.position = position;
+        //transform.position = position;
+        if (useSpecificRespawnPoint && respawnTarget != null)
+        {
+            // คำนวณตำแหน่ง: เอาตำแหน่งเป้าหมาย + ดันขึ้นแกน Y ตามค่า Offset
+            Vector3 targetPos = respawnTarget.position + (Vector3.up * spawnHeightOffset);
+            transform.position = targetPos;
 
+            // *** ไม่มีการสั่ง transform.rotation = ... (ตัดออกตามที่ขอครับ) ***
+        }
+        else
+        {
+            // โหมดปกติ: ไปเกิดตรงจุดที่ของพัง
+            transform.position = destructionPosition;
+        }
         // show progress UI
         if (progressPanel != null)
         {
@@ -785,7 +804,7 @@ public class TrashCraftingSystem : MonoBehaviour
         // hide progress UI
         if (progressPanel != null) progressPanel.SetActive(false);
 
-        Debug.Log($"Trash pile returned to position: {position}");
+        //Debug.Log($"Trash pile returned to position: {position}");
     }
 
     #endregion

@@ -16,6 +16,7 @@ TagManager:
   - Glue
   - Bullet
   - DarkZone
+  - SlideGround
   layers:
   - Default
   - TransparentFX
@@ -43,7 +44,7 @@ TagManager:
   - Camera
   - FlyingToDoll
   - DollLevel02
-  - 
+  - SlideGround
   - 
   - 
   - 
