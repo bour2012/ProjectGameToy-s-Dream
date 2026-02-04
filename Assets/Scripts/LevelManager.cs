@@ -150,7 +150,7 @@ public class LevelManager : MonoBehaviour
             var bc = boss.GetComponent<BossController>();
             if (bc != null)
             {
-                bc.ResetGlueAccumulation();
+                //bc.ResetGlueAccumulation();
                 Debug.Log("LevelManager: Called ResetGlueAccumulation on boss.");
             }
         }

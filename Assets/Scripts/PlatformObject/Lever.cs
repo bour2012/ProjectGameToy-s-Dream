@@ -75,7 +75,7 @@ public class Lever : MonoBehaviour, IInteractable
         }
         // ถ้าเป็นโหมด Animation, Animator จะจัดการ Sprite เริ่มต้นเองจาก Default State
         // ตั้งค่าบอสตอนเริ่มเกม
-        UpdateBossState();
+        //UpdateBossState();
 
         //// ให้ Lever มี AudioSource ของตัวเอง (ถ้ายังไม่มี)
         //audioSource = GetComponent<AudioSource>();
@@ -141,7 +141,7 @@ public class Lever : MonoBehaviour, IInteractable
         }
 
         // สั่งงานบอส (ถ้ามี)
-        UpdateBossState();
+        //UpdateBossState();
 
         // 3) ถ้าเป็นการกดโดยผู้เล่น ให้สั่ง linked levers ให้ทำงานจากระบบ
         if (isPlayerAction && linkedLevers != null)
@@ -194,30 +194,30 @@ public class Lever : MonoBehaviour, IInteractable
         operationCoroutine = StartCoroutine(ToggleLeverSequence(false));
     }
 
-    // ฟังก์ชันย่อยสำหรับสั่งบอส (เรียกใช้ทั้งตอน Start และตอนสับ)
-    private void UpdateBossState()
-    {
-        if (bossToControl != null)
-        {
-            if (guardPointTransform != null)
-            {
-                // Lever Active -> ไปเฝ้าจุดนี้, Lever Inactive -> ยกเลิกเฝ้า
-                if (isActive)
-                {
-                    bossToControl.GoToGuardPoint(guardPointTransform.position);
-                }
-                else
-                {
-                    bossToControl.CancelGuardPoint();
-                }
-            }
-            else
-            {
-                // ถ้าไม่มี Guard Point ใส่ไว้ ให้ใช้ Logic เดิม (ถ้าต้องการ)
-                // bossToControl.SetPatrolState(!isActive);
-            }
-        }
-    }
+    //// ฟังก์ชันย่อยสำหรับสั่งบอส (เรียกใช้ทั้งตอน Start และตอนสับ)
+    //private void UpdateBossState()
+    //{
+    //    if (bossToControl != null)
+    //    {
+    //        if (guardPointTransform != null)
+    //        {
+    //            // Lever Active -> ไปเฝ้าจุดนี้, Lever Inactive -> ยกเลิกเฝ้า
+    //            if (isActive)
+    //            {
+    //                bossToControl.GoToGuardPoint(guardPointTransform.position);
+    //            }
+    //            else
+    //            {
+    //                bossToControl.CancelGuardPoint();
+    //            }
+    //        }
+    //        else
+    //        {
+    //            // ถ้าไม่มี Guard Point ใส่ไว้ ให้ใช้ Logic เดิม (ถ้าต้องการ)
+    //            // bossToControl.SetPatrolState(!isActive);
+    //        }
+    //    }
+    //}
 
     // Coroutine สำหรับโหมด Rotation (เหมือนเดิม)
     private IEnumerator RotateHandle(float targetAngle)
