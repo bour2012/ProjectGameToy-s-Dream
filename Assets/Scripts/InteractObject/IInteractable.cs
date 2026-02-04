@@ -4,4 +4,5 @@ using UnityEngine;
 {
     string GetInteractText();
     void Interact();
+    Vector3 GetUiOffset() => Vector3.zero;
 }

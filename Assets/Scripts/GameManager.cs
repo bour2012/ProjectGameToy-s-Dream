@@ -1525,7 +1525,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.DeleteKey("Saved_Glue");
         PlayerPrefs.DeleteKey("Saved_Thread");
         PlayerPrefs.DeleteKey(BONUS_TRIGGERED_KEY);
-
+        PlayerPrefs.DeleteKey("CurrentBossPhase");
         // รีเซ็ตจำนวนไอเทมในตัวผู้เล่นให้เป็น 0 ทันที (ไม่ต้องรอโหลด)
         if (ItemManager.Instance != null)
         {
@@ -1584,7 +1584,50 @@ public class GameManager : MonoBehaviour
     #endregion
 
 
+    #region QuitGameClearSave
+    private void OnApplicationQuit()
+    {
+        // เมื่อผู้เล่นกดกากบาทปิดเกม หรือ Alt+F4
+        // ให้ลบเซฟเฟสบอสทิ้งทันที
+        PlayerPrefs.DeleteKey("CurrentBossPhase");
+        PlayerPrefs.Save();
+        Debug.Log("Auto-Cleared Boss Phase Save on Quit.");
+    }
+
+    public void QuitToMainMenu()
+    {
+        // 1. ล้างข้อมูลเฟสบอสทิ้ง (เพื่อให้เริ่มใหม่เมื่อเข้าเล่นครั้งหน้า)
+        PlayerPrefs.DeleteKey("CurrentBossPhase");
+        PlayerPrefs.Save();
+        Debug.Log("Cleared Boss Phase Save (User Quit).");
+
+        // 2. ถ้ามีของอื่นๆ ที่อยากล้างตอนออกเกมก็ใส่ตรงนี้
+        // ClearCheckpointSaveData(); // ถ้าอยากให้ Checkpoint หายด้วยก็เปิดบรรทัดนี้
+
+        // 3. เปลี่ยนฉากกลับไปเมนู (ใส่ชื่อ Scene เมนูของคุณ)
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void QuitDesktop()
+    {
+        // 1. ล้างข้อมูลก่อนปิดเกม
+        PlayerPrefs.DeleteKey("CurrentBossPhase");
+        PlayerPrefs.Save();
+
+        // 2. ปิดโปรแกรม
+        Debug.Log("Quitting Game...");
+        Application.Quit();
+    }
+
+    #endregion
+
+
+
+
 }
+
+
+
 
 // ========================================
 // Data Classes

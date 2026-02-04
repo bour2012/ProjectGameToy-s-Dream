@@ -18,7 +18,7 @@ public class LevelManager : MonoBehaviour
     public float spawnDelay = 0.1f; // Delay between spawning objects
 
     [Header("Boss Integration")]
-    public BossGlueMeter bossGlueMeter;
+
     public Transform boss;
 
     public bool isTransitioning = false;
@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     // Expose transition state so other systems (e.g. BossController) can query
     // whether a level transition is currently in progress.
     public bool IsTransitioning { get { return isTransitioning; } }
-
+    private const string BOSS_PHASE_KEY = "CurrentBossPhase";
     [System.Serializable]
     public class LevelData
     {
@@ -55,19 +55,29 @@ public class LevelManager : MonoBehaviour
         InitializeLevels();
 
         // Start with configured currentLevelIndex (clamped). This respects inspector override.
+        if (PlayerPrefs.HasKey(BOSS_PHASE_KEY))
+        {
+            currentLevelIndex = PlayerPrefs.GetInt(BOSS_PHASE_KEY);
+            Debug.Log($"<color=yellow>Load Boss Phase from Save: Phase {currentLevelIndex}</color>");
+        }
+        else
+        {
+            // ถ้าไม่มีเซฟ ให้ใช้ค่า Default (0)
+            currentLevelIndex = 0;
+        }
+
+        // เริ่มโหลดด่านตาม Index ที่ได้มา (0 หรือค่าที่เซฟไว้)
         if (levels.Length > 0)
         {
             int startIdx = Mathf.Clamp(currentLevelIndex, 0, levels.Length - 1);
-            currentLevelIndex = startIdx;
+
+            // 1. โหลดฉาก
             StartCoroutine(LoadLevel(startIdx));
+
+     
+            MovePlayerToStartPosition();
         }
 
-        // Subscribe to boss glue meter events
-        if (bossGlueMeter != null)
-        {
-            // We'll need to modify BossGlueMeter to have an event when it's full
-            StartCoroutine(MonitorBossGlueMeter());
-        }
     }
 
     void InitializeLevels()
@@ -123,7 +133,9 @@ public class LevelManager : MonoBehaviour
     private IEnumerator TransitionToLevel(int targetLevelIndex)
     {
         isTransitioning = true;
-
+        PlayerPrefs.SetInt(BOSS_PHASE_KEY, targetLevelIndex);
+        PlayerPrefs.Save();
+        Debug.Log($"<color=cyan>Saved Boss Phase: {targetLevelIndex}</color>");
         // Despawn current level
         yield return StartCoroutine(DespawnCurrentLevel());
 
@@ -138,9 +150,9 @@ public class LevelManager : MonoBehaviour
 
         // Move player to new position
         MovePlayerToStartPosition();
-
-        // Reset boss to idle state
-        SetBossIdleState();
+        UpdateBossPhase(targetLevelIndex);
+        //// Reset boss to idle state
+        //SetBossIdleState();
 
 
 
@@ -190,10 +202,27 @@ public class LevelManager : MonoBehaviour
                 levelObj.gameObject.SetActive(true);
             }
         }
-
+        UpdateBossPhase(levelIndex);
         Debug.Log($"Level {level.levelName} loaded with {level.levelObjects.Length} objects");
     }
+    private void UpdateBossPhase(int levelIndex)
+    {
+        if (boss != null)
+        {
+            var bossCtrl = boss.GetComponent<BossController>();
+            if (bossCtrl != null)
+            {
+                bossCtrl.EnterPhase(levelIndex);
+            }
+        }
+    }
 
+    public void ClearBossPhaseSave()
+    {
+        PlayerPrefs.DeleteKey(BOSS_PHASE_KEY);
+        PlayerPrefs.Save();
+        Debug.Log("Cleared Boss Phase Save.");
+    }
     private IEnumerator DespawnCurrentLevel()
     {
         if (currentLevelIndex < 0 || currentLevelIndex >= levels.Length) yield break;
@@ -263,57 +292,57 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void SetBossIdleState()
-    {
-        if (boss != null)
-        {
-            //// Disable boss movement/AI components
-            //var bossController = boss.GetComponent<BossController>();
-            //if (bossController != null)
-            //{
-            //    bossController.enabled = false;
-            //}
+    //private void SetBossIdleState()
+    //{
+    //    if (boss != null)
+    //    {
+    //        //// Disable boss movement/AI components
+    //        //var bossController = boss.GetComponent<BossController>();
+    //        //if (bossController != null)
+    //        //{
+    //        //    bossController.enabled = false;
+    //        //}
 
-            //var bossAI = boss.GetComponent<BossAttackAI>();
-            //if (bossAI != null)
-            //{
-            //    bossAI.enabled = false;
-            //}
+    //        //var bossAI = boss.GetComponent<BossAttackAI>();
+    //        //if (bossAI != null)
+    //        //{
+    //        //    bossAI.enabled = false;
+    //        //}
 
-            //// Stop boss movement
-            //var bossRb = boss.GetComponent<Rigidbody2D>();
-            //if (bossRb != null)
-            //{
-            //    bossRb.linearVelocity = Vector2.zero;
-            //    bossRb.angularVelocity = 0f;
-            //}
+    //        //// Stop boss movement
+    //        //var bossRb = boss.GetComponent<Rigidbody2D>();
+    //        //if (bossRb != null)
+    //        //{
+    //        //    bossRb.linearVelocity = Vector2.zero;
+    //        //    bossRb.angularVelocity = 0f;
+    //        //}
 
-            // Reset glue meter
-            if (bossGlueMeter != null)
-            {
-                bossGlueMeter.ResetMeter();
-            }
+    //        // Reset glue meter
+    //        if (bossGlueMeter != null)
+    //        {
+    //            bossGlueMeter.ResetMeter();
+    //        }
 
-            Debug.Log("Boss set to idle state");
-        }
-    }
+    //        Debug.Log("Boss set to idle state");
+    //    }
+    //}
 
-    public IEnumerator MonitorBossGlueMeter()
-    {
-        while (true)
-        {
-            if (bossGlueMeter != null && bossGlueMeter.IsMeterFull())
-            {
-                Debug.Log("Boss glue meter is full! Triggering level transition...");
-                //NextLevel();
-                StartCoroutine(PlayPreTransitionDialogsAndAdvance());
-                // Wait a bit before checking again to avoid multiple triggers
-                yield return new WaitForSeconds(2f);
-            }
+    //public IEnumerator MonitorBossGlueMeter()
+    //{
+    //    while (true)
+    //    {
+    //        if (bossGlueMeter != null && bossGlueMeter.IsMeterFull())
+    //        {
+    //            Debug.Log("Boss glue meter is full! Triggering level transition...");
+    //            //NextLevel();
+    //            StartCoroutine(PlayPreTransitionDialogsAndAdvance());
+    //            // Wait a bit before checking again to avoid multiple triggers
+    //            yield return new WaitForSeconds(2f);
+    //        }
 
-            yield return new WaitForSeconds(0.1f); // Check every frame
-        }
-    }
+    //        yield return new WaitForSeconds(0.1f); // Check every frame
+    //    }
+    //}
 
     // Public methods for external triggers
     public void TriggerLevelTransition()

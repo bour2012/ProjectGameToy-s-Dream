@@ -125,7 +125,8 @@ public class PlayerInteractor : MonoBehaviour
         Vector3 topPosition = currentTargetCollider.bounds.center + new Vector3(0, currentTargetCollider.bounds.extents.y, 0);
         float yOffset = Mathf.Sin(Time.time * animationSpeed) * animationAmplitude;
         Vector3 animationOffset = new Vector3(0, yOffset, 0);
-        interactPromptUI.transform.position = topPosition + promptOffset + animationOffset;
+        interactPromptUI.transform.position = topPosition + promptOffset + animationOffset + currentInteractable.GetUiOffset();
+
         interactPromptUI.transform.rotation = Quaternion.identity;
     }
 

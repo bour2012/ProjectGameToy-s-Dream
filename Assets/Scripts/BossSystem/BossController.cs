@@ -78,9 +78,9 @@ public class BossController : MonoBehaviour
         public float healthThreshold = 0.5f;
     }
 
-    [Header("Status")]
-    public float maxHealth = 100f;
-    public float currentHealth;
+    //[Header("Status")]
+    //public float maxHealth = 100f;
+    //public float currentHealth;
 
     void Start()
     {
@@ -94,10 +94,10 @@ public class BossController : MonoBehaviour
         if (playerObj != null) playerTransform = playerObj.transform;
 
         startPosition = transform.position;
-        currentHealth = maxHealth;
+        //currentHealth = maxHealth;
 
         CreateViewCone();
-        EnterPhase(0);
+        //EnterPhase(0);
     }
 
     void Update()
@@ -109,7 +109,6 @@ public class BossController : MonoBehaviour
         }
 
         HandleMovement();
-        CheckPhaseProgression();
     }
 
     // ใช้ LateUpdate เพื่อวาดแสงหลังจากบอสขยับเสร็จแล้ว (แก้แสงสั่นตอนเดิน)
@@ -117,10 +116,26 @@ public class BossController : MonoBehaviour
     {
         if (!isDefeated) DrawFieldOfView();
     }
+    //public void AdvanceToNextPhase()
+    //{
+    //    if (isDefeated) return;
 
+    //    int nextIndex = currentPhaseIndex + 1;
+
+    //    // เช็คว่าเฟสหมดหรือยัง (ถ้าครบ 3 เฟส หรือเกินจำนวนที่ตั้งไว้)
+    //    if (nextIndex >= phases.Length || nextIndex >= 3)
+    //    {
+    //        Debug.Log("เก็บครบ 3 ชิ้นแล้ว! บอสแพ้!");
+    //        HitByUltimateGlue(); // สั่งให้บอสร่วง (จบเกม)
+    //    }
+    //    else
+    //    {
+    //        Debug.Log($"เปลี่ยนเป็นเฟสที่ {nextIndex + 1}");
+    //        EnterPhase(nextIndex); // เข้าสู่เฟสถัดไป
+    //    }
+    //}
     void HandleMovement()
     {
-        // ... (Logic การเคลื่อนที่คงเดิม) ...
         BossPhaseData phase = phases[currentPhaseIndex];
         Vector3 targetPos;
         float currentSpeed = phase.moveSpeed;
@@ -391,10 +406,23 @@ public class BossController : MonoBehaviour
         yield return new WaitForSeconds(knockbackDuration);
         if (moveScript != null) moveScript.enabled = true;
     }
-    void CheckPhaseProgression() { if (currentPhaseIndex < phases.Length - 1 && (currentHealth / maxHealth) <= phases[currentPhaseIndex].healthThreshold) EnterPhase(currentPhaseIndex + 1); }
+    //void CheckPhaseProgression() { if (currentPhaseIndex < phases.Length - 1 && (currentHealth / maxHealth) <= phases[currentPhaseIndex].healthThreshold) EnterPhase(currentPhaseIndex + 1); }
     public void EnterPhase(int index) { currentPhaseIndex = index; phaseTime = 0f; isSwooping = false; isReturning = false; swoopTimer = 0f; if (animator != null) { animator.SetInteger("Phase", currentPhaseIndex); animator.SetTrigger("PhaseTransition"); } }
-    public void TakeDamage(float amount) { if (!isDefeated) { currentHealth -= amount; if (animator != null) animator.SetTrigger("TakeDamage"); } }
-    public void HitByUltimateGlue() { if (!isDefeated) { isDefeated = true; if (animator != null) animator.SetBool("Fall", true); rb.bodyType = RigidbodyType2D.Dynamic; rb.gravityScale = fallGravityScale; StartCoroutine(EndGameSequence()); } }
+    //public void TakeDamage(float amount) { if (!isDefeated) { currentHealth -= amount; if (animator != null) animator.SetTrigger("TakeDamage"); } }
+    public void HitByUltimateGlue() { 
+        if (!isDefeated) { isDefeated = true;
+            if (animator != null) animator.SetBool("Fall", true); 
+            rb.bodyType = RigidbodyType2D.Dynamic; 
+            rb.gravityScale = fallGravityScale; StartCoroutine(EndGameSequence()); 
+        }
+        LevelManager lvlMgr = FindFirstObjectByType<LevelManager>();
+        if (lvlMgr != null)
+        {
+            lvlMgr.ClearBossPhaseSave();
+        }
+
+        StartCoroutine(EndGameSequence());
+    }
     IEnumerator EndGameSequence() { yield return new WaitForSeconds(4f); Debug.Log("Trigger Cutscene Here..."); }
     private void OnDrawGizmos() { Gizmos.color = Color.yellow; Gizmos.DrawWireSphere(transform.position, viewRadius); }
 }

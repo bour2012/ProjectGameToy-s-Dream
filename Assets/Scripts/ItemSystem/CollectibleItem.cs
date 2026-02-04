@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class CollectibleItem : MonoBehaviour
 {
-    public enum CollectibleType { GenericItem, Key }
+    public enum CollectibleType { GenericItem, Key, BossPhaseTrigger }
     [Header("Item Settings")]
     public CollectibleType type = CollectibleType.GenericItem;
 
@@ -55,34 +55,46 @@ public class CollectibleItem : MonoBehaviour
 
     void Collect()
     {
-        if (isCollected || ItemManager.Instance == null) return;
+        if (isCollected) return; // ตัด ItemManager.Instance == null ออกเพื่อให้เก็บ Boss Item ได้แม้ไม่มี Manager
         isCollected = true;
+
+        // บันทึกว่าเก็บแล้ว (ยกเว้น Key)
+        if (type != CollectibleType.Key)
+        {
+            GameManager.Instance?.MarkItemAsCollected(this.itemID);
+        }
 
         switch (type)
         {
             case CollectibleType.GenericItem:
-                // 1. บอก GameManager ให้จำว่าเก็บไปแล้ว โดยใช้ itemID ที่เป็นเอกลักษณ์
-                // GameManager.Instance?.MarkItemAsCollected(this.name); // <--- บรรทัดเดิมที่ใช้ชื่อ
-                GameManager.Instance?.MarkItemAsCollected(this.itemID);   // <--- บรรทัดที่แก้ไขใหม่!
-
-                // 2. เพิ่มไอเทมให้ผู้เล่น
-                ItemManager.Instance.CollectItem(itemType, itemAmount);
+                if (ItemManager.Instance != null)
+                    ItemManager.Instance.CollectItem(itemType, itemAmount);
                 break;
 
             case CollectibleType.Key:
-                // การเก็บกุญแจจะไม่ถูกบันทึกในระบบนี้ ซึ่งถูกต้องตามที่คุณต้องการ
-                ItemManager.Instance.AddKey(keyID);
+                if (ItemManager.Instance != null)
+                    ItemManager.Instance.AddKey(keyID);
+                break;
+
+            case CollectibleType.BossPhaseTrigger:
+                Debug.Log("เก็บของครบ! ไปด่านต่อไป!");
+
+                LevelManager levelMgr = FindFirstObjectByType<LevelManager>();
+                if (levelMgr != null)
+                {
+                    // สั่งให้เปลี่ยนด่าน (เดี๋ยว LevelManager จะไปสั่งบอสเอง)
+                    // ถ้ายังไม่จบเกม ให้ไปด่านถัดไป
+                    levelMgr.NextLevel();
+                }
                 break;
         }
 
-        // 3. เล่นเอฟเฟกต์
         if (collectEffect != null)
             Instantiate(collectEffect, transform.position, Quaternion.identity);
 
         if (collectSound != null)
             AudioSource.PlayClipAtPoint(collectSound.clip, transform.position);
 
-        // 4. ทำลายตัวเองทันที
         Destroy(gameObject);
     }
 }

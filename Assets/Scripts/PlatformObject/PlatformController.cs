@@ -329,8 +329,21 @@ public class PlatformController : MonoBehaviour
     }
 
     #region Parenting System
-    void OnTriggerEnter2D(Collider2D other) { if (!useParentingMode) return; HandleTriggerEnter(other.gameObject); }
-    void OnTriggerExit2D(Collider2D other) { if (!useParentingMode) return; HandleTriggerExit(other.gameObject); }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!useParentingMode) return;
+        HandleTriggerEnter(other.gameObject);
+    }
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (!useParentingMode) return;
+
+        // [เพิ่ม] ป้องกันบั๊ก: ถ้าวัตถุออกจาก Trigger ตัวนึง แต่อาจจะยังอยู่ใน Trigger อีกตัว
+        // (เช่น ออกจาก Zone แต่ขาข้างนึงยังแตะ Platform) 
+        // ปกติเราไม่ต้องเช็คละเอียดขนาดนั้นในเคสนี้ เพราะ Zone มันครอบ Platform อยู่แล้ว
+        // แค่เช็คว่าออกจริงๆ ก็พอ
+        HandleTriggerExit(other.gameObject);
+    }
     void OnCollisionEnter2D(Collision2D col) { if (!useParentingMode) return; HandleCollisionEnter(col); }
     void OnCollisionExit2D(Collision2D col) { if (!useParentingMode) return; HandleTriggerExit(col.gameObject); }
 
