@@ -42963,6 +42963,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3968328463941729982, guid: 47208897213b5794abe033c544cf5203, type: 3}
+      propertyPath: groundingPoint
+      value: 
+      objectReference: {fileID: 83164750}
+    - target: {fileID: 3968328463941729982, guid: 47208897213b5794abe033c544cf5203, type: 3}
       propertyPath: glueHitCooldown
       value: 0.5
       objectReference: {fileID: 0}
@@ -42974,6 +42978,10 @@ PrefabInstance:
       propertyPath: flightPatrolRadius
       value: 10.03
       objectReference: {fileID: 0}
+    - target: {fileID: 3968328463941729982, guid: 47208897213b5794abe033c544cf5203, type: 3}
+      propertyPath: permanentRestPoint
+      value: 
+      objectReference: {fileID: 83164750}
     - target: {fileID: 3968328463941729982, guid: 47208897213b5794abe033c544cf5203, type: 3}
       propertyPath: obstacleLayer.m_Bits
       value: 1050752

@@ -165,6 +165,9 @@ MonoBehaviour:
   projectilePrefab: {fileID: 760080139131159738, guid: 3ccc24b9a72985e4b8070727a2fdb981, type: 3}
   projectileSpawnPoint: {fileID: 3719873707518783203}
   projectileSpeed: 4
+  fireRespawnMode: 0
+  arrivalThreshold: 0.5
+  projectileMaxArrivalWait: 5
   dropItemPrefab: {fileID: 0}
   showDebugGizmos: 1
   showGlueDebugLogs: 1
@@ -438,7 +441,7 @@ Animator:
   m_GameObject: {fileID: 7134003482790238440}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c2df40014d8578f499592e1e04b4bc33, type: 2}
+  m_Controller: {fileID: 22100000, guid: 28e7dd41eb6217f48870ae7d07379408, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

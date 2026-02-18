@@ -95,7 +95,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
         if (isSpecialState)
         {
-            animator.SetTrigger(ANIM_IS_SPECIAL);
+            animator.SetBool(ANIM_IS_SPECIAL, true);
             isSpecialState = false;
         }
     }
