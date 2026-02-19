@@ -61,6 +61,7 @@ public abstract class Enemy : MonoBehaviour, ISlowable
     protected const string ANIM_HIT = "Hit";
     protected const string ANIM_DIE = "Die";
     protected const string ANIM_IS_SPECIAL = "IsSpecial";
+    protected const string ANIM_IS_SPECIAL02 = "IsSpecial 0";
 
     protected virtual void Awake()
     {
@@ -95,9 +96,11 @@ public abstract class Enemy : MonoBehaviour, ISlowable
 
         if (isSpecialState)
         {
-            animator.SetBool(ANIM_IS_SPECIAL, true);
+            animator.SetTrigger(ANIM_IS_SPECIAL02);
             isSpecialState = false;
+        
         }
+        
     }
 
     protected virtual void Update()
