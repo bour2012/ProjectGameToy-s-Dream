@@ -101,8 +101,8 @@ Transform:
   m_GameObject: {fileID: 703067302966554701}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.25, y: 3.35, z: 0}
-  m_LocalScale: {x: 2.8240001, y: 2.8240001, z: 2.8240001}
+  m_LocalPosition: {x: 0.463, y: 3.17, z: 0}
+  m_LocalScale: {x: 2.928488, y: 2.928488, z: 2.928488}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3276045831625616735}
@@ -148,10 +148,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1801414243
+  m_SortingLayer: 10
   m_SortingOrder: 16
-  m_Sprite: {fileID: -7118516954527346663, guid: 83db1eeb3a3807a4ea3492b986a3350c, type: 3}
+  m_Sprite: {fileID: -8026009292560051812, guid: 268296e744ae82743bef940b288db5fb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -495,6 +495,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   modeXUnLock: 0
+  slidingGroundTag: SlideGround
 --- !u!58 &1656270262562304916
 CircleCollider2D:
   m_ObjectHideFlags: 0
