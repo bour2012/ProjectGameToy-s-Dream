@@ -1407,6 +1407,10 @@ PlayableDirector:
     value: {fileID: 9163426326848214123}
   - key: {fileID: -8290526883747940177, guid: f4f465ec1b92c0f4a811bfb5c980d2cb, type: 2}
     value: {fileID: 1388391425574247017}
+  - key: {fileID: 9100822538168444891, guid: f4f465ec1b92c0f4a811bfb5c980d2cb, type: 2}
+    value: {fileID: 1278155982}
+  - key: {fileID: 6404558401166619049, guid: f4f465ec1b92c0f4a811bfb5c980d2cb, type: 2}
+    value: {fileID: 5766277489041167120}
   m_ExposedReferences:
     m_References:
     - 4a636201c6437c04cbd2fceb16fc2321: {fileID: 576181690544628218}
@@ -15907,7 +15911,7 @@ Transform:
   m_GameObject: {fileID: 745674898}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.1018705, y: 0.8718027, z: -25.403538}
+  m_LocalPosition: {x: 3.1018705, y: 2.450337, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -29974,11 +29978,11 @@ MonoBehaviour:
   dialogID: Trigger_Dialog09
   dialogSequence:
   - dialogText: 'Boss : Arghhhhhh'
-    currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
-    typingSound: {fileID: 8300000, guid: 83064ffe156aba648b3b1a0125fd3919, type: 3}
-    playSoundFrequency: 1
-    randomizePitch: 0
-    pitchRange: {x: 0, y: 0}
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
+    playSoundFrequency: 4
+    randomizePitch: 1
+    pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 0}
     waitForCamera: 0
     cameraSmoothness: 10
@@ -30088,16 +30092,31 @@ MonoBehaviour:
   m_Events:
     m_Signals:
     - {fileID: 11400000, guid: ca5d960c4778c1546a152b6ceaf62fce, type: 2}
+    - {fileID: 11400000, guid: 846b790570ef73c498f569815eeaab57, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1278155980}
-          m_TargetAssemblyTypeName: DialogTrigger, Assembly-CSharp
-          m_MethodName: TriggerDialog
+        - m_Target: {fileID: 4431670731825378541}
+          m_TargetAssemblyTypeName: SceneTransition, Assembly-CSharp
+          m_MethodName: Interact
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1278155977}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -35386,7 +35405,7 @@ Transform:
   m_GameObject: {fileID: 1762850122}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.064543, y: 51.906067, z: -25.403538}
+  m_LocalPosition: {x: 4.064543, y: 52.763138, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -50817,6 +50836,7 @@ GameObject:
   - component: {fileID: 5766277489041167119}
   - component: {fileID: 1671333104815896256}
   - component: {fileID: 434620138782536234}
+  - component: {fileID: 5766277489041167120}
   m_Layer: 5
   m_Name: Black
   m_TagString: Untagged
@@ -50998,7 +51018,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transition: {fileID: 4190825066774530901}
-  nextSceneName: GamePlayTown
+  nextSceneName: CutsceneEnd
   requireButtonPress: 1
   modeChengTime: 0
   changTime: 0
@@ -51178,7 +51198,7 @@ Transform:
   m_GameObject: {fileID: 1839594709781910737}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.3188255, y: 2.7023625, z: -25.403538}
+  m_LocalPosition: {x: 3.3188255, y: 4.280897, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51601,6 +51621,28 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!95 &5766277489041167120
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4108155961839319886}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &5851501235912638063
 MonoBehaviour:
   m_ObjectHideFlags: 0

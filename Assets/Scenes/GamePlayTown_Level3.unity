@@ -25384,7 +25384,31 @@ MonoBehaviour:
     displayDuration: 5
     onLineStart:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 1846221061}
+          m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+          m_MethodName: set_clip
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 8300000, guid: 8d5645ac9b4bcdc429492636d2ada284, type: 3}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1846221061}
+          m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+          m_MethodName: Play
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - dialogText: 
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
@@ -50348,6 +50372,7 @@ GameObject:
   - component: {fileID: 1846221060}
   - component: {fileID: 1846221062}
   - component: {fileID: 1846221061}
+  - component: {fileID: 1846221063}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -50364,7 +50389,7 @@ Transform:
   m_GameObject: {fileID: 1846221059}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.65804, y: -0.0349, z: 0.34511}
+  m_LocalPosition: {x: 3.6580353, y: -0.034900665, z: 0.34511}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -50383,9 +50408,9 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
   m_Resource: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.08
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -50479,7 +50504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgmAudioSource: {fileID: 0}
+  bgmAudioSource: {fileID: 1846221061}
   sceneBGM: {fileID: 0}
   godModeKey: 291
   godModeSpeed: 10
@@ -50508,6 +50533,23 @@ MonoBehaviour:
   dialogIDToPlayOnRespawn: 
   showDebugInfo: 1
   previousState: 0
+--- !u!320 &1846221063
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846221059}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 71ec0bbfa0c020041b1eca604e6ee3ed, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings: []
+  m_ExposedReferences:
+    m_References: []
 --- !u!4 &1846824720 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 107540711077034587, guid: 92072c862e751bf4dad748129cb56883, type: 3}
@@ -53553,7 +53595,6 @@ SpriteRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1846221060}
   - {fileID: 1244870324}
   - {fileID: 1438720411}
   - {fileID: 1400176804}
@@ -53568,3 +53609,4 @@ SceneRoots:
   - {fileID: 1407942096}
   - {fileID: 861915090}
   - {fileID: 1238666414}
+  - {fileID: 1846221060}

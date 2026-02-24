@@ -3188,25 +3188,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
-  - levelName: FinalLevel
-    preTransitionDialogs: []
-    levelObjects:
-    - gameObject: {fileID: 1527211234}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 831997585}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 2047860178}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1860552026}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
   - levelName: Level01
     preTransitionDialogs: []
     levelObjects:
@@ -3602,6 +3583,25 @@ MonoBehaviour:
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
     - gameObject: {fileID: 1969285390}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+  - levelName: FinalLevel
+    preTransitionDialogs: []
+    levelObjects:
+    - gameObject: {fileID: 1527211234}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 831997585}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 2047860178}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1860552026}
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
@@ -73465,6 +73465,10 @@ PrefabInstance:
     - target: {fileID: 858979833757233033, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 889427540479347055, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: nextSceneName
+      value: CutsceneEndBoss
       objectReference: {fileID: 0}
     - target: {fileID: 1072797966149843291, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: audioSource

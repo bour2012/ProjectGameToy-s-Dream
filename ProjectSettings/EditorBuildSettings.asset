@@ -38,6 +38,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FinalBoss.unity
     guid: e125af17c0f39b241ab1637a5ce42882
+  - enabled: 1
+    path: Assets/Scenes/GamePlayTown_Level3.unity
+    guid: b8e04c05e3a6f054db9b739ee3efb56d
+  - enabled: 1
+    path: Assets/Scenes/CutsceneEndBoss.unity
+    guid: 2d0bb09fb52533740a2cae08491cd3c1
+  - enabled: 1
+    path: Assets/Scenes/CutsceneEnd.unity
+    guid: ab932be09c49b1649919d351961696f2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
