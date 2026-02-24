@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 [RequireComponent(typeof(Collider2D))]
 public class CollectibleItem : MonoBehaviour
 {
@@ -78,13 +79,18 @@ public class CollectibleItem : MonoBehaviour
 
             case CollectibleType.BossPhaseTrigger:
                 Debug.Log("เก็บของครบ! ไปด่านต่อไป!");
-
+                BossItemUI ui = FindFirstObjectByType<BossItemUI>();
+                if (ui != null)
+                {
+                    ui.AddBossItem();
+                }
                 LevelManager levelMgr = FindFirstObjectByType<LevelManager>();
                 if (levelMgr != null)
                 {
                     // สั่งให้เปลี่ยนด่าน (เดี๋ยว LevelManager จะไปสั่งบอสเอง)
                     // ถ้ายังไม่จบเกม ให้ไปด่านถัดไป
                     levelMgr.NextLevel();
+                    
                 }
                 break;
         }
