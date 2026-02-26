@@ -10,14 +10,14 @@ public class PressurePlate : MonoBehaviour
     public AudioSource audioSource;   // ตัวเล่นเสียง (ลากมาใส่ หรือปล่อยว่างเพื่อให้โค้ดหาเอง)
     public AudioClip activateSound;   // ไฟล์เสียงตอนเหยียบ
 
-    private void Start()
-    {
-        // ถ้าลืมลาก AudioSource มาใส่ โค้ดจะพยายามหาจากในตัวมันเองให้
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-        }
-    }
+    //private void Start()
+    //{
+    //    // ถ้าลืมลาก AudioSource มาใส่ โค้ดจะพยายามหาจากในตัวมันเองให้
+    //    if (audioSource == null)
+    //    {
+    //        audioSource = GetComponent<AudioSource>();
+    //    }
+    //}
 
     void OnTriggerEnter2D(Collider2D other)
     {

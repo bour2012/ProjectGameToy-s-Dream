@@ -407,19 +407,29 @@ public class PlayerMovement : MonoBehaviour
         }
         isJumping = false;
     }
-
+    public void PlayJumpSound()
+    {
+        if (jumpSfx != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(jumpSfx, jumpSfxVolume);
+        }
+    }
     public void ProcessInput()
     {
-      
-        if(Input.GetButtonDown("Jump") && groundCheck)
+
+        if (Input.GetButtonDown("Jump") && (groundCheck || isSwinging))
         {
-            isJumping = true;
+            // ถ้าอยู่บนพื้นให้ตั้งค่า isJumping เพื่อใส่แรงกระโดดตอนเดินบนพื้น
+            if (groundCheck)
+            {
+                isJumping = true;
+            }
+
+            // เล่นเสียงกระโดด (เล่นทั้งตอนกระโดดจากพื้น และ กระโดดออกจากเชือก)
             if (jumpSfx != null && audioSource != null)
             {
                 audioSource.PlayOneShot(jumpSfx, jumpSfxVolume);
-            
             }
-           
         }
         horizontalInput = Input.GetAxisRaw("Horizontal");
     }

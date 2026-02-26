@@ -254,6 +254,10 @@ public class Rope : MonoBehaviour
                     Vector2 forwardForce = releaseVelocity.normalized * Mathf.Min(releaseVelocity.magnitude * 0.3f, 3f);
                     playerRb.linearVelocity = releaseVelocity + forwardForce;
                 }
+                if (playerMovement != null)
+                {
+                    playerMovement.PlayJumpSound();
+                }
                 ResetRope();
             }
         }

@@ -87,7 +87,10 @@ public class DialogTrigger : MonoBehaviour
     public bool autoAdvance = false;
     [Range(0.1f, 10f)] public float autoAdvanceDelay = 2f;
 
-
+    void Start()
+    {
+        GameManager gm = FindFirstObjectByType<GameManager>();
+    }
     public enum ConflictStrategy
     {
         Ignore,     // ไม่ทำอะไรเลย (ถ้ามีคนพูดอยู่ อันนี้จะไม่ทำงาน)      // รอจนกว่าอันเก่าจบ แล้วค่อยพูด (แนะนำอันนี้)

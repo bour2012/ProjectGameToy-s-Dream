@@ -79,12 +79,12 @@ public class Lever : MonoBehaviour, IInteractable
 
         //// ให้ Lever มี AudioSource ของตัวเอง (ถ้ายังไม่มี)
         //audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.playOnAwake = false;
-            audioSource.spatialBlend = 0f; // 2D sound
-        }
+        //if (audioSource == null)
+        //{
+        //    audioSource = gameObject.AddComponent<AudioSource>();
+        //    audioSource.playOnAwake = false;
+        //    audioSource.spatialBlend = 0f; // 2D sound
+        //}
     }
 
     #region IInteractable Implementation

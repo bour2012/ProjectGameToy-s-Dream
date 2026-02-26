@@ -201,7 +201,8 @@ public class BossController : MonoBehaviour
 
         viewMeshFilter = viewConeObject.AddComponent<MeshFilter>();
         viewMeshRenderer = viewConeObject.AddComponent<MeshRenderer>();
-
+        viewMeshRenderer.sortingLayerName = "Player"; // ถ้ามี Layer อื่นที่อยู่หน้าฉาก ให้เปลี่ยนชื่อตรงนี้ (ต้องพิมพ์ให้ตรงเป๊ะ)
+        viewMeshRenderer.sortingOrder = 20;            // ใส่เลขเยอะๆ ไว้ก่อนให้ทะลุฉากขึ้นมา
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
         viewMeshFilter.mesh = viewMesh;

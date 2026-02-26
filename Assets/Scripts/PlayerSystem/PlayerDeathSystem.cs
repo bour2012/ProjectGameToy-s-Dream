@@ -250,56 +250,35 @@ public class PlayerDeathSystem : MonoBehaviour
         }
 
 
-        //// ปิดการควบคุม
-        //if (playerMovement != null)
-        //{
-        //    playerMovement.enabled = false;
-        //}
-
-        //if (playerController != null)
-        //{
-        //    playerController.SetControlEnabled(false);
-        //}
-
-        // หยุดการเคลื่อนไหว
+        // 1. หยุดการเคลื่อนไหว
         if (playerRigidbody != null)
         {
             playerRigidbody.linearVelocity = Vector2.zero;
             playerRigidbody.angularVelocity = 0f;
+            // ปิดการใช้ Physics ชั่วคราวแทนการซ่อนตัว Object
+            playerRigidbody.simulated = false;
         }
 
-        // If the player has a Camera as a child, detach it so destroying/disabling the player
-        // won't remove the camera from the scene (prevents sudden blank view).
-        Camera childCam = GetComponentInChildren<Camera>(true);
-        if (childCam != null && childCam.transform.IsChildOf(transform))
-        {
-            childCam.transform.SetParent(null);
-            if (showDeathStateDebug) Debug.Log("PlayerDeathSystem: Detached child camera to preserve view during death sequence");
-        }
+        // 2. ปิดการควบคุม
+        if (playerMovement != null) playerMovement.enabled = false;
+        if (playerController != null) playerController.SetControlEnabled(false);
 
-        // Instead of deactivating the whole GameObject (which would stop coroutines on this MonoBehaviour),
-        // disable player control and visuals so the player 'disappears' while the death particle plays.
-        if (playerMovement != null)
-        {
-            playerMovement.enabled = false;
-        }
+        // 3. ปิด Collider ไม่ให้ชนกับอะไรอีก
+        var col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
 
-        if (playerController != null)
-        {
-            playerController.SetControlEnabled(false);
-        }
-
+        // 4. ซ่อนเฉพาะภาพ (Sprite) ของ Player แทนการปิด GameObject ทั้งตัว
         if (playerSprite != null)
         {
             playerSprite.enabled = false;
         }
 
-        var col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
-
-        if (playerRigidbody != null)
+        // หากมีลูกที่เป็น Camera ให้ปลดออกชั่วคราว
+        Camera childCam = GetComponentInChildren<Camera>(true);
+        if (childCam != null && childCam.transform.IsChildOf(transform))
         {
-            playerRigidbody.simulated = false;
+            childCam.transform.SetParent(null);
+            if (showDeathStateDebug) Debug.Log("PlayerDeathSystem: Detached child camera to preserve view during death sequence");
         }
 
         // เล่นเสียงตาย
@@ -308,33 +287,22 @@ public class PlayerDeathSystem : MonoBehaviour
             audioSource.PlayOneShot(deathSound);
         }
 
-        // เล่น Effect ตาย (instantiate prefab so it remains visible while we fade/reload)
+        // เล่น Effect ตาย
         if (deathEffect != null)
         {
             ParticleSystem ps = Instantiate(deathEffect, transform.position, Quaternion.identity);
             ps.Play();
             currentDeathEffectInstance = ps;
 
-            // calculate a safe destroy time (duration + max start lifetime)
             var main = ps.main;
-            float maxLifetime = 0f;
-            // try get constantMax safely
-            if (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants)
-            {
-                maxLifetime = main.startLifetime.constantMax;
-            }
-            else
-            {
-                maxLifetime = main.startLifetime.constant;
-            }
-
+            float maxLifetime = main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants ? main.startLifetime.constantMax : main.startLifetime.constant;
             float destroyAfter = main.duration + maxLifetime + 0.25f;
             Destroy(ps.gameObject, destroyAfter);
         }
 
         Debug.Log($"Player ตายจาก: {deathType}");
 
-        // เริ่มกระบวนการ Respawn (จะทำ ManualReset / Reload ภายใน)
+        // เริ่มกระบวนการ Respawn
         StartCoroutine(DeathSequence());
     }
 
@@ -454,16 +422,19 @@ public class PlayerDeathSystem : MonoBehaviour
 
         if (playerSprite != null)
         {
+            playerSprite.enabled = true;
             playerSprite.color = originalColor;
         }
 
         // รีเซ็ต Physics
         if (playerRigidbody != null)
         {
+            playerRigidbody.simulated = true;
             playerRigidbody.linearVelocity = Vector2.zero;
             playerRigidbody.angularVelocity = 0f;
         }
-
+        var col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = true; // [เพิ่ม] เปิด Collider กลับมา
         // เปิดการควบคุมกลับ
         if (playerMovement != null)
         {

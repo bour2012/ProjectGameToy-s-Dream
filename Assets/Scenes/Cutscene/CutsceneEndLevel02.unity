@@ -11222,7 +11222,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
   m_Resource: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -11318,8 +11318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 501915e8540cac146841e70b92e0efc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgmAudioSource: {fileID: 0}
-  sceneBGM: {fileID: 0}
+  bgmAudioSource: {fileID: 719445225}
+  sceneBGM: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 01

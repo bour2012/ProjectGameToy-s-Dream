@@ -42524,6 +42524,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 2.7444565
       objectReference: {fileID: 0}
+    - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -25.403538
+      objectReference: {fileID: 0}
     - target: {fileID: 3562499932661091990, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_Pivot.y
       value: 0
@@ -47518,7 +47522,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
   m_Resource: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0

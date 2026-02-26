@@ -39,16 +39,23 @@ public class Checkpoint : MonoBehaviour
     // public int threadCount = 2;
 
     private bool isActivated = false;
-
-    private void Start()
+    private bool hasPlayedEffects = false;
+    private void Awake()
     {
         if (string.IsNullOrEmpty(checkpointID))
         {
             checkpointID = $"{gameObject.scene.name}_{gameObject.name}_{transform.GetSiblingIndex()}";
         }
+        if (PlayerPrefs.GetInt("Visited_" + checkpointID, 0) == 1)
+        {
+            hasPlayedEffects = true;
+        }
+       
+    }
+    private void Start()
+    {
         UpdateVisual();
     }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         // ��Ҩ����¡ ActivateCheckpoint() �����������
@@ -61,14 +68,7 @@ public class Checkpoint : MonoBehaviour
     public void ActivateCheckpoint()
     {
         if (GameManager.Instance == null) return;
-
-        // 1. ตรวจสอบว่าเคยทำงานไปแล้วหรือยัง
-        if (isActivated || GameManager.Instance == null) return;
-
-        // ---------------------------------------------------------
-        // ★ แก้ตรงนี้: ย้ายการแจกไอเทมมาทำเป็นสิ่งแรกสุด! ★
-        // เพื่อให้ Inventory ของผู้เล่นมีของครบ ก่อนที่จะทำการ Save
-        // ---------------------------------------------------------
+        if (isActivated) return;
         switch (mode)
         {
             case CheckpointMode.OverrideInventory:
@@ -78,18 +78,18 @@ public class Checkpoint : MonoBehaviour
                 ApplyBonusItems();
                 break;
         }
-
-        // 2. พอแจกของเสร็จ ค่อยบอก GameManager ให้ตั้งค่า Checkpoint ล่าสุด
-        // GameManager จะทำการ Snapshot (ถ่ายรูป) ข้อมูลที่มีของครบแล้วเก็บไว้
         GameManager.Instance.SetActiveCheckpoint(this);
-        
-        // (บรรทัดนี้ SaveItemSnapshot อาจจะไม่จำเป็นแล้วถ้า SetActiveCheckpoint ทำงานถูก
-        // แต่ใส่ไว้กันเหนียวก็ได้ครับ แต่ต้องอยู่หลังแจกของเสมอ)
         GameManager.Instance.SaveItemSnapshot();
-        // 5. ����Ϳ࿡�������
         if (checkpointAnimator != null) checkpointAnimator.SetTrigger("Activate");
-        if (activationEffect != null) activationEffect.Play();
-        if (audioSource != null && activationSound != null) audioSource.PlayOneShot(activationSound);
+        if (!hasPlayedEffects)
+        {
+            if (activationEffect != null) activationEffect.Play();
+            if (audioSource != null && activationSound != null) audioSource.PlayOneShot(activationSound);
+
+            hasPlayedEffects = true; // จำไว้ว่าเล่นแล้ว
+            PlayerPrefs.SetInt("Visited_" + checkpointID, 1); // บันทึกลงเครื่องว่าจุดนี้เคยมาแล้ว
+            PlayerPrefs.Save();
+        }
         isActivated = true;
         UpdateVisual();
     }

@@ -87,6 +87,7 @@ public class GameManager : MonoBehaviour
     public static System.Action<string> OnRepairCompleted;
     public static System.Action<string> OnCraftingCompleted;
     public static System.Action OnAllRepairsCompleted;
+    public static GameManager instance;
 
     // Singleton
     public static GameManager Instance { get; private set; }
@@ -117,6 +118,7 @@ public class GameManager : MonoBehaviour
                 
                 Instance.PlayBGM(sceneBGM);
             }
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
     }
@@ -1516,7 +1518,13 @@ public class GameManager : MonoBehaviour
 
         // ล้างรายการ Checkpoint ที่เคยได้โบนัสไปแล้ว
         triggeredBonusCheckpointIDs.Clear();
-
+        if (allCheckpoints != null)
+        {
+            foreach (var cp in allCheckpoints)
+            {
+                PlayerPrefs.DeleteKey("Visited_" + cp.GetCheckpointID());
+            }
+        }
         // ล้างรายการ Item ในฉากที่เก็บไปแล้ว (ถ้ามีระบบเก็บของตามฉาก)
         collectedItemIDs.Clear();
 
