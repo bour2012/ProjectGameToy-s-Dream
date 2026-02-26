@@ -15911,7 +15911,7 @@ Transform:
   m_GameObject: {fileID: 745674898}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.1018705, y: 2.450337, z: -25.403538}
+  m_LocalPosition: {x: 3.1018705, y: 1.4358585, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -29722,6 +29722,7 @@ GameObject:
   - component: {fileID: 1243119097}
   - component: {fileID: 1243119099}
   - component: {fileID: 1243119098}
+  - component: {fileID: 1243119100}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -29757,7 +29758,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -29882,6 +29883,28 @@ MonoBehaviour:
   dialogIDToPlayOnRespawn: 
   showDebugInfo: 0
   previousState: 0
+--- !u!95 &1243119100
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243119096}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1278155977
 GameObject:
   m_ObjectHideFlags: 0
@@ -30110,13 +30133,13 @@ MonoBehaviour:
           m_CallState: 2
     - m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1278155977}
-          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_MethodName: 
+        - m_Target: {fileID: 1278155980}
+          m_TargetAssemblyTypeName: DialogTrigger, Assembly-CSharp
+          m_MethodName: TriggerDialog
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: 
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -35405,7 +35428,7 @@ Transform:
   m_GameObject: {fileID: 1762850122}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.064543, y: 52.763138, z: -25.403538}
+  m_LocalPosition: {x: 4.064543, y: 51.906067, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51198,7 +51221,7 @@ Transform:
   m_GameObject: {fileID: 1839594709781910737}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.3188255, y: 4.280897, z: -25.403538}
+  m_LocalPosition: {x: 3.3188255, y: 3.2664182, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
