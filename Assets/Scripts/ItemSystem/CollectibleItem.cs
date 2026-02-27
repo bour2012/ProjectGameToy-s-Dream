@@ -1,10 +1,10 @@
 using UnityEngine;
 
-
 [RequireComponent(typeof(Collider2D))]
 public class CollectibleItem : MonoBehaviour
 {
     public enum CollectibleType { GenericItem, Key, BossPhaseTrigger }
+
     [Header("Item Settings")]
     public CollectibleType type = CollectibleType.GenericItem;
 
@@ -22,6 +22,23 @@ public class CollectibleItem : MonoBehaviour
     public GameObject itemVisual;
     public ParticleSystem collectEffect;
     public AudioSource collectSound;
+
+    // ==========================================
+    // [ปรับใหม่] การตั้งค่าเอฟเฟกต์ลอยและแสงด้านหลัง
+    // ==========================================
+    [Header("Hover & Background Glow Effects")]
+    public bool enableHoverEffect = true;      // เปิด/ปิด การลอย
+    public float hoverSpeed = 2f;              // ความเร็วในการลอยขึ้นลง
+    public float hoverHeight = 0.2f;           // ระยะความสูงที่ลอย
+
+    public bool enableGlowEffect = true;       // เปิด/ปิด แสงด้านหลัง
+    public SpriteRenderer glowSpriteRenderer;  // **สำคัญ** ลาก Sprite ของแสงด้านหลังมาใส่ช่องนี้!
+    public float minGlowOpacity = 0.2f;        // ความสว่างขั้นต่ำ (Alpha 0-1)
+    public float maxGlowOpacity = 1f;          // ความสว่างสูงสุด (Alpha 0-1)
+    public float glowSpeed = 3f;               // ความเร็วกะพริบ
+
+    private Vector3 startPosition;
+    // ==========================================
 
     private bool isCollected = false;
 
@@ -44,6 +61,54 @@ public class CollectibleItem : MonoBehaviour
 
         // ทำให้แน่ใจว่า Collider เป็น Trigger
         GetComponent<Collider2D>().isTrigger = true;
+    }
+
+    void Start()
+    {
+        // จำตำแหน่งเริ่มต้นไว้ เพื่อให้ลอยขึ้นลงจากจุดเดิม
+        startPosition = transform.position;
+
+        // ดักกรณีผู้เล่นลืมลาก Glow Sprite มาใส่ ให้ลองหาอัตโนมัติ
+        if (enableGlowEffect && glowSpriteRenderer == null)
+        {
+            // หา SpriteRenderer ในลูกๆ
+            foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
+            {
+                // สมมติว่าแสงด้านหลังไม่ใช่ไอเทมหลัก (Visual)
+                if (itemVisual == null || sr.gameObject != itemVisual)
+                {
+                    glowSpriteRenderer = sr;
+                    break;
+                }
+            }
+        }
+    }
+
+    void Update()
+    {
+        if (isCollected) return;
+
+        // 1. เอฟเฟกต์ลอยขึ้นลง (Hover)
+        if (enableHoverEffect)
+        {
+            float newY = startPosition.y + (Mathf.Sin(Time.time * hoverSpeed) * hoverHeight);
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        }
+
+        // 2. เอฟเฟกต์แสงด้านหลัง (Background Glow Pulse)
+        if (enableGlowEffect && glowSpriteRenderer != null)
+        {
+            // ใช้ Mathf.Sin คำนวณค่าคลื่น (-1 ถึง 1) แปลงเป็น (0 ถึง 1)
+            float glowAlpha = (Mathf.Sin(Time.time * glowSpeed) + 1f) / 2f;
+
+            // ใช้ Mathf.Lerp เพื่อกะพริบ Alpha ระหว่างค่า Min กับ Max
+            float finalAlpha = Mathf.Lerp(minGlowOpacity, maxGlowOpacity, glowAlpha);
+
+            // เซ็ตสีใหม่โดยเปลี่ยนแค่ค่า Alpha (A)
+            Color currentColor = glowSpriteRenderer.color;
+            currentColor.a = finalAlpha;
+            glowSpriteRenderer.color = currentColor;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -90,7 +155,7 @@ public class CollectibleItem : MonoBehaviour
                     // สั่งให้เปลี่ยนด่าน (เดี๋ยว LevelManager จะไปสั่งบอสเอง)
                     // ถ้ายังไม่จบเกม ให้ไปด่านถัดไป
                     levelMgr.NextLevel();
-                    
+
                 }
                 break;
         }
