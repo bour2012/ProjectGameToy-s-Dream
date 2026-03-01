@@ -227,7 +227,7 @@ MonoBehaviour:
   checkpointSprite: {fileID: 0}
   activationEffect: {fileID: 1685224348801980161}
   audioSource: {fileID: 1584422311429014267}
-  activationSound: {fileID: 8300000, guid: ddfda94f9de25b64d818efe6051d55e7, type: 3}
+  activationSound: {fileID: 8300000, guid: be2a0cc336e3b2f4191f50126ef89cfc, type: 3}
 --- !u!61 &528254184063157125
 BoxCollider2D:
   m_ObjectHideFlags: 0
