@@ -1,20 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI; // จำเป็นสำหรับ Slider
+using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections;
 
 public class GiantGlueTrigger : MonoBehaviour, IInteractable
 {
-    [Header("Glue Settings")]
-    [Tooltip("จำนวนกาวที่ต้องยิงใส่ให้เต็ม")]
-    public int glueRequired = 5;
-    [Tooltip("Tag ของกระสุนกาว")]
-    public string glueTag = "Glue";
-
-    [Header("UI Progress")]
-    [Tooltip("ลาก Slider (Glue Bar) มาใส่ตรงนี้")]
-    public Slider glueSlider; // <-- เปลี่ยนจาก Image เป็น Slider
-
     [Header("Interact Settings")]
     [Tooltip("ปรับตำแหน่งไอคอน E ให้ต่ำลงหรือสูงขึ้นเฉพาะจุดนี้")]
     public Vector3 uiOffset = Vector3.zero;
@@ -29,25 +19,14 @@ public class GiantGlueTrigger : MonoBehaviour, IInteractable
     public UnityEvent onCutsceneStart;
 
     // ตัวแปรภายใน
-    private int currentGlueCount = 0;
-    private bool isReadyToInteract = false;
+    private bool isReadyToInteract = true; // ปรับเป็น true ตั้งแต่เริ่มต้นเลย
     private bool isCutsceneStarted = false;
     private CanvasGroup fadeCanvasGroup;
     private Image fadeImage;
-    private Collider2D triggerCollider;
 
     void Start()
     {
-        triggerCollider = GetComponent<Collider2D>();
-
-        // ตั้งค่า Slider เริ่มต้น
-        if (glueSlider != null)
-        {
-            glueSlider.maxValue = glueRequired; // กำหนดค่าเต็มเท่ากับจำนวนกาวที่ต้องใช้
-            glueSlider.value = 0;               // เริ่มต้นที่ 0
-        }
-
-        // Setup FadePanel (ส่วนเดิม)
+        // Setup FadePanel
         if (fadePanel != null)
         {
             fadeCanvasGroup = fadePanel.GetComponent<CanvasGroup>();
@@ -64,44 +43,14 @@ public class GiantGlueTrigger : MonoBehaviour, IInteractable
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag(glueTag) && !isCutsceneStarted)
-        {
-            Destroy(other.gameObject);
-
-            if (!isReadyToInteract)
-            {
-                currentGlueCount++;
-
-                // --- อัปเดตค่า Slider ---
-                if (glueSlider != null)
-                {
-                    glueSlider.value = currentGlueCount;
-                }
-                // ---------------------
-
-                Debug.Log($"Glue Progress: {currentGlueCount}/{glueRequired}");
-
-                if (currentGlueCount >= glueRequired)
-                {
-                    isReadyToInteract = true;
-
-                    // Trick: รีเฟรช Collider เพื่อให้ปุ่ม E ขึ้นทันทีถ้าผู้เล่นยืนแช่อยู่
-                    if (triggerCollider != null)
-                    {
-                        triggerCollider.enabled = false;
-                        triggerCollider.enabled = true;
-                    }
-                }
-            }
-        }
-    }
+    // ลบ OnTriggerEnter2D ออกไปได้เลย เพราะระบบ IInteractable ของคุณ 
+    // น่าจะมีการตรวจจับจากฝั่ง Player อยู่แล้ว
 
     // --- Interface Implementation ---
 
     public string GetInteractText()
     {
+        // ถ้าคัตซีนยังไม่เริ่ม ก็โชว์ปุ่ม E ได้ตลอด
         if (isReadyToInteract && !isCutsceneStarted)
         {
             return interactPrompt;

@@ -49572,7 +49572,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.7058824}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -51741,9 +51741,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '
-
-'
+  m_text: sddsdssdsdsd
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 154070a566de79d4db7189029d9d5010, type: 2}
   m_sharedMaterial: {fileID: -3615518849634891567, guid: 154070a566de79d4db7189029d9d5010, type: 2}
@@ -51770,13 +51768,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 80
-  m_fontSizeBase: 80
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -52307,9 +52305,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5fa7699f26615a41bb494ebd2221abf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glueRequired: 5
-  glueTag: Glue
-  glueSlider: {fileID: 0}
   uiOffset: {x: -0.12, y: -0.65, z: 0}
   interactPrompt: Start Machine
   fadePanel: {fileID: 4546501230794346559}

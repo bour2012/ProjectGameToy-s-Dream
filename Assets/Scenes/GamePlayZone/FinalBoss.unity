@@ -3298,6 +3298,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
+  - levelName: FinalLevel
+    preTransitionDialogs: []
+    levelObjects:
+    - gameObject: {fileID: 1527211234}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 831997585}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 2047860178}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
+    - gameObject: {fileID: 1860552026}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
   - levelName: Level01
     preTransitionDialogs: []
     levelObjects:
@@ -3693,25 +3712,6 @@ MonoBehaviour:
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
     - gameObject: {fileID: 1969285390}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-  - levelName: FinalLevel
-    preTransitionDialogs: []
-    levelObjects:
-    - gameObject: {fileID: 1527211234}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 831997585}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 2047860178}
-      storedPosition: {x: 0, y: 0, z: 0}
-      storedRotation: {x: 0, y: 0, z: 0, w: 0}
-      wasActiveAtStart: 0
-    - gameObject: {fileID: 1860552026}
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
@@ -41645,6 +41645,10 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7269530641857470568, guid: 3ff370b8ea80f52428bee56a02ea97ca, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7899959792572343891, guid: 3ff370b8ea80f52428bee56a02ea97ca, type: 3}
       propertyPath: m_Name
       value: SuperGlue
@@ -41657,6 +41661,10 @@ PrefabInstance:
       propertyPath: fadePanel
       value: 
       objectReference: {fileID: 3591502704109354371}
+    - target: {fileID: 7909599269779138504, guid: 3ff370b8ea80f52428bee56a02ea97ca, type: 3}
+      propertyPath: glueRequired
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7909599269779138504, guid: 3ff370b8ea80f52428bee56a02ea97ca, type: 3}
       propertyPath: onCutsceneStart.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

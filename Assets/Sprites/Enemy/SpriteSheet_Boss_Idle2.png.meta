@@ -234,6 +234,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: SpriteSheet_Boss_Idle2_5
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 1
+        width: 524
+        height: 291
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7ff1602a59bda0428c923bf0c1114cd
+      internalID: -462367199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -255,6 +277,7 @@ TextureImporter:
       SpriteSheet_Boss_Idle2_2: -3563781847280240148
       SpriteSheet_Boss_Idle2_3: -2662220576571306596
       SpriteSheet_Boss_Idle2_4: 1108145062114437343
+      SpriteSheet_Boss_Idle2_5: -462367199
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
