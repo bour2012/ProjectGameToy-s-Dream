@@ -10,14 +10,27 @@ public class PushableBox : MonoBehaviour
     public bool modeXUnLock = false;
     private bool hasBeenPushed = false;
     private bool isOnSlipperyGround = false;
-    // ฟังก์ชันนี้จะถูกเรียกโดย Player
+
     [Header("Settings")]
     [Tooltip("ชื่อ Tag ของพื้นที่จะทำให้กล่องปลดล็อกอัตโนมัติ (เช่น น้ำแข็ง/ทางลาด)")]
-    public string slidingGroundTag = "SlideGround"; // <-- 1. เพิ่มตัวแปรสำหรับชื่อ Tag
+    public string slidingGroundTag = "SlideGround";
+
+    [Header("Physics Settings")]
+    [Tooltip("แรงหน่วงเวลาอยู่บนพื้นลื่น (ยิ่งน้อยยิ่งลื่นไถลไกล แต่อย่าให้เป็น 0) แนะนำ 0.5 - 2.0")]
+    public float slipperyDamping = 1f; // <-- เพิ่มตัวแปรนี้เข้ามา
+
+    private float defaultDamping; // <-- เอาไว้จำค่าเดิมก่อนลงพื้นลื่น
+
     void Awake()
     {
         // หา Rigidbody2D ของตัวเองเก็บไว้
         rb = GetComponent<Rigidbody2D>();
+
+        // จำค่า damping ดั้งเดิมที่ตั้งไว้ใน Inspector (บนตัว Rigidbody2D)
+        if (rb != null)
+        {
+            defaultDamping = rb.linearDamping;
+        }
     }
 
     void Start()
@@ -25,6 +38,7 @@ public class PushableBox : MonoBehaviour
         // "ใส่เบรกมือ" ให้กล่องทันทีที่เริ่มเกม
         LockBox();
     }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // ถ้าสิ่งที่ชนมี Tag ตรงกับที่เราตั้งไว้ (เช่น "SlideGround")
@@ -38,14 +52,21 @@ public class PushableBox : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        // (Optional) ถ้าหลุดออกจากพื้นลื่น จะให้กลับมาล็อคเหมือนเดิมไหม?
-        // ถ้าต้องการให้พ้นพื้นลื่นแล้วหยุดไหล ให้เปิดคอมเมนต์บรรทัดล่างนี้ครับ
+        // ถ้าหลุดออกจากพื้นลื่น
         if (collision.gameObject.CompareTag(slidingGroundTag))
         {
-             isOnSlipperyGround = false;
-             // LockBox(); // <-- ถ้าอยากให้หยุดทันทีเมื่อพ้นพื้นลื่น ให้เอา comment ออก
+            isOnSlipperyGround = false;
+
+            // คืนค่าความฝืดกลับเป็นปกติ
+            if (rb != null)
+            {
+                rb.linearDamping = defaultDamping;
+            }
+
+            // LockBox(); // <-- ถ้าอยากให้หยุดทันทีเมื่อพ้นพื้นลื่น ให้เอา comment ออก
         }
     }
+
     public void NotifyPlayerIsPushing()
     {
         // ถ้ายังไม่เคยถูกผลักมาก่อน
@@ -65,19 +86,27 @@ public class PushableBox : MonoBehaviour
         {
             // ปลดล็อกแกน X และ Y แต่ยังคงล็อกการหมุนไว้
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
             if (isOnSlipperyGround)
             {
-                rb.linearDamping = 0f; // ลื่นปรื๊ด
+                // ใส่แรงหน่วงนิดหน่อยตามที่ตั้งค่าไว้ใน Inspector กล่องจะค่อยๆ ชะลอแล้วหยุด
+                rb.linearDamping = slipperyDamping;
+            }
+            else
+            {
+                // ถ้าไม่ได้อยู่บนพื้นลื่น ก็ให้ใช้ค่าหน่วงปกติ
+                rb.linearDamping = defaultDamping;
             }
         }
     }
+
     public void LockBox()
     {
         if (isOnSlipperyGround) return;
+
         if (rb != null)
         {
             // ล็อกทุกอย่าง: ตำแหน่ง X, Y และการหมุน Z
-
             if (modeXUnLock)
             {
                 rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -85,7 +114,6 @@ public class PushableBox : MonoBehaviour
                 return;
             }
             rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
-            //Debug.Log($"[PushableBox] '{gameObject.name}' Locked.");
         }
     }
 }

@@ -116,10 +116,10 @@ TextureImporter:
       name: Key_0
       rect:
         serializedVersion: 2
-        x: 138
-        y: 24
-        width: 236
-        height: 464
+        x: 53
+        y: 25
+        width: 406
+        height: 451
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 248d6226ba2fc7c43a384add0bd3eebb
     internalID: 0
     vertices: []
     indices: 
@@ -146,7 +146,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Key_0: 1694913177206695654
   mipmapLimitGroupName: 

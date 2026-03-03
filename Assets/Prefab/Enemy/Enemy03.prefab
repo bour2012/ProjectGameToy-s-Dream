@@ -144,7 +144,7 @@ MonoBehaviour:
   wallDetectionDistance: 2
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 2176
+    m_Bits: 3147904
   maxPositionAttempts: 5
   dangerLayer:
     serializedVersion: 2
@@ -170,6 +170,7 @@ MonoBehaviour:
   arrivalThreshold: 0.5
   projectileMaxArrivalWait: 5
   dropItemPrefab: {fileID: 0}
+  returnStuckTimeout: 3
   showDebugGizmos: 1
   showGlueDebugLogs: 1
 --- !u!58 &5351402897135363221

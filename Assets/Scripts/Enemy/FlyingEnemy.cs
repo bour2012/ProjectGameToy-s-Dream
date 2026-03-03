@@ -104,6 +104,11 @@ public class FlyingEnemy : Enemy
     [Tooltip("(Optional) ไอเทมที่จะดรอปเมื่อตาย")]
     public GameObject dropItemPrefab;
 
+    [Header("Return System (New)")]
+    [Tooltip("เวลาสูงสุดที่จะพยายามบินกลับจุดเดิมก่อนยอมแพ้และหาจุดใหม่ (วินาที)")]
+    public float returnStuckTimeout = 3f;
+    private float returnStuckTimer = 0f;
+
     [Header("Debug")]
     public bool showDebugGizmos = true;
     public bool showGlueDebugLogs = true;
@@ -143,7 +148,6 @@ public class FlyingEnemy : Enemy
 
     protected override void Update()
     {
-        // ⭐ แก้ไข 1: ถ้าเป็น GroundedForever ให้ล็อคตายตรงนี้เลย
         if (currentState == State.GroundedForever)
         {
             if (animator != null)
@@ -213,20 +217,22 @@ public class FlyingEnemy : Enemy
         bool isSpecialAction = (currentState == State.Perched);
         animator.SetBool("IsSpecial", isSpecialAction);
 
-        //bool isAttackingAction = (currentState == State.PreparingAttack);
-        //if(isAttackingAction)
-      
-
-        
-
         if (currentState == State.Flying || currentState == State.Returning || currentState == State.FlyingToDoll)
         {
             animator.SetBool("IsMoving", false); // บิน -> Idle Animation
         }
-        else if (currentState == State.Idle )
+        else if (currentState == State.Idle)
         {
             animator.SetBool("IsMoving", false); // Idle State -> Walk Animation
         }
+    }
+
+    // ⭐ ฟังก์ชันช่วยเหลือเพื่อลดความซ้ำซ้อนเวลาเปลี่ยนโหมดกลับ
+    private void ChangeToReturningState()
+    {
+        currentReturnTarget = GetNearestValidIdlePosition();
+        currentState = State.Returning;
+        returnStuckTimer = 0f; // รีเซ็ตเวลาใหม่ทุกครั้งที่เริ่มกลับ
     }
 
     #region CheckForDoll
@@ -247,8 +253,7 @@ public class FlyingEnemy : Enemy
     {
         if (currentDollTarget == null)
         {
-            currentReturnTarget = GetNearestIdlePosition();
-            currentState = State.Returning;
+            ChangeToReturningState();
             return;
         }
         rb.gravityScale = 0f;
@@ -338,8 +343,7 @@ public class FlyingEnemy : Enemy
         GameObject target = DetectAndLockTarget();
         if (target == null)
         {
-            currentReturnTarget = GetNearestIdlePosition();
-            currentState = State.Returning;
+            ChangeToReturningState();
             return;
         }
         rb.gravityScale = 0f;
@@ -369,7 +373,6 @@ public class FlyingEnemy : Enemy
         }
     }
 
-    // ⭐ เพิ่มกลับมาให้แล้ว: ฟังก์ชันสุ่มหาจุดบินใหม่
     void SetNewFlightTarget()
     {
         Vector2 newTarget = Vector2.zero;
@@ -399,12 +402,10 @@ public class FlyingEnemy : Enemy
         }
         else
         {
-            currentReturnTarget = GetNearestIdlePosition();
-            currentState = State.Returning;
+            ChangeToReturningState();
         }
     }
 
-    // ⭐ เพิ่มกลับมาให้แล้ว: ฟังก์ชันเช็คสิ่งกีดขวาง
     bool IsPathClear(Vector2 from, Vector2 to)
     {
         Vector2 direction = to - from;
@@ -482,6 +483,15 @@ public class FlyingEnemy : Enemy
 
     void HandleReturningState()
     {
+        // ⭐ ระบบจับเวลา ถ้าเดินชนอะไรนานเกินไปจะสุ่มหาทางใหม่
+        returnStuckTimer += Time.deltaTime;
+        if (returnStuckTimer >= returnStuckTimeout)
+        {
+            returnStuckTimer = 0f; // เริ่มนับเวลาใหม่
+            currentReturnTarget = GetNearestValidIdlePosition(); // หาจุดที่ไม่ตัน
+            if (showDebugGizmos) Debug.Log($"[{gameObject.name}] Stuck for too long! Finding new return target...");
+        }
+
         currentSpeed = Mathf.Lerp(currentSpeed, flyingSpeed, Time.deltaTime * 2f);
         Vector2 directionToHome = (currentReturnTarget - (Vector2)transform.position).normalized;
         Vector2 avoidanceVec = GetAvoidanceDirection(directionToHome);
@@ -495,13 +505,13 @@ public class FlyingEnemy : Enemy
         if (finalDirection.x != 0)
             transform.localScale = new Vector3(Mathf.Sign(finalDirection.x), 1, 1);
 
+        // ถ้าถึงจุดเป้าหมายแล้ว (รวมถึงกรณีที่ถูกสั่งให้ค้างที่เดิม มันก็จะทำงานทันที)
         if (Vector2.Distance(transform.position, currentReturnTarget) < 0.15f)
         {
             transform.position = currentReturnTarget;
             rb.linearVelocity = Vector2.zero;
             currentSpeed = 0f;
 
-            // ⭐ แก้ไข 2: เช็คว่าเป็นจุดพักถาวรหรือไม่?
             if (permanentRestPoint != null && Vector2.Distance(transform.position, permanentRestPoint.position) < 0.1f)
             {
                 currentState = State.GroundedForever;
@@ -517,31 +527,41 @@ public class FlyingEnemy : Enemy
         }
     }
 
-    private Vector2 GetNearestIdlePosition()
+    // ⭐ เปลี่ยนลอจิกการหาจุดใหม่อย่างเข้มงวด ถ้าทางปิดทึบจะไม่เลือกจุดนั้น
+    private Vector2 GetNearestValidIdlePosition()
     {
-        if (idlePoints == null || idlePoints.Length == 0) return initialPosition;
-
-        Vector2 bestPoint = initialPosition;
-        float minWeightedDistance = float.MaxValue;
+        Vector2 bestPoint = transform.position; // เริ่มต้นที่ตำแหน่งปัจจุบัน ถ้าหาไม่ได้ก็จะตั้งค่าเป็นที่เดิม
+        float minDistance = float.MaxValue;
+        bool foundAnyClearPath = false;
 
         List<Vector2> allPoints = new List<Vector2>();
-        foreach (var t in idlePoints) if (t != null) allPoints.Add(t.position);
+        if (idlePoints != null)
+        {
+            foreach (var t in idlePoints) if (t != null) allPoints.Add(t.position);
+        }
         allPoints.Add(initialPosition);
 
         foreach (Vector2 pointPos in allPoints)
         {
-            float realDist = Vector2.Distance(transform.position, pointPos);
-            float weightedDist = realDist;
-            Vector2 direction = (pointPos - (Vector2)transform.position).normalized;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, realDist, obstacleLayer);
-            if (hit.collider != null) weightedDist = realDist * 5f + 100f;
-
-            if (weightedDist < minWeightedDistance)
+            // ตรวจสอบว่าเส้นทางลากเป็นเส้นตรงโล่งหรือไม่
+            if (IsPathClear(transform.position, pointPos))
             {
-                minWeightedDistance = weightedDist;
-                bestPoint = pointPos;
+                float dist = Vector2.Distance(transform.position, pointPos);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    bestPoint = pointPos;
+                    foundAnyClearPath = true;
+                }
             }
         }
+
+        // ถ้าไม่มีทางไหนว่างเลย ก็อยู่ที่เดิม
+        if (!foundAnyClearPath)
+        {
+            if (showDebugGizmos) Debug.Log($"[{gameObject.name}] All return paths blocked! Hovering in place.");
+        }
+
         return bestPoint;
     }
 
@@ -569,7 +589,6 @@ public class FlyingEnemy : Enemy
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ⭐ แก้ไข 3: ถ้า GroundedForever แล้ว ห้ามรับกาว
         if (currentState == State.GroundedForever) return;
 
         if (other.GetComponent<GlueProjectile>() == null) return;
@@ -597,23 +616,19 @@ public class FlyingEnemy : Enemy
         isCurrentlyFalling = true;
         currentState = State.Falling;
 
-        // ยกเลิกการโจมตีถ้ากำลังทำอยู่
         if (isAttacking) { StopAllCoroutines(); isAttacking = false; }
         if (attackLineRenderer != null) attackLineRenderer.enabled = false;
 
-        // เปิดแรงโน้มถ่วงให้ร่วง
         rb.gravityScale = 1f;
         currentSpeed = 0f;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.5f, rb.linearVelocity.y);
 
         yield return new WaitForSeconds(duration);
 
-        // หยุดร่วงและนอนมึน
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
-        yield return new WaitForSeconds(2.0f); // นอนมึน 2 วิ
+        yield return new WaitForSeconds(2.0f);
 
-        // บินขึ้น (Takeoff)
         float takeoffTimer = 0f;
         while (takeoffTimer < 1.0f)
         {
@@ -622,26 +637,20 @@ public class FlyingEnemy : Enemy
             yield return null;
         }
 
-        // ฟื้นตัวเสร็จ รีเซ็ตค่า
         currentGlueHitCount = 0;
         isCurrentlyFalling = false;
 
-        // เช็คว่าควรไปไหนต่อ
         CheckForDoll();
         if (currentState == State.FlyingToDoll)
         {
-            // ถ้าเจอตุ๊กตา ก็ไปหาตุ๊กตา
         }
         else
         {
-            // ถ้าไม่เจอ ให้กลับไปหาจุดพัก
-            currentReturnTarget = GetNearestIdlePosition();
-            currentState = State.Returning;
+            ChangeToReturningState();
         }
     }
     public void OnPlayerEnterZone(GameObject player)
     {
-        // ⭐ แก้ไข 4: ถ้า GroundedForever ห้ามสนใจผู้เล่น
         if (currentState == State.GroundedForever) return;
 
         if (currentState == State.Perched || currentState == State.FlyingToDoll) return;
@@ -660,14 +669,12 @@ public class FlyingEnemy : Enemy
 
     public void OnPlayerExitZone()
     {
-        // ⭐ แก้ไข 5: ถ้า GroundedForever ไม่ต้องสนตอนผู้เล่นออก
         if (currentState == State.GroundedForever) return;
 
         isPlayerInZone = false;
         playerInZone = null;
         currentTarget = null;
-        currentReturnTarget = GetNearestIdlePosition();
-        currentState = State.Returning;
+        ChangeToReturningState();
     }
 
     private void OnDrawGizmos()
@@ -737,7 +744,6 @@ public class FlyingEnemy : Enemy
         }
     }
 
-    // ⭐ เพิ่มกลับมาให้แล้ว: เช็คระยะโจมตี
     bool IsTargetInRange()
     {
         if (currentTarget == null) return false;

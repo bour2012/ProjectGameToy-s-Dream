@@ -13525,7 +13525,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'Son : We have to stop him before he harm the townpeoples !!'
+  - dialogText: 'Son : We have to stop him before he harms the townspeople!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 0
@@ -13547,7 +13547,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Dad : But how ??'
+  - dialogText: 'Dad : But how...?'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 0
@@ -13569,8 +13569,8 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Son : I have an idea, If we collect the broken part of the glue
-      cannon and remake it'
+  - dialogText: 'Son : I have an idea. If we <color=#FFD700>collect the broken parts
+      of the glue cannon and repair it...</color> '
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 1
@@ -13592,7 +13592,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Son : We can use the cannon to beat the demon lord !!'
+  - dialogText: 'Son : We can use the cannon to beat the Demon Lord!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 0
@@ -13614,8 +13614,8 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Son : We have to collect 3 part in 3 each level. Good luck hero
-      !
+  - dialogText: 'Son : We have to <color=#FFD700>collect three parts in each level.</color>
+      Good luck!
 
 '
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -13639,9 +13639,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Dad : Let''s finish this !
-
-'
+  - dialogText: 'Dad : ...Let''s finish this!'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 0
@@ -54748,9 +54746,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'Son : Okay !! final trap !
-
-'
+  - dialogText: 'Son : Great! Only one left!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 1
@@ -57854,9 +57850,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'Son : This is it !! make the cannon !!
-
-'
+  - dialogText: "Son : This is it! <color=#FFD700>Craft the cannon!</color> \r\n"
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 1
@@ -66821,9 +66815,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'Son : Two more !
-
-'
+  - dialogText: 'Son : Nice! Two more to go!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 1

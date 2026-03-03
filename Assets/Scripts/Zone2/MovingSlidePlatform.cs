@@ -186,16 +186,16 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
     //    isSlowed = false;
     //}
 
-    void OnGUI()
-    {
-        if (!isSlowed) return;
-        if (Camera.main == null) return;
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 1.5f);
-        float remain = Mathf.Max(0, slowEndTime - Time.time);
+    //void OnGUI()
+    //{
+    //    if (!isSlowed) return;
+    //    if (Camera.main == null) return;
+    //    Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 1.5f);
+    //    float remain = Mathf.Max(0, slowEndTime - Time.time);
 
-        GUI.color = Color.cyan;
-        GUI.Label(new Rect(screenPos.x - 50, Screen.height - screenPos.y, 120, 25),
-                  $"SLOWED! ({remain:F1}s)");
-        GUI.color = Color.white;
-    }
+    //    GUI.color = Color.cyan;
+    //    GUI.Label(new Rect(screenPos.x - 50, Screen.height - screenPos.y, 120, 25),
+    //              $"SLOWED! ({remain:F1}s)");
+    //    GUI.color = Color.white;
+    //}
 }

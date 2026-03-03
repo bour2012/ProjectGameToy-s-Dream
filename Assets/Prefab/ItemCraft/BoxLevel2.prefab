@@ -375,6 +375,7 @@ MonoBehaviour:
       m_Calls: []
   modeXUnLock: 1
   slidingGroundTag: SlideGround
+  slipperyDamping: 1
 --- !u!1 &7343645727448012209
 GameObject:
   m_ObjectHideFlags: 0
@@ -651,3 +652,4 @@ MonoBehaviour:
       m_Calls: []
   modeXUnLock: 0
   slidingGroundTag: SlideGround
+  slipperyDamping: 1

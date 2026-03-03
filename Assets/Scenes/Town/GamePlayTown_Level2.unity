@@ -42484,18 +42484,6 @@ PrefabInstance:
       propertyPath: dialogCamera
       value: 
       objectReference: {fileID: 1813102373}
-    - target: {fileID: 1097462671323146618, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 947.6462
-      objectReference: {fileID: 0}
-    - target: {fileID: 1097462671323146618, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1097462671323146618, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2021545689174041489, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
       value: 140.3
@@ -45421,8 +45409,8 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : But we still have one more favor to ask of you,
-      for there are townspeople who were taken away and are still waiting for help'
+  - dialogText: 'The town chief : But there are still townspeople who have been kidnapped,
+      so we may need to ask for your help a while longer...'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45456,7 +45444,8 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : But we have something that can help you'
+  - dialogText: 'The town chief : ...Don''t worry! We have something that can help
+      you!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45490,8 +45479,8 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : This will help you get past the traps the demons
-      have set'
+  - dialogText: 'The town chief : These will help you get past traps that the monsters
+      have set.'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45525,8 +45514,8 @@ MonoBehaviour:
             m_StringArgument: Start
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: "The town chief : I\u2019ve heard that the demons are holding the
-      townspeople captive in the Demon Lord\u2019s castle"
+  - dialogText: 'The town chief : I''ve heard that the monsters have imprisoned our
+      townspeople in the Demon Lord''s castle.'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45560,9 +45549,7 @@ MonoBehaviour:
             m_StringArgument: Next01
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : Good luck our hero !
-
-'
+  - dialogText: 'The town chief : Good luck, Our hero!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45596,7 +45583,7 @@ MonoBehaviour:
             m_StringArgument: Next02
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'Dad : Of course, you can count on me
+  - dialogText: 'Dad : Of course, you can count on me!
 
 '
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}

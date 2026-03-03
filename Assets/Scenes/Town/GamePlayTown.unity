@@ -8357,18 +8357,6 @@ PrefabInstance:
       propertyPath: dialogCamera
       value: 
       objectReference: {fileID: 1745455248}
-    - target: {fileID: 1097462671323146618, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 947.6462
-      objectReference: {fileID: 0}
-    - target: {fileID: 1097462671323146618, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1097462671323146618, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2021545689174041489, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
       value: 140.3

@@ -1090,7 +1090,7 @@ MonoBehaviour:
     prefab: {fileID: 7899959792572343891, guid: 02405ac5bb1f3ef4bb727dc85449e2f7, type: 3}
     lifetime: 15
     requiredItemType: 0
-    requiredAmount: 2
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 0
@@ -1103,7 +1103,7 @@ MonoBehaviour:
     prefab: {fileID: 5425856077105691806, guid: 898ed60cb4167114a9c5ad00fdb41613, type: 3}
     lifetime: 15
     requiredItemType: 1
-    requiredAmount: 2
+    requiredAmount: 1
     canBePushed: 1
     canDistractEnemies: 1
     canBePossessed: 0

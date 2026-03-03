@@ -423,8 +423,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1801414243
   m_SortingLayer: 10
-  m_SortingOrder: 9
-  m_Sprite: {fileID: 1780922917589292398, guid: f3a84596ad8ce5b4f8c22d880824ae13, type: 3}
+  m_SortingOrder: 18
+  m_Sprite: {fileID: -654791537, guid: 34c7a0e0e9953314eb91a7a1c8bb46bc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
@@ -496,6 +496,7 @@ MonoBehaviour:
       m_Calls: []
   modeXUnLock: 0
   slidingGroundTag: SlideGround
+  slipperyDamping: 1
 --- !u!58 &1656270262562304916
 CircleCollider2D:
   m_ObjectHideFlags: 0
