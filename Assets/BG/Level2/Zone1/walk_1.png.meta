@@ -103,12 +103,12 @@ TextureImporter:
       name: walk_1_0
       rect:
         serializedVersion: 2
-        x: 156
-        y: 252
-        width: 692
-        height: 516
+        x: 28
+        y: 239
+        width: 979
+        height: 492
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: cfa063809a1d8eb48ad2f7ee848bfe57
     internalID: 0
     vertices: []
     indices: 
@@ -136,6 +136,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       walk_1_0: 8681008312180965034
+      walk_1_1: 952115424
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
