@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: b829607d96616f9469597603bae8f726
+guid: 403a8e2c000c7884cbd4b79641bb195d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3417021879014406698
-    second: Bat_hang_0
+      213: 3769045107881144276
+    second: Glue_plat_0
   - first:
-      213: -6806426896748769075
-    second: Bat_hang_1
+      213: 3138781022241760551
+    second: Glue_plat_1
   - first:
-      213: -3939538875182300308
-    second: Bat_hang_2
+      213: 3799183574457438059
+    second: Glue_plat_2
   - first:
-      213: 7681304483630134680
-    second: Bat_hang_3
+      213: -7109544705255118208
+    second: Glue_plat_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,11 +109,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bat_hang_0
+      name: Glue_plat_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 516
+        y: 512
         width: 512
         height: 512
       alignment: 0
@@ -124,18 +124,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6d5cb9784bc4490d0800000000000000
-      internalID: -3417021879014406698
+      spriteID: 4dfedad6e865e4430800000000000000
+      internalID: 3769045107881144276
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bat_hang_1
+      name: Glue_plat_1
       rect:
         serializedVersion: 2
         x: 512
-        y: 516
+        y: 512
         width: 512
         height: 512
       alignment: 0
@@ -146,18 +146,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dc010a5acc6ba81a0800000000000000
-      internalID: -6806426896748769075
+      spriteID: 7252572b5b03f8b20800000000000000
+      internalID: 3138781022241760551
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bat_hang_2
+      name: Glue_plat_2
       rect:
         serializedVersion: 2
         x: 0
-        y: 4
+        y: 0
         width: 512
         height: 512
       alignment: 0
@@ -168,18 +168,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c63caedf342f359c0800000000000000
-      internalID: -3939538875182300308
+      spriteID: b6fc800055969b430800000000000000
+      internalID: 3799183574457438059
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bat_hang_3
+      name: Glue_plat_3
       rect:
         serializedVersion: 2
         x: 512
-        y: 4
+        y: 0
         width: 512
         height: 512
       alignment: 0
@@ -190,8 +190,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 895b3660bb9799a60800000000000000
-      internalID: 7681304483630134680
+      spriteID: 08a628032c2d55d90800000000000000
+      internalID: -7109544705255118208
       vertices: []
       indices: 
       edges: []
@@ -200,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: cacf35a16d4f33d468beebc469cdcbdb
+    spriteID: f3afcef51210e024aa323a14af71f4ee
     internalID: 0
     vertices: []
     indices: 
@@ -212,10 +212,10 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":512.0,"y":512.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Bat_hang_0: -3417021879014406698
-      Bat_hang_1: -6806426896748769075
-      Bat_hang_2: -3939538875182300308
-      Bat_hang_3: 7681304483630134680
+      Glue_plat_0: 3769045107881144276
+      Glue_plat_1: 3138781022241760551
+      Glue_plat_2: 3799183574457438059
+      Glue_plat_3: -7109544705255118208
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

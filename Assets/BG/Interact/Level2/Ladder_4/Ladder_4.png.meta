@@ -14,6 +14,9 @@ TextureImporter:
   - first:
       213: -9062397171794640541
     second: Ladder_4_3
+  - first:
+      213: 6112310578854928617
+    second: Ladder_4_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +116,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 516
+        y: 512
         width: 512
         height: 512
       alignment: 0
@@ -135,7 +138,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 516
+        y: 512
         width: 512
         height: 512
       alignment: 0
@@ -157,7 +160,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 4
+        y: 0
         width: 512
         height: 512
       alignment: 0
@@ -179,7 +182,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 4
+        y: 0
         width: 512
         height: 512
       alignment: 0
@@ -200,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 65c5d8b6d4cb05c48a1951826d203cf4
+    spriteID: d7d4f9270630f0b49bc5bd251050b60f
     internalID: 0
     vertices: []
     indices: 
