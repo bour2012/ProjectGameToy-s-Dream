@@ -26852,6 +26852,7 @@ GameObject:
   - component: {fileID: 1244870324}
   - component: {fileID: 1244870323}
   - component: {fileID: 1244870322}
+  - component: {fileID: 1244870325}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -26920,6 +26921,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1244870325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244870321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cb4c4fc943fa114f84b2becdb105c05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicToPlay: {fileID: 0}
 --- !u!1001 &1271594523
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27794,7 +27808,19 @@ MonoBehaviour:
     displayDuration: 5
     onLineStart:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 1244870325}
+          m_TargetAssemblyTypeName: BGMTrigger, Assembly-CSharp
+          m_MethodName: TriggerMusic
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - dialogText: 'The town chief : Our town needs your help!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}

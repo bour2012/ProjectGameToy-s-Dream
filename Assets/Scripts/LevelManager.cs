@@ -80,6 +80,33 @@ public class LevelManager : MonoBehaviour
 
     }
 
+    void Update()
+    {
+        // ระบบ Debug: กด F1 เพื่อบังคับข้ามไปด่านต่อไปทันที
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            if (!isTransitioning)
+            {
+                Debug.Log("<color=orange>[Debug] บังคับข้ามด่านด้วยปุ่ม F1</color>");
+                NextLevel();
+            }
+            else
+            {
+                Debug.Log("<color=red>[Debug] ไม่สามารถข้ามด่านได้ กำลังอยู่ในระหว่างโหลด (Transition)</color>");
+            }
+        }
+
+        // (แถมให้เผื่อต้องใช้) กด F2 เพื่อย้อนกลับด่านก่อนหน้า
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            if (!isTransitioning && currentLevelIndex > 0)
+            {
+                Debug.Log("<color=orange>[Debug] บังคับย้อนด่านด้วยปุ่ม F2</color>");
+                LoadSpecificLevel(currentLevelIndex - 1);
+            }
+        }
+    }
+
     void InitializeLevels()
     {
         // Store positions and hide all objects except current level
@@ -138,7 +165,7 @@ public class LevelManager : MonoBehaviour
         Debug.Log($"<color=cyan>Saved Boss Phase: {targetLevelIndex}</color>");
         // Despawn current level
         yield return StartCoroutine(DespawnCurrentLevel());
-
+        ClearClonedObjects();
         // Wait a moment between transitions
         yield return new WaitForSeconds(0.5f);
 
@@ -395,7 +422,22 @@ public class LevelManager : MonoBehaviour
     {
         LoadSpecificLevel(levelIndex);
     }
+    private void ClearClonedObjects()
+    {
+        // ค้นหา GameObject ทั้งหมดที่ทำงานอยู่ในฉากปัจจุบัน
+        GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
+        foreach (GameObject obj in allObjects)
+        {
+            // ตรวจสอบว่าชื่อลงท้ายด้วย [Clone] หรือไม่
+            if (obj.name.EndsWith("(Clone)"))
+            {
+                // ทำลายทิ้ง (หรือถ้าอยากแค่ปิด ให้เปลี่ยนเป็น obj.SetActive(false); แทน)
+                Destroy(obj);
+            }
+        }
+        Debug.Log("Cleared all [Clone] objects from the scene.");
+    }
     // Method to store current scene objects into a level data
     [ContextMenu("Store Current Scene Objects")]
     public void StoreCurrentSceneObjects()

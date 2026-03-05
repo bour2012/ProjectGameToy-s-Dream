@@ -415,7 +415,7 @@ public class GameManager : MonoBehaviour
         previousState = currentState;
         currentState = newState;
 
-        // แจ้งเตือนการเปลี่ยนสถานะ
+
         OnGameStateChanged?.Invoke(currentState);
 
         // จัดการผู้เล่น
