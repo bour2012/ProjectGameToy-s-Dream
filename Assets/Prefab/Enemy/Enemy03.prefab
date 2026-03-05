@@ -163,6 +163,8 @@ MonoBehaviour:
   showAttackTelegraph: 1
   telegraphStartColor: {r: 1, g: 1, b: 0, a: 0.3}
   telegraphEndColor: {r: 1, g: 0, b: 0, a: 0.8}
+  enemySprite: {fileID: 6245928998906951344}
+  warningColor: {r: 1, g: 0, b: 0, a: 1}
   projectilePrefab: {fileID: 760080139131159738, guid: 3ccc24b9a72985e4b8070727a2fdb981, type: 3}
   projectileSpawnPoint: {fileID: 3719873707518783203}
   projectileSpeed: 4

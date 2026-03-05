@@ -82,6 +82,12 @@ public class FlyingEnemy : Enemy
     [Tooltip("สี Telegraph (ก่อนยิง)")]
     public Color telegraphEndColor = new Color(1f, 0f, 0f, 0.8f);
 
+    [Header("Attack Warning Color")]
+    [Tooltip("ลาก SpriteRenderer ของตัวศัตรูมาใส่")]
+    public SpriteRenderer enemySprite;
+    [Tooltip("สีที่จะเปลี่ยนตอนเตรียมยิง (เช่น สีแดง)")]
+    public Color warningColor = Color.red;
+    private Color originalColor; // สำหรับจำสีเดิมของศัตรู
     public GameObject projectilePrefab;
     public Transform projectileSpawnPoint;
     public float projectileSpeed = 10f;
@@ -125,17 +131,12 @@ public class FlyingEnemy : Enemy
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
-        if (showAttackTelegraph)
-        {
-            attackLineRenderer = gameObject.AddComponent<LineRenderer>();
-            attackLineRenderer.startWidth = 0.1f;
-            attackLineRenderer.endWidth = 0.05f;
-            attackLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            attackLineRenderer.startColor = telegraphStartColor;
-            attackLineRenderer.endColor = telegraphStartColor;
-            attackLineRenderer.enabled = false;
-            attackLineRenderer.sortingOrder = 10;
-        }
+        if (enemySprite == null)
+            enemySprite = GetComponentInChildren<SpriteRenderer>(); // พยายามหาอัตโนมัติถ้าลืมลากใส่
+
+        if (enemySprite != null)
+            originalColor = enemySprite.color; // จำสีเดิมเอาไว้
+
         if (chaseMode == ChaseMode.Zone)
         {
             attackCooldown = Random.Range(1.0f, 3.0f);
@@ -427,7 +428,32 @@ public class FlyingEnemy : Enemy
     {
         isAttacking = true;
         currentSpeed = 0f;
+        if (enemySprite != null)
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < attackPrepareTime)
+            {
+                // ถ้าโดนกาวหรือร่วงกลางคัน ให้คืนสีเดิมและหยุดโจมตี
+                if (isCurrentlyFalling || currentGlueHitCount >= requiredGlueHitsToFall)
+                {
+                    enemySprite.color = originalColor;
+                    isAttacking = false;
+                    yield break;
+                }
 
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / attackPrepareTime;
+
+                // ค่อยๆ ไล่สีจากสีปกติ ไปเป็นสีแดง (หรือสีเตือนที่ตั้งไว้)
+                enemySprite.color = Color.Lerp(originalColor, warningColor, t);
+
+                yield return null; // รอเฟรมถัดไป
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(attackPrepareTime);
+        }
         if (isCurrentlyFalling) { isAttacking = false; yield break; }
 
         if (currentTarget != null) lockedAttackTarget = currentTarget.transform.position;
@@ -468,6 +494,11 @@ public class FlyingEnemy : Enemy
             projectileRb.linearVelocity = direction * projectileSpeed;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        if (enemySprite != null)
+        {
+            enemySprite.color = originalColor;
+        }
 
         if (fireRespawnMode == FireRespawnMode.WaitForArrival)
             StartCoroutine(WatchProjectileArrival(projectile, lockedAttackTarget));
@@ -617,6 +648,7 @@ public class FlyingEnemy : Enemy
         currentState = State.Falling;
 
         if (isAttacking) { StopAllCoroutines(); isAttacking = false; }
+        if (enemySprite != null) enemySprite.color = originalColor;
         if (attackLineRenderer != null) attackLineRenderer.enabled = false;
 
         rb.gravityScale = 1f;

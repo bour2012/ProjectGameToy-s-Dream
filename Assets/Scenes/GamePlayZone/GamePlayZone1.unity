@@ -17817,7 +17817,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -26479,7 +26479,7 @@ MonoBehaviour:
     playSoundFrequency: 2
     randomizePitch: 1
     pitchRange: {x: 0.9, y: 1.1}
-    focusTarget: {fileID: 0}
+    focusTarget: {fileID: 332024358}
     waitForCamera: 0
     cameraSmoothness: 3
     changeZoom: 0
@@ -45958,7 +45958,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -46165,7 +46165,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -64082,7 +64082,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -64886,7 +64886,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 0
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -74330,7 +74330,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -81062,7 +81062,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -126017,7 +126017,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -130575,7 +130575,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -165338,7 +165338,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -166894,7 +166894,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -213684,7 +213684,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 0
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -219109,7 +219109,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
