@@ -52684,7 +52684,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 557.53644
+      value: 557.5356
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
@@ -55428,7 +55428,7 @@ Transform:
   m_GameObject: {fileID: 958820211}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 39.690903, y: -23.435251, z: -10}
+  m_LocalPosition: {x: 39.691406, y: -23.435251, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -62787,7 +62787,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: 
   dialogSequence:
-  - dialogText: 'Son : That demon lord '
+  - dialogText: 'Son : That demon lord wasn''t kidding...'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -64173,7 +64173,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   - dialogText: "Son : Hmm... Maybe <color=#FFD700>that new box you got from the
-      town chief can withstand its power.</color> \r\n"
+      Town Chief can withstand its power.</color> \r\n"
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -64882,7 +64882,7 @@ Transform:
   m_GameObject: {fileID: 1129398734}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 57.112457, y: -34.620754, z: -20.03}
+  m_LocalPosition: {x: 57.112595, y: -34.620754, z: -20.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -69014,7 +69014,7 @@ Transform:
   m_GameObject: {fileID: 1193027304}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 39.690903, y: -23.435251, z: -10}
+  m_LocalPosition: {x: 39.69142, y: -23.435251, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -71242,7 +71242,7 @@ Transform:
   m_GameObject: {fileID: 1228676170}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 39.690903, y: -23.435251, z: -10}
+  m_LocalPosition: {x: 39.691406, y: -23.43525, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -92258,7 +92258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'Son : Look! The door is locked.
+  - dialogText: 'Son : Look! The door is locked!
 
 '
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -92338,7 +92338,7 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'Bat : (Attack!)'
+  - dialogText: 'Bat : Take this!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
     playSoundFrequency: 2
@@ -92372,7 +92372,7 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'Bat : !!'
+  - dialogText: 
     currentVoice: {fileID: 0}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -102660,7 +102660,7 @@ Transform:
   m_GameObject: {fileID: 1776214974}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 39.690903, y: -23.435251, z: -10}
+  m_LocalPosition: {x: 39.691414, y: -23.43525, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -116656,7 +116656,7 @@ Transform:
   m_GameObject: {fileID: 2015044203}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 32.867416, y: -22.439796, z: -10}
+  m_LocalPosition: {x: 32.86708, y: -22.439796, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
