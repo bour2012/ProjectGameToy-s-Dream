@@ -276,6 +276,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   modeXUnLock: 0
+  slidingGroundTag: SlideGround
+  slipperyDamping: 1
 --- !u!95 &8139585016719113071
 Animator:
   serializedVersion: 7

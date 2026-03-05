@@ -1544,6 +1544,7 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.SetInt("GlueCount", 0);
         PlayerPrefs.SetInt("ThreadCount", 0);
+        PlayerPrefs.DeleteKey("BossItemCount");
         PlayerPrefs.Save();
 
         //// Clear PlayerPrefs
@@ -1598,6 +1599,7 @@ public class GameManager : MonoBehaviour
         // เมื่อผู้เล่นกดกากบาทปิดเกม หรือ Alt+F4
         // ให้ลบเซฟเฟสบอสทิ้งทันที
         PlayerPrefs.DeleteKey("CurrentBossPhase");
+        PlayerPrefs.DeleteKey("BossItemCount");
         PlayerPrefs.Save();
         Debug.Log("Auto-Cleared Boss Phase Save on Quit.");
     }
@@ -1606,6 +1608,7 @@ public class GameManager : MonoBehaviour
     {
         // 1. ล้างข้อมูลเฟสบอสทิ้ง (เพื่อให้เริ่มใหม่เมื่อเข้าเล่นครั้งหน้า)
         PlayerPrefs.DeleteKey("CurrentBossPhase");
+        PlayerPrefs.DeleteKey("BossItemCount");
         PlayerPrefs.Save();
         Debug.Log("Cleared Boss Phase Save (User Quit).");
 
@@ -1621,7 +1624,7 @@ public class GameManager : MonoBehaviour
         // 1. ล้างข้อมูลก่อนปิดเกม
         PlayerPrefs.DeleteKey("CurrentBossPhase");
         PlayerPrefs.Save();
-
+        PlayerPrefs.DeleteKey("BossItemCount");
         // 2. ปิดโปรแกรม
         Debug.Log("Quitting Game...");
         Application.Quit();
