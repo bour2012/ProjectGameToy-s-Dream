@@ -8048,6 +8048,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: msVFX_Stylized Smoke 1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 107540711077034587, guid: 92072c862e751bf4dad748129cb56883, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5830301
@@ -15621,7 +15625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &574230497
 Transform:
   m_ObjectHideFlags: 0
@@ -15631,7 +15635,7 @@ Transform:
   m_GameObject: {fileID: 574230496}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.2982, y: -1.5946, z: 0}
+  m_LocalPosition: {x: -2.6268368, y: -1.3967212, z: 0}
   m_LocalScale: {x: 0.94045514, y: 0.94045514, z: 0.94045514}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17641,6 +17645,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: msVFX_Stylized Smoke 1
       objectReference: {fileID: 0}
+    - target: {fileID: 104829970813648393, guid: 92072c862e751bf4dad748129cb56883, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 107540711077034587, guid: 92072c862e751bf4dad748129cb56883, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5830301
@@ -17655,7 +17663,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 107540711077034587, guid: 92072c862e751bf4dad748129cb56883, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.888874
+      value: -3.514329
       objectReference: {fileID: 0}
     - target: {fileID: 107540711077034587, guid: 92072c862e751bf4dad748129cb56883, type: 3}
       propertyPath: m_LocalPosition.y
@@ -42596,7 +42604,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 225.76
+      value: 224.76
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
@@ -47195,11 +47203,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'The town chief : You did a great job saving our people!'
+  - dialogText: 'Dad : What about this cannon, chief?'
+    currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 0
+    pitchRange: {x: 0.9, y: 1.1}
+    focusTarget: {fileID: 2000329386}
+    waitForCamera: 0
+    cameraSmoothness: 10
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
+    shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
+    isHint: 0
+    hintUIElement: {fileID: 0}
+    displayDuration: 5
+    onLineStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 101534699}
+          m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+          m_MethodName: SetTrigger
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Next02
+            m_BoolArgument: 0
+          m_CallState: 2
+  - dialogText: 'Town Chief : Oh, the cannon! I was going to let you have it, but
+      it was too heavy and just in the way..'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
     randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
+    focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 10
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
+    shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
+    isHint: 0
+    hintUIElement: {fileID: 0}
+    displayDuration: 5
+    onLineStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 101534699}
+          m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+          m_MethodName: SetTrigger
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Next03
+            m_BoolArgument: 0
+          m_CallState: 2
+  - dialogText: 'Dad : What can it do?'
+    currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
+    typingSound: {fileID: 0}
+    playSoundFrequency: 2
+    randomizePitch: 0
     pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
@@ -47229,6 +47306,41 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
+  - dialogText: 'Town Chief : It is just a glue cannon. The items I gave you should
+      be more than enough. You won''t need it!'
+    currentVoice: {fileID: 0}
+    typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
+    playSoundFrequency: 2
+    randomizePitch: 1
+    pitchRange: {x: 0.9, y: 1.1}
+    focusTarget: {fileID: 0}
+    waitForCamera: 0
+    cameraSmoothness: 10
+    changeZoom: 0
+    targetLensSize: 40
+    zoomDuration: 1
+    shakeCamera: 0
+    useFadeCut: 0
+    fadeDuration: 0.5
+    fadeHoldDuration: 0.5
+    isHint: 0
+    hintUIElement: {fileID: 0}
+    displayDuration: 5
+    onLineStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+          m_MethodName: 
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: FlyStart
+            m_BoolArgument: 0
+          m_CallState: 2
   triggerOnce: 1
   freezePlayerOnStart: 1
   rememberAcrossScenes: 0
@@ -47239,7 +47351,19 @@ MonoBehaviour:
   conflictStrategy: 1
   onDialogComplete:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 101534699}
+        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+        m_MethodName: SetTrigger
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Next04
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!212 &1813895618
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -48169,7 +48293,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1920751210
 Transform:
   m_ObjectHideFlags: 0
@@ -48745,6 +48869,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1407942096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 29.195}
+--- !u!4 &2000329386 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1088623095315482801, guid: 3ff370b8ea80f52428bee56a02ea97ca, type: 3}
+  m_PrefabInstance: {fileID: 709780934}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2011760340
 GameObject:
   m_ObjectHideFlags: 0
