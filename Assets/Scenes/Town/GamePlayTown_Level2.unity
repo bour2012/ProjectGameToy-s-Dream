@@ -42340,7 +42340,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5648906
+      value: 2.5624099
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
@@ -42644,11 +42644,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8233388488026244111, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5648906
+      value: 2.5624099
       objectReference: {fileID: 0}
     - target: {fileID: 8233388488026244111, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7444553
+      value: 2.7444565
       objectReference: {fileID: 0}
     - target: {fileID: 8244405281263360146, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: Damping.x
@@ -45352,7 +45352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'The town chief : You did a great job saving our people!'
+  - dialogText: 'Town Chief : You did a great job saving our people!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45386,7 +45386,7 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : Thank you from the bottom of my heart!'
+  - dialogText: 'Town Chief : Thank you from the bottom of my heart!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45420,7 +45420,7 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : But there are still townspeople who have been kidnapped,
+  - dialogText: 'Town Chief : But there are still townspeople who have been kidnapped,
       so we may need to ask for your help a while longer...'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
@@ -45455,8 +45455,7 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : ...Don''t worry! We have something that can help
-      you!'
+  - dialogText: 'Town Chief : ...Don''t worry! We have something that can help you!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
@@ -45490,7 +45489,7 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : These will help you get past traps that the monsters
+  - dialogText: 'Town Chief : These will help you get past traps that the monsters
       have set.'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
@@ -45525,8 +45524,8 @@ MonoBehaviour:
             m_StringArgument: Start
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : I''ve heard that the monsters have imprisoned our
-      townspeople in the Demon Lord''s castle.'
+  - dialogText: 'Town Chief : I''ve heard that the monsters have imprisoned our townspeople
+      in the Demon Lord''s castle.'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
