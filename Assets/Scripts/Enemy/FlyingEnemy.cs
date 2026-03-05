@@ -275,6 +275,11 @@ public class FlyingEnemy : Enemy
         if (Vector2.Distance(transform.position, currentDollTarget.position) <= dollSnapDistance)
         {
             currentState = State.Perched;
+            CraftedObject craftedDoll = currentDollTarget.GetComponentInParent<CraftedObject>();
+            if (craftedDoll != null)
+            {
+                craftedDoll.StartBeingEaten();
+            }
         }
     }
 

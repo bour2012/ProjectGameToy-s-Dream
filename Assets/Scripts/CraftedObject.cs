@@ -10,6 +10,13 @@ public class CraftedObject : MonoBehaviour
     public int currentHitPoints = 3;
     public int maxHitPoints = 3;
 
+    // --- ส่วนที่เพิ่มให้ใหม่ (เฉพาะเรื่องการกิน) ---
+    [Header("Eating Behavior")]
+    [Tooltip("ติ๊กช่องนี้ถ้าอยากให้ไอเทมชิ้นนี้ (เช่น กล้วย) ถูกศัตรูกินเพื่อเปลี่ยน Animation ได้")]
+    public bool canBeEaten = false;
+    private bool isCurrentlyBeingEaten = false; // เอาไว้เช็คภายใน (ไม่ต้องติ๊กใน Inspector)
+    // ---------------------------------------------
+
     [Header("Debug")]
     public bool showDebugInfo = true;
 
@@ -21,14 +28,14 @@ public class CraftedObject : MonoBehaviour
     private Coroutine lifetimeCoroutine;
     private Coroutine blinkWarningCoroutine;
 
-    // --- UI Handling (ปรับปรุงใหม่) ---
+    // --- UI Handling ---
     public GameObject interactPromptRef;
     private TextMeshProUGUI interactPromptText;
     private KeyCode returnKey = KeyCode.Q;
     private float interactionDistance = 3f;
 
     private Transform player;
-    private bool isPlayerNear = false; // ตัวแปรเช็คสถานะเหมือน TrashCraftingSystem
+    private bool isPlayerNear = false;
     private Vector3 originalPromptScale = Vector3.one;
     private Coroutine uiAnimCoroutine;
 
@@ -51,9 +58,10 @@ public class CraftedObject : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
 
+        // ค้นหาในลูกด้วยตามที่คุณแก้ไว้
+        animator = GetComponentInChildren<Animator>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
@@ -77,13 +85,11 @@ public class CraftedObject : MonoBehaviour
         if (interactPromptRef != null)
         {
             interactPromptText = interactPromptRef.GetComponent<TextMeshProUGUI>();
-            // เริ่มต้นซ่อนไว้ก่อน
             TogglePromptUI(false);
         }
 
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-        // เริ่มนับถอยหลัง
         if (itemData != null)
         {
             StartLifetimeCountdown();
@@ -94,18 +100,33 @@ public class CraftedObject : MonoBehaviour
 
     void Update()
     {
-        // 1. ตรวจสอบระยะผู้เล่น
         CheckPlayerDistance();
 
-        // 2. รับ Input (ถ้าผู้เล่นอยู่ใกล้)
         if (isPlayerNear)
         {
             HandleInput();
-            UpdateUIPosition(); // อัปเดตตำแหน่ง UI ให้ตามวัตถุ
+            UpdateUIPosition();
         }
     }
 
-    // --- ส่วนที่ปรับปรุง: Logic การเช็คระยะและการแสดงผล UI ---
+    // ==========================================
+    // ฟังก์ชันนี้ศัตรูจะเรียกใช้ตอนบินมาเกาะ
+    // ==========================================
+    public void StartBeingEaten()
+    {
+        // ถ้าไอเทมนี้ไม่ได้รับอนุญาตให้กิน (ไม่ได้ติ๊ก canBeEaten) หรือกำลังโดนกินอยู่แล้ว ให้ข้ามไป
+        if (!canBeEaten || isCurrentlyBeingEaten) return;
+
+        isCurrentlyBeingEaten = true;
+
+        // สั่งเปลี่ยน Animation เป็น "Eat" อย่างเดียว (ระบบอื่นทำงานตามปกติเหมือนเดิม)
+        if (animator != null)
+        {
+            animator.SetTrigger("Eat");
+            if (showDebugInfo) Debug.Log($"{gameObject.name} animation changed to 'Eat'.");
+        }
+    }
+    // ==========================================
 
     void CheckPlayerDistance()
     {
@@ -115,13 +136,11 @@ public class CraftedObject : MonoBehaviour
             return;
         }
 
-        // ตรวจสอบระยะห่าง
         float distance = Vector2.Distance(transform.position, player.position);
 
-        // เงื่อนไขการแสดง UI: ระยะถึง AND ไม่ได้ถูกสิง (ถ้าถูกสิงมักจะซ่อน UI)
+        // ระบบกลับมาเป็นของเดิมเป๊ะๆ (ไม่มีการซ่อน UI เพราะโดนกิน)
         bool shouldShowUI = distance <= interactionDistance && !isPossessed;
 
-        // สั่งเปิด/ปิดเฉพาะเมื่อสถานะเปลี่ยน (เพื่อประสิทธิภาพ)
         if (shouldShowUI != isPlayerNear)
         {
             isPlayerNear = shouldShowUI;
@@ -133,8 +152,6 @@ public class CraftedObject : MonoBehaviour
     {
         if (interactPromptRef == null) return;
 
-        // Use appear/disappear animation coroutines instead of instant SetActive to avoid
-        // popping the UI. Record original scale on first use.
         if (originalPromptScale == Vector3.one && interactPromptRef.transform != null)
         {
             originalPromptScale = interactPromptRef.transform.localScale;
@@ -142,7 +159,6 @@ public class CraftedObject : MonoBehaviour
 
         if (show)
         {
-            // start appear animation
             if (uiAnimCoroutine != null) StopCoroutine(uiAnimCoroutine);
             uiAnimCoroutine = StartCoroutine(UIAppearAnimation());
             UpdatePromptText();
@@ -197,34 +213,27 @@ public class CraftedObject : MonoBehaviour
         if (interactPromptText != null)
         {
             interactPromptText.text = $"Press {returnKey} to Break";
-            interactPromptText.color = Color.white; // หรือสีตามต้องการ
+            interactPromptText.color = Color.white;
         }
     }
 
     void UpdateUIPosition()
     {
-        // ถ้า UI นี้เป็น World Space หรืออยากให้ลอยเหนือหัววัตถุ
-        // หมายเหตุ: เนื่องจาก interactPromptRef นี้อาจถูกแชร์มาจาก TrashSystem 
-        // การย้ายตำแหน่งอาจต้องระวังถ้า TrashSystem ใช้พร้อมกัน (แต่ปกติ TrashSystem จะถูกปิดไปแล้ว)
         if (interactPromptRef != null && interactPromptRef.activeInHierarchy)
         {
-            // ปรับตำแหน่งให้ลอยเหนือวัตถุเล็กน้อย (Vector3.up * 2f คือความสูง)
             interactPromptRef.transform.position = transform.position + Vector3.up * 1.5f;
         }
     }
 
     void HandleInput()
     {
-        // รับ Input ทำลายของ
         if (Input.GetKeyDown(returnKey))
         {
             ForceReturnToTrash();
         }
     }
 
-    // --- จบส่วนปรับปรุง UI ---
-
-    #region Lifetime & Visuals (คงเดิม)
+    #region Lifetime & Visuals
 
     void StartLifetimeCountdown()
     {
@@ -274,14 +283,13 @@ public class CraftedObject : MonoBehaviour
 
     #endregion
 
-    #region Possession System (คงเดิม - ตัดย่อเพื่อความกระชับ)
+    #region Possession System
 
     public bool TryPossess(GameObject possessor)
     {
         if (!itemData.canBePossessed || isPossessed) return false;
         isPossessed = true;
 
-        // เมื่อถูกสิง ให้ปิด UI ทันที
         if (isPlayerNear)
         {
             isPlayerNear = false;
@@ -315,11 +323,10 @@ public class CraftedObject : MonoBehaviour
 
     #endregion
 
-    #region Destruction and Return (คงเดิม)
+    #region Destruction and Return
 
     public void ReturnToTrash()
     {
-        // ซ่อน UI ก่อนทำลาย
         TogglePromptUI(false);
 
         if (itemData.destroyEffect) Instantiate(itemData.destroyEffect, transform.position, transform.rotation);
@@ -342,7 +349,7 @@ public class CraftedObject : MonoBehaviour
 
     #endregion
 
-    #region Collision & Public Methods (คงเดิม)
+    #region Collision & Public Methods
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -362,7 +369,6 @@ public class CraftedObject : MonoBehaviour
     void OnDestroy()
     {
         StopAllCoroutines();
-        // ป้องกัน UI ค้างถ้า object ถูกทำลาย
         if (interactPromptRef != null && isPlayerNear)
         {
             interactPromptRef.SetActive(false);
