@@ -5829,7 +5829,7 @@ Transform:
   m_GameObject: {fileID: 72783589}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 65.109566, y: 6.0826178, z: -10}
+  m_LocalPosition: {x: 65.11014, y: 6.0826178, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17237,7 +17237,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Son: Look! The villagers who were taken are over there!'
+  - dialogText: 'Son: Look! The townspeople are over there!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -17281,7 +17281,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "Dad: Don\u2019t worry. It\u2019s hero time."
+  - dialogText: "Dad: Don\u2019t worry. It\u2019s hero time!"
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -17793,7 +17793,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Dad : Way, of course. It''s me, after all~'
+  - dialogText: 'Dad : Well, of course. It''s me, after all~'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -25758,7 +25758,7 @@ Transform:
   m_GameObject: {fileID: 215876620}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 91.38128, y: 2.3541899, z: -10}
+  m_LocalPosition: {x: 91.38144, y: 2.3541899, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46428,7 +46428,7 @@ Transform:
   m_GameObject: {fileID: 383989147}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 93.29204, y: 8.46862, z: -10}
+  m_LocalPosition: {x: 93.29225, y: 8.46862, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -49847,7 +49847,7 @@ Transform:
   m_GameObject: {fileID: 432029269}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 62.03891, y: 5.509512, z: -10}
+  m_LocalPosition: {x: 62.039017, y: 5.509512, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51281,7 +51281,7 @@ Transform:
   m_GameObject: {fileID: 443298082}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 58.938316, y: 5.908676, z: -10}
+  m_LocalPosition: {x: 58.937958, y: 5.908676, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -61772,7 +61772,7 @@ Transform:
   m_GameObject: {fileID: 526361292}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 62.560684, y: 5.8003387, z: -10}
+  m_LocalPosition: {x: 62.560867, y: 5.8003387, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73121,7 +73121,7 @@ Transform:
   m_GameObject: {fileID: 609644263}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 65.87081, y: 7.2130775, z: -10}
+  m_LocalPosition: {x: 65.871506, y: 7.2130775, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -76459,7 +76459,7 @@ Transform:
   m_GameObject: {fileID: 652833916}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 58.696, y: 5.9101114, z: -10}
+  m_LocalPosition: {x: 58.695602, y: 5.9101114, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -76705,7 +76705,7 @@ Transform:
   m_GameObject: {fileID: 656287174}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 58.651787, y: 6.313532, z: -10}
+  m_LocalPosition: {x: 58.651382, y: 6.313532, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -82860,7 +82860,7 @@ Transform:
   m_GameObject: {fileID: 743709025}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 62.995483, y: 4.324888, z: -10}
+  m_LocalPosition: {x: 62.995735, y: 4.324888, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -106297,7 +106297,7 @@ Transform:
   m_GameObject: {fileID: 938261486}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 67.60704, y: 10.310972, z: -10}
+  m_LocalPosition: {x: 67.608, y: 10.310972, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -109504,7 +109504,7 @@ Transform:
   m_GameObject: {fileID: 992666929}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 62.72322, y: -6.2552166, z: -10}
+  m_LocalPosition: {x: 62.7238, y: -6.2552166, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -116216,7 +116216,7 @@ MonoBehaviour:
   dialogID: 
   dialogSequence:
   - dialogText: 'Dad : Those must be the townspeople the chief was talking about,
-      right?.'
+      right?'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -121194,7 +121194,7 @@ Transform:
   m_GameObject: {fileID: 1161838191}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 62.484726, y: 8.431215, z: -10}
+  m_LocalPosition: {x: 62.48491, y: 8.431215, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -125993,7 +125993,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Son : Definitely not. You can trust me on this !!'
+  - dialogText: 'Son : Definitely not. You can trust me on this!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
@@ -129108,7 +129108,7 @@ Transform:
   m_GameObject: {fileID: 1272663710}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 64.844406, y: 5.4239845, z: -10}
+  m_LocalPosition: {x: 64.84495, y: 5.4239845, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -147546,7 +147546,7 @@ Transform:
   m_GameObject: {fileID: 1377839627}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 63.473724, y: 5.3405867, z: -10}
+  m_LocalPosition: {x: 63.474052, y: 5.3405867, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -148802,7 +148802,7 @@ Transform:
   m_GameObject: {fileID: 1400374314}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 63.582092, y: 6.693755, z: -10}
+  m_LocalPosition: {x: 63.582443, y: 6.693755, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -176047,7 +176047,7 @@ Transform:
   m_GameObject: {fileID: 1549833907}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 64.29985, y: 8.547379, z: -10}
+  m_LocalPosition: {x: 64.30031, y: 8.547379, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -197587,7 +197587,7 @@ Transform:
   m_GameObject: {fileID: 1757560669}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 36.629196, y: -26.063278, z: -10}
+  m_LocalPosition: {x: 36.62938, y: -26.063278, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -205801,7 +205801,7 @@ Transform:
   m_GameObject: {fileID: 1874090168}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 65.46024, y: 3.0889206, z: -10}
+  m_LocalPosition: {x: 65.46088, y: 3.0889206, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
