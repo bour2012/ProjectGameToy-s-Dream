@@ -27808,19 +27808,7 @@ MonoBehaviour:
     displayDuration: 5
     onLineStart:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1244870325}
-          m_TargetAssemblyTypeName: BGMTrigger, Assembly-CSharp
-          m_MethodName: TriggerMusic
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
   - dialogText: 'The town chief : Our town needs your help!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
@@ -42699,7 +42687,19 @@ MonoBehaviour:
     displayDuration: 5
     onLineStart:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 1244870325}
+          m_TargetAssemblyTypeName: BGMTrigger, Assembly-CSharp
+          m_MethodName: TriggerMusic
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - dialogText: 'Dad : So this is the town we have to save then.'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
     typingSound: {fileID: 0}
