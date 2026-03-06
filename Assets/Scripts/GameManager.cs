@@ -1594,6 +1594,57 @@ public class GameManager : MonoBehaviour
 
 
     #region QuitGameClearSave
+    public void ClearAllSaveData()
+    {
+        // ==========================================
+        // 1. ล้างตัวแปรในความจำ (RAM) ของ GameManager
+        // ==========================================
+        playedDialogIDs.Clear();
+        collectedItemIDs.Clear();
+        triggeredBonusCheckpointIDs.Clear();
+
+        foreach (var progress in repairProgresses)
+        {
+            progress.isCompleted = false;
+            progress.completionTime = 0f;
+            progress.toolUsed = default;
+        }
+
+        foreach (var progress in craftingProgresses)
+        {
+            progress.totalCrafted = 0;
+            progress.lastCraftTime = 0f;
+            progress.lastToolUsed = default;
+        }
+
+        // ==========================================
+        // 2. ดึงค่าเวลาเดิมมาเก็บไว้ในกระเป๋าก่อน
+        // ==========================================
+        float savedTime = 0f;
+        if (PlayerPrefs.HasKey("GameClearTime"))
+        {
+            savedTime = PlayerPrefs.GetFloat("GameClearTime");
+        }
+
+        // ==========================================
+        // 3. ทิ้งระเบิดล้างข้อมูลเซฟทุกด่านในเครื่องทั้งหมด 100%
+        // ==========================================
+        PlayerPrefs.DeleteAll();
+
+        // ==========================================
+        // 4. เอาสถิติเวลาที่แอบเก็บไว้ คืนค่ากลับเข้าไปใหม่
+        // ==========================================
+        if (savedTime > 0f)
+        {
+            PlayerPrefs.SetFloat("GameClearTime", savedTime);
+        }
+
+        // สั่งเซฟเพื่อยืนยันการทำลายล้างและการกู้คืน
+        PlayerPrefs.Save();
+
+       
+    }
+
     private void OnApplicationQuit()
     {
         // เมื่อผู้เล่นกดกากบาทปิดเกม หรือ Alt+F4
