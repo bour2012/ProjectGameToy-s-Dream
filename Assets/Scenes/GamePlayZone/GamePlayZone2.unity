@@ -2165,7 +2165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog8
   dialogSequence:
   - dialogText: 'Dad : Is this castle supposed to be advanced...or ancient?'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
@@ -3110,7 +3110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog5
   dialogSequence:
   - dialogText: "Son : This is it \u2014 the final stage, the Demon Lord\u2019s castle!"
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -3975,7 +3975,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog12
   dialogSequence:
   - dialogText: "Son : Okay, this is the last one \u2014 the Demon Lord is officially
       out of budget now!"
@@ -12595,7 +12595,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 07
+      value: 2-07
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -13462,7 +13462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog13
   dialogSequence:
   - dialogText: 'Dad : Ugh...There are a lot of monsters!'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
@@ -23921,7 +23921,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog17
   dialogSequence:
   - dialogText: 'Dad : Hey, what about that demon lord?'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
@@ -24044,7 +24044,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 09
+      value: 2-09
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -30559,7 +30559,7 @@ Transform:
   m_GameObject: {fileID: 234559060}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 20.142801, y: -53.045296, z: -10}
+  m_LocalPosition: {x: -137.10721, y: -51.232796, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -31201,7 +31201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog16
   dialogSequence:
   - dialogText: 'Son : Yes!! We finally did it!!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -39806,7 +39806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog10
   dialogSequence:
   - dialogText: 'Dad : Ah! Another moving floor!'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
@@ -41895,7 +41895,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 04
+      value: 2-04
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -52918,7 +52918,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog11
   dialogSequence:
   - dialogText: 'Son : Hey, we can actually stop this one!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -63806,7 +63806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog7
   dialogSequence:
   - dialogText: 'Son : We have to get the key and make the door open...'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -76761,7 +76761,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 05
+      value: 2-05
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -89717,7 +89717,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 03
+      value: 2-03
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -119106,11 +119106,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 147.87259
+      value: 546.8669
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -89.47324
+      value: -94.236404
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.z
@@ -119342,11 +119342,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 22.31
+      value: -134.7525
       objectReference: {fileID: 0}
     - target: {fileID: 6169112861595440363, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.1
+      value: -3.225
       objectReference: {fileID: 0}
     - target: {fileID: 7451034957549622444, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
@@ -129410,7 +129410,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 10
+      value: 2-10
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -130205,7 +130205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog15
   dialogSequence:
   - dialogText: 'Son : That demon lord wasn''t kidding...'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -131809,7 +131809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog1
   dialogSequence:
   - dialogText: 'Son : Let''s go save the rest of the townspeople!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
@@ -131903,7 +131903,7 @@ MonoBehaviour:
         m_Calls: []
   triggerOnce: 1
   freezePlayerOnStart: 1
-  rememberAcrossScenes: 0
+  rememberAcrossScenes: 1
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
@@ -135619,7 +135619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: Trigger_Dialog09
+  dialogID: Trigger_Dialog19
   dialogSequence:
   - dialogText: 'Son : I won''t let you go any further! You aren''t getting past
       this!'
@@ -135708,7 +135708,7 @@ MonoBehaviour:
   delay: 0.21
   autoAdvance: 1
   autoAdvanceDelay: 2.5
-  conflictStrategy: 0
+  conflictStrategy: 1
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -141285,7 +141285,7 @@ MonoBehaviour:
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 01
-  defaultCheckpoint: {fileID: 0}
+  defaultCheckpoint: {fileID: 1335281546}
   showCheckpointDebugInfo: 1
   resetToLastCheckpoint: 1
   debugGameGM: 0
@@ -146041,7 +146041,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 08
+      value: 2-08
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -147190,7 +147190,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 12
+      value: 2-12
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -147788,7 +147788,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 01
+      value: 2-01
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -147863,6 +147863,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
+--- !u!114 &1335281546 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
+  m_PrefabInstance: {fileID: 1335281545}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9eff2c990c20524fb5cd35c132df303, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1336011109
 GameObject:
   m_ObjectHideFlags: 0
@@ -151034,7 +151045,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 14
+      value: 2-14
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -166822,7 +166833,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 02
+      value: 2-02
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -169580,7 +169591,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 06
+      value: 2-06
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -178935,7 +178946,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: Trigger_Dialog09
+  dialogID: Trigger_Dialog18
   dialogSequence:
   - dialogText: 'Son : Look! The door is locked!
 
@@ -186244,7 +186255,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 13
+      value: 2-13
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -198289,7 +198300,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 11
+      value: 2-11
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -198805,7 +198816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog9
   dialogSequence:
   - dialogText: 'Dad : A moving floor!?'
     currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
@@ -199098,7 +199109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog2
   dialogSequence:
   - dialogText: 'Son : Not bad at all, hero! You handle the new item really well!
 
@@ -202300,7 +202311,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: checkpointID
-      value: 15
+      value: 2-15
       objectReference: {fileID: 0}
     - target: {fileID: 624492779507724141, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: bonusGlueAmount
@@ -219929,7 +219940,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog4
   dialogSequence:
   - dialogText: 'Son : I knew it... Those monsters must be using threads as their
       power source!'
@@ -229014,7 +229025,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e35b898002c22947af915cf704e2830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogID: 
+  dialogID: Trigger_Dialog14
   dialogSequence:
   - dialogText: 'Demon Lord : Stop right there! Intruder!'
     currentVoice: {fileID: 0}
