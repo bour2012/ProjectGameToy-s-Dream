@@ -6248,8 +6248,8 @@ MonoBehaviour:
   lifetime: 20
   timeStickToTarget: 7
   groundDestroyDelay: 6
-  stickForce: 60
-  timeGlueStick: 3
+  stickForce: 80
+  timeGlueStick: 4
   targetLayers:
     serializedVersion: 2
     m_Bits: 658432
