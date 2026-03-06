@@ -18670,7 +18670,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   - dialogText: 
-    currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
+    currentVoice: {fileID: 0}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
     randomizePitch: 1
@@ -25568,7 +25568,7 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - dialogText: 
-    currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
+    currentVoice: {fileID: 0}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
     randomizePitch: 1
@@ -45516,7 +45516,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5648906
+      value: 2.546827
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
@@ -45828,11 +45828,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8233388488026244111, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5648906
+      value: 2.546827
       objectReference: {fileID: 0}
     - target: {fileID: 8233388488026244111, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7444553
+      value: 2.7444565
       objectReference: {fileID: 0}
     - target: {fileID: 8244405281263360146, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: Damping.x
@@ -49114,7 +49114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'The town chief : You finally did it, hero!
+  - dialogText: 'Town Chief : You finally did it, hero!
 
 '
     currentVoice: {fileID: 0}
@@ -49174,7 +49174,7 @@ MonoBehaviour:
             m_StringArgument: FlyStart
             m_BoolArgument: 0
           m_CallState: 2
-  - dialogText: 'The town chief : Peace will return to our town once again!
+  - dialogText: 'Town Chief : Peace will return to our town once again!
 
 
 '
@@ -49222,7 +49222,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   - dialogText: 
-    currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
+    currentVoice: {fileID: 0}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
     randomizePitch: 1
@@ -49256,7 +49256,7 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   - dialogText: 
-    currentVoice: {fileID: 11400000, guid: 62bec4f1950ebc044b533f13b14b2e03, type: 2}
+    currentVoice: {fileID: 0}
     typingSound: {fileID: 0}
     playSoundFrequency: 2
     randomizePitch: 1
@@ -51310,7 +51310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: Trigger_Dialog09
   dialogSequence:
-  - dialogText: 'The town chief : You did a great job saving our people!'
+  - dialogText: 'Town Chief : You did a great job saving our people!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 2
