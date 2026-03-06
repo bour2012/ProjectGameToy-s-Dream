@@ -8379,11 +8379,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5649292
+      value: 2.546827
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7444527
+      value: 2.7444553
       objectReference: {fileID: 0}
     - target: {fileID: 3902534689289002104, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: Lens.FieldOfView
@@ -8651,7 +8651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8233388488026244111, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.5648906
+      value: 2.546827
       objectReference: {fileID: 0}
     - target: {fileID: 8233388488026244111, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
@@ -27787,7 +27787,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogID: 
   dialogSequence:
-  - dialogText: 'The town chief : Oh hero... You have finally arrived...!'
+  - dialogText: 'Town Chief : Oh hero... You have finally arrived...!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27809,7 +27809,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'The town chief : Our town needs your help!!'
+  - dialogText: 'Town Chief : Our town needs your help!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27853,8 +27853,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "The town chief : The demon has attacked our town and kidnapped the
-      townspeople\u2026"
+  - dialogText: "Town Chief : The demon has attacked our town and kidnapped the townspeople\u2026"
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27876,7 +27875,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: "The town chief : You have to go help them\u2026"
+  - dialogText: "Town Chief : You have to go help them\u2026"
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27898,7 +27897,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'The town chief : Please... You are our only hope...!'
+  - dialogText: 'Town Chief : Please... You are our only hope...!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -27942,7 +27941,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'The town chief : Thank you...! I''m counting on you, hero!'
+  - dialogText: 'Town Chief : Thank you...! I''m counting on you, hero!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
     playSoundFrequency: 5
@@ -42722,7 +42721,7 @@ MonoBehaviour:
     onLineStart:
       m_PersistentCalls:
         m_Calls: []
-  - dialogText: 'Son : Yes! Let''s go meet the town chief!'
+  - dialogText: 'Son : Yes! Let''s go meet the Town Chief!'
     currentVoice: {fileID: 11400000, guid: 16c23f38c9c721a43b13dbef2817c2c4, type: 2}
     typingSound: {fileID: 0}
     playSoundFrequency: 5
