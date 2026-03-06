@@ -362,16 +362,13 @@ public class TrashCraftingSystem : MonoBehaviour
             }
         }
 
-        CraftTool tool = currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
+        CraftTool tool = currentItem.requiredItemType == ItemManager.ItemType.Glue ? CraftTool.Glue : CraftTool.Thread;
         if (gameManager.StartCrafting(trashId, tool))
         {
             onPickup.Invoke();
             StartCrafting();
         }
-        else
-        {
-         
-        }
+  
     }
 
     void StartCrafting()
@@ -448,7 +445,9 @@ public class TrashCraftingSystem : MonoBehaviour
 
         if (gameManager != null)
         {
-            CraftTool tool = currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
+            CraftableItem currentItem = craftableItems[currentItemIndex];
+            CraftTool tool = currentItem.requiredItemType == ItemManager.ItemType.Glue ? CraftTool.Glue : CraftTool.Thread;
+
             gameManager.CompleteCrafting(trashId, tool);
         }
 
@@ -705,8 +704,8 @@ public class TrashCraftingSystem : MonoBehaviour
 
     public CraftTool GetCurrentTool()
     {
-        // Keep backward compatibility - return appropriate tool based on current item
-        return currentItemIndex == 0 ? CraftTool.Glue : CraftTool.Thread;
+        if (craftableItems == null || craftableItems.Length == 0) return CraftTool.Glue;
+        return craftableItems[currentItemIndex].requiredItemType == ItemManager.ItemType.Glue ? CraftTool.Glue : CraftTool.Thread;
     }
 
     public bool IsPlayerInRange()

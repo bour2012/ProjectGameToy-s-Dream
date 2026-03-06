@@ -1092,7 +1092,7 @@ MonoBehaviour:
     requiredItemType: 0
     requiredAmount: 1
     canBePushed: 1
-    canDistractEnemies: 1
+    canDistractEnemies: 0
     canBePossessed: 0
     maxHitPoints: 3
     spawnEffect: {fileID: 0}

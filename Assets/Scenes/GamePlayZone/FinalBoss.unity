@@ -27779,7 +27779,7 @@ MonoBehaviour:
   puzzleManager: {fileID: 0}
   bossToControl: {fileID: 0}
   guardPointTransform: {fileID: 0}
-  leverAnimator: {fileID: 0}
+  leverAnimator: {fileID: 1568646018}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
@@ -36945,7 +36945,7 @@ MonoBehaviour:
   puzzleManager: {fileID: 805060223}
   bossToControl: {fileID: 0}
   guardPointTransform: {fileID: 0}
-  leverAnimator: {fileID: 0}
+  leverAnimator: {fileID: 77282607}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
@@ -71711,7 +71711,7 @@ MonoBehaviour:
   puzzleManager: {fileID: 0}
   bossToControl: {fileID: 0}
   guardPointTransform: {fileID: 0}
-  leverAnimator: {fileID: 0}
+  leverAnimator: {fileID: 2050093886}
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
   animationDuration: 0.5
