@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using UnityEngine.Audio;
 public class GlueShooting : MonoBehaviour
 {
     [Header("Glue Projectile")]
@@ -39,6 +39,7 @@ public class GlueShooting : MonoBehaviour
 
     [Header("Audio")]
     public AudioClip switchSound;
+    public AudioMixerGroup audioMixerGroup;
     private AudioSource audioSource;
 
     // Private Variables
@@ -52,6 +53,19 @@ public class GlueShooting : MonoBehaviour
     private float scrollAccumulator = 0f;
     private float scrollThreshold = 0.2f;
     private Animator animator;
+
+    [Header("Main Bubble (กรอบใหญ่)")]
+    [SerializeField] private Image mainSlotIcon;     // ลาก Image รูปไอเทมช่องใหญ่มาใส่
+    [SerializeField] private TMP_Text mainSlotText;  // ลาก Text ตัวเลขช่องใหญ่มาใส่
+
+    [Header("Sub Bubble (กรอบเล็ก)")]
+    [SerializeField] private Image subSlotIcon;      // ลาก Image รูปไอเทมช่องเล็กมาใส่
+    [SerializeField] private TMP_Text subSlotText;   // ลาก Text ตัวเลขช่องเล็กมาใส่
+
+    [Header("Item Sprites (รูปไอเทม)")]
+    [SerializeField] private Sprite glueSprite;      // ลากไฟล์รูป กาว จาก Project มาใส่
+    [SerializeField] private Sprite threadSprite;    // ลากไฟล์รูป ด้าย จาก Project มาใส่
+
     void Awake()
     {
         ropeScript = GetComponent<Rope>();
@@ -65,6 +79,10 @@ public class GlueShooting : MonoBehaviour
             audioSource.playOnAwake = false;
             audioSource.spatialBlend = 0f; // 2D
         }
+        if (audioMixerGroup != null)
+        {
+            audioSource.outputAudioMixerGroup = audioMixerGroup;
+        }
         if (trajectoryLine != null)
         {
             trajectoryLine.enabled = false;
@@ -72,6 +90,9 @@ public class GlueShooting : MonoBehaviour
         }
         if (aimingCrosshair != null) aimingCrosshair.SetActive(false);
         if (glueAimIndicator != null) glueAimIndicator.SetActive(false);
+
+     
+
         int savedItemIndex = PlayerPrefs.GetInt("SelectedItem", 0);
         selectedItem = (ItemManager.ItemType)savedItemIndex;
     }
@@ -366,17 +387,44 @@ public class GlueShooting : MonoBehaviour
     #region UI Management
     private void UpdateUI()
     {
-        if (glueIcon != null)
+        if (mainSlotIcon == null || subSlotIcon == null) return;
+
+        // เช็กสถานะว่ามีไอเทมไหม (เพื่อปรับสีเทา/ขาว)
+        bool hasGlue = ItemManager.Instance != null && ItemManager.Instance.HasItem(ItemManager.ItemType.Glue);
+        bool hasThread = ItemManager.Instance != null && ItemManager.Instance.HasItem(ItemManager.ItemType.Thread);
+
+        // ดึงจำนวนไอเทม (แก้ไขโค้ดดึงจำนวนตรงนี้ให้ตรงกับระบบ ItemManager ของคุณนะครับ)
+        // สมมติว่ามีฟังก์ชัน GetItemCount()
+        string glueCount = ItemManager.Instance != null ? ItemManager.Instance.GetItemCount(ItemManager.ItemType.Glue).ToString() : "0";
+        string threadCount = ItemManager.Instance != null ? ItemManager.Instance.GetItemCount(ItemManager.ItemType.Thread).ToString() : "0";
+
+        if (selectedItem == ItemManager.ItemType.Glue)
         {
-            bool hasGlue = ItemManager.Instance != null && ItemManager.Instance.HasItem(ItemManager.ItemType.Glue);
-            glueIcon.color = hasGlue ? availableColor : unavailableColor;
-            glueIcon.transform.localScale = selectedItem == ItemManager.ItemType.Glue ? Vector3.one * selectedScale : Vector3.one * normalScale;
+            // --- ถ้าเลือกกาว (กาวอยู่กรอบใหญ่, ด้ายอยู่กรอบเล็ก) ---
+
+            // อัปเดตกรอบใหญ่ (กาว)
+            mainSlotIcon.sprite = glueSprite;
+            mainSlotIcon.color = hasGlue ? availableColor : unavailableColor;
+            if (mainSlotText != null) mainSlotText.text = glueCount;
+
+            // อัปเดตกรอบเล็ก (ด้าย)
+            subSlotIcon.sprite = threadSprite;
+            subSlotIcon.color = hasThread ? availableColor : unavailableColor;
+            if (subSlotText != null) subSlotText.text = threadCount;
         }
-        if (threadIcon != null)
+        else if (selectedItem == ItemManager.ItemType.Thread)
         {
-            bool hasThread = ItemManager.Instance != null && ItemManager.Instance.HasItem(ItemManager.ItemType.Thread);
-            threadIcon.color = hasThread ? availableColor : unavailableColor;
-            threadIcon.transform.localScale = selectedItem == ItemManager.ItemType.Thread ? Vector3.one * selectedScale : Vector3.one * normalScale;
+            // --- ถ้าเลือกด้าย (ด้ายอยู่กรอบใหญ่, กาวอยู่กรอบเล็ก) ---
+
+            // อัปเดตกรอบใหญ่ (ด้าย)
+            mainSlotIcon.sprite = threadSprite;
+            mainSlotIcon.color = hasThread ? availableColor : unavailableColor;
+            if (mainSlotText != null) mainSlotText.text = threadCount;
+
+            // อัปเดตกรอบเล็ก (กาว)
+            subSlotIcon.sprite = glueSprite;
+            subSlotIcon.color = hasGlue ? availableColor : unavailableColor;
+            if (subSlotText != null) subSlotText.text = glueCount;
         }
     }
     #endregion

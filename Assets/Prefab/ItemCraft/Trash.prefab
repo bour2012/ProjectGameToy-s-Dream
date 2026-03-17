@@ -394,7 +394,7 @@ MonoBehaviour:
     canBePossessed: 0
     maxHitPoints: 3
     spawnEffect: {fileID: 0}
-    destroyEffect: {fileID: 0}
+    destroyEffect: {fileID: 265766274217486953, guid: 92072c862e751bf4dad748129cb56883, type: 3}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
   - itemName: Doll
@@ -407,7 +407,7 @@ MonoBehaviour:
     canBePossessed: 1
     maxHitPoints: 3
     spawnEffect: {fileID: 0}
-    destroyEffect: {fileID: 0}
+    destroyEffect: {fileID: 265766274217486953, guid: 92072c862e751bf4dad748129cb56883, type: 3}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
   craftingUIContainer: {fileID: 6554329274878622131}

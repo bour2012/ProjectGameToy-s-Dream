@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.Audio;
 public class PlayerMovement : MonoBehaviour
 {
     #region Inspector Fields
@@ -51,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip jumpSfx;
     [Range(0f,1f)] public float jumpSfxVolume = 1f;
     public AudioClip walkSfx;
+    public AudioMixerGroup audioMixerGroup;
 
     [Header("Rope Hook")]
     public bool isSwinging;
@@ -101,6 +102,11 @@ public class PlayerMovement : MonoBehaviour
         walkAudioSource.loop = true;
         walkAudioSource.spatialBlend = 0f;
         walkAudioSource.volume = jumpSfxVolume;
+        if (audioMixerGroup != null)
+        {
+            audioSource.outputAudioMixerGroup = audioMixerGroup;
+            walkAudioSource.outputAudioMixerGroup = audioMixerGroup;
+        }
     }
 
     void Start()

@@ -219,16 +219,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1379772568605124388}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8025761028876967488}
+  m_Father: {fileID: 3473232212945337454}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0.000038146973, y: 0}
+  m_AnchoredPosition: {x: -35.551914, y: 19.206177}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &5511350914070982296
@@ -259,7 +259,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 5
+  m_text: 10
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -324,7 +324,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -23.754059, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -562,7 +562,7 @@ Transform:
   m_GameObject: {fileID: 2096666592065691518}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 379.26074, y: 98.09953, z: -25.403538}
+  m_LocalPosition: {x: 442.68185, y: 153.67471, z: -25.403538}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -609,9 +609,9 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 55.7
+  field of view: 45
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 4.5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -963,6 +963,7 @@ MonoBehaviour:
   jumpSfx: {fileID: 8300000, guid: 2ab234f4d543da6489fba6b16e41e411, type: 3}
   jumpSfxVolume: 0.08
   walkSfx: {fileID: 8300000, guid: ff591ef269c5c904094e1eb27a9cb33c, type: 3}
+  audioMixerGroup: {fileID: 8857546310750713109, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
   isSwinging: 0
   ropeHook: {x: 0, y: 0}
   stompEffectPrefab: {fileID: 104829970813648393, guid: 6e28a0ff602dfa74592b57a934f74759, type: 3}
@@ -1074,14 +1075,21 @@ MonoBehaviour:
     m_Bits: 7414
   aimingCrosshair: {fileID: 1770114402707627071}
   glueAimIndicator: {fileID: 0}
-  glueIcon: {fileID: 111460321233768257}
-  threadIcon: {fileID: 7045200073669169958}
+  glueIcon: {fileID: 326339856020634128}
+  threadIcon: {fileID: 2974627093183333633}
   selectedScale: 1.5
   normalScale: 1
   availableColor: {r: 1, g: 1, b: 1, a: 1}
   unavailableColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 0.76862746}
   respectGameManagerState: 1
   switchSound: {fileID: 8300000, guid: 835d70643e6a19042ae378457e4b10db, type: 3}
+  audioMixerGroup: {fileID: 8857546310750713109, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
+  mainSlotIcon: {fileID: 326339856020634128}
+  mainSlotText: {fileID: 2501760833078356211}
+  subSlotIcon: {fileID: 2974627093183333633}
+  subSlotText: {fileID: 4943746802959343612}
+  glueSprite: {fileID: -1874323572, guid: 87f18914cbba7e54d8ea274a14128568, type: 3}
+  threadSprite: {fileID: 1349771605, guid: c802b0149f188e84494daf19867b1116, type: 3}
 --- !u!114 &4329671785173147999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1358,7 +1366,7 @@ AudioSource:
   m_GameObject: {fileID: 2605084227717049825}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 8857546310750713109, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -1475,15 +1483,14 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 674507627864654650}
+  m_Children: []
   m_Father: {fileID: 4435754792205024795}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -23, y: 2}
-  m_SizeDelta: {x: 166.43268, y: 166.43268}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: -0.000005722046, y: 0.0000019073486}
+  m_SizeDelta: {x: 151.4962, y: 151.4962}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1367665108282641190
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1571,7 +1578,7 @@ AudioSource:
   m_GameObject: {fileID: 2842588201188864771}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
+  OutputAudioMixerGroup: {fileID: 4176217579578349143, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -1686,7 +1693,7 @@ Transform:
   m_GameObject: {fileID: 2904849290922289491}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.7529397, z: -25.403538}
+  m_LocalPosition: {x: 0, y: 4.75292, z: -25.403538}
   m_LocalScale: {x: 3.384513, y: 3.384513, z: 3.384513}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2060,13 +2067,14 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 113523748528407271}
   - {fileID: 8025761028876967488}
   m_Father: {fileID: 3181173103888386948}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -69, y: -17.606995}
-  m_SizeDelta: {x: 170.65, y: 171.22}
+  m_AnchoredPosition: {x: -69, y: -38.419567}
+  m_SizeDelta: {x: 212.1365, y: 212.8451}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &4358556531652941491
 CanvasRenderer:
@@ -2776,15 +2784,14 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 113523748528407271}
+  m_Children: []
   m_Father: {fileID: 3473232212945337454}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -11, y: 10}
-  m_SizeDelta: {x: 166.4327, y: 166.43268}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0.000061035156, y: 0}
+  m_SizeDelta: {x: 188.6897, y: 188.69}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &5574487829512846092
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3755,6 +3762,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 674507627864654650}
   - {fileID: 3530242591408480114}
   m_Father: {fileID: 7355687084050963551}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4192,12 +4200,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3530242591408480114}
+  m_Father: {fileID: 4435754792205024795}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 22, y: -27}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: -17.106888, y: -17.696753}
+  m_SizeDelta: {x: 43.6803, y: 43.6803}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &4465035574230969302
 CanvasRenderer:
@@ -4227,7 +4235,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 5
+  m_text: '10
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4254,7 +4264,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44.75
+  m_fontSize: 36.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4292,7 +4302,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: -2.5976295}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

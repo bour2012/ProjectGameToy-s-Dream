@@ -12,9 +12,9 @@ public class LadderTop : MonoBehaviour
 
 
 
-    private bool isPlayerOnLadder = false; // ตรวจสอบว่าผู้เล่นอยู่ใกล้บันไดหรือไม่
+    private bool isPlayerOnLadder = false; //   วจ อบ  าผ            ัน        
 
-    private Rigidbody2D playerRb;         // Reference ไปยัง Rigidbody2D ของผู้เล่น
+    private Rigidbody2D playerRb;         // Reference   ัง Rigidbody2D  อง      
     //private float savedGravity;
 
 
@@ -24,7 +24,7 @@ public class LadderTop : MonoBehaviour
 
     {
 
-        // ตั้งค่า Trigger ให้กับ Collider
+        //   ้งค   Trigger    ับ Collider
         //savedGravity = playerRb.gravityScale;
         Collider2D col = GetComponent<Collider2D>();
 
@@ -38,9 +38,8 @@ public class LadderTop : MonoBehaviour
 
 
 
-        // ตั้งค่า Layer เป็น Ladder Layer (8)
 
-        gameObject.layer = 8;
+        gameObject.layer = 8;
 
     }
 
@@ -58,33 +57,30 @@ public class LadderTop : MonoBehaviour
 
             {
 
-                // ตรวจสอบว่าผู้เล่นกด W หรือ S
+              
 
-                if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
+                if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
 
                 {
 
-                    //ปิดแรงโน้มถ่วงเพื่อให้ผู้เล่นปีนบันไดได้
+                   
 
-                    playerRb.gravityScale = 0f;
+                    playerRb.gravityScale = 0f;
 
 
 
-                    // ควบคุมการเคลื่อนที่ขึ้น-ลงบันได
+                    float verticalInput = Input.GetAxis("Vertical");
 
-                    float verticalInput = Input.GetAxis("Vertical");
+                    playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, verticalInput * 5f); 
 
-                    playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, verticalInput * 5f); // ความเร็วปีนบันได
-
-                }
+                }
 
                 else
 
                 {
+ 
 
-                    // ถ้าไม่ได้กด W หรือ S ให้หยุดการเคลื่อนที่
-
-                    playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
+                    playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
 
                 }
 
@@ -108,21 +104,21 @@ public class LadderTop : MonoBehaviour
 
 
 
-            // เก็บ Reference ไปยัง Rigidbody2D ของผู้เล่น
+            //    Reference   ัง Rigidbody2D  อง      
 
-            playerRb = other.GetComponent<Rigidbody2D>();
+            playerRb = other.GetComponent<Rigidbody2D>();
 
-            //playerController = other.GetComponent<PlayerController>();
+            //playerController = other.GetComponent<PlayerController>();
 
 
 
-            if (playerRb != null)
+            if (playerRb != null)
 
             {
 
-                isPlayerOnLadder = true; // ผู้เล่นอยู่ใกล้บันได
+                isPlayerOnLadder = true; //              ัน 
 
-            }
+            }
 
         }
 
@@ -142,17 +138,16 @@ public class LadderTop : MonoBehaviour
 
 
 
-            // รีเซ็ตสถานะเมื่อผู้เล่นออกจากบันได
 
-            isPlayerOnLadder = false;
+            isPlayerOnLadder = false;
 
             if (playerRb != null)
 
             {
 
-                playerRb.gravityScale = 2; // คืนค่าแรงโน้มถ่วงปกติ
+                playerRb.gravityScale = 2;  
 
-            }
+            }
 
         }
 

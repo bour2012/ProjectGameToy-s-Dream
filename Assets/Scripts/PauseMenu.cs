@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // --- [เพิ่มใหม่] อย่าลืม using TMPro เพื่อใช้ Text ---
+using TMPro; // --- [๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ] ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ using TMPro ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Text ---
 
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] CanvasGroup pauseMenuGroup;
 
-    // --- [เพิ่มใหม่] ช่องสำหรับใส่ Text เวลาในหน้า Pause ---
+    // --- [๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ] ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ Text ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝหน๏ฟฝ๏ฟฝ Pause ---
     [SerializeField] TextMeshProUGUI pauseTimeText;
     // ---------------------------------------------
 
@@ -25,6 +25,13 @@ public class PauseMenu : MonoBehaviour
             SetPauseState(isPaused);
         }
     }
+    public void OpenSetting()
+    {
+       
+            isPaused = !isPaused;
+            SetPauseState(isPaused);
+        
+    }
 
     void SetPauseState(bool pause)
     {
@@ -42,7 +49,7 @@ public class PauseMenu : MonoBehaviour
         {
             SpeedrunTimer.Instance?.PauseTimer();
 
-            // --- [เพิ่มใหม่] ดึงเวลาปัจจุบันมาโชว์ตอนเข้าเมนู Pause ---
+            // --- [๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ] ๏ฟฝึง๏ฟฝ๏ฟฝ๏ฟฝาปัจ๏ฟฝุบัน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Pause ---
             if (pauseTimeText != null && SpeedrunTimer.Instance != null)
             {
                 float currentPlayTime = SpeedrunTimer.Instance.GetTotalTime();

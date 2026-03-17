@@ -728,30 +728,46 @@ public class TrashCraftingSystem : MonoBehaviour
     /// </summary>
     public void OnCraftedObjectDestroyed(Vector3 position)
     {
-        // The Trash GameObject may be inactive (it was hidden when crafting started).
-        // Activate it first so we can start coroutines on this MonoBehaviour, then run the return routine.
         currentCraftedObject = null;
-        // Ensure the trash GameObject is active so StartCoroutine works
+
+        // ทำให้กองขยะ Active กลับมาก่อนเพื่อให้ StartCoroutine ทำงานได้
         if (!gameObject.activeInHierarchy)
         {
             gameObject.SetActive(true);
         }
 
-        // Reset progress bar UI before starting
+        // รีเซ็ตหลอด Progress
         if (progressBar != null) progressBar.value = 0f;
         if (progressPanel != null) progressPanel.SetActive(false);
 
-        if (craftingEffect)
+        // --- ส่วนที่แก้ไข: เล่นเอฟเฟกต์ตอนไอเทมหายไป ณ ตำแหน่งที่มันอยู่ล่าสุด ---
+
+        // 1. เลือกว่าจะใช้ควันไหนดี (ถ้ามี destroyEffect เฉพาะตัวให้ใช้ก่อน ถ้าไม่มีใช้ควัน Crafting เดิม)
+        ParticleSystem effectToPlay = craftingEffect;
+        if (currentItemIndex < craftableItems.Length)
         {
-            ParticleSystem ps = Instantiate(craftingEffect, transform.position, transform.rotation);
+            var item = craftableItems[currentItemIndex];
+            if (item.destroyEffect != null)
+            {
+                effectToPlay = item.destroyEffect;
+            }
+        }
+
+        // 2. สั่งเล่นเอฟเฟกต์ ณ ตำแหน่ง 'position' (ตำแหน่งล่าสุดของวัตถุก่อนหายไป)
+        if (effectToPlay != null)
+        {
+            ParticleSystem ps = Instantiate(effectToPlay, position, Quaternion.identity);
             var main = ps.main;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             ps.transform.SetParent(null);
             ps.Play();
+
             float maxLifetime = (main.startLifetime.mode == ParticleSystemCurveMode.TwoConstants) ? main.startLifetime.constantMax : main.startLifetime.constant;
             float destroyAfter = main.duration + maxLifetime + 0.25f;
             Destroy(ps.gameObject, destroyAfter);
         }
+        // -----------------------------------------------------------
+
         StartCoroutine(ReturnToTrashRoutine(position));
     }
 
