@@ -231,6 +231,11 @@ public class PlayerDeathSystem : MonoBehaviour
             GameManager.Instance.ChangeState(GameState.Dead, "Player died");
             onPlayerDies.Invoke();
 
+            if (ItemManager.Instance != null)
+            {
+                ItemManager.Instance.ClearAllKeys();
+            }
+
             if (deathDialogManager != null && GameManager.Instance != null)
             {
                 DialogTrigger dialogToPlay = deathDialogManager.GetCurrentDeathDialog();

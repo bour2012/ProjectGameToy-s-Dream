@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name == "Main Menu") return;
         FindPlayerReferences();
         ApplyCheckpointAndItemsAfterReload();
     }
@@ -653,43 +654,43 @@ public class GameManager : MonoBehaviour
     private void ApplyCheckpointAndItemsAfterReload()
     {
         InitializeCheckpointSystem();
-        CollectAllCheckpoints(); // เก็บ Checkpoint ทั้งหมดในฉากใหม่เข้า Array
+        CollectAllCheckpoints();
 
-        // ================================================================
-        // [FIX] ส่วนที่เพิ่ม: ซ่อม defaultCheckpoint ที่หายไป (Missing)
-        // ================================================================
+        // 1. ซ่อม defaultCheckpoint ที่หายไป (กันเหนียว)
         if (defaultCheckpoint == null && allCheckpoints.Length > 0)
         {
-            // พยายามหา Checkpoint ที่มี ID ตรงกับที่เราตั้งไว้ใน defaultStartCheckpointID
             foreach (var cp in allCheckpoints)
             {
                 if (cp.GetCheckpointID() == defaultStartCheckpointID)
                 {
                     defaultCheckpoint = cp;
-                    Debug.Log($"<color=cyan>[GameManager] Re-assigned Default Checkpoint to ID: {defaultStartCheckpointID}</color>");
                     break;
                 }
             }
-
-            // ถ้าหาไม่เจอจริงๆ ให้ใช้ตัวแรกสุดของฉากเป็น Default ไปเลย (กันเหนียว)
-            if (defaultCheckpoint == null)
-            {
-                defaultCheckpoint = allCheckpoints[0];
-                Debug.LogWarning($"[GameManager] Could not find ID '{defaultStartCheckpointID}'. Using first checkpoint ({allCheckpoints[0].GetCheckpointID()}) as default.");
-            }
+            if (defaultCheckpoint == null) defaultCheckpoint = allCheckpoints[0];
         }
-        // ================================================================
 
-
-        // 1. กู้คืนไอเทมและประวัติโบนัสก่อนเป็นอันดับแรก
+        // 2. กู้ไอเทมกลับคืนมาก่อน
         RestoreItemsFromSnapshot();
 
         bool checkpointIsSet = false;
+        if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-        // 2. โหลดตำแหน่ง Checkpoint ล่าสุด (ถ้ามีเซฟ)
-        if (PlayerPrefs.HasKey("LastCheckpoint"))
+        // === 3. ดึงสถานะว่ามากดปุ่ม Continue มาหรือเปล่า ===
+        bool isContinuing = PlayerPrefs.GetInt("IsContinuing", 0) == 1;
+
+        // ถ้าเล่นต่อ (Continue) และมีเซฟอยู่
+        if (isContinuing && PlayerPrefs.HasKey("LastCheckpoint"))
         {
             string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
+
+            // ดึงพิกัด X, Y, Z สุดท้ายที่บันทึกไว้ออกมาตรงๆ 
+            Vector3 savedPos = new Vector3(
+                PlayerPrefs.GetFloat("CheckpointX"),
+                PlayerPrefs.GetFloat("CheckpointY"),
+                PlayerPrefs.GetFloat("CheckpointZ")
+            );
+
             foreach (Checkpoint checkpoint in allCheckpoints)
             {
                 if (checkpoint != null && checkpoint.GetCheckpointID() == checkpointID)
@@ -697,51 +698,43 @@ public class GameManager : MonoBehaviour
                     SetActiveCheckpoint(checkpoint);
                     checkpoint.ActivateCheckpoint();
                     checkpointIsSet = true;
-                    Debug.Log($"<color=lime>Checkpoint loaded from save: {checkpointID}</color>");
+
+                    // บังคับวาร์ปไปยังพิกัดที่เซฟไว้
+                    if (player != null)
+                    {
+                        // ปิดเปิดจังหวะนึงเพื่อกันโดน Physics ของ Unity ดึงกลับ
+                        player.gameObject.SetActive(false);
+                        player.position = savedPos;
+                        player.gameObject.SetActive(true);
+
+                        if (playerDeath != null) playerDeath.Respawn(savedPos);
+                    }
+
+                    Debug.Log($"<color=lime>[Continue] วาร์ปผู้เล่นไปจุดเซฟ: {checkpointID} พิกัด: {savedPos}</color>");
                     break;
                 }
             }
         }
 
-        // 3. ถ้าไม่มีเซฟ (หรือหาไม่เจอ) -> ให้ใช้ Default Checkpoint ที่เราเพิ่งซ่อมไปข้างบน
+        // 4. ถ้าเป็นการเริ่มเกมใหม่ (New Game) หรือหาจุดเซฟไม่เจอ
         if (!checkpointIsSet)
         {
-            // ถ้าอยู่ในโหมด ResetToLastCheckpoint (Debug) เราจะไม่ทำอะไร ให้มันโหลดเซฟ
-            // แต่ถ้าไม่ (โหมดเล่นจริง หรือเพิ่งเริ่มเกมใหม่) ให้ใช้ Default
-
-            // หมายเหตุ: Logic ตรงนี้ขึ้นอยู่กับว่าคุณอยากให้ 'กด R' แล้วกลับไปจุดเซฟล่าสุด หรือกลับไปจุดเริ่มเกม
-            // ถ้าอยากให้กด R แล้วกลับไปจุดเซฟล่าสุดเสมอ ให้ปล่อยผ่าน
-            // ถ้าอยากให้เริ่มใหม่ที่ Default ถ้าไม่มีเซฟ ให้ทำดังนี้:
-
             if (defaultCheckpoint != null)
             {
                 SetActiveCheckpoint(defaultCheckpoint);
                 defaultCheckpoint.ActivateCheckpoint();
-                // ย้าย Player ไปจุด Default ทันทีถ้าจำเป็น
-                if (player != null) player.position = defaultCheckpoint.GetSpawnPosition();
 
-                Debug.Log($"<color=yellow>Starting at Default Checkpoint: {defaultCheckpoint.GetCheckpointID()}</color>");
+                if (player != null)
+                {
+                    player.position = defaultCheckpoint.GetSpawnPosition();
+                    if (playerDeath != null) playerDeath.Respawn(defaultCheckpoint.GetSpawnPosition());
+                }
+
+                Debug.Log($"<color=yellow>[New Game] เริ่มต้นที่จุด Default: {defaultCheckpoint.GetCheckpointID()}</color>");
             }
         }
 
-        // จัดการตำแหน่ง Player ขั้นสุดท้าย
-        if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
-
-        if (player != null)
-        {
-            // ถ้ามี Checkpoint ให้เกิดที่ Checkpoint
-            if (currentActiveCheckpoint != null)
-            {
-                player.position = currentActiveCheckpoint.GetSpawnPosition();
-                if (playerDeath != null) playerDeath.Respawn(currentActiveCheckpoint.GetSpawnPosition());
-            }
-            // ถ้าไม่มี ให้เกิดจุดเริ่มต้น scene (กรณีแย่สุดที่ไม่มี Checkpoint เลย)
-            else
-            {
-                player.position = defaultSpawnPosition;
-            }
-        }
-
+        // อัปเดต UI ของไอเทม
         if (ItemManager.Instance != null)
         {
             ItemManager.Instance.UpdateUI();
@@ -947,6 +940,9 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetFloat("CheckpointX", checkpoint.transform.position.x);
             PlayerPrefs.SetFloat("CheckpointY", checkpoint.transform.position.y);
             PlayerPrefs.SetFloat("CheckpointZ", checkpoint.transform.position.z);
+
+            PlayerPrefs.SetString("SavedScene", SceneManager.GetActiveScene().name);
+            PlayerPrefs.SetInt("HasSavedGame", 1);
             SaveItemSnapshot();
 
             if (showCheckpointDebugInfo) // เช็คตัวแปร debug ก่อน Log
@@ -993,7 +989,10 @@ public class GameManager : MonoBehaviour
     {
 
         if (showCheckpointDebugInfo) Debug.Log("Manual Reset triggered (R key)");
-
+        if (ItemManager.Instance != null)
+        {
+            ItemManager.Instance.ClearAllKeys();
+        }
         // --- แก้ไข: เช็คว่าถ้ามี Checkpoint อยู่แล้ว ให้เซฟย้ำอีกทีก่อนรีเซ็ต ---
         if (currentActiveCheckpoint != null)
         {
@@ -1081,7 +1080,12 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.DeleteKey("CheckpointX");
         PlayerPrefs.DeleteKey("CheckpointY");
         PlayerPrefs.DeleteKey("CheckpointZ");
+
+        PlayerPrefs.DeleteKey("HasSavedGame");
+        PlayerPrefs.DeleteKey("SavedScene");
+        PlayerPrefs.DeleteKey("IsContinuing");
         PlayerPrefs.Save();
+
 
         Debug.Log("ลบข้อมูลเซฟ Checkpoint แล้ว");
     }
@@ -1584,6 +1588,10 @@ public class GameManager : MonoBehaviour
         ClearCheckpointSaveData();
         PlayerPrefs.SetInt("GlueCount", 0);
         PlayerPrefs.SetInt("ThreadCount", 0);
+
+        PlayerPrefs.DeleteKey("HasSavedGame");
+        PlayerPrefs.DeleteKey("SavedScene");
+        PlayerPrefs.DeleteKey("IsContinuing");
         PlayerPrefs.Save();
         Debug.Log("PlayerPrefs cleared for debug reset.");
 
@@ -1657,27 +1665,35 @@ public class GameManager : MonoBehaviour
 
     public void QuitToMainMenu()
     {
-        // 1. ล้างข้อมูลเฟสบอสทิ้ง (เพื่อให้เริ่มใหม่เมื่อเข้าเล่นครั้งหน้า)
+        // สั่งหยุดเวลาและบันทึกเวลาปัจจุบันลง PlayerPrefs ทันที
+        if (SpeedrunTimer.Instance != null)
+        {
+            SpeedrunTimer.Instance.PauseTimer();
+            SpeedrunTimer.Instance.SaveCurrentTimeProgress();
+        }
+
         PlayerPrefs.DeleteKey("CurrentBossPhase");
         PlayerPrefs.DeleteKey("BossItemCount");
         PlayerPrefs.Save();
-        Debug.Log("Cleared Boss Phase Save (User Quit).");
+        Debug.Log("Saved Time and Cleared Boss Phase Save (User Quit to Menu).");
 
-        // 2. ถ้ามีของอื่นๆ ที่อยากล้างตอนออกเกมก็ใส่ตรงนี้
-        // ClearCheckpointSaveData(); // ถ้าอยากให้ Checkpoint หายด้วยก็เปิดบรรทัดนี้
-
-        // 3. เปลี่ยนฉากกลับไปเมนู (ใส่ชื่อ Scene เมนูของคุณ)
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("Main Menu");
     }
 
     public void QuitDesktop()
     {
-        // 1. ล้างข้อมูลก่อนปิดเกม
+        // สั่งหยุดเวลาและบันทึกเวลาปัจจุบันลง PlayerPrefs ทันที
+        if (SpeedrunTimer.Instance != null)
+        {
+            SpeedrunTimer.Instance.PauseTimer();
+            SpeedrunTimer.Instance.SaveCurrentTimeProgress();
+        }
+
         PlayerPrefs.DeleteKey("CurrentBossPhase");
-        PlayerPrefs.Save();
         PlayerPrefs.DeleteKey("BossItemCount");
-        // 2. ปิดโปรแกรม
-        Debug.Log("Quitting Game...");
+        PlayerPrefs.Save();
+
+        Debug.Log("Quitting Game and Saved Progress...");
         Application.Quit();
     }
 

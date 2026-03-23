@@ -10,22 +10,22 @@ public struct ButtonSoundPair
 
 public class SceneButtonSound : MonoBehaviour
 {
-    [Header("ตัวเล่นเสียงหลักประจำฉาก")]
+    [Header("๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยง๏ฟฝ๏ฟฝัก๏ฟฝ๏ฟฝะจำฉาก")]
     public AudioSource localAudioSource;
 
-    [Header("1. ตั้งค่าปุ่ม UI บนหน้าจอ")]
+    [Header("1. ๏ฟฝ๏ฟฝ้งค๏ฟฝาป๏ฟฝ๏ฟฝ๏ฟฝ UI ๏ฟฝ๏ฟฝหน๏ฟฝาจ๏ฟฝ")]
     public ButtonSoundPair[] uiButtonSounds;
 
-    [Header("2. ตั้งค่าปุ่มเหยียบ (Pressure Plate) ในฉาก")]
-    public AudioClip pressurePlateSound; // ลากเสียงเหยียบปุ่มใส่แค่ตรงนี้ที่เดียว!
-    [Header("3. ตั้งค่าคันโยก (Lever)")]
+    [Header("2. ๏ฟฝ๏ฟฝ้งค๏ฟฝาป๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยบ (Pressure Plate) ในฉาก")]
+    public AudioClip pressurePlateSound; // ๏ฟฝาก๏ฟฝ๏ฟฝ๏ฟฝยง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยบ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝรง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ!
+    [Header("3. ๏ฟฝ๏ฟฝ้งค๏ฟฝาคัน๏ฟฝยก (Lever)")]
     public AudioClip leverToggleSound;
     void Start()
     {
         if (localAudioSource == null) return;
 
         // ============================================
-        // ส่วนที่ 1: จัดการปุ่ม UI (แบบเดิม)
+        // ๏ฟฝ๏ฟฝวน๏ฟฝ๏ฟฝ๏ฟฝ 1: ๏ฟฝัด๏ฟฝ๏ฟฝรป๏ฟฝ๏ฟฝ๏ฟฝ UI (แบบ๏ฟฝ๏ฟฝ๏ฟฝ)
         // ============================================
         foreach (ButtonSoundPair pair in uiButtonSounds)
         {
@@ -40,34 +40,34 @@ public class SceneButtonSound : MonoBehaviour
         }
 
         // ============================================
-        // ส่วนที่ 2: จัดการ Pressure Plate อัตโนมัติ (ใหม่)
+        // ๏ฟฝ๏ฟฝวน๏ฟฝ๏ฟฝ๏ฟฝ 2: ๏ฟฝัด๏ฟฝ๏ฟฝ๏ฟฝ Pressure Plate ๏ฟฝัต๏ฟฝ๏ฟฝัต๏ฟฝ (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ)
         // ============================================
         if (pressurePlateSound != null)
         {
-            // สแกนหา PressurePlate ทุกตัวที่วางอยู่ในฉากนี้
+            // ๏ฟฝแกน๏ฟฝ๏ฟฝ PressurePlate ๏ฟฝุก๏ฟฝ๏ฟฝวท๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝในฉาก๏ฟฝ๏ฟฝ๏ฟฝ
             PressurePlate[] allPlates = FindObjectsByType<PressurePlate>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             foreach (PressurePlate plate in allPlates)
             {
-                // บังคับยัด AudioSource และ ไฟล์เสียง จากศูนย์กลางเข้าไปให้มันเลย
+                // ๏ฟฝัง๏ฟฝับ๏ฟฝัด AudioSource ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยง ๏ฟฝาก๏ฟฝูน๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัน๏ฟฝ๏ฟฝ๏ฟฝ
                 plate.audioSource = localAudioSource;
                 plate.activateSound = pressurePlateSound;
             }
-            Debug.Log($"เชื่อมต่อเสียงให้แท่นเหยียบทั้งหมด {allPlates.Length} อันเรียบร้อย!");
+            Debug.Log($"๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยบ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ {allPlates.Length} ๏ฟฝัน๏ฟฝ๏ฟฝ๏ฟฝยบ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ!");
         }
 
         if (leverToggleSound != null)
         {
-            // สแกนหา Lever ทุกตัวในฉาก
+            // ๏ฟฝแกน๏ฟฝ๏ฟฝ Lever ๏ฟฝุก๏ฟฝ๏ฟฝ๏ฟฝในฉาก
             Lever[] allLevers = FindObjectsByType<Lever>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             foreach (Lever lever in allLevers)
             {
-                // ส่ง AudioSource และ เสียงสับคันโยก ไปให้ Lever ทุกตัว
+                // ๏ฟฝ๏ฟฝ AudioSource ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝยง๏ฟฝับ๏ฟฝัน๏ฟฝยก ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Lever ๏ฟฝุก๏ฟฝ๏ฟฝ๏ฟฝ
                 lever.audioSource = localAudioSource;
                 lever.toggleSound = leverToggleSound;
             }
-            Debug.Log($"เชื่อมต่อเสียงให้คันโยกทั้งหมด {allLevers.Length} อันเรียบร้อย!");
+            Debug.Log($"๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยง๏ฟฝ๏ฟฝ๏ฟฝัน๏ฟฝยก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ {allLevers.Length} ๏ฟฝัน๏ฟฝ๏ฟฝ๏ฟฝยบ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ!");
         }
     }
 }

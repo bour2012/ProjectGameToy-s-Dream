@@ -8,15 +8,15 @@ public class CollectibleItem : MonoBehaviour
     [Header("Item Settings")]
     public CollectibleType type = CollectibleType.GenericItem;
 
-    [Tooltip("สำหรับ GenericItem: เลือกประเภทไอเทม")]
+    [Tooltip("๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ GenericItem: ๏ฟฝ๏ฟฝ๏ฟฝอก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ")]
     public ItemManager.ItemType itemType = ItemManager.ItemType.Glue;
-    [Tooltip("สำหรับ GenericItem: จำนวนที่จะได้รับ")]
+    [Tooltip("๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ GenericItem: ๏ฟฝำนวน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ")]
     public int itemAmount = 1;
-    [Tooltip("สำหรับ Key: ID เฉพาะของกุญแจดอกนี้ (ต้องตรงกับประตู)")]
+    [Tooltip("๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ Key: ID เฉพ๏ฟฝะของ๏ฟฝุญแจดอก๏ฟฝ๏ฟฝ๏ฟฝ (๏ฟฝ๏ฟฝอง๏ฟฝรง๏ฟฝับ๏ฟฝ๏ฟฝะต๏ฟฝ)")]
     public string keyID;
 
-    [Tooltip("ID เฉพาะสำหรับไอเทมชิ้นนี้ (ถ้าเว้นว่างจะสร้างให้อัตโนมัติ)")]
-    public string itemID; // <-- เราจะใช้ตัวนี้เป็นหลักในการจดจำ
+    [Tooltip("ID เฉพ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ้นน๏ฟฝ๏ฟฝ (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัต๏ฟฝ๏ฟฝัต๏ฟฝ)")]
+    public string itemID; // <-- ๏ฟฝ๏ฟฝาจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝวน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝักในก๏ฟฝรจ๏ฟฝ๏ฟฝ๏ฟฝ
 
     [Header("Visual Settings")]
     public GameObject itemVisual;
@@ -24,18 +24,18 @@ public class CollectibleItem : MonoBehaviour
     public AudioSource collectSound;
 
     // ==========================================
-    // [ปรับใหม่] การตั้งค่าเอฟเฟกต์ลอยและแสงด้านหลัง
+    // [๏ฟฝ๏ฟฝับ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ] ๏ฟฝ๏ฟฝรต๏ฟฝ้งค๏ฟฝ๏ฟฝ๏ฟฝอฟเฟก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝสง๏ฟฝ๏ฟฝาน๏ฟฝ๏ฟฝัง
     // ==========================================
     [Header("Hover & Background Glow Effects")]
-    public bool enableHoverEffect = true;      // เปิด/ปิด การลอย
-    public float hoverSpeed = 2f;              // ความเร็วในการลอยขึ้นลง
-    public float hoverHeight = 0.2f;           // ระยะความสูงที่ลอย
+    public bool enableHoverEffect = true;      // ๏ฟฝิด/๏ฟฝิด ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
+    public float hoverSpeed = 2f;              // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝในก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยข๏ฟฝ๏ฟฝลง
+    public float hoverHeight = 0.2f;           // ๏ฟฝ๏ฟฝ๏ฟฝะค๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝูง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
 
-    public bool enableGlowEffect = true;       // เปิด/ปิด แสงด้านหลัง
-    public SpriteRenderer glowSpriteRenderer;  // **สำคัญ** ลาก Sprite ของแสงด้านหลังมาใส่ช่องนี้!
-    public float minGlowOpacity = 0.2f;        // ความสว่างขั้นต่ำ (Alpha 0-1)
-    public float maxGlowOpacity = 1f;          // ความสว่างสูงสุด (Alpha 0-1)
-    public float glowSpeed = 3f;               // ความเร็วกะพริบ
+    public bool enableGlowEffect = true;       // ๏ฟฝิด/๏ฟฝิด ๏ฟฝสง๏ฟฝ๏ฟฝาน๏ฟฝ๏ฟฝัง
+    public SpriteRenderer glowSpriteRenderer;  // **๏ฟฝำคัญ** ๏ฟฝาก Sprite ๏ฟฝอง๏ฟฝสง๏ฟฝ๏ฟฝาน๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ!
+    public float minGlowOpacity = 0.2f;        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ้นต๏ฟฝ๏ฟฝ (Alpha 0-1)
+    public float maxGlowOpacity = 1f;          // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝูง๏ฟฝุด (Alpha 0-1)
+    public float glowSpeed = 3f;               // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝวกะพ๏ฟฝิบ
 
     private Vector3 startPosition;
     // ==========================================
@@ -44,37 +44,37 @@ public class CollectibleItem : MonoBehaviour
 
     void Awake()
     {
-        // สร้าง ID อัตโนมัติถ้าไม่ได้กำหนด
+        // ๏ฟฝ๏ฟฝ๏ฟฝาง ID ๏ฟฝัต๏ฟฝ๏ฟฝัติถ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝหน๏ฟฝ
         if (string.IsNullOrEmpty(itemID))
         {
             itemID = $"{gameObject.scene.name}_{gameObject.name}_{transform.position.sqrMagnitude}";
         }
 
-        // --- ส่วนสำคัญที่สุด ---
-        // ตรวจสอบกับ GameManager (ที่ยังคงอยู่หลังตาย) ว่า itemID นี้เคยถูกเก็บไปแล้วหรือยัง
+        // --- ๏ฟฝ๏ฟฝวน๏ฟฝำคัญ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝุด ---
+        // ๏ฟฝ๏ฟฝวจ๏ฟฝอบ๏ฟฝับ GameManager (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ๏ฟฝ) ๏ฟฝ๏ฟฝ๏ฟฝ itemID ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยถูก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง
         if (GameManager.Instance != null && GameManager.Instance.HasItemBeenCollected(itemID))
         {
-            // ถ้าเคยเก็บแล้ว -> ทำลายตัวเองทิ้งไปเงียบๆ ก่อนที่ผู้เล่นจะเห็น
+            // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ -> ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยต๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยบ๏ฟฝ ๏ฟฝ๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ่นจ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
             Destroy(gameObject);
-            return; // ออกจากฟังก์ชันทันที ไม่ต้องทำอะไรต่อ
+            return; // ๏ฟฝอก๏ฟฝาก๏ฟฝัง๏ฟฝ๏ฟฝัน๏ฟฝัน๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝรต๏ฟฝ๏ฟฝ
         }
 
-        // ทำให้แน่ใจว่า Collider เป็น Trigger
+        // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Collider ๏ฟฝ๏ฟฝ Trigger
         GetComponent<Collider2D>().isTrigger = true;
     }
 
     void Start()
     {
-        // จำตำแหน่งเริ่มต้นไว้ เพื่อให้ลอยขึ้นลงจากจุดเดิม
+        // ๏ฟฝำต๏ฟฝ๏ฟฝหน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยข๏ฟฝ๏ฟฝลง๏ฟฝาก๏ฟฝุด๏ฟฝ๏ฟฝ๏ฟฝ
         startPosition = transform.position;
 
-        // ดักกรณีผู้เล่นลืมลาก Glow Sprite มาใส่ ให้ลองหาอัตโนมัติ
+        // ๏ฟฝัก๏ฟฝรณีผ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาก Glow Sprite ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝ๏ฟฝัต๏ฟฝ๏ฟฝัต๏ฟฝ
         if (enableGlowEffect && glowSpriteRenderer == null)
         {
-            // หา SpriteRenderer ในลูกๆ
+            // ๏ฟฝ๏ฟฝ SpriteRenderer ๏ฟฝ๏ฟฝูก๏ฟฝ
             foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
             {
-                // สมมติว่าแสงด้านหลังไม่ใช่ไอเทมหลัก (Visual)
+                // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝสง๏ฟฝ๏ฟฝาน๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัก (Visual)
                 if (itemVisual == null || sr.gameObject != itemVisual)
                 {
                     glowSpriteRenderer = sr;
@@ -88,23 +88,23 @@ public class CollectibleItem : MonoBehaviour
     {
         if (isCollected) return;
 
-        // 1. เอฟเฟกต์ลอยขึ้นลง (Hover)
+        // 1. ๏ฟฝอฟเฟก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยข๏ฟฝ๏ฟฝลง (Hover)
         if (enableHoverEffect)
         {
             float newY = startPosition.y + (Mathf.Sin(Time.time * hoverSpeed) * hoverHeight);
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
 
-        // 2. เอฟเฟกต์แสงด้านหลัง (Background Glow Pulse)
+        // 2. ๏ฟฝอฟเฟก๏ฟฝ๏ฟฝ๏ฟฝสง๏ฟฝ๏ฟฝาน๏ฟฝ๏ฟฝัง (Background Glow Pulse)
         if (enableGlowEffect && glowSpriteRenderer != null)
         {
-            // ใช้ Mathf.Sin คำนวณค่าคลื่น (-1 ถึง 1) แปลงเป็น (0 ถึง 1)
+            // ๏ฟฝ๏ฟฝ Mathf.Sin ๏ฟฝำนวณ๏ฟฝ๏ฟฝาค๏ฟฝ๏ฟฝ๏ฟฝ (-1 ๏ฟฝึง 1) ๏ฟฝลง๏ฟฝ๏ฟฝ (0 ๏ฟฝึง 1)
             float glowAlpha = (Mathf.Sin(Time.time * glowSpeed) + 1f) / 2f;
 
-            // ใช้ Mathf.Lerp เพื่อกะพริบ Alpha ระหว่างค่า Min กับ Max
+            // ๏ฟฝ๏ฟฝ Mathf.Lerp ๏ฟฝ๏ฟฝ๏ฟฝอกะพ๏ฟฝิบ Alpha ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ๏ฟฝ Min ๏ฟฝับ Max
             float finalAlpha = Mathf.Lerp(minGlowOpacity, maxGlowOpacity, glowAlpha);
 
-            // เซ็ตสีใหม่โดยเปลี่ยนแค่ค่า Alpha (A)
+            // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Alpha (A)
             Color currentColor = glowSpriteRenderer.color;
             currentColor.a = finalAlpha;
             glowSpriteRenderer.color = currentColor;
@@ -121,10 +121,10 @@ public class CollectibleItem : MonoBehaviour
 
     void Collect()
     {
-        if (isCollected) return; // ตัด ItemManager.Instance == null ออกเพื่อให้เก็บ Boss Item ได้แม้ไม่มี Manager
+        if (isCollected) return; // ๏ฟฝัด ItemManager.Instance == null ๏ฟฝอก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Boss Item ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ Manager
         isCollected = true;
 
-        // บันทึกว่าเก็บแล้ว (ยกเว้น Key)
+        // ๏ฟฝัน๏ฟฝึก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ (ยก๏ฟฝ๏ฟฝ๏ฟฝ Key)
         if (type != CollectibleType.Key)
         {
             GameManager.Instance?.MarkItemAsCollected(this.itemID);
@@ -143,7 +143,7 @@ public class CollectibleItem : MonoBehaviour
                 break;
 
             case CollectibleType.BossPhaseTrigger:
-                Debug.Log("เก็บของครบ! ไปด่านต่อไป!");
+                Debug.Log("๏ฟฝ็บของ๏ฟฝรบ! ไปด๏ฟฝาน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ!");
                 BossItemUI ui = FindFirstObjectByType<BossItemUI>();
                 if (ui != null)
                 {
@@ -152,8 +152,8 @@ public class CollectibleItem : MonoBehaviour
                 LevelManager levelMgr = FindFirstObjectByType<LevelManager>();
                 if (levelMgr != null)
                 {
-                    // สั่งให้เปลี่ยนด่าน (เดี๋ยว LevelManager จะไปสั่งบอสเอง)
-                    // ถ้ายังไม่จบเกม ให้ไปด่านถัดไป
+                    // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยน๏ฟฝ๏ฟฝาน (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ LevelManager ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ่งบ๏ฟฝ๏ฟฝ๏ฟฝอง)
+                    // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง๏ฟฝ๏ฟฝ่จบ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝไปด๏ฟฝาน๏ฟฝัด๏ฟฝ
                     levelMgr.NextLevel();
 
                 }

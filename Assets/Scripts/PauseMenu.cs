@@ -67,6 +67,7 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1;
         SpeedrunTimer.Instance?.PauseTimer();
+        //SpeedrunTimer.Instance.SaveCurrentTimeProgress();
         SceneManager.LoadScene("Main Menu");
     }
 

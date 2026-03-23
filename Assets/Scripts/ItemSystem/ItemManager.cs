@@ -108,7 +108,7 @@ public class ItemManager : MonoBehaviour
         {
             Debug.Log($"Key Used: {keyID}");
             // หมายเหตุ: โดยทั่วไปเราจะไม่ลบกุญแจหลังจากใช้
-            // collectedKeyIDs.Remove(keyID); // <-- เปิดใช้อันนี้ถ้าอยากให้กุญแจหายไปหลังใช้
+            collectedKeyIDs.Remove(keyID); // <-- เปิดใช้อันนี้ถ้าอยากให้กุญแจหายไปหลังใช้
             return true;
         }
         return false;
@@ -193,6 +193,13 @@ public class ItemManager : MonoBehaviour
 
         //if (showDebugInfo)
         //    Debug.Log($"Set {itemType} count to {count}");
+    }
+
+    public void ClearAllKeys()
+    {
+        collectedKeyIDs.Clear(); // แก้เป็นชื่อนี้ครับ
+        Debug.Log("ล้างกุญแจในกระเป๋าหมดแล้ว เตรียมเริ่มรอบใหม่");
+        Debug.Log("ล้างกุญแจในกระเป๋าหมดแล้ว เตรียมเริ่มรอบใหม่");
     }
 
     #endregion

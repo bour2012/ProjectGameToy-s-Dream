@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpeedrunTimer : MonoBehaviour
 {
@@ -7,12 +8,11 @@ public class SpeedrunTimer : MonoBehaviour
     private float currentTime = 0f;
     private bool isTimerRunning = false;
 
-    // ��������Ѻ૿���Ҩ���ŧ����ͧ
     private const string SAVE_KEY = "GameClearTime";
+    private const string RUNTIME_KEY = "CurrentRunTime"; // เพิ่ม Key สำหรับเก็บเวลาที่กำลังเดินอยู่
 
     void Awake()
     {
-        // �����ʤ�Ի��������§����оѹ ���ⴹ����µ͹����¹��ҹ/���
         if (Instance == null)
         {
             Instance = this;
@@ -32,40 +32,98 @@ public class SpeedrunTimer : MonoBehaviour
         }
     }
 
-    // --- 1. ���¡��͹ "���������ҹ Tutorial" ���� "������ New Game" ---
+    // แก้ไขฟังก์ชันนี้ให้เช็คว่ากด Continue หรือ New Game
     public void StartNewRun()
     {
-        currentTime = 0f;
-        isTimerRunning = true;
+        if (PlayerPrefs.GetInt("IsContinuing", 0) == 0)
+        {
+            currentTime = 0f;
+            PlayerPrefs.SetFloat(RUNTIME_KEY, 0f);
+            isTimerRunning = true;
+            Debug.Log("<color=cyan>[Timer] Started New Run. Time reset to 0.</color>");
+        }
     }
+
     public float GetTotalTime()
     {
         return currentTime;
     }
-    // --- (Optional) ��������� GameManager ���¡��ش���ҵ͹�ѡ��/�٩ҡ ---
-    public void PauseTimer() { isTimerRunning = false; }
-    public void ResumeTimer() { isTimerRunning = true; }
 
-    // --- 2. ���¡��͹ "����ҹ�ش����" ���� "��Һ���˭���" ---
+    public void PauseTimer()
+    {
+        isTimerRunning = false;
+    }
+
+    public void ResumeTimer()
+    {
+        isTimerRunning = true;
+    }
+
+    // เพิ่มฟังก์ชันนี้สำหรับเรียกตอนกด Quilt Game
+    public void SaveCurrentTimeProgress()
+    {
+        PlayerPrefs.SetFloat(RUNTIME_KEY, currentTime);
+        PlayerPrefs.Save();
+        Debug.Log("Saved current run time: " + FormatTime(currentTime));
+    }
+
     public void CompleteRun()
     {
         isTimerRunning = false;
-
-        // �ѹ�֡���ҷ����蹨�ŧ PlayerPrefs (૿����)
         PlayerPrefs.SetFloat(SAVE_KEY, currentTime);
-        PlayerPrefs.Save();
 
+        // เมื่อเคลียร์เกม ลบสถานะเซฟเกมทิ้ง เพื่อไม่ให้กด Continue ได้อีกจนกว่าจะเริ่มเล่นใหม่
+        PlayerPrefs.DeleteKey("HasSavedGame");
+        PlayerPrefs.DeleteKey(RUNTIME_KEY);
+
+        PlayerPrefs.Save();
         Debug.Log("Game Cleared! Time saved: " + FormatTime(currentTime));
     }
 
-    // --- �ѧ��ѹ�ŧ���ҵ���Ţ ����繢�ͤ���Ẻ HH:MM:SS ---
     public static string FormatTime(float timeInSeconds)
     {
         int hours = Mathf.FloorToInt(timeInSeconds / 3600f);
         int minutes = Mathf.FloorToInt((timeInSeconds % 3600f) / 60f);
         int seconds = Mathf.FloorToInt(timeInSeconds % 60f);
-
-        // �Ѵ�������������Ţ 2 ��ѡ���� �� 01:05:09
         return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds);
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // ถ้าโหลดเข้าหน้าชื่อ "MainMenu" ให้หยุดเวลาและบันทึกเวลาทันที!
+        if (scene.name == "Main Menu")
+        {
+            isTimerRunning = false;
+            if (currentTime > 0f)
+            {
+                SaveCurrentTimeProgress();
+                Debug.Log("<color=orange>[Timer] ตรวจพบหน้า Main Menu: บังคับหยุดและเซฟเวลาอัตโนมัติ</color>");
+            }
+        }
+        else
+        {
+            if (PlayerPrefs.GetInt("IsContinuing", 0) == 1)
+            {
+                // ดึงเวลาเดิมกลับมาและสั่งให้เวลาเดินทันทีที่โหลดฉากเสร็จ!
+                currentTime = PlayerPrefs.GetFloat(RUNTIME_KEY, 0f);
+                isTimerRunning = true;
+
+                // ล้างค่าตัวนี้ทิ้ง เพื่อป้องกันการโหลดฉากถัดไปแล้วเวลาบั๊ก
+                PlayerPrefs.SetInt("IsContinuing", 0);
+                PlayerPrefs.Save();
+
+                Debug.Log("<color=lime>[Timer] กลับเข้าเกม (Continue): เริ่มนับเวลาต่อจาก " + FormatTime(currentTime) + "</color>");
+            }
+        }
     }
 }
