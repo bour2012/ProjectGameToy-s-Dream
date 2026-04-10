@@ -1,14 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // --- [��������] ������� using TMPro ������ Text ---
+using TMPro;
 
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] CanvasGroup pauseMenuGroup;
-
-    // --- [��������] ��ͧ����Ѻ��� Text �����˹�� Pause ---
     [SerializeField] TextMeshProUGUI pauseTimeText;
-    // ---------------------------------------------
 
     private bool isPaused = false;
 
@@ -21,16 +18,30 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            isPaused = !isPaused;
-            SetPauseState(isPaused);
+            // ตรวจสอบว่าเปิดหรือปิดอยู่
+            if (isPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                OpenSetting();
+            }
         }
     }
+
     public void OpenSetting()
     {
-       
-            isPaused = !isPaused;
-            SetPauseState(isPaused);
-        
+        // เช็คก่อนว่าสามารถเปิดเมนูได้ไหม (เช่น ถ้าตายอยู่จะได้ไม่เปิดทับ)
+        if (GameManager.Instance != null && !GameManager.Instance.CanChangeToState(GameState.Menu))
+            return;
+
+        SetPauseState(true);
+    }
+
+    public void Resume()
+    {
+        SetPauseState(false);
     }
 
     void SetPauseState(bool pause)
@@ -42,24 +53,34 @@ public class PauseMenu : MonoBehaviour
         {
             pauseMenuGroup.alpha = pause ? 1 : 0;
             pauseMenuGroup.interactable = pause;
-            pauseMenuGroup.blocksRaycasts = pause;
+            pauseMenuGroup.blocksRaycasts = pause; // ป้องกันการกดโดนปุ่มตอนที่เมนูปิดอยู่
         }
 
         if (pause)
         {
             SpeedrunTimer.Instance?.PauseTimer();
 
-            // --- [��������] �֧���һѨ�غѹ�����͹������� Pause ---
             if (pauseTimeText != null && SpeedrunTimer.Instance != null)
             {
                 float currentPlayTime = SpeedrunTimer.Instance.GetTotalTime();
                 pauseTimeText.text = "Time: " + SpeedrunTimer.FormatTime(currentPlayTime);
             }
-            // ----------------------------------------------------
+
+            // --- [เพิ่มใหม่] สั่ง GameManager ให้เปลี่ยน State เป็น Menu เพื่อหยุด Player ---
+            if (GameManager.Instance != null && GameManager.Instance.currentState != GameState.Menu)
+            {
+                GameManager.Instance.OpenMenu();
+            }
         }
         else
         {
             SpeedrunTimer.Instance?.ResumeTimer();
+
+            // --- [เพิ่มใหม่] สั่ง GameManager ให้เปลี่ยน State กลับเป็น Normal เพื่อคืนการควบคุม ---
+            if (GameManager.Instance != null && GameManager.Instance.currentState == GameState.Menu)
+            {
+                GameManager.Instance.CloseMenu();
+            }
         }
     }
 
@@ -67,13 +88,7 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1;
         SpeedrunTimer.Instance?.PauseTimer();
-        //SpeedrunTimer.Instance.SaveCurrentTimeProgress();
         SceneManager.LoadScene("Main Menu");
-    }
-
-    public void Resume()
-    {
-        SetPauseState(false);
     }
 
     public void Restart()

@@ -963,6 +963,8 @@ MonoBehaviour:
   jumpSfx: {fileID: 8300000, guid: 2ab234f4d543da6489fba6b16e41e411, type: 3}
   jumpSfxVolume: 0.08
   walkSfx: {fileID: 8300000, guid: ff591ef269c5c904094e1eb27a9cb33c, type: 3}
+  climbSfx: {fileID: 8300000, guid: 5805ee96857cb4b4b835e77b8e3ed404, type: 3}
+  climbSfxVolume: 1
   audioMixerGroup: {fileID: 8857546310750713109, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
   isSwinging: 0
   ropeHook: {x: 0, y: 0}

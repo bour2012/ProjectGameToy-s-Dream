@@ -676,11 +676,11 @@ public class GameManager : MonoBehaviour
         bool checkpointIsSet = false;
         if (player == null) player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-        // === 3. ดึงสถานะว่ามากดปุ่ม Continue มาหรือเปล่า ===
-        bool isContinuing = PlayerPrefs.GetInt("IsContinuing", 0) == 1;
+        //// === 3. ดึงสถานะว่ามากดปุ่ม Continue มาหรือเปล่า ===
+        //bool isContinuing = PlayerPrefs.GetInt("IsContinuing", 0) == 1;
 
         // ถ้าเล่นต่อ (Continue) และมีเซฟอยู่
-        if (isContinuing && PlayerPrefs.HasKey("LastCheckpoint"))
+        if (PlayerPrefs.HasKey("LastCheckpoint"))
         {
             string checkpointID = PlayerPrefs.GetString("LastCheckpoint");
 
@@ -1414,14 +1414,14 @@ public class GameManager : MonoBehaviour
 
     void HandleGlobalInput()
     {
-        // ESC - เปิด/ปิดเมนู
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (currentState == GameState.Menu)
-                CloseMenu();
-            else if (CanChangeToState(GameState.Menu))
-                OpenMenu();
-        }
+        //// ESC - เปิด/ปิดเมนู
+        //if (Input.GetKeyDown(KeyCode.Escape))
+        //{
+        //    if (currentState == GameState.Menu)
+        //        CloseMenu();
+        //    else if (CanChangeToState(GameState.Menu))
+        //        OpenMenu();
+        //}
     }
 
     #endregion

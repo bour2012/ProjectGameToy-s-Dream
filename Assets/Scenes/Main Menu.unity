@@ -11262,6 +11262,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2054401703}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &335934092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19311,6 +19323,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1386025886}
         m_TargetAssemblyTypeName: SceneTransition, Assembly-CSharp
         m_MethodName: QuitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2054401703}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -27808,6 +27832,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1874032310}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
         m_MethodName: ContinueGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2054401703}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -51371,6 +51407,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7195913143500293948, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 3964744677678150508, guid: f4f0e8846e23e7546bd1492da3d4a9fe, type: 3}
     - target: {fileID: 7567051753033174043, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -51396,6 +51436,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+--- !u!82 &2054401703 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 8521208208435017353, guid: 28c86650b9c21c645bae019f38cebb57, type: 3}
+  m_PrefabInstance: {fileID: 2054401702}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2054703526
 GameObject:
   m_ObjectHideFlags: 0
