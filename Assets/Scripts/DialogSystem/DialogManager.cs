@@ -24,6 +24,12 @@ public class DialogManager : MonoBehaviour
     [SerializeField] private int dialogCameraPriority = 100;
     [SerializeField] private float cameraMovementThreshold = 0.01f;
 
+    [Header("Camera Reset Settings")]
+    [Tooltip("เปิด (True) = ซูมเสร็จกลับไปหา Player เสมอ เพื่อกันกล้องกระชากรอบหน้า\nปิด (False) = ทำงานเหมือนออริจินัล (กลับไปหา Player แต่ตัว DialogCamera จำเป้าหมายล่าสุดไว้)")]
+    public bool resetCameraOnDialogEnd = true;
+    [Tooltip("หน่วงเวลา (วินาที) ที่จะให้กล้องค้างไว้ที่เดิมก่อนจะกลับไปหาเป้าหมายหลัก (ทำงานเมื่อเปิด Reset Camera เป็น True)")]
+    public float cameraResetDelay = 1.0f;
+
     private CinemachinePositionComposer positionComposer;
 
     [Header("Text Animation")]
@@ -34,7 +40,12 @@ public class DialogManager : MonoBehaviour
     private Coroutine zoomCoroutine;
     private float currentTargetLensSize;
     private float initialLensSize;
+
+    private Transform initialCameraTarget;
+
     private Coroutine typewriterCoroutine;
+    private Coroutine cameraResetCoroutine;
+
     private DialogTrigger currentOriginator;
     private DialogData[] currentSequence;
     private int currentIndex = 0;
@@ -47,6 +58,7 @@ public class DialogManager : MonoBehaviour
     private float autoAdvanceDelay = 2f;
     private bool isWaitingForCamera = false;
     private Coroutine autoAdvanceCoroutine;
+
     void Awake()
     {
         Instance = this;
@@ -58,6 +70,8 @@ public class DialogManager : MonoBehaviour
         {
             positionComposer = dialogCamera.GetComponent<CinemachinePositionComposer>();
             dialogCamera.Priority = 0;
+
+            initialCameraTarget = dialogCamera.Follow;
 
             if (dialogCamera.Lens.Orthographic)
                 defaultLensSize = dialogCamera.Lens.OrthographicSize;
@@ -90,7 +104,6 @@ public class DialogManager : MonoBehaviour
             if (isTyping)
             {
                 StopTypewriter();
-                // ถ้ากดข้าม ให้โชว์ข้อความทั้งหมดทันที (รวมถึง Tag สีด้วย)
                 if (currentSequence != null && currentIndex < currentSequence.Length)
                     dialogText.text = currentSequence[currentIndex].dialogText;
             }
@@ -100,6 +113,7 @@ public class DialogManager : MonoBehaviour
             }
         }
     }
+
     public void ForceStopDialog()
     {
         StopAllCoroutines();
@@ -107,27 +121,28 @@ public class DialogManager : MonoBehaviour
         if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
         if (autoAdvanceCoroutine != null) StopCoroutine(autoAdvanceCoroutine);
 
+        if (cameraResetCoroutine != null) StopCoroutine(cameraResetCoroutine);
+
         isDialogActive = false;
         isTyping = false;
-        isTransitioning = false;   // <--- ตัวการที่ทำให้กดไม่ได้
-        isWaitingForCamera = false; // <--- ตัวการที่ทำให้กดไม่ได้
-        isShowingHint = false;     // <--- ตัวการที่ทำให้กดไม่ได้
+        isTransitioning = false;
+        isWaitingForCamera = false;
+        isShowingHint = false;
 
         if (dialogBox != null) dialogBox.SetActive(false);
 
-        // ถ้ามีการ Fade ค้างไว้ ต้องเคลียร์ให้ใสเหมือนเดิม
         if (fadePanelCanvasGroup != null)
         {
             fadePanelCanvasGroup.alpha = 0;
             fadePanelCanvasGroup.blocksRaycasts = false;
         }
 
-        // 4. คืนค่ากล้อง
-        if (dialogCamera != null) dialogCamera.Priority = 0;
+        // สั่งทำงานทันทีโดยไม่สน Delay
+        CleanupCameraState(true);
 
-        // 5. คืนค่า Game Manager (ปลดล็อคตัวละคร)
         if (GameManager.Instance != null) GameManager.Instance.EndDialogState();
     }
+
     private void StopAutoAdvance()
     {
         if (autoAdvanceCoroutine != null)
@@ -136,9 +151,16 @@ public class DialogManager : MonoBehaviour
             autoAdvanceCoroutine = null;
         }
     }
+
     public void StartDialogSequence(DialogData[] sequence, DialogTrigger originator, bool freezePlayer, bool autoNext = false, float delay = 2f)
     {
         if (sequence == null || sequence.Length == 0 || isDialogActive) return;
+
+        if (cameraResetCoroutine != null)
+        {
+            StopCoroutine(cameraResetCoroutine);
+            cameraResetCoroutine = null;
+        }
 
         currentOriginator = originator;
         currentSequence = sequence;
@@ -400,10 +422,67 @@ public class DialogManager : MonoBehaviour
         isWaitingForCamera = false;
         isDialogActive = false;
         if (dialogBox != null) dialogBox.SetActive(false);
-        if (dialogCamera != null) dialogCamera.Priority = 0;
+
+        CleanupCameraState(false);
+
         if (GameManager.Instance != null) GameManager.Instance.EndDialogState();
         currentOriginator?.InvokeCompletionEvent();
     }
+
+    // ---------------------------------------------------------
+    // ลอจิกควบคุมกล้องตอนคุยจบ (ปรับแก้ให้ตรงกับออริจินัลเมื่อเลือก False)
+    // ---------------------------------------------------------
+    private void CleanupCameraState(bool isImmediate)
+    {
+        if (dialogCamera == null) return;
+
+        // ถ้าเลือกปิด (False) ให้ทำงานเหมือนโค้ดต้นฉบับของคุณเป๊ะๆ
+        if (!resetCameraOnDialogEnd)
+        {
+            // คืน Priority เป็น 0 ทันที เพื่อให้กล้องหลักกลับมาทำงานและตาม Player
+            dialogCamera.Priority = 0;
+            return; // จบแค่นี้ ไม่ต้องยุ่งกับค่า Follow/Lens (ปล่อยให้มันจำค่าล่าสุดไว้)
+        }
+
+        // ถ้าเลือกเปิด (True) เช็คว่าจะทำทันที หรือจะหน่วงเวลาก่อน
+        if (isImmediate || cameraResetDelay <= 0f)
+        {
+            ExecuteCameraReset();
+        }
+        else
+        {
+            cameraResetCoroutine = StartCoroutine(DelayedCameraResetRoutine());
+        }
+    }
+
+    private IEnumerator DelayedCameraResetRoutine()
+    {
+        // หน่วงเวลาให้ผู้เล่นดูบรรยากาศ/ตำแหน่งเดิมก่อน
+        yield return new WaitForSeconds(cameraResetDelay);
+        ExecuteCameraReset();
+    }
+
+    private void ExecuteCameraReset()
+    {
+        if (dialogCamera != null)
+        {
+            // 1. คืน Priority เป็น 0 เพื่อสลับกลับไปหากล้องหลัก
+            dialogCamera.Priority = 0;
+
+            // 2. ล้างค่าความจำของ Dialog Camera กลับเป็น Player เหมือนเดิม
+            dialogCamera.Follow = initialCameraTarget;
+
+            var lensSettings = dialogCamera.Lens;
+            if (lensSettings.Orthographic)
+                lensSettings.OrthographicSize = initialLensSize;
+            else
+                lensSettings.FieldOfView = initialLensSize;
+
+            dialogCamera.Lens = lensSettings;
+            currentTargetLensSize = initialLensSize;
+        }
+    }
+    // ---------------------------------------------------------
 
     private void StopTypewriter()
     {
@@ -415,13 +494,10 @@ public class DialogManager : MonoBehaviour
         isTyping = false;
     }
 
-    // --------------------------------------------------------------------------------
-    // ส่วนที่แก้ไขเพื่อแก้ปัญหา Tag สีโผล่
-    // --------------------------------------------------------------------------------
     private IEnumerator TypewriterEffect(DialogData data)
     {
         isTyping = true;
-        dialogText.text = ""; // ล้างข้อความเก่า
+        dialogText.text = "";
 
         if (string.IsNullOrEmpty(data.dialogText))
         {
@@ -430,39 +506,26 @@ public class DialogManager : MonoBehaviour
             yield break;
         }
 
-        // แปลงข้อความทั้งหมดเป็น String ปกติเพื่อเช็ค Tag ได้ง่าย
         string fullText = data.dialogText;
 
         for (int i = 0; i < fullText.Length; i++)
         {
-            // 1. ตรวจสอบว่าตัวอักษรนี้เป็นจุดเริ่มต้นของ Tag หรือไม่ (<)
             if (fullText[i] == '<')
             {
-                // มองหาจุดจบของ Tag (>)
                 int closeIndex = fullText.IndexOf('>', i);
 
-                // ถ้าเจอจุดจบ แสดงว่าเป็น Tag จริงๆ
                 if (closeIndex != -1)
                 {
-                    // ดึงข้อความทั้งก้อน Tag ออกมา (เช่น <color=red>)
                     string tag = fullText.Substring(i, closeIndex - i + 1);
-
-                    // เติม Tag ลงไปใน Text ทันที (เพื่อให้ Unity รู้ว่าต้องเปลี่ยนสี)
                     dialogText.text += tag;
-
-                    // กระโดดข้าม Index ไปที่ตัวสุดท้ายของ Tag เลย (ไม่ต้องรอพิมพ์ทีละตัว)
                     i = closeIndex;
-
-                    // ข้ามการเล่นเสียงและการรอเวลาใน Loop นี้
                     continue;
                 }
             }
 
-            // 2. ถ้าไม่ใช่ Tag ก็พิมพ์ตัวอักษรปกติ
             char c = fullText[i];
             dialogText.text += c;
 
-            // เล่นเสียงเฉพาะตอนพิมพ์ตัวอักษรปกติ (ไม่เล่นตอนใส่ Tag)
             if (data.currentVoice != null)
             {
                 PlayLetterSound(c, data);
@@ -470,7 +533,6 @@ public class DialogManager : MonoBehaviour
             else if (data.typingSound != null && c != ' ')
             {
                 int freq = Mathf.Max(1, data.playSoundFrequency);
-                // เช็คว่าตัวนี้ควรเล่นเสียงไหม
                 if (dialogText.text.Length % freq == 0)
                 {
                     PlayTypingSound(data);
@@ -483,11 +545,10 @@ public class DialogManager : MonoBehaviour
         isTyping = false;
         if (autoAdvance)
         {
-            StopAutoAdvance(); // กันพลาด
-            autoAdvanceCoroutine = StartCoroutine(AutoAdvanceCoroutine()); // เก็บตัวแปร
+            StopAutoAdvance();
+            autoAdvanceCoroutine = StartCoroutine(AutoAdvanceCoroutine());
         }
     }
-    // --------------------------------------------------------------------------------
 
     private void PlayTypingSound(DialogData data)
     {
@@ -537,14 +598,11 @@ public class DialogManager : MonoBehaviour
             src.PlayOneShot(data.typingSound);
         }
     }
+
     public void ShowAlert(string message, VoiceProfile sound = null, int freq = 2, bool rndPitch = true, Vector2? pRange = null)
     {
-
         DialogData tempData = new DialogData();
-
         tempData.dialogText = message;
-
-        // กำหนดค่า Default เพื่อไม่ให้เกิดบั๊ก
         tempData.useFadeCut = false;
         tempData.changeZoom = false;
         tempData.isHint = false;
@@ -555,24 +613,10 @@ public class DialogManager : MonoBehaviour
             tempData.currentVoice = sound;
             tempData.playSoundFrequency = freq;
             tempData.randomizePitch = rndPitch;
-            // ถ้ามีการส่ง pRange มาให้ใช้ค่าที่ส่งมา ถ้าไม่มีให้ใช้ค่ามาตรฐาน (0.9 - 1.1)
             tempData.pitchRange = pRange ?? new Vector2(0.9f, 1.1f);
         }
-        // เริ่มระบบโดยส่งข้อมูลจำลองเข้าไป
         StartDialogSequence(new DialogData[] { tempData }, null, true);
-
-        //DialogData tempData = new DialogData();
-
-
-        //tempData.dialogText = message;
-
-        //tempData.useFadeCut = false;
-        //tempData.changeZoom = false;
-        //tempData.isHint = false;
-
-        //StartDialogSequence(new DialogData[] { tempData }, null, true);
     }
-
 
     private IEnumerator AutoAdvanceCoroutine(float delayTime = -1f)
     {

@@ -4396,6 +4396,10 @@ MonoBehaviour:
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
       wasActiveAtStart: 0
+    - gameObject: {fileID: 150987265}
+      storedPosition: {x: 0, y: 0, z: 0}
+      storedRotation: {x: 0, y: 0, z: 0, w: 0}
+      wasActiveAtStart: 0
     - gameObject: {fileID: 1969285390}
       storedPosition: {x: 0, y: 0, z: 0}
       storedRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -82995,6 +82999,10 @@ PrefabInstance:
       propertyPath: dialogCamera
       value: 
       objectReference: {fileID: 1375569798}
+    - target: {fileID: 1072797966149843291, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: resetCameraOnDialogEnd
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1280402993167385819, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_IsActive
       value: 1
