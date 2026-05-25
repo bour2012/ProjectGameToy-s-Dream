@@ -14220,6 +14220,8 @@ MonoBehaviour:
   dialogCamera: {fileID: 0}
   dialogCameraPriority: 100
   cameraMovementThreshold: 0.01
+  resetCameraOnDialogEnd: 1
+  cameraResetDelay: 1
   useTypewriterEffect: 1
   typewriterSpeed: 0.015
 --- !u!114 &457222212
@@ -14389,6 +14391,13 @@ MonoBehaviour:
   unavailableColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 0.76862746}
   respectGameManagerState: 1
   switchSound: {fileID: 0}
+  audioMixerGroup: {fileID: 0}
+  mainSlotIcon: {fileID: 0}
+  mainSlotText: {fileID: 0}
+  subSlotIcon: {fileID: 0}
+  subSlotText: {fileID: 0}
+  glueSprite: {fileID: 0}
+  threadSprite: {fileID: 0}
 --- !u!114 &457222215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14514,6 +14523,9 @@ MonoBehaviour:
   jumpSfx: {fileID: 0}
   jumpSfxVolume: 1
   walkSfx: {fileID: 0}
+  climbSfx: {fileID: 0}
+  climbSfxVolume: 1
+  audioMixerGroup: {fileID: 0}
   isSwinging: 0
   ropeHook: {x: 0, y: 0}
   stompEffectPrefab: {fileID: 0}
@@ -55091,13 +55103,17 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3021559752427781224, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.5648906
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7444553
+      value: 2.7444565
       objectReference: {fileID: 0}
     - target: {fileID: 3902534689289002104, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: Lens.FieldOfView

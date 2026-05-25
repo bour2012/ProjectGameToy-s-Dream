@@ -53070,12 +53070,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgmAudioSource: {fileID: 2089691862}
   sceneBGM: {fileID: 8300000, guid: 4a796c9ed004477419b85d98243f6a1a, type: 3}
-  godModeKey: 291
+  godModeKey: 0
   godModeSpeed: 10
   defaultStartCheckpointID: 01
   defaultCheckpoint: {fileID: 0}
   showCheckpointDebugInfo: 0
-  resetToLastCheckpoint: 1
+  resetToLastCheckpoint: 0
   debugGameGM: 0
   currentState: 0
   player: {fileID: 0}
