@@ -28,9 +28,15 @@ public class BossItemUI : MonoBehaviour
 
     void UpdateUI()
     {
+       if (counterText == null) 
+        {
+            Debug.LogWarning("BossItemUI: ลืมลาก Text ใส่ช่อง Counter Text ใน Inspector ครับ!");
+            return; // สั่งหยุดการทำงานของฟังก์ชันนี้ทันที เพื่อไม่ให้ลงไปเจอ Error ด้านล่าง
+        }
+
+        // โค้ดเดิมของคุณ
         counterText.text = $"{currentCount} / {maxCount}";
 
-        // เช็คสีเขียวทุกครั้งที่มีการอัปเดต UI (เผื่อตอนโหลดซีนใหม่มาแล้วของครบพอดี)
         if (currentCount >= maxCount)
         {
             counterText.color = Color.green;

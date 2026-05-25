@@ -750,6 +750,13 @@ public class GameManager : MonoBehaviour
     {
         // หา PlayerDeath component
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            // เปลี่ยนจาก Debug.LogError เป็นแค่ Log ธรรมดา (หรือจะลบทิ้งไม่ให้โชว์อะไรเลยก็ได้ครับ)
+            Debug.Log("GameManager: ซีนนี้ไม่มี Player ข้ามการทำงานระบบ Checkpoint");
+         
+            return;
+        }
         if (playerObj != null)
         {
             playerDeath = playerObj.GetComponent<PlayerDeathSystem>();

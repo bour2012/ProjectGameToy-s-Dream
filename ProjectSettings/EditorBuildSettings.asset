@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Town/GamePlayTown.unity
     guid: 2289a04e6b4c7b8448a4128b896b64f3
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/GamePlayTown_Level2_Demo.unity
     guid: b13ccc3761a3245478224256475c9858
   - enabled: 1
@@ -23,7 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GamePlayZone/GamePlayZone2.unity
     guid: cc53fdb192b75144586443be6c5bc4c1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TestLevel.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1

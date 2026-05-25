@@ -430,34 +430,33 @@ public class DialogManager : MonoBehaviour
     }
 
     // ---------------------------------------------------------
-    // ลอจิกควบคุมกล้องตอนคุยจบ (ปรับแก้ให้ตรงกับออริจินัลเมื่อเลือก False)
+    // แก้ไขใหม่: คืนมุมมองให้กล้องหลักทันที ส่วนการเคลียร์ค่ากล้องแยกไปรอด้านหลัง
     // ---------------------------------------------------------
     private void CleanupCameraState(bool isImmediate)
     {
         if (dialogCamera == null) return;
 
-        // ถ้าเลือกปิด (False) ให้ทำงานเหมือนโค้ดต้นฉบับของคุณเป๊ะๆ
-        if (!resetCameraOnDialogEnd)
-        {
-            // คืน Priority เป็น 0 ทันที เพื่อให้กล้องหลักกลับมาทำงานและตาม Player
-            dialogCamera.Priority = 0;
-            return; // จบแค่นี้ ไม่ต้องยุ่งกับค่า Follow/Lens (ปล่อยให้มันจำค่าล่าสุดไว้)
-        }
+        // บังคับคืน Priority เป็น 0 ทันทีเสมอ เพื่อให้กล้องหลัก (ตัวเกมปกติ) ได้ทำงานเลย! ไม่ต้องรอ!
+        dialogCamera.Priority = 0;
 
-        // ถ้าเลือกเปิด (True) เช็คว่าจะทำทันที หรือจะหน่วงเวลาก่อน
+        // ถ้าเลือกปิด (False) ก็จบแค่นี้ ปล่อยให้มันจำเป้าหมายล่าสุดไป
+        if (!resetCameraOnDialogEnd) return;
+
+        // ถ้าเลือกเปิด (True) เช็คว่าจะล้างค่า (Follow & Lens) ทันที หรือหน่วงเวลาก่อน
         if (isImmediate || cameraResetDelay <= 0f)
         {
             ExecuteCameraReset();
         }
         else
         {
+            // ปล่อยให้ผู้เล่นเล่นเกมไปตามปกติ ส่วนระบบนี้จะแอบไปทำงานล้างค่าด้านหลังเมื่อหมดเวลา
             cameraResetCoroutine = StartCoroutine(DelayedCameraResetRoutine());
         }
     }
 
     private IEnumerator DelayedCameraResetRoutine()
     {
-        // หน่วงเวลาให้ผู้เล่นดูบรรยากาศ/ตำแหน่งเดิมก่อน
+        // หน่วงเวลาการล้างค่าของกล้อง Dialog Camera (ไม่กระทบมุมมองของผู้เล่นแล้ว)
         yield return new WaitForSeconds(cameraResetDelay);
         ExecuteCameraReset();
     }
@@ -466,10 +465,7 @@ public class DialogManager : MonoBehaviour
     {
         if (dialogCamera != null)
         {
-            // 1. คืน Priority เป็น 0 เพื่อสลับกลับไปหากล้องหลัก
-            dialogCamera.Priority = 0;
-
-            // 2. ล้างค่าความจำของ Dialog Camera กลับเป็น Player เหมือนเดิม
+            // ล้างค่าความจำของ Dialog Camera กลับเป็นค่าเริ่มต้น (Player) เพื่อไม่ให้กระชากเวลามีการคุยใหม่
             dialogCamera.Follow = initialCameraTarget;
 
             var lensSettings = dialogCamera.Lens;

@@ -178774,8 +178774,8 @@ MonoBehaviour:
   - dialogText: 'Bat : You can''t get into the castle without this key!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 259815871}
     waitForCamera: 0
@@ -178808,8 +178808,8 @@ MonoBehaviour:
   - dialogText: 'Bat : Take this!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 0}
     waitForCamera: 0
@@ -178866,8 +178866,8 @@ MonoBehaviour:
 '
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 0}
     waitForCamera: 0
@@ -229055,8 +229055,8 @@ MonoBehaviour:
   - dialogText: 'Demon Lord : Stop right there! Intruder!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 732969320}
     waitForCamera: 0
@@ -229112,8 +229112,8 @@ MonoBehaviour:
       be consequences! !'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 732969320}
     waitForCamera: 0
@@ -229147,8 +229147,8 @@ MonoBehaviour:
       ahead!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 732969320}
     waitForCamera: 0
@@ -229181,7 +229181,7 @@ MonoBehaviour:
   - dialogText: 'Demon Lord : Muahaha!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
+    playSoundFrequency: 5
     randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 732969320}

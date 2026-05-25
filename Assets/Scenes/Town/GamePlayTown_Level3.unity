@@ -18650,8 +18650,8 @@ MonoBehaviour:
   - dialogText: 'Demon Lord : This is the end for you!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 1324035636}
     waitForCamera: 1
@@ -25480,8 +25480,8 @@ MonoBehaviour:
   - dialogText: 'Demon Lord : It''s not over yet, hero!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 0}
     waitForCamera: 1
@@ -25619,7 +25619,7 @@ MonoBehaviour:
       Townspeople!!'
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: df1af8d7a0eda4341a686db3e72c1f7a, type: 3}
-    playSoundFrequency: 2
+    playSoundFrequency: 5
     randomizePitch: 0
     pitchRange: {x: 0, y: 2}
     focusTarget: {fileID: 1926134402}
@@ -49241,8 +49241,8 @@ MonoBehaviour:
 '
     currentVoice: {fileID: 0}
     typingSound: {fileID: 8300000, guid: 987f1009730310d4480fc9b2c4263ddf, type: 3}
-    playSoundFrequency: 2
-    randomizePitch: 1
+    playSoundFrequency: 5
+    randomizePitch: 0
     pitchRange: {x: 0.9, y: 1.1}
     focusTarget: {fileID: 0}
     waitForCamera: 0
