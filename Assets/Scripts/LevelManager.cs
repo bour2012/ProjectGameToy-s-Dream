@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    [Header ("Debug Skip Level Boss")]
+    public bool debugSkipLevel = false;
+
     [Header("Level Configuration")]
     public LevelData[] levels;
     public int currentLevelIndex = 0;
@@ -83,7 +86,7 @@ public class LevelManager : MonoBehaviour
     void Update()
     {
         // ระบบ Debug: กด F1 เพื่อบังคับข้ามไปด่านต่อไปทันที
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.F1) && debugSkipLevel)
         {
             if (!isTransitioning)
             {
@@ -97,7 +100,7 @@ public class LevelManager : MonoBehaviour
         }
 
         // (แถมให้เผื่อต้องใช้) กด F2 เพื่อย้อนกลับด่านก่อนหน้า
-        if (Input.GetKeyDown(KeyCode.F2))
+        if (Input.GetKeyDown(KeyCode.F2) && debugSkipLevel)
         {
             if (!isTransitioning && currentLevelIndex > 0)
             {
