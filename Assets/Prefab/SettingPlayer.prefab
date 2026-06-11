@@ -964,7 +964,7 @@ MonoBehaviour:
   jumpSfxVolume: 0.08
   walkSfx: {fileID: 8300000, guid: ff591ef269c5c904094e1eb27a9cb33c, type: 3}
   climbSfx: {fileID: 8300000, guid: 5805ee96857cb4b4b835e77b8e3ed404, type: 3}
-  climbSfxVolume: 1
+  climbSfxVolume: 0.08
   audioMixerGroup: {fileID: 8857546310750713109, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
   isSwinging: 0
   ropeHook: {x: 0, y: 0}
@@ -1374,7 +1374,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.4
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0
