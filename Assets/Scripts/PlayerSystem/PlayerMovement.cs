@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.Audio;
 public class PlayerMovement : MonoBehaviour
@@ -14,6 +14,10 @@ public class PlayerMovement : MonoBehaviour
     public float airControl = 0.5f;
     public float maxAirSpeed = 2f;
     public float swingForce = 4f;
+
+    [Header("Jump Assist")]
+    public float coyoteTime = 0.12f;
+    public float jumpBufferTime = 0.15f;
 
     [Header("Ground Check")]
     public Transform stompCheck;
@@ -84,6 +88,8 @@ public class PlayerMovement : MonoBehaviour
     private bool hitWallRight;
     private bool facingRight = true;
     private bool suppressInputUntilRelease = false;
+    private float coyoteTimeCounter;
+    private float jumpBufferCounter;
     #endregion
 
     #region Unity Callbacks
@@ -456,21 +462,47 @@ public class PlayerMovement : MonoBehaviour
     }
     public void ProcessInput()
     {
-
-        if (Input.GetButtonDown("Jump") && (groundCheck || isSwinging))
+        // --- Coyote Time: ให้กระโดดได้แม้ตกจากขอบไปแล้วเล็กน้อย ---
+        if (groundCheck)
         {
-            // ถ้าอยู่บนพื้นให้ตั้งค่า isJumping เพื่อใส่แรงกระโดดตอนเดินบนพื้น
-            if (groundCheck)
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        // --- Jump Buffer: จำการกด Jump ไว้ เพื่อกระโดดทันทีพอแตะพื้น ---
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+
+        // --- ตรวจสอบการกระโดดด้วย Coyote Time + Jump Buffer ---
+        bool canCoyoteJump = coyoteTimeCounter > 0f;
+        if (jumpBufferCounter > 0f && (canCoyoteJump || isSwinging))
+        {
+            // กระโดดจากพื้น (หรือ coyote) — ไม่ใช่จากเชือก
+            if (canCoyoteJump && !isSwinging)
             {
                 isJumping = true;
             }
 
-            // เล่นเสียงกระโดด (เล่นทั้งตอนกระโดดจากพื้น และ กระโดดออกจากเชือก)
+            // ป้องกัน double jump จาก coyote time
+            jumpBufferCounter = 0f;
+            coyoteTimeCounter = 0f;
+
+            // เล่นเสียงกระโดด (ทั้งจากพื้นและจากเชือก)
             if (jumpSfx != null && audioSource != null)
             {
                 audioSource.PlayOneShot(jumpSfx, jumpSfxVolume);
             }
         }
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
     }
     private void UpdateFirePointPosition()

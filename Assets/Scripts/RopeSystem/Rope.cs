@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,6 +22,16 @@ public class Rope : MonoBehaviour
     public LayerMask ropeLayerMask;
     public float ropeMaxCastDistance = 20f;
     public float ropeStandardDistance = 5f;
+
+    [Header("Aim Assist")]
+    public float aimAssistRadius = 0.5f;
+    public float aimAssistAngle = 15f;
+    public bool enableAimAssist = true;
+    public bool snapToHookCenter = true;
+
+    [Header("Crosshair Feedback")]
+    public Color crosshairNormalColor = Color.white;
+    public Color crosshairHighlightColor = Color.green;
 
     [Header("Game Manager Integration")]
     public bool respectGameManagerState = true;
@@ -96,6 +106,15 @@ public class Rope : MonoBehaviour
         if (!ropeAttached)
         {
             SetCrosshairPosition(aimAngle);
+
+                // Aim assist preview — highlight crosshair when a valid rope target is in range
+                if (enableAimAssist && crosshairSprite != null)
+                {
+                    Vector2 aimDir2D = new Vector2(Mathf.Cos(aimAngle), Mathf.Sin(aimAngle));
+                    Vector2 previewOrigin = playerPosition + aimDir2D * 0.2f;
+                    RaycastHit2D previewHit = FindBestRopeTarget(previewOrigin, aimDir2D);
+                    crosshairSprite.color = (previewHit.collider != null) ? crosshairHighlightColor : crosshairNormalColor;
+                }
 
             if (wasSwingingLastFrame)
             {
@@ -186,15 +205,18 @@ public class Rope : MonoBehaviour
 
             ropeRenderer.enabled = true;
 
-            // แก้ไข: ขยับจุดเริ่ม Raycast ออกจากตัวละครเล็กน้อย เพื่อป้องกัน Raycast ชนตัวผู้เล่นเอง
+            // Aim Assist: ใช้ CircleCast + Cone Search แทน Raycast ธรรมดา เพื่อให้จับเชือกง่ายขึ้น
             Vector2 rayOrigin = playerPosition + aimDirection * 0.2f;
-            var hit = Physics2D.Raycast(rayOrigin, aimDirection, ropeMaxCastDistance, ropeLayerMask);
+            var hit = FindBestRopeTarget(rayOrigin, aimDirection);
 
             if (hit.collider != null)
             {
                 ropeAttached = true;
                 attachedTarget = hit.collider.transform;
-                localHitOffset = (Vector2)hit.point - (Vector2)attachedTarget.position;
+
+                // Snap to center: ใช้จุดกลางของ hook object แทน hit point ดิบ เพื่อให้เชือกดูสวย
+                Vector2 snapPoint = snapToHookCenter ? (Vector2)attachedTarget.position : (Vector2)hit.point;
+                localHitOffset = snapPoint - (Vector2)attachedTarget.position;
 
                 if (ItemManager.Instance != null)
                 {
@@ -205,16 +227,16 @@ public class Rope : MonoBehaviour
                     }
                 }
 
-                if (!ropePositions.Contains(hit.point))
+                if (!ropePositions.Contains(snapPoint))
                 {
                     var playerRb = transform.GetComponent<Rigidbody2D>();
                     playerRb.AddForce(new Vector2(0f, 1f), ForceMode2D.Impulse);
 
                     Vector2 preSwingVelocity = playerRb.linearVelocity;
                     savedGravity = playerRb.gravityScale;
-                    ropePositions.Add(hit.point);
+                    ropePositions.Add(snapPoint);
 
-                    float actualDistance = Vector2.Distance(playerPosition, hit.point);
+                    float actualDistance = Vector2.Distance(playerPosition, snapPoint);
 
                     // แก้ไข: ปรับลอจิกการคำนวณระยะเชือกให้ง่ายและไม่บั๊ก
                     float targetDistance = Mathf.Clamp(actualDistance * 0.8f, minRopeLength, ropeStandardDistance);
@@ -226,7 +248,7 @@ public class Rope : MonoBehaviour
 
                     if (preSwingVelocity.magnitude < 1f)
                     {
-                        Vector2 swingDirection = Vector2.Perpendicular((hit.point - (Vector2)transform.position).normalized);
+                        Vector2 swingDirection = Vector2.Perpendicular((snapPoint - (Vector2)transform.position).normalized);
                         if (aimDirection.x > 0) swingDirection *= -1;
                         playerRb.AddForce(swingDirection * 2f, ForceMode2D.Impulse);
                     }
@@ -424,6 +446,73 @@ public class Rope : MonoBehaviour
         return GameManager.Instance.currentState == GameState.Normal;
     }
 
+    #endregion
+
+    #region Aim Assist Helpers
+    /// <summary>
+    /// ค้นหาเป้าหมายเชือกด้วย CircleCast + Cone Search เพื่อช่วยเหลือการเล็งของผู้เล่น
+    /// </summary>
+    private RaycastHit2D FindBestRopeTarget(Vector2 origin, Vector2 aimDir)
+    {
+        if (enableAimAssist)
+        {
+            // 1. CircleCast — กว้างกว่า Raycast ปกติ ช่วยจับ hook ที่อยู่ใกล้แนวเล็ง
+            RaycastHit2D circleHit = Physics2D.CircleCast(origin, aimAssistRadius, aimDir, ropeMaxCastDistance, ropeLayerMask);
+            if (circleHit.collider != null) return circleHit;
+
+            // 2. Cone Search — ยิง Raycast เป็นพัดออกจากทิศเล็ง ±aimAssistAngle°
+            float bestAngleDiff = float.MaxValue;
+            RaycastHit2D bestHit = default;
+            int steps = 3;
+
+            for (int i = 1; i <= steps; i++)
+            {
+                float angle = aimAssistAngle * ((float)i / steps);
+
+                // ยิง ray ทางบวก (+angle)
+                Vector2 dirPos = RotateVector2(aimDir, angle);
+                RaycastHit2D hitPos = Physics2D.Raycast(origin, dirPos, ropeMaxCastDistance, ropeLayerMask);
+                if (hitPos.collider != null)
+                {
+                    float angleDiff = Vector2.Angle(aimDir, ((Vector2)hitPos.point - origin).normalized);
+                    if (angleDiff < bestAngleDiff)
+                    {
+                        bestAngleDiff = angleDiff;
+                        bestHit = hitPos;
+                    }
+                }
+
+                // ยิง ray ทางลบ (-angle)
+                Vector2 dirNeg = RotateVector2(aimDir, -angle);
+                RaycastHit2D hitNeg = Physics2D.Raycast(origin, dirNeg, ropeMaxCastDistance, ropeLayerMask);
+                if (hitNeg.collider != null)
+                {
+                    float angleDiff = Vector2.Angle(aimDir, ((Vector2)hitNeg.point - origin).normalized);
+                    if (angleDiff < bestAngleDiff)
+                    {
+                        bestAngleDiff = angleDiff;
+                        bestHit = hitNeg;
+                    }
+                }
+            }
+
+            if (bestHit.collider != null) return bestHit;
+        }
+
+        // Fallback: Raycast ปกติ
+        return Physics2D.Raycast(origin, aimDir, ropeMaxCastDistance, ropeLayerMask);
+    }
+
+    /// <summary>
+    /// หมุน Vector2 ตามมุมที่กำหนด (องศา)
+    /// </summary>
+    private Vector2 RotateVector2(Vector2 v, float angleDegrees)
+    {
+        float rad = angleDegrees * Mathf.Deg2Rad;
+        float cos = Mathf.Cos(rad);
+        float sin = Mathf.Sin(rad);
+        return new Vector2(v.x * cos - v.y * sin, v.x * sin + v.y * cos);
+    }
     #endregion
 
     void OnDrawGizmos()
