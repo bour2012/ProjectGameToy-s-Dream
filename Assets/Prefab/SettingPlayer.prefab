@@ -562,7 +562,7 @@ Transform:
   m_GameObject: {fileID: 2096666592065691518}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 442.68185, y: 153.67471, z: -25.403538}
+  m_LocalPosition: {x: 0, y: 4.75292, z: -25.403538}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -609,9 +609,9 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 45
+  field of view: 63.9
   orthographic: 0
-  orthographic size: 4.5
+  orthographic size: 4
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -937,6 +937,8 @@ MonoBehaviour:
   airControl: 0.5
   maxAirSpeed: 2
   swingForce: 4
+  coyoteTime: 0.12
+  jumpBufferTime: 0.15
   stompCheck: {fileID: 8634237373888722930}
   groundLayer:
     serializedVersion: 2
@@ -1016,6 +1018,12 @@ MonoBehaviour:
     m_Bits: 8192
   ropeMaxCastDistance: 4
   ropeStandardDistance: 1.8
+  aimAssistRadius: 0.5
+  aimAssistAngle: 15
+  enableAimAssist: 1
+  snapToHookCenter: 1
+  crosshairNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  crosshairHighlightColor: {r: 0, g: 1, b: 0, a: 1}
   respectGameManagerState: 1
   swingStartSound: {fileID: 8300000, guid: a3249e8183550d647b2ee48bf3c41ca0, type: 3}
   audioSource: {fileID: 8880096863202690154}
@@ -1678,7 +1686,7 @@ AudioLowPassFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2842588201188864771}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_LowpassResonanceQ: 1
   lowpassLevelCustomCurve:
@@ -1686,7 +1694,7 @@ AudioLowPassFilter:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.045020465
+      value: 0.022282856
       inSlope: 0
       outSlope: 0
       tangentMode: 0
