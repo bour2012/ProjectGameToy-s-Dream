@@ -937,6 +937,8 @@ MonoBehaviour:
   airControl: 0.5
   maxAirSpeed: 2
   swingForce: 4
+  coyoteTime: 0.12
+  jumpBufferTime: 0.15
   stompCheck: {fileID: 8634237373888722930}
   groundLayer:
     serializedVersion: 2
@@ -1014,8 +1016,14 @@ MonoBehaviour:
   ropeLayerMask:
     serializedVersion: 2
     m_Bits: 8192
-  ropeMaxCastDistance: 4
+  ropeMaxCastDistance: 3.25
   ropeStandardDistance: 1.8
+  aimAssistRadius: 0.5
+  aimAssistAngle: 15
+  enableAimAssist: 1
+  snapToHookCenter: 1
+  crosshairNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  crosshairHighlightColor: {r: 0, g: 1, b: 0, a: 1}
   respectGameManagerState: 1
   swingStartSound: {fileID: 8300000, guid: a3249e8183550d647b2ee48bf3c41ca0, type: 3}
   audioSource: {fileID: 8880096863202690154}
