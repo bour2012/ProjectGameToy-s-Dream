@@ -335,7 +335,7 @@ public class CraftedObject : MonoBehaviour
 
         if (parentCraftingSystem != null)
         {
-            parentCraftingSystem.OnCraftedObjectDestroyed(initialPosition);
+            parentCraftingSystem.OnCraftedObjectDestroyed(transform.position);
         }
 
         Destroy(gameObject);

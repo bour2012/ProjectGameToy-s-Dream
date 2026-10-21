@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -59,6 +59,8 @@ public class GlueShooting : MonoBehaviour
     [SerializeField] private TMP_Text mainSlotText;  // ลาก Text ตัวเลขช่องใหญ่มาใส่
 
     [Header("Sub Bubble (กรอบเล็ก)")]
+    [Tooltip("ลากกรอบเล็ก Sub Bubble มาใส่ (ถ้าไม่ใส่จะใช้ตำแหน่งของ subSlotIcon อัตโนมัติ)")]
+    [SerializeField] private RectTransform subBubbleRect;
     [SerializeField] private Image subSlotIcon;      // ลาก Image รูปไอเทมช่องเล็กมาใส่
     [SerializeField] private TMP_Text subSlotText;   // ลาก Text ตัวเลขช่องเล็กมาใส่
 
@@ -104,6 +106,7 @@ public class GlueShooting : MonoBehaviour
             HideAiming();
             return;
         }
+        HandleSubBubbleClick();
         HandleItemSwitching();
         HandleGlueAiming();
         UpdateUI();
@@ -140,6 +143,57 @@ public class GlueShooting : MonoBehaviour
     #endregion
 
     #region Item Switching System
+    private int lastSwitchFrame = -1;
+
+    /// <summary>
+    /// ตรวจจับการคลิกที่กรอบเล็ก (Sub Bubble) เพื่อสลับไอเทม
+    /// </summary>
+    private void HandleSubBubbleClick()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (IsMouseOverSubBubble())
+            {
+                SwitchItem(true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// ตรวจสอบว่าตำแหน่งเมาส์อยู่เหนือกราฟิกของกรอบเล็กหรือไม่
+    /// </summary>
+    public bool IsMouseOverSubBubble()
+    {
+        // 1. ถ้ามีลาก RectTransform ของกรอบเล็กมาใส่ ให้เช็คก่อน
+        if (subBubbleRect != null)
+        {
+            return IsPointInRect(subBubbleRect, Input.mousePosition);
+        }
+
+        // 2. ถ้าไม่ได้ลาก subBubbleRect ให้ใช้ subSlotIcon และ parent ของมันอัตโนมัติ
+        if (subSlotIcon != null)
+        {
+            if (IsPointInRect(subSlotIcon.rectTransform, Input.mousePosition)) return true;
+
+            // ตรวจสอบ parent ด้วย (เผื่อกรอบพื้นหลังใหญ่กว่าตัว icon)
+            RectTransform parentRect = subSlotIcon.transform.parent as RectTransform;
+            if (parentRect != null && parentRect.GetComponent<Canvas>() == null)
+            {
+                if (IsPointInRect(parentRect, Input.mousePosition)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsPointInRect(RectTransform rect, Vector2 screenPoint)
+    {
+        if (rect == null) return false;
+        Canvas canvas = rect.GetComponentInParent<Canvas>();
+        Camera cam = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? (canvas.worldCamera != null ? canvas.worldCamera : mainCamera) : null;
+        return RectTransformUtility.RectangleContainsScreenPoint(rect, screenPoint, cam);
+    }
+
     private void HandleItemSwitching()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -156,39 +210,37 @@ public class GlueShooting : MonoBehaviour
                 SwitchItem(false);
                 scrollAccumulator = 0f;
             }
-
-            if (scrollAccumulator >= scrollThreshold || scrollAccumulator <= -scrollThreshold)
-            {
-                SwitchItem(scrollAccumulator >= scrollThreshold);
-                scrollAccumulator = 0f;
-
-                if (isAiming)
-                {
-                    HideAiming();
-                }
-             
-            }
         }
     }
 
-    private void SwitchItem(bool forward)
+    public void SwitchItem(bool forward = true)
     {
+        if (Time.frameCount == lastSwitchFrame) return; // ป้องกันการสลับซ้ำในเฟรมเดียวกัน
+        lastSwitchFrame = Time.frameCount;
+
         int itemCount = System.Enum.GetValues(typeof(ItemManager.ItemType)).Length;
         int currentIndex = (int)selectedItem;
         currentIndex = (currentIndex + (forward ? 1 : -1) + itemCount) % itemCount;
         selectedItem = (ItemManager.ItemType)currentIndex;
         PlayerPrefs.SetInt("SelectedItem", currentIndex);
         PlayerPrefs.Save();
+
         if (isAiming)
         {
             HideAiming();
         }
-        // Play switch sound
+
+        // เล่นเสียงสลับไอเทม
         if (audioSource != null && switchSound != null)
         {
             audioSource.PlayOneShot(switchSound);
         }
+
+        UpdateUI();
     }
+
+    public void ToggleItem() => SwitchItem(true);
+    public void OnSubBubbleClick() => SwitchItem(true);
 
     public ItemManager.ItemType GetSelectedItem()
     {
@@ -251,6 +303,7 @@ public class GlueShooting : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && isAiming && canShoot)
         {
+            if (IsMouseOverSubBubble()) return;
             ShootGlue();
         }
     }

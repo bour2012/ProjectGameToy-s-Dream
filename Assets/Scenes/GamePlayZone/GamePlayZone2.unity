@@ -130509,6 +130509,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrashUp (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6547132702051595228, guid: 3a118194c5da6f747a718c5a2385497c, type: 3}
+      propertyPath: movingPlatform
+      value: 
+      objectReference: {fileID: 257242501}
+    - target: {fileID: 6547132702051595228, guid: 3a118194c5da6f747a718c5a2385497c, type: 3}
+      propertyPath: useSpecificRespawnPoint
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6907666651735839197, guid: 3a118194c5da6f747a718c5a2385497c, type: 3}
       propertyPath: m_SortingLayer
       value: 11
@@ -149708,8 +149716,8 @@ Transform:
   m_GameObject: {fileID: 1363580720}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -29.25, y: -71.8388, z: 0}
-  m_LocalScale: {x: 7.1141663, y: 5.6886544, z: 1}
+  m_LocalPosition: {x: -26.6071, y: -71.8388, z: 0}
+  m_LocalScale: {x: 12.40097, y: 5.6886544, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 419910460}
@@ -169310,7 +169318,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4183866145937292554, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.33
+      value: -12.29
       objectReference: {fileID: 0}
     - target: {fileID: 4183866145937292554, guid: 6e5aece9d3752ea448e19b50a20bf5c0, type: 3}
       propertyPath: m_LocalPosition.y

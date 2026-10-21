@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class SmartCursorSystem : MonoBehaviour
 {
@@ -52,42 +52,48 @@ public class SmartCursorSystem : MonoBehaviour
 
         // รวม Layer เป้าหมาย
         LayerMask targetLayers = ropeableLayer | glueableLayer;
-        // มันจะคืนค่า int บอกจำนวนที่เจอ และเอาข้อมูลใส่ลงใน hitsBuffer
         int hitCount = Physics2D.RaycastNonAlloc(mousePos, Vector2.zero, hitsBuffer, 100f, targetLayers);
 
-        // วนลูปเท่าจำนวนที่เจอ (hitCount)
-        for (int i = 0; i < hitCount; i++)
+        // --- กรณีถือเชือก (Thread) ---
+        if (currentItem == ItemManager.ItemType.Thread)
         {
-            RaycastHit2D hit = hitsBuffer[i];
-            int hitLayer = hit.collider.gameObject.layer;
-
-            // --- กรณีถือเชือก (Thread) ---
-            if (currentItem == ItemManager.ItemType.Thread)
+            // ถ้า Rope Script ตรวจพบเป้าหมายที่พร้อมจะ Snap ในทิศทางที่เล็ง ให้เปลี่ยน Cursor ทันที
+            if (ropeScript != null && ropeScript.HasValidTarget())
             {
-                if (IsLayerInMask(hitLayer, ropeableLayer))
+                cursorToUse = threadValidCursor;
+            }
+            else
+            {
+                // Fallback: ตรวจสอบกรณีเมาส์ชี้ไปที่ตัวจุดโหนโดยตรง
+                for (int i = 0; i < hitCount; i++)
                 {
-                    // เช็คระยะ (ถ้ามี script Rope)
-                    bool isInRange = true;
-                    if (ropeScript != null)
+                    RaycastHit2D hit = hitsBuffer[i];
+                    int hitLayer = hit.collider.gameObject.layer;
+
+                    if (IsLayerInMask(hitLayer, ropeableLayer))
                     {
                         float dist = Vector2.Distance(glueShootingScript.transform.position, mousePos);
-                        if (dist > ropeScript.ropeMaxCastDistance) isInRange = false;
-                    }
-
-                    if (isInRange)
-                    {
-                        cursorToUse = threadValidCursor;
-                        break; // เจอแล้วหยุดเลย ประหยัดเวลา
+                        if (ropeScript == null || dist <= ropeScript.ropeMaxCastDistance)
+                        {
+                            cursorToUse = threadValidCursor;
+                            break;
+                        }
                     }
                 }
             }
-            // --- กรณีถือกาว (Glue) ---
-            else if (currentItem == ItemManager.ItemType.Glue)
+        }
+        // --- กรณีถือกาว (Glue) ---
+        else if (currentItem == ItemManager.ItemType.Glue)
+        {
+            for (int i = 0; i < hitCount; i++)
             {
+                RaycastHit2D hit = hitsBuffer[i];
+                int hitLayer = hit.collider.gameObject.layer;
+
                 if (IsLayerInMask(hitLayer, glueableLayer))
                 {
                     cursorToUse = glueValidCursor;
-                    break; // เจอแล้วหยุดเลย
+                    break;
                 }
             }
         }

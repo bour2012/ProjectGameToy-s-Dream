@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine;
@@ -13,6 +13,13 @@ public class TrashCraftingSystem : MonoBehaviour
     public float spawnHeightOffset = 1.0f;
     [Tooltip("ลาก GameObject ที่ต้องการให้ขยะไปเกิดตรงนั้นมาใส่ (เช่น Empty Object บน Platform)")]
     public Transform respawnTarget;
+
+    [Header("Moving Platform Tracking (ระบบเกาะติดแท่นเคลื่อนที่)")]
+    [Tooltip("เปิดใช้งานระบบเกาะติดแท่นเคลื่อนที่ (ขยะจะอัปเดตตำแหน่งตามแท่นตลอดเวลา)")]
+    public bool trackMovingPlatform = true;
+    [Tooltip("ลากแท่นเคลื่อนที่ (Moving Platform) มาใส่ หรือปล่อยว่างไว้ให้ระบบค้นหาอัตโนมัติ")]
+    public Transform movingPlatform;
+
     [Header("Crafting Settings")]
     public float interactionDistance = 3f;
     public LayerMask playerLayer = 1;
@@ -61,6 +68,10 @@ public class TrashCraftingSystem : MonoBehaviour
     private Coroutine uiAnimationCoroutine;
     private Coroutine itemSwitchCoroutine; 
 
+    // Moving Platform Tracking
+    private Vector3 localPlatformOffset;
+    private bool isAttachedToPlatform = false;
+
     [System.Serializable]
     public class CraftableItem
     {
@@ -90,6 +101,9 @@ public class TrashCraftingSystem : MonoBehaviour
 
     void Start()
     {
+        // ตรวจสอบและเกาะติดแท่นเคลื่อนที่ (ถ้ามี)
+        SetupPlatformTracking();
+
         // หาผู้เล่นและ GameManager
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         gameManager = GameManager.Instance;
@@ -102,6 +116,54 @@ public class TrashCraftingSystem : MonoBehaviour
         if (gameManager != null)
         {
             GameManager.OnGameStateChanged += OnGameStateChanged;
+        }
+    }
+
+    void SetupPlatformTracking()
+    {
+        if (!trackMovingPlatform) return;
+
+        // 1. ถ้ามีการกำหนด respawnTarget บนแท่นลอย
+        if (movingPlatform == null && respawnTarget != null)
+        {
+            movingPlatform = respawnTarget.parent != null ? respawnTarget.parent : respawnTarget;
+        }
+
+        // 2. ถ้าขยะวางเป็นลูกของแท่นใน Hierarchy อยู่แล้ว
+        if (movingPlatform == null && transform.parent != null)
+        {
+            movingPlatform = transform.parent;
+        }
+
+        // 3. ค้นหาอัตโนมัติ: ยิง Raycast ลงพื้นเพื่อหา PlatformMovement หรือ PlatformController
+        if (movingPlatform == null)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 3f);
+            if (hit.collider != null)
+            {
+                var platformMovement = hit.collider.GetComponentInParent<PlatformMovement>();
+                if (platformMovement != null)
+                {
+                    movingPlatform = platformMovement.transform;
+                }
+                else
+                {
+                    var platformController = hit.collider.GetComponentInParent<PlatformController>();
+                    if (platformController != null)
+                    {
+                        movingPlatform = platformController.transform;
+                    }
+                }
+            }
+        }
+
+        // ถ้าพบแท่นเคลื่อนที่ ให้ทำการผูกตำแหน่งและบันทึก Local Offset
+        if (movingPlatform != null)
+        {
+            isAttachedToPlatform = true;
+            localPlatformOffset = movingPlatform.InverseTransformPoint(transform.position);
+            transform.SetParent(movingPlatform);
+            Debug.Log($"[{gameObject.name}] Attached to moving platform: {movingPlatform.name}");
         }
     }
 
@@ -452,6 +514,13 @@ public class TrashCraftingSystem : MonoBehaviour
         }
 
         Debug.Log($"Crafting completed: {craftableItems[currentItemIndex].itemName}");
+
+        // ถ้าอยู่บนแท่นเคลื่อนที่ ให้เกาะติดแท่นไว้แม้ตอนที่ inactive
+        if (trackMovingPlatform && isAttachedToPlatform && movingPlatform != null)
+        {
+            transform.SetParent(movingPlatform);
+        }
+
         gameObject.SetActive(false);
     }
 
@@ -491,6 +560,12 @@ public class TrashCraftingSystem : MonoBehaviour
         {
            
             GameObject craftedObj = Instantiate(itemToCreate.prefab, transform.position, transform.rotation);
+
+            // ถ้าสร้างบนแท่นเคลื่อนที่ ให้วัตถุที่สร้างเกาะติดแท่นไปด้วย
+            if (trackMovingPlatform && isAttachedToPlatform && movingPlatform != null)
+            {
+                craftedObj.transform.SetParent(movingPlatform);
+            }
 
             CraftedObject craftedComponent = craftedObj.GetComponent<CraftedObject>();
             if (craftedComponent == null)
@@ -773,15 +848,29 @@ public class TrashCraftingSystem : MonoBehaviour
 
     IEnumerator ReturnToTrashRoutine(Vector3 destructionPosition)
     {
-        // move pile to destroyed position
-        //transform.position = position;
+        // กำหนดตำแหน่งเกิดใหม่
         if (useSpecificRespawnPoint && respawnTarget != null)
         {
             // คำนวณตำแหน่ง: เอาตำแหน่งเป้าหมาย + ดันขึ้นแกน Y ตามค่า Offset
             Vector3 targetPos = respawnTarget.position + (Vector3.up * spawnHeightOffset);
             transform.position = targetPos;
 
-            // *** ไม่มีการสั่ง transform.rotation = ... (ตัดออกตามที่ขอครับ) ***
+            // ผูก Parent เพื่อให้ขยะขยับตามแท่นเป้าหมายเสมอ
+            if (respawnTarget.parent != null)
+            {
+                transform.SetParent(respawnTarget.parent);
+            }
+            else
+            {
+                transform.SetParent(respawnTarget);
+            }
+        }
+        else if (trackMovingPlatform && isAttachedToPlatform && movingPlatform != null)
+        {
+            // คำนวณตำแหน่งบนแท่น ณ เวลาปัจจุบันตาม Local Offset เดิม
+            Vector3 targetPos = movingPlatform.TransformPoint(localPlatformOffset) + (Vector3.up * spawnHeightOffset);
+            transform.position = targetPos;
+            transform.SetParent(movingPlatform);
         }
         else
         {
