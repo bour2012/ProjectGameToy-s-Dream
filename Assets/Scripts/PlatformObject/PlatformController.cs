@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,23 +9,25 @@ public class PlatformController : MonoBehaviour
     public bool isAnimMode = false;
     public Animator platformAnimator;
 
-    [Header("Triggers")]
-    public string activateTriggerName = "Open";
-    public string deactivateTriggerName = "Close";
+    [Header("Animation Parameters")]
+    [Tooltip("เปิดใช้งานโหมด Bool Parameter (แนะนำ: ช่วยแก้ปัญหาอนิเมชั่นค้างเมื่อรับส่งสัญญาณเร็ว)")]
+    public bool useBoolParameter = true;
+    [Tooltip("ชื่อตัวแปรแบบ Bool ใน Animator (เช่น IsOpen)")]
+    public string boolParamName = "IsOpen";
 
-    //[Header("State Names (Start Only)")]
-    //[Tooltip("ชื่อ State ใน Animator ต้องตรงเป๊ะ (ถ้าไม่มีให้เว้นว่างไว้)")]
-    //public string idleOpenStateName = "IdleOpen";
-    //[Tooltip("ชื่อ State ใน Animator ต้องตรงเป๊ะ (ถ้าไม่มีให้เว้นว่างไว้)")]
-    //public string idleCloseStateName = "IdleClose";
+    [Header("Trigger Mode (Fallback)")]
+    [Tooltip("ชื่อ Trigger เปิด (ใช้เมื่อ useBoolParameter = false หรือ Animator ยังไม่มีตัวแปร Bool)")]
+    public string activateTriggerName = "Open";
+    [Tooltip("ชื่อ Trigger ปิด (ใช้เมื่อ useBoolParameter = false หรือ Animator ยังไม่มีตัวแปร Bool)")]
+    public string deactivateTriggerName = "Close";
 
     private bool isActive = false;
 
     // --- Optimization: Cache Animator Hashes ---
+    private int boolParamID;
     private int activateTriggerID;
     private int deactivateTriggerID;
-    private int idleOpenStateID;
-    private int idleCloseStateID;
+    private bool hasBoolParam = false;
 
     [Header("Physics Settings")]
     public Transform platform;
@@ -146,27 +148,49 @@ public class PlatformController : MonoBehaviour
         // --- Optimization: Convert Strings to Hashes ---
         if (isAnimMode && platformAnimator != null)
         {
+            boolParamID = Animator.StringToHash(boolParamName);
             activateTriggerID = Animator.StringToHash(activateTriggerName);
             deactivateTriggerID = Animator.StringToHash(deactivateTriggerName);
 
-            //// ป้องกัน Error โดยเช็คว่าชื่อไม่ว่างเปล่าก่อนแปลง Hash
-            //if (!string.IsNullOrEmpty(idleOpenStateName))
-            //    idleOpenStateID = Animator.StringToHash(idleOpenStateName);
+            hasBoolParam = CheckHasParameter(platformAnimator, boolParamName, AnimatorControllerParameterType.Bool);
 
-            //if (!string.IsNullOrEmpty(idleCloseStateName))
-            //    idleCloseStateID = Animator.StringToHash(idleCloseStateName);
+            // ซิงค์สถานะเริ่มต้นให้กับ Animator
+            UpdateAnimation(true);
+        }
+    }
 
-            //// --- Fix: Check before Play ---
-            //if (isActive)
-            //{
-            //    if (!string.IsNullOrEmpty(idleOpenStateName))
-            //        platformAnimator.Play(idleOpenStateID);
-            //}
-            //else
-            //{
-            //    if (!string.IsNullOrEmpty(idleCloseStateName))
-            //        platformAnimator.Play(idleCloseStateID);
-            //}
+    private bool CheckHasParameter(Animator anim, string paramName, AnimatorControllerParameterType type)
+    {
+        if (anim == null || string.IsNullOrEmpty(paramName)) return false;
+        foreach (var p in anim.parameters)
+        {
+            if (p.name == paramName && p.type == type) return true;
+        }
+        return false;
+    }
+
+    private void UpdateAnimation(bool force)
+    {
+        if (!isAnimMode || platformAnimator == null) return;
+
+        // โหมด 1: ใช้ Bool Parameter (แนะนำ)
+        if (useBoolParameter && hasBoolParam)
+        {
+            platformAnimator.SetBool(boolParamID, isActive);
+        }
+        // โหมด 2: Fallback Trigger (พร้อม ResetTrigger ฝั่งตรงข้ามเสมอ เพื่อกันบั๊ก Trigger ชนกัน)
+        else
+        {
+            if (isActive)
+            {
+                platformAnimator.ResetTrigger(deactivateTriggerID);
+                platformAnimator.SetTrigger(activateTriggerID);
+            }
+            else
+            {
+                platformAnimator.ResetTrigger(activateTriggerID);
+                platformAnimator.SetTrigger(deactivateTriggerID);
+            }
         }
     }
 
@@ -236,8 +260,7 @@ public class PlatformController : MonoBehaviour
 
         if (isAnimMode && platformAnimator != null && prevActive != isActive)
         {
-            if (isActive) platformAnimator.SetTrigger(activateTriggerID);
-            else platformAnimator.SetTrigger(deactivateTriggerID);
+            UpdateAnimation(false);
         }
 
         UnfreezePlatform();
@@ -274,7 +297,7 @@ public class PlatformController : MonoBehaviour
 
         if (isAnimMode && platformAnimator != null && prevActive != isActive)
         {
-            platformAnimator.SetTrigger(activateTriggerID);
+            UpdateAnimation(false);
         }
 
         UnfreezePlatform();

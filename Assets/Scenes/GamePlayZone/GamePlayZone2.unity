@@ -3970,6 +3970,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 747758599}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 41979792}
@@ -12261,6 +12263,7 @@ MonoBehaviour:
     m_Bits: 1600
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &166207422
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -32034,6 +32037,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 257242501}
@@ -39168,6 +39173,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 282657330}
@@ -53622,6 +53629,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 417427624}
@@ -54785,6 +54794,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 434955830}
@@ -64935,6 +64946,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 539933841}
@@ -71216,7 +71229,7 @@ Transform:
   m_GameObject: {fileID: 575984669}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.07, y: -25.388077, z: 0}
+  m_LocalPosition: {x: -26.82, y: -25.388077, z: 0}
   m_LocalScale: {x: 0.36, y: 0.36, z: 0.36}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -78004,6 +78017,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &610396399
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -108395,6 +108409,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 1575374011}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
   platform: {fileID: 839037233}
@@ -112880,6 +112896,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &909741099
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -126116,6 +126133,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1029162356}
@@ -128546,6 +128565,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 1373533544}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
   platform: {fileID: 1065269685}
@@ -132585,6 +132606,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1129396452}
@@ -137688,6 +137711,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1198401888}
@@ -138346,6 +138371,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1210888128}
@@ -141567,6 +141594,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1252266323
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -142177,6 +142205,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1260244616}
@@ -144784,6 +144814,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1293032229
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -165795,6 +165826,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1458844065}
@@ -166686,6 +166719,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1470229627
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -167039,6 +167073,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1478545841
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -169751,6 +169786,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1516832829
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -170774,6 +170810,7 @@ MonoBehaviour:
     m_Bits: 34080320
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1532313909
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -179184,7 +179221,7 @@ MonoBehaviour:
     changeZoom: 0
     targetLensSize: 40
     zoomDuration: 1
-    shakeCamera: 0
+    shakeCamera: 1
     useFadeCut: 0
     fadeDuration: 0.5
     fadeHoldDuration: 0.5
@@ -179193,7 +179230,19 @@ MonoBehaviour:
     displayDuration: 5
     onLineStart:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 1497108619}
+          m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+          m_MethodName: SetTrigger
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: End
+            m_BoolArgument: 0
+          m_CallState: 2
   - dialogText: 'Bat : Bwahaha!!
 
 '
@@ -179292,7 +179341,7 @@ MonoBehaviour:
   useDelay: 1
   delay: 0.5
   autoAdvance: 1
-  autoAdvanceDelay: 2.5
+  autoAdvanceDelay: 4
   conflictStrategy: 0
   onDialogComplete:
     m_PersistentCalls:
@@ -180276,6 +180325,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1603872156}
@@ -187199,6 +187250,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1722150770}
@@ -188056,6 +188109,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1727618870}
@@ -190011,6 +190066,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 125139676}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Activate
   deactivateTriggerName: Deactivate
   platform: {fileID: 1758011885}
@@ -194884,6 +194941,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 882983472}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1830411946}
@@ -196585,6 +196644,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1856427288}
@@ -197206,7 +197267,7 @@ Transform:
   m_GameObject: {fileID: 1864045970}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -21.25895, y: -25.388077, z: 0}
+  m_LocalPosition: {x: -21.38395, y: -25.388077, z: 0}
   m_LocalScale: {x: 0.36, y: 0.36, z: 0.36}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -198413,6 +198474,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 1324936999}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1884951854}
@@ -203620,6 +203683,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1962747910}
@@ -205194,6 +205259,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1993341142}
@@ -214369,6 +214436,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 2051403076}

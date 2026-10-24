@@ -1,35 +1,33 @@
-﻿using UnityEngine;
+using UnityEngine;
+using System.Collections.Generic;
 
 public class PressurePlate : MonoBehaviour
 {
     public PlatformController platform;
     public LayerMask triggerLayers; // กำหนด LayerMask สำหรับ Object ที่จะตรวจสอบ
-    private int objectsOnPlate = 0;
 
     [Header("Audio Settings")]
     public AudioSource audioSource;   // ตัวเล่นเสียง (ลากมาใส่ หรือปล่อยว่างเพื่อให้โค้ดหาเอง)
     public AudioClip activateSound;   // ไฟล์เสียงตอนเหยียบ
+    public AudioClip deactivateSound; // ไฟล์เสียงตอนปล่อย
 
-    //private void Start()
-    //{
-    //    // ถ้าลืมลาก AudioSource มาใส่ โค้ดจะพยายามหาจากในตัวมันเองให้
-    //    if (audioSource == null)
-    //    {
-    //        audioSource = GetComponent<AudioSource>();
-    //    }
-    //}
+    private readonly HashSet<Collider2D> collidersOnPlate = new HashSet<Collider2D>();
 
     void OnTriggerEnter2D(Collider2D other)
     {
         // ตรวจสอบว่า Object ที่เข้ามาอยู่ใน Layer ที่กำหนดหรือไม่
         if (IsInLayerMask(other.gameObject, triggerLayers))
         {
-            objectsOnPlate++;
-            platform.Toggle(true); // เปิดแพลตฟอร์ม
-            Debug.Log("Pressure Plate Activated: Open");
+            bool wasEmpty = collidersOnPlate.Count == 0;
+            collidersOnPlate.Add(other);
 
-            // --- เล่นเสียงตรงนี้ ---
-            PlaySound(activateSound);
+            if (wasEmpty)
+            {
+                if (platform != null) platform.Toggle(true); // เปิดแพลตฟอร์ม
+                Debug.Log("Pressure Plate Activated: Open");
+
+                PlaySound(activateSound);
+            }
         }
     }
 
@@ -38,15 +36,39 @@ public class PressurePlate : MonoBehaviour
         // ตรวจสอบว่า Object ที่ออกไปอยู่ใน Layer ที่กำหนดหรือไม่
         if (IsInLayerMask(other.gameObject, triggerLayers))
         {
-            objectsOnPlate--;
-            if (objectsOnPlate <= 0)
+            collidersOnPlate.Remove(other);
+            CleanupInvalidColliders();
+
+            if (collidersOnPlate.Count == 0)
             {
-                platform.Toggle(false); // ปิดแพลตฟอร์ม
+                if (platform != null) platform.Toggle(false); // ปิดแพลตฟอร์ม
                 Debug.Log("Pressure Plate Deactivated: Close");
 
-                // ถ้าอยากให้มีเสียงตอน "ปล่อย" ด้วย ให้เพิ่ม PlaySound(deactivateSound) ตรงนี้ครับ
+                PlaySound(deactivateSound);
             }
         }
+    }
+
+    private void FixedUpdate()
+    {
+        // ป้องกันบั๊ก: วัตถุที่เหยียบอยู่ถูกทำลาย (Destroy) หรือ Disable กะทันหันขณะอยู่บนแป้น
+        if (collidersOnPlate.Count > 0)
+        {
+            int beforeCount = collidersOnPlate.Count;
+            CleanupInvalidColliders();
+
+            if (beforeCount > 0 && collidersOnPlate.Count == 0)
+            {
+                if (platform != null) platform.Toggle(false);
+                Debug.Log("Pressure Plate Auto-Reset (Object destroyed/removed): Close");
+                PlaySound(deactivateSound);
+            }
+        }
+    }
+
+    private void CleanupInvalidColliders()
+    {
+        collidersOnPlate.RemoveWhere(c => c == null || !c.gameObject.activeInHierarchy || !c.enabled);
     }
 
     // ฟังก์ชันช่วยเล่นเสียง (กัน Error กรณีลืมใส่เสียง)

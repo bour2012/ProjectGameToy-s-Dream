@@ -3964,6 +3964,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 43158927}
@@ -19642,6 +19644,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 1019276601}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 147364327}
@@ -20660,6 +20664,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 158860090}
@@ -29186,6 +29192,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &244454900
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -37089,6 +37096,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 1209027401}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 340665057}
@@ -46082,8 +46091,8 @@ Transform:
   m_GameObject: {fileID: 381104947}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -29.44, y: 11.65, z: 0}
-  m_LocalScale: {x: 1.4380378, y: 2.0625873, z: 1}
+  m_LocalPosition: {x: -27.846254, y: 11.65, z: 0}
+  m_LocalScale: {x: 3.6254802, y: 2.0625873, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1512521275}
@@ -47135,6 +47144,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 395634901}
@@ -47484,6 +47495,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &398506208
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -57338,6 +57350,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 469817177}
@@ -60399,6 +60413,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 506081974}
@@ -62876,11 +62892,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.6897135
+      value: -6.71413
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.6764364
+      value: 2.5204637
       objectReference: {fileID: 0}
     - target: {fileID: 3388954749647900216, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_LocalPosition.z
@@ -63332,11 +63348,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5158328026089379270, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: field of view
-      value: 50
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5158328026089379270, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: orthographic size
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5402416324665696925, guid: 2172e57fa1edc904699ba0c2bf6f8776, type: 3}
       propertyPath: m_SortingLayer
@@ -65414,6 +65430,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 564200903}
@@ -65761,6 +65779,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &567911095
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -75939,6 +75958,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &643515929
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -100489,6 +100509,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 867512366}
@@ -110231,6 +110253,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &999727585
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -117736,6 +117759,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1109814697}
@@ -119928,6 +119953,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1142361819
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -122750,6 +122776,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1176754976}
@@ -138456,6 +138484,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 916578040}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1331906438}
@@ -145065,6 +145095,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1355994636
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -146639,6 +146670,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1372229691}
@@ -147306,6 +147339,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1375817932}
@@ -147590,6 +147625,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1376469123}
@@ -168526,6 +168563,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1514433074}
@@ -180347,6 +180386,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 1275197587}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1606132077}
@@ -196390,6 +196431,7 @@ MonoBehaviour:
     m_Bits: 66624
   audioSource: {fileID: 1243119098}
   activateSound: {fileID: 8300000, guid: 0e1c2909ab533f040926c17fcb634b42, type: 3}
+  deactivateSound: {fileID: 0}
 --- !u!61 &1742076196
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -205047,6 +205089,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1861404738}

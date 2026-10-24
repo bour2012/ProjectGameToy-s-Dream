@@ -5,7 +5,7 @@ public class TimedHelpTrigger : MonoBehaviour
 {
     [Header("Timer Settings")]
     [Tooltip("ผู้เล่นต้องติดอยู่ในโซนนี้กี่วินาที ถึงจะแสดงบทพูดช่วยเหลือ")]
-    [Range(5f, 120f)]
+    [Range(1f, 120f)]
     public float timeUntilHelp = 15f;
 
     [Header("Dialog To Trigger")]
