@@ -90,6 +90,10 @@ public class PlayerMovement : MonoBehaviour
     private bool suppressInputUntilRelease = false;
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
+
+    [Header("Conveyor Belt Integration")]
+    private float conveyorVelocityX = 0f;
+    private bool hasConveyorContact = false;
     #endregion
 
     #region Unity Callbacks
@@ -278,6 +282,13 @@ public class PlayerMovement : MonoBehaviour
         {
             Move();
         }
+
+        // รีเซ็ตค่าแรงสายพานถ้าเฟรมนี้ไม่ได้สัมผัสกับสายพาน
+        if (!hasConveyorContact)
+        {
+            conveyorVelocityX = 0f;
+        }
+        hasConveyorContact = false;
     }
     #endregion
 
@@ -443,13 +454,37 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawLine(position + new Vector2(radius, radius), position - new Vector2(radius, radius), color);
         Debug.DrawLine(position + new Vector2(-radius, radius), position - new Vector2(-radius, radius), color);
     }
+    public void ApplyConveyorVelocity(float vx)
+    {
+        conveyorVelocityX = vx;
+        hasConveyorContact = true;
+    }
+
+    public bool IsPushingObject()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.currentState == GameState.PushingObject)
+            return true;
+
+        PlayerPush push = GetComponent<PlayerPush>();
+        if (push != null && push.IsHolding)
+            return true;
+
+        return false;
+    }
+
     public void Move()
     {
-        rBody.linearVelocity = new Vector2(horizontalInput * speed, rBody.linearVelocity.y);
+        if (IsPushingObject())
+        {
+            isJumping = false;
+        }
+
+        float targetVx = (horizontalInput * speed) + conveyorVelocityX;
+        rBody.linearVelocity = new Vector2(targetVx, rBody.linearVelocity.y);
+
         if(isJumping)
         {
             rBody.linearVelocity = new Vector2(0f, jumpSpeed);
-        
         }
         isJumping = false;
     }
@@ -462,44 +497,56 @@ public class PlayerMovement : MonoBehaviour
     }
     public void ProcessInput()
     {
-        // --- Coyote Time: ให้กระโดดได้แม้ตกจากขอบไปแล้วเล็กน้อย ---
-        if (groundCheck)
-        {
-            coyoteTimeCounter = coyoteTime;
-        }
-        else
-        {
-            coyoteTimeCounter -= Time.deltaTime;
-        }
+        bool isPushing = IsPushingObject();
 
-        // --- Jump Buffer: จำการกด Jump ไว้ เพื่อกระโดดทันทีพอแตะพื้น ---
-        if (Input.GetButtonDown("Jump"))
+        if (isPushing)
         {
-            jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-
-        // --- ตรวจสอบการกระโดดด้วย Coyote Time + Jump Buffer ---
-        bool canCoyoteJump = coyoteTimeCounter > 0f;
-        if (jumpBufferCounter > 0f && (canCoyoteJump || isSwinging))
-        {
-            // กระโดดจากพื้น (หรือ coyote) — ไม่ใช่จากเชือก
-            if (canCoyoteJump && !isSwinging)
-            {
-                isJumping = true;
-            }
-
-            // ป้องกัน double jump จาก coyote time
+            // ไม่อนุญาตให้กระโดดขณะกำลังลาก/ผลักกล่อง
             jumpBufferCounter = 0f;
             coyoteTimeCounter = 0f;
-
-            // เล่นเสียงกระโดด (ทั้งจากพื้นและจากเชือก)
-            if (jumpSfx != null && audioSource != null)
+            isJumping = false;
+        }
+        else
+        {
+            // --- Coyote Time: ให้กระโดดได้แม้ตกจากขอบไปแล้วเล็กน้อย ---
+            if (groundCheck)
             {
-                audioSource.PlayOneShot(jumpSfx, jumpSfxVolume);
+                coyoteTimeCounter = coyoteTime;
+            }
+            else
+            {
+                coyoteTimeCounter -= Time.deltaTime;
+            }
+
+            // --- Jump Buffer: จำการกด Jump ไว้ เพื่อกระโดดทันทีพอแตะพื้น ---
+            if (Input.GetButtonDown("Jump"))
+            {
+                jumpBufferCounter = jumpBufferTime;
+            }
+            else
+            {
+                jumpBufferCounter -= Time.deltaTime;
+            }
+
+            // --- ตรวจสอบการกระโดดด้วย Coyote Time + Jump Buffer ---
+            bool canCoyoteJump = coyoteTimeCounter > 0f;
+            if (jumpBufferCounter > 0f && (canCoyoteJump || isSwinging))
+            {
+                // กระโดดจากพื้น (หรือ coyote) — ไม่ใช่จากเชือก
+                if (canCoyoteJump && !isSwinging)
+                {
+                    isJumping = true;
+                }
+
+                // ป้องกัน double jump จาก coyote time
+                jumpBufferCounter = 0f;
+                coyoteTimeCounter = 0f;
+
+                // เล่นเสียงกระโดด (ทั้งจากพื้นและจากเชือก)
+                if (jumpSfx != null && audioSource != null)
+                {
+                    audioSource.PlayOneShot(jumpSfx, jumpSfxVolume);
+                }
             }
         }
 

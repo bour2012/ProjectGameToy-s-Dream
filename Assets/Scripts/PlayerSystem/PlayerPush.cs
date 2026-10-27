@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class PlayerPush : MonoBehaviour
@@ -33,6 +33,7 @@ public class PlayerPush : MonoBehaviour
     private GameObject targetBox;
     private GameObject availableBox;
     private bool isHolding = false;
+    public bool IsHolding => isHolding;
     private Rigidbody2D playerRb;
     private SpriteRenderer playerSprite;
     private PlayerController playerController;

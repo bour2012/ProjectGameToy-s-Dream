@@ -24,6 +24,10 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
     private float[] originalAnimSpeeds; // ใช้ Array เก็บค่าความเร็วเริ่มต้นของ Animator แต่ละตัว
     // ----------------------------------------
 
+    // Event & Property แจ้งเตือนสถานะไปยัง GlueSpot
+    public System.Action<bool> onStateChanged; // true = moving, false = slowed
+    public bool IsSlowed => isSlowed;
+
     private bool isSlowed = false;
     private float slowEndTime = 0f;
     private Coroutine mainSlowCoroutine;
@@ -35,7 +39,7 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
         currentSpeed = normalSpeed;
         col = GetComponent<Collider2D>();
 
-        // --- [อัปเดตใหม่] กวาดหา Animator ทั้งหมดในตัวลูกอัตโนมัติ ---
+        // --- กวาดหา Animator ทั้งหมดในตัวลูกอัตโนมัติ ---
         animators = GetComponentsInChildren<Animator>();
         originalAnimSpeeds = new float[animators.Length];
 
@@ -54,7 +58,7 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
         currentSpeed = 0f;
         isSlowed = true;
 
-        // --- [อัปเดตใหม่] สั่งลดความเร็ว Animator ทุกตัวพร้อมกัน ---
+        // สั่งลดความเร็ว Animator ทุกตัวพร้อมกัน
         for (int i = 0; i < animators.Length; i++)
         {
             if (animators[i] != null)
@@ -62,6 +66,8 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
                 animators[i].speed = slowAnimationSpeed;
             }
         }
+
+        onStateChanged?.Invoke(false);
     }
 
     public void OnGlueDetached()
@@ -69,7 +75,7 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
         currentSpeed = originalSpeed;
         isSlowed = false;
 
-        // --- [อัปเดตใหม่] คืนความเร็วเดิมให้ Animator ทุกตัวพร้อมกัน ---
+        // คืนความเร็วเดิมให้ Animator ทุกตัวพร้อมกัน
         for (int i = 0; i < animators.Length; i++)
         {
             if (animators[i] != null)
@@ -79,11 +85,24 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
         }
 
         ApplyPushToOverlapping();
+        onStateChanged?.Invoke(true);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (!isActive) return;
+
+        // ถ้าสายพานกำลังทำงาน (ไฟเขียว) และผู้เล่นอยู่บนสายพาน ให้ส่งแรงสายพานเข้าตัวผู้เล่น
+        if (currentSpeed > 0.01f)
+        {
+            PlayerMovement player = collision.gameObject.GetComponent<PlayerMovement>();
+            if (player != null)
+            {
+                player.ApplyConveyorVelocity(moveDirection.normalized.x * currentSpeed);
+                return;
+            }
+        }
+
         Rigidbody2D hitRb = collision.rigidbody;
         if (hitRb != null)
         {
