@@ -27,6 +27,7 @@ public class MovingSlidePlatform : MonoBehaviour, ISlowable
     // Event & Property แจ้งเตือนสถานะไปยัง GlueSpot
     public System.Action<bool> onStateChanged; // true = moving, false = slowed
     public bool IsSlowed => isSlowed;
+    public float RemainingSlowTime => isSlowed ? Mathf.Max(0f, slowEndTime - Time.time) : 0f;
 
     private bool isSlowed = false;
     private float slowEndTime = 0f;

@@ -2,42 +2,88 @@ using UnityEngine;
 
 public class GlueSpot : MonoBehaviour, ISlowable
 {
+    public enum LightPhase
+    {
+        Green,
+        Red,
+        Yellow
+    }
+
     [Header("Target Platform")]
     [Tooltip("สายพานที่ต้องการให้หยุด")]
     public MovingSlidePlatform targetPlatform;
     [Tooltip("สายพานตัวอื่นๆ ที่ต้องการให้หยุดพร้อมกัน (ถ้ามี)")]
     public MovingSlidePlatform[] additionalPlatforms;
 
-    [Header("Traffic Light Indicators (สัญญาณไฟจราจร)")]
-    [Tooltip("SpriteRenderer ของไฟเขียว")]
-    public SpriteRenderer greenLightRenderer;
-    [Tooltip("SpriteRenderer ของไฟแดง")]
-    public SpriteRenderer redLightRenderer;
+    [Header("Single Light Indicator (ดวงไฟสัญญาณเดี่ยว)")]
+    [Tooltip("SpriteRenderer ของดวงไฟสัญญาณ")]
+    public SpriteRenderer lightRenderer;
 
     [Space(5)]
-    [Tooltip("Sprite ไฟเขียวตอนเปิด (ถ้ามี)")]
-    public Sprite greenLightOnSprite;
-    [Tooltip("Sprite ไฟเขียวตอนปิด (ถ้ามี ถ้าไม่มีจะใช้สีเทา)")]
-    public Sprite greenLightOffSprite;
+    [Tooltip("Sprite ไฟเขียว (ถ้ามี)")]
+    public Sprite greenSprite;
+    [Tooltip("Sprite ไฟแดง (ถ้ามี)")]
+    public Sprite redSprite;
+    [Tooltip("Sprite ไฟเหลือง (ถ้ามี)")]
+    public Sprite yellowSprite;
 
-    [Tooltip("Sprite ไฟแดงตอนเปิด (ถ้ามี)")]
-    public Sprite redLightOnSprite;
-    [Tooltip("Sprite ไฟแดงตอนปิด (ถ้ามี ถ้าไม่มีจะใช้สีเทา)")]
-    public Sprite redLightOffSprite;
-
-    [Header("Traffic Light Colors (สีไฟจราจร)")]
+    [Header("Light Colors (สีไฟ 3 เฟส)")]
     public bool useColorFallback = true;
-    [Tooltip("สีไฟเขียวตอนติด (สว่าง)")]
-    public Color greenOnColor = new Color(0.1f, 1f, 0.1f, 1f);
-    [Tooltip("สีไฟเขียวตอนดับ (เทา)")]
-    public Color greenOffColor = new Color(0.25f, 0.25f, 0.25f, 1f);
+    [Tooltip("สีไฟเขียว (ปกติขณะสายพานเคลื่อนที่)")]
+    public Color greenColor = new Color(0.1f, 1f, 0.1f, 1f);
+    [Tooltip("สีไฟแดง (หยุดขณะโดนกาว)")]
+    public Color redColor = new Color(1f, 0.15f, 0.15f, 1f);
+    [Tooltip("สีไฟเหลือง (เตือนก่อนสายพานจะกลับมาขยับ)")]
+    public Color yellowColor = new Color(1f, 0.85f, 0.1f, 1f);
 
-    [Tooltip("สีไฟแดงตอนติด (สว่าง)")]
-    public Color redOnColor = new Color(1f, 0.15f, 0.15f, 1f);
-    [Tooltip("สีไฟแดงตอนดับ (เทา)")]
-    public Color redOffColor = new Color(0.25f, 0.25f, 0.25f, 1f);
+    [Header("Warning Duration (ระยะเวลาเตือนไฟเหลือง)")]
+    [Tooltip("เวลาก่อนที่สายพานจะกลับมาเดิน ที่จะเปลี่ยนเป็นสีเหลืองเตือน (วินาที)")]
+    public float yellowWarningDuration = 2f;
+
+    // --- ส่วนรองรับของเดิม (Backward Compatibility เพื่อไม่ให้ Reference ใน Inspector หลุด) ---
+    [HideInInspector] public SpriteRenderer greenLightRenderer;
+    [HideInInspector] public SpriteRenderer redLightRenderer;
+    [HideInInspector] public Sprite greenLightOnSprite;
+    [HideInInspector] public Sprite greenLightOffSprite;
+    [HideInInspector] public Sprite redLightOnSprite;
+    [HideInInspector] public Sprite redLightOffSprite;
+    [HideInInspector] public Color greenOnColor = new Color(0.1f, 1f, 0.1f, 1f);
+    [HideInInspector] public Color greenOffColor = new Color(0.25f, 0.25f, 0.25f, 1f);
+    [HideInInspector] public Color redOnColor = new Color(1f, 0.15f, 0.15f, 1f);
+    [HideInInspector] public Color redOffColor = new Color(0.25f, 0.25f, 0.25f, 1f);
 
     private bool isStopped = false;
+    private LightPhase currentPhase = LightPhase.Green;
+    private float internalSlowEndTime = 0f;
+
+    void Awake()
+    {
+        ResolveRenderer();
+    }
+
+    void OnValidate()
+    {
+        ResolveRenderer();
+    }
+
+    private void ResolveRenderer()
+    {
+        if (lightRenderer == null)
+        {
+            if (greenLightRenderer != null) lightRenderer = greenLightRenderer;
+            else if (redLightRenderer != null) lightRenderer = redLightRenderer;
+            else lightRenderer = GetComponent<SpriteRenderer>();
+        }
+
+        if (greenSprite == null && greenLightOnSprite != null) greenSprite = greenLightOnSprite;
+        if (redSprite == null && redLightOnSprite != null) redSprite = redLightOnSprite;
+
+        // ถ้ามี redLightRenderer แยกออกมาคนละตัวกับ lightRenderer ให้ปิดการแสดงผลเพื่อไม่ให้มีไฟ 2 ดวง
+        if (redLightRenderer != null && redLightRenderer != lightRenderer && Application.isPlaying)
+        {
+            redLightRenderer.enabled = false;
+        }
+    }
 
     void OnEnable()
     {
@@ -57,6 +103,7 @@ public class GlueSpot : MonoBehaviour, ISlowable
 
     void Start()
     {
+        ResolveRenderer();
         SyncStateWithPlatform();
         UpdateVisualIndicators();
     }
@@ -64,7 +111,6 @@ public class GlueSpot : MonoBehaviour, ISlowable
     void Update()
     {
         // ซิงค์สถานะไฟกับสายพานทุกเฟรม เพื่อให้ไฟตรงกับเวลาของสายพาน 100%
-        // แม้จะมีการยิงกาวซ้ำเพื่อเพิ่มเวลาก็ตาม
         SyncStateWithPlatform();
     }
 
@@ -88,17 +134,71 @@ public class GlueSpot : MonoBehaviour, ISlowable
             }
         }
 
-        if (isStopped != anySlowed)
+        isStopped = anySlowed;
+
+        // คำนวณเฟสของไฟ 3 สถานะ:
+        // 1. เขียว: สายพานเดินปกติ
+        // 2. แดง: โดนกาวหยุด
+        // 3. เหลือง: ใกล้จะหมดเวลาหยุด ก่อนจะกลับไปเป็นสีเขียว
+        LightPhase newPhase = LightPhase.Green;
+
+        if (isStopped)
         {
-            isStopped = anySlowed;
+            float remaining = GetRemainingSlowTime();
+            if (remaining > 0f && remaining <= yellowWarningDuration)
+            {
+                newPhase = LightPhase.Yellow;
+            }
+            else
+            {
+                newPhase = LightPhase.Red;
+            }
+        }
+        else
+        {
+            newPhase = LightPhase.Green;
+        }
+
+        if (newPhase != currentPhase)
+        {
+            currentPhase = newPhase;
             UpdateVisualIndicators();
         }
+    }
+
+    private float GetRemainingSlowTime()
+    {
+        float maxRemaining = 0f;
+
+        if (targetPlatform != null && targetPlatform.IsSlowed)
+        {
+            maxRemaining = Mathf.Max(maxRemaining, targetPlatform.RemainingSlowTime);
+        }
+
+        if (additionalPlatforms != null)
+        {
+            for (int i = 0; i < additionalPlatforms.Length; i++)
+            {
+                if (additionalPlatforms[i] != null && additionalPlatforms[i].IsSlowed)
+                {
+                    maxRemaining = Mathf.Max(maxRemaining, additionalPlatforms[i].RemainingSlowTime);
+                }
+            }
+        }
+
+        // Fallback กรณีไม่มี reference platform หรือคำนวณผ่าน internal timer
+        if (maxRemaining <= 0f && isStopped)
+        {
+            maxRemaining = Mathf.Max(0f, internalSlowEndTime - Time.time);
+        }
+
+        return maxRemaining;
     }
 
     private void OnPlatformStateChanged(bool isMoving)
     {
         isStopped = !isMoving;
-        UpdateVisualIndicators();
+        SyncStateWithPlatform();
     }
 
     public void ApplySlow(float slowAmount, float duration)
@@ -121,7 +221,9 @@ public class GlueSpot : MonoBehaviour, ISlowable
             }
         }
 
-        UpdateVisualIndicators();
+        // MovingSlidePlatform บวกเพิ่ม 2 วินาทีใน ApplySlow
+        internalSlowEndTime = Mathf.Max(internalSlowEndTime, Time.time) + duration + 2f;
+        SyncStateWithPlatform();
     }
 
     public void ApplyGradualSlow(float targetSlowAmount, float duration, float lerpTime)
@@ -132,43 +234,41 @@ public class GlueSpot : MonoBehaviour, ISlowable
     public void ResetSpot()
     {
         isStopped = false;
-        UpdateVisualIndicators();
+        internalSlowEndTime = 0f;
+        SyncStateWithPlatform();
     }
 
     public void UpdateVisualIndicators()
     {
-        // รูปแบบไฟจราจร: ติดสีเดียว อีกดวงดับเป็นสีเทา
-        // ขยับ (ปกติ) -> เขียวติด (สว่าง) / แดงดับ (สีเทา)
-        // หยุด (โดนกาว) -> เขียวดับ (สีเทา) / แดงติด (สว่าง)
-        bool greenOn = !isStopped;
-        bool redOn = isStopped;
-
-        if (greenLightRenderer != null)
+        if (lightRenderer == null)
         {
-            if (greenOn)
-            {
-                if (greenLightOnSprite != null) greenLightRenderer.sprite = greenLightOnSprite;
-                greenLightRenderer.color = (greenLightOnSprite != null && !useColorFallback) ? Color.white : greenOnColor;
-            }
-            else
-            {
-                if (greenLightOffSprite != null) greenLightRenderer.sprite = greenLightOffSprite;
-                greenLightRenderer.color = (greenLightOffSprite != null && !useColorFallback) ? Color.white : greenOffColor;
-            }
+            ResolveRenderer();
         }
 
-        if (redLightRenderer != null)
+        if (lightRenderer == null) return;
+
+        switch (currentPhase)
         {
-            if (redOn)
-            {
-                if (redLightOnSprite != null) redLightRenderer.sprite = redLightOnSprite;
-                redLightRenderer.color = (redLightOnSprite != null && !useColorFallback) ? Color.white : redOnColor;
-            }
-            else
-            {
-                if (redLightOffSprite != null) redLightRenderer.sprite = redLightOffSprite;
-                redLightRenderer.color = (redLightOffSprite != null && !useColorFallback) ? Color.white : redOffColor;
-            }
+            case LightPhase.Green:
+                if (greenSprite != null) lightRenderer.sprite = greenSprite;
+                lightRenderer.color = (greenSprite != null && !useColorFallback) ? Color.white : greenColor;
+                break;
+
+            case LightPhase.Yellow:
+                if (yellowSprite != null) lightRenderer.sprite = yellowSprite;
+                lightRenderer.color = (yellowSprite != null && !useColorFallback) ? Color.white : yellowColor;
+                break;
+
+            case LightPhase.Red:
+                if (redSprite != null) lightRenderer.sprite = redSprite;
+                lightRenderer.color = (redSprite != null && !useColorFallback) ? Color.white : redColor;
+                break;
+        }
+
+        // ปิดไฟแดงเดิม (ถ้ามีและไม่ใช่ดวงเดียวกับ lightRenderer)
+        if (redLightRenderer != null && redLightRenderer != lightRenderer && redLightRenderer.enabled)
+        {
+            redLightRenderer.enabled = false;
         }
     }
 }
