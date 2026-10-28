@@ -116,10 +116,10 @@ TextureImporter:
       name: Switch3_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 13
-        width: 1075
-        height: 1038
+        x: 0
+        y: 0
+        width: 2024
+        height: 2024
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a9ee0b0a8ae11a346892c27b3251ba1c
     internalID: 0
     vertices: []
     indices: 
@@ -146,7 +146,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":2024.0,"y":2024.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Switch3_0: 1636240934216283020
   mipmapLimitGroupName: 

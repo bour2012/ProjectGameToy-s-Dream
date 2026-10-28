@@ -125,7 +125,7 @@ public class PlatformController : MonoBehaviour
 
         if (isRotationMode)
         {
-            startRotation = platform.eulerAngles.z;
+            //startRotation = platform.eulerAngles.z;
             currentRotation = startRotation;
         }
         else

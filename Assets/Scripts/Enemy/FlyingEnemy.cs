@@ -155,7 +155,7 @@ public class FlyingEnemy : Enemy
             {
                 animator.SetBool("IsMoving", true);   // Walk
                 animator.SetBool("IsSpecial", false);
-                animator.SetBool("IsAttacking", false);
+                //animator.SetBool("IsAttacking", false);
             }
             rb.linearVelocity = Vector2.zero;
             return;
@@ -167,7 +167,7 @@ public class FlyingEnemy : Enemy
             if (animator != null)
             {
                 animator.SetBool("IsSpecial", false);
-                animator.SetBool("IsAttacking", false);
+                //animator.SetBool("IsAttacking", false);
             }
             return;
         }
