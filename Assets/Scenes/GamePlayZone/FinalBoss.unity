@@ -1874,7 +1874,7 @@ Transform:
   m_GameObject: {fileID: 77282606}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -143.61, y: -53.23, z: 0}
+  m_LocalPosition: {x: -144.26, y: -53.23, z: 0}
   m_LocalScale: {x: 0.56729996, y: 0.56729996, z: 0.56729996}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3513,6 +3513,7 @@ MonoBehaviour:
     m_Bits: 67136
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &129346817
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4001,6 +4002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 212ff02d381ce87479336dfd3494d5f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugSkipLevel: 0
   levels:
   - levelName: Level01
     preTransitionDialogs: []
@@ -11033,6 +11035,7 @@ MonoBehaviour:
     m_Bits: 591424
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &260041246
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12134,6 +12137,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 307618036}
@@ -18062,6 +18067,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 542230345}
@@ -30440,6 +30447,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 15841552}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 831814406}
@@ -37808,6 +37817,7 @@ MonoBehaviour:
     m_Bits: 33621568
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &943783900
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -37918,7 +37928,7 @@ Transform:
   m_GameObject: {fileID: 943783897}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -141.38, y: -54.16, z: 0}
+  m_LocalPosition: {x: -141.93, y: -54.16, z: 0}
   m_LocalScale: {x: 0.54335, y: 0.15813999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -38533,6 +38543,7 @@ MonoBehaviour:
     m_Bits: 33621568
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
+  deactivateSound: {fileID: 0}
 --- !u!61 &967577056
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -39203,6 +39214,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 990559512}
@@ -39889,6 +39902,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1011421579}
@@ -45748,13 +45763,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1075793691}
   pivotPosition: {x: 0, y: 0, z: 0}
   upPosition: {x: -137.7, y: -46.85, z: 0}
   downPosition: {x: -137.7, y: -54.76, z: 0}
-  speed: 2
+  speed: 1.5
   openRotationAngle: 0
   rotationSpeed: 50
   startRotation: 0
@@ -48560,6 +48577,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1187709231}
@@ -50082,9 +50101,9 @@ MonoBehaviour:
   godModeSpeed: 10
   defaultStartCheckpointID: 01
   defaultCheckpoint: {fileID: 0}
-  showCheckpointDebugInfo: 0
+  showCheckpointDebugInfo: 1
   resetToLastCheckpoint: 1
-  debugGameGM: 0
+  debugGameGM: 1
   currentState: 0
   player: {fileID: 0}
   playerMovement: {fileID: 0}
@@ -55418,6 +55437,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 1
   platformAnimator: {fileID: 2141605785}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1442909622}
@@ -57332,7 +57353,7 @@ Transform:
   m_GameObject: {fileID: 1505240624}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -143.55, y: -52.76, z: 0}
+  m_LocalPosition: {x: -144.2, y: -52.76, z: 0}
   m_LocalScale: {x: 0.3252, y: 0.3252, z: 0.3252}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -60067,6 +60088,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 1618909530}
@@ -73925,6 +73948,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAnimMode: 0
   platformAnimator: {fileID: 0}
+  useBoolParameter: 1
+  boolParamName: IsOpen
   activateTriggerName: Open
   deactivateTriggerName: Close
   platform: {fileID: 2007629951}

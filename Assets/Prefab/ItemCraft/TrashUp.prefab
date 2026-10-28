@@ -1052,6 +1052,8 @@ MonoBehaviour:
   useSpecificRespawnPoint: 0
   spawnHeightOffset: 1
   respawnTarget: {fileID: 0}
+  trackMovingPlatform: 1
+  movingPlatform: {fileID: 0}
   interactionDistance: 1.5
   playerLayer:
     serializedVersion: 2
@@ -1075,7 +1077,7 @@ MonoBehaviour:
     destroySound: {fileID: 0}
   - itemName: Doll
     prefab: {fileID: 5425856077105691806, guid: c881463e3b8f21148907247518990dd8, type: 3}
-    lifetime: 15
+    lifetime: 18
     requiredItemType: 1
     requiredAmount: 1
     canBePushed: 1
