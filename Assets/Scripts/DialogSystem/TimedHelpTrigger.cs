@@ -36,12 +36,11 @@ public class TimedHelpTrigger : MonoBehaviour
     /// </summary>
     public void StopHelpTimer()
     {
-        if (timerCoroutine != null)
-        {
+       
             Debug.Log("[TimedHelp] Stopping help timer because player succeeded.");
             StopCoroutine(timerCoroutine);
             timerCoroutine = null;
-        }
+        
     }
 
     // Coroutine ที่ทำงานนับเวลาถอยหลัง

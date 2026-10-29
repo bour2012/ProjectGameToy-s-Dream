@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Events;
 using System.Collections;
@@ -101,17 +101,79 @@ public class DialogTrigger : MonoBehaviour
     [Tooltip("ถ้ามี Dialog อื่นเล่นอยู่ จะให้ทำอย่างไร?")]
     public ConflictStrategy conflictStrategy = ConflictStrategy.Ignore;
 
+    [Header("Zone / Exit Settings (Optional)")]
+    [Tooltip("เริ่มพูดทันทีที่ผู้เล่นเดินชน TriggerEnter หรือไม่ (ค่าเริ่มต้น: True เหมือนเดิม ถ้าปิดไว้ จะใช้ Collider นี้เป็นแค่โซนตรวจจับให้อีเว้นอื่นเรียกใช้)")]
+    public bool triggerOnEnter = true;
+
+    [Tooltip("ต้องให้ผู้เล่นอยู่ใน Collider เท่านั้นถึงจะเริ่มเล่น Dialog ได้ (ถ้าอยู่นอกโซน แม้ Event จะสั่ง TriggerDialog ก็จะไม่ทำงาน)")]
+    public bool requirePlayerInside = false;
+
+    [Tooltip("ถ้าเดินออกจาก Collider ขณะที่บทพูดกำลังแสดงอยู่ ให้สั่งปิดบทพูดทันทีหรือไม่")]
+    public bool closeDialogOnExit = false;
+
     [Header("Events")]
     public UnityEvent onDialogComplete;
 
     private bool hasTriggered = false;
+    private bool isPlayerInside = false;
+    private int playerColliderCount = 0;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (IsPlayer(other))
         {
-            StartDialogSequence();
+            playerColliderCount++;
+            isPlayerInside = true;
+
+            if (triggerOnEnter)
+            {
+                StartDialogSequence();
+            }
         }
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (IsPlayer(other))
+        {
+            isPlayerInside = true;
+            if (playerColliderCount == 0)
+            {
+                playerColliderCount = 1;
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (IsPlayer(other))
+        {
+            playerColliderCount = Mathf.Max(0, playerColliderCount - 1);
+            if (playerColliderCount == 0)
+            {
+                isPlayerInside = false;
+
+                if (closeDialogOnExit && DialogManager.Instance != null && DialogManager.Instance.IsDialogActive)
+                {
+                    DialogManager.Instance.ForceStopDialog();
+                }
+            }
+        }
+    }
+
+    private void OnDisable()
+    {
+        playerColliderCount = 0;
+        isPlayerInside = false;
+    }
+
+    private bool IsPlayer(Collider2D other)
+    {
+        if (other == null) return false;
+        if (other.CompareTag("Player")) return true;
+        if (other.transform.root != null && other.transform.root.CompareTag("Player")) return true;
+        if (other.GetComponentInParent<PlayerMovement>() != null) return true;
+        return false;
     }
 
     public void TriggerDialog() => StartDialogSequence();
@@ -122,8 +184,18 @@ public class DialogTrigger : MonoBehaviour
     {
         if (rememberAcrossScenes && GameManager.Instance != null && GameManager.Instance.HasAlreadyPlayed(dialogID)) yield break;
         if (triggerOnce && hasTriggered) yield break;
+        if (requirePlayerInside && !isPlayerInside) yield break;
 
-        if (useDelay) yield return new WaitForSeconds(delay);
+        if (useDelay)
+        {
+            float elapsed = 0f;
+            while (elapsed < delay)
+            {
+                if (requirePlayerInside && !isPlayerInside) yield break;
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+        }
 
         if (dialogSequence == null || dialogSequence.Length == 0) yield break;
         if (DialogManager.Instance == null) yield break;
@@ -135,11 +207,6 @@ public class DialogTrigger : MonoBehaviour
                 case ConflictStrategy.Ignore:
                     yield break; // จบการทำงานไปเลย
 
-                //case ConflictStrategy.Wait:
-                //    // รอจนกว่า IsDialogActive จะเป็น false
-                //    yield return new WaitUntil(() => !DialogManager.Instance.IsDialogActive);
-                //    break;
-
                 case ConflictStrategy.Interrupt:
                     // สั่งหยุดอันเก่า
                     DialogManager.Instance.ForceStopDialog();
@@ -148,6 +215,8 @@ public class DialogTrigger : MonoBehaviour
                     break;
             }
         }
+
+        if (requirePlayerInside && !isPlayerInside) yield break;
 
         if (triggerOnce) hasTriggered = true;
 

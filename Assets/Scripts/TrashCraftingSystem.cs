@@ -32,6 +32,12 @@ public class TrashCraftingSystem : MonoBehaviour
     [Header("Craftable Items")]
     public CraftableItem[] craftableItems = new CraftableItem[2];
 
+    [Header("Lifetime Override Settings (กำหนดเวลาพิเศษ)")]
+    [Tooltip("ถ้าติ๊กถูก จะบังคับใช้ overrideLifetime แทนเวลาปกติของไอเทม")]
+    public bool useLifetimeOverride = false;
+    [Tooltip("เวลาของไอเทมที่คราฟต์เมื่อเปิดใช้ Override (เช่น 5 วินาที)")]
+    public float overrideLifetime = 5f;
+
     [Header("UI References")]
     public GameObject craftingUIContainer;
     public Transform iconHolder;
@@ -54,7 +60,19 @@ public class TrashCraftingSystem : MonoBehaviour
     public AudioClip craftCompleteSfx;
     [Range(0f,1f)] public float craftCompleteVolume = 1f;
 
+    [Header("Events")]
+    [Tooltip("เรียกเมื่อเริ่มทำการคราฟต์")]
     public UnityEvent onPickup;
+    [Tooltip("เรียกเมื่อคราฟต์เสร็จสมบูรณ์ (เหมือนกับ CompleteCrafting)")]
+    public UnityEvent onCraftCompleted;
+    [Tooltip("เรียกเมื่อของที่คราฟต์กลับมาเป็นกองขยะเสร็จสมบูรณ์")]
+    public UnityEvent onReturnToTrash;
+    [Tooltip("เรียกทันทีเมื่อของที่คราฟต์ถูกทำลาย / เริ่มต้นกลับมาเป็นขยะ")]
+    public UnityEvent onCraftedObjectDestroyed;
+
+    // C# Events สำหรับ Script ภายนอกที่ต้องการ Subscribe
+    public static System.Action<string> OnCraftCompleted;
+    public static System.Action<string> OnTrashReturned;
 
     // GameManager reference
     [HideInInspector] public GameManager gameManager;
@@ -499,6 +517,11 @@ public class TrashCraftingSystem : MonoBehaviour
     void CompleteCrafting()
     {
         UseItemForCrafting();
+
+        // แจ้ง Event onCraftCompleted ก่อน เพื่อให้การตั้งค่าต่างๆ (เช่น SetLifetimeTo5Seconds) มีผลกับวัตถุที่กำลังจะถูกสร้างทันที
+        onCraftCompleted?.Invoke();
+        OnCraftCompleted?.Invoke(trashId);
+
         CreateCraftedObject();
 
         // Restore original behavior: deactivate the trash GameObject; the new crafted object
@@ -574,7 +597,8 @@ public class TrashCraftingSystem : MonoBehaviour
             }
 
     
-            craftedComponent.Initialize(itemToCreate, this, craftingUIContainer, progressPanel, interactPrompt, returnKey, interactionDistance);
+            float effectiveLifetime = useLifetimeOverride ? overrideLifetime : -1f;
+            craftedComponent.Initialize(itemToCreate, this, craftingUIContainer, progressPanel, interactPrompt, returnKey, interactionDistance, effectiveLifetime);
 
         
             currentCraftedObject = craftedObj;
@@ -798,6 +822,75 @@ public class TrashCraftingSystem : MonoBehaviour
         return currentItemIndex < craftableItems.Length ? craftableItems[currentItemIndex] : null;
     }
 
+    #region Lifetime Override Methods
+
+    /// <summary>
+    /// สั่งเปลี่ยน lifetime ของทุกชิ้นที่คราฟต์จากกองนี้เป็น newLifetime (เช่น ถูกเรียกจาก Dialog หรือ Trigger ภายนอก)
+    /// </summary>
+    public void SetLifetimeOverride(float newLifetime)
+    {
+        useLifetimeOverride = true;
+        overrideLifetime = newLifetime;
+
+        // อัปเดต lifetime ของทุกไอเทมในกองนี้ด้วย เพื่อให้ค่าเปลี่ยนจริงในทุกส่วน
+        if (craftableItems != null)
+        {
+            foreach (var item in craftableItems)
+            {
+                if (item != null) item.lifetime = newLifetime;
+            }
+        }
+
+        // ถ้ามีของที่คราฟต์ออกไปแล้วอยู่ใน Scene ก็ให้อัปเดตเวลาด้วยทันที
+        ApplyLifetimeToActiveCraftedObject(newLifetime);
+
+        Debug.Log($"[{trashId}] Lifetime override enabled: {newLifetime} seconds.");
+    }
+
+    /// <summary>
+    /// เปิดใช้งาน Override ตามค่า overrideLifetime ที่ตั้งไว้ใน Inspector (ค่าเริ่มต้นคือ 5 วิ)
+    /// เหมาะสำหรับต่อกับ UnityEvent บน DialogTrigger / Inspector แบบไม่ต้องส่ง Parameter
+    /// </summary>
+    public void EnableLifetimeOverride()
+    {
+        SetLifetimeOverride(overrideLifetime);
+    }
+
+    /// <summary>
+    /// สั่งตั้งเวลาพิเศษเป็น 5 วินาทีทันที
+    /// เหมาะสำหรับต่อกับ UnityEvent ใน Inspector
+    /// </summary>
+    public void SetLifetimeTo5Seconds()
+    {
+        SetLifetimeOverride(5f);
+    }
+
+    /// <summary>
+    /// ปิดการ Override และกลับไปใช้เวลาปกติของแต่ละไอเทมตามเดิม
+    /// </summary>
+    public void DisableLifetimeOverride()
+    {
+        useLifetimeOverride = false;
+        Debug.Log($"[{trashId}] Lifetime override disabled, reverted to default item lifetime.");
+    }
+
+    /// <summary>
+    /// นำเวลาใหม่ไปใช้กับวัตถุที่กำลังแสดงอยู่ใน Scene ณ ตอนนี้ (ถ้ามี)
+    /// </summary>
+    private void ApplyLifetimeToActiveCraftedObject(float newLifetime)
+    {
+        if (currentCraftedObject != null)
+        {
+            CraftedObject craftedComp = currentCraftedObject.GetComponent<CraftedObject>();
+            if (craftedComp != null)
+            {
+                craftedComp.UpdateLifetime(newLifetime);
+            }
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// เรียกจาก CraftedObject เมื่อวัตถุถูกทำลายและต้องกลับมาเป็นกองขยะ
     /// </summary>
@@ -810,6 +903,11 @@ public class TrashCraftingSystem : MonoBehaviour
         {
             gameObject.SetActive(true);
         }
+
+        Debug.Log($"[{trashId}] OnCraftedObjectDestroyed invoked!");
+
+        // เรียก Event ทันทีที่ของที่คราฟต์ถูกทำลาย / เริ่มกระบวนการกลับมาเป็นขยะ
+        onCraftedObjectDestroyed?.Invoke();
 
         // รีเซ็ตหลอด Progress
         if (progressBar != null) progressBar.value = 0f;
@@ -907,6 +1005,10 @@ public class TrashCraftingSystem : MonoBehaviour
 
         // hide progress UI
         if (progressPanel != null) progressPanel.SetActive(false);
+
+        // เรียก Event เมื่อของที่คราฟต์กลับมาเป็นขยะเสร็จสมบูรณ์
+        onReturnToTrash?.Invoke();
+        OnTrashReturned?.Invoke(trashId);
 
         //Debug.Log($"Trash pile returned to position: {position}");
     }

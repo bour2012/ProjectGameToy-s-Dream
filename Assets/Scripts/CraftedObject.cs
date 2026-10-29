@@ -23,6 +23,7 @@ public class CraftedObject : MonoBehaviour
     // Data References
     private TrashCraftingSystem.CraftableItem itemData;
     private TrashCraftingSystem parentCraftingSystem;
+    private float activeLifetime;
 
     // Coroutines
     private Coroutine lifetimeCoroutine;
@@ -73,11 +74,12 @@ public class CraftedObject : MonoBehaviour
 
     public void Initialize(TrashCraftingSystem.CraftableItem data, TrashCraftingSystem craftingSystem,
         GameObject uiContainerRef = null, GameObject progressPanel = null, GameObject interactPrompt = null,
-        KeyCode returnKeyOverride = KeyCode.Q, float interactionDistanceOverride = 3f)
+        KeyCode returnKeyOverride = KeyCode.Q, float interactionDistanceOverride = 3f, float lifetimeOverride = -1f)
     {
         itemData = data;
         parentCraftingSystem = craftingSystem;
         currentHitPoints = data.maxHitPoints;
+        activeLifetime = (lifetimeOverride > 0f) ? lifetimeOverride : (data != null ? data.lifetime : 2f);
 
         returnKey = returnKeyOverride;
         interactionDistance = interactionDistanceOverride;
@@ -95,7 +97,7 @@ public class CraftedObject : MonoBehaviour
             StartLifetimeCountdown();
         }
 
-        if (showDebugInfo) Debug.Log($"CraftedObject initialized: {itemData.itemName}");
+        if (showDebugInfo) Debug.Log($"CraftedObject initialized: {itemData.itemName} (Lifetime: {activeLifetime}s)");
     }
 
     void Update()
@@ -235,6 +237,17 @@ public class CraftedObject : MonoBehaviour
 
     #region Lifetime & Visuals
 
+    public void UpdateLifetime(float newLifetime)
+    {
+        activeLifetime = newLifetime;
+        if (!isPossessed && gameObject.activeInHierarchy)
+        {
+            StopBlinkWarning();
+            StartLifetimeCountdown();
+            if (showDebugInfo) Debug.Log($"[{gameObject.name}] Lifetime updated to {newLifetime}s");
+        }
+    }
+
     void StartLifetimeCountdown()
     {
         if (lifetimeCoroutine != null) StopCoroutine(lifetimeCoroutine);
@@ -243,10 +256,10 @@ public class CraftedObject : MonoBehaviour
 
     IEnumerator LifetimeCountdown()
     {
-        float remainingTime = itemData.lifetime;
-        float warningTime = Mathf.Min(1f, itemData.lifetime * 0.3f);
+        float remainingTime = activeLifetime;
+        float warningTime = Mathf.Min(1f, activeLifetime * 0.3f);
 
-        yield return new WaitForSeconds(remainingTime - warningTime);
+        yield return new WaitForSeconds(Mathf.Max(0f, remainingTime - warningTime));
         StartBlinkWarning();
         yield return new WaitForSeconds(warningTime);
         ReturnToTrash();

@@ -42,7 +42,7 @@ public class PressurePlate : MonoBehaviour
             if (collidersOnPlate.Count == 0)
             {
                 if (platform != null) platform.Toggle(false); // ปิดแพลตฟอร์ม
-                Debug.Log("Pressure Plate Deactivated: Close");
+                //Debug.Log("Pressure Plate Deactivated: Close");
 
                 PlaySound(deactivateSound);
             }
