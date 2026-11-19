@@ -356,6 +356,47 @@ MonoBehaviour:
   m_OpenClipOffsetRotation: {x: 0, y: 0, z: 0, w: 1}
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
   m_ApplyOffsets: 0
+--- !u!114 &-6849340657970019360
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d21dcc2386d650c4597f3633c75a1f98, type: 3}
+  m_Name: Animation Track (9)
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_AnimClip: {fileID: 0}
+  m_Locked: 0
+  m_Muted: 0
+  m_CustomPlayableFullTypename: 
+  m_Curves: {fileID: 0}
+  m_Parent: {fileID: 11400000}
+  m_Children: []
+  m_Clips: []
+  m_Markers:
+    m_Objects: []
+  m_InfiniteClipPreExtrapolation: 1
+  m_InfiniteClipPostExtrapolation: 1
+  m_InfiniteClipOffsetPosition: {x: 0, y: 0, z: 0}
+  m_InfiniteClipOffsetEulerAngles: {x: 0, y: 0, z: 0}
+  m_InfiniteClipTimeOffset: 0
+  m_InfiniteClipRemoveOffset: 0
+  m_InfiniteClipApplyFootIK: 1
+  mInfiniteClipLoop: 0
+  m_MatchTargetFields: 63
+  m_Position: {x: 0, y: 0, z: 0}
+  m_EulerAngles: {x: 0, y: 0, z: 0}
+  m_AvatarMask: {fileID: 0}
+  m_ApplyAvatarMask: 1
+  m_TrackOffset: 0
+  m_InfiniteClip: {fileID: 6024295429140680033}
+  m_OpenClipOffsetRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_Rotation: {x: 0, y: 0, z: 0, w: 1}
+  m_ApplyOffsets: 0
 --- !u!74 &-6589634612146462569
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -853,6 +894,7 @@ MonoBehaviour:
   - {fileID: 1479705410678031799}
   - {fileID: 1646309720542232390}
   - {fileID: 214835054085626217}
+  - {fileID: -6849340657970019360}
   - {fileID: 4789810044963832089}
   - {fileID: -532899036637828897}
   m_FixedDuration: 0
@@ -1773,11 +1815,11 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: 6786174358254676657}
-    m_Duration: 27.585306122448973
+    m_Duration: 51.45
     m_TimeScale: 1
     m_ParentTrack: {fileID: 4789810044963832089}
     m_EaseInDuration: 4.28549952760034
-    m_EaseOutDuration: 2.971681594848633
+    m_EaseOutDuration: 6.14
     m_BlendInDuration: -1
     m_BlendOutDuration: -1
     m_MixInCurve:
@@ -1785,19 +1827,19 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 2
-        outSlope: 2
-        tangentMode: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -1810,8 +1852,8 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: -2
+        outSlope: -2
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
@@ -1819,8 +1861,8 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: 0
-        outSlope: 0
+        inSlope: -0
+        outSlope: -0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
@@ -1829,7 +1871,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_BlendInCurveMode: 1
-    m_BlendOutCurveMode: 0
+    m_BlendOutCurveMode: 1
     m_ExposedParameterNames: []
     m_AnimationCurves: {fileID: 0}
     m_Recordable: 0
@@ -1844,6 +1886,126 @@ MonoBehaviour:
     volume: 1
     stereoPan: 0
     spatialBlend: 0
+--- !u!74 &6024295429140680033
+AnimationClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Recorded (8)
+  serializedVersion: 7
+  m_Legacy: 0
+  m_Compressed: 0
+  m_UseHighQualityCurve: 1
+  m_RotationCurves: []
+  m_CompressedRotationCurves: []
+  m_EulerCurves: []
+  m_PositionCurves: []
+  m_ScaleCurves: []
+  m_FloatCurves:
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 33.433334
+        value: -1145
+        inSlope: 298.26407
+        outSlope: 298.26407
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 50.966667
+        value: 4859
+        inSlope: 330.59616
+        outSlope: 330.59616
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.87424487
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_AnchoredPosition.y
+    path: 
+    classID: 224
+    script: {fileID: 0}
+    flags: 0
+  m_PPtrCurves: []
+  m_SampleRate: 60
+  m_WrapMode: 0
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_ClipBindingConstant:
+    genericBindings:
+    - serializedVersion: 2
+      path: 0
+      attribute: 538195251
+      script: {fileID: 0}
+      typeID: 224
+      customType: 28
+      isPPtrCurve: 0
+      isIntCurve: 0
+      isSerializeReferenceCurve: 0
+    pptrCurveMapping: []
+  m_AnimationClipSettings:
+    serializedVersion: 2
+    m_AdditiveReferencePoseClip: {fileID: 0}
+    m_AdditiveReferencePoseTime: 0
+    m_StartTime: 0
+    m_StopTime: 50.966667
+    m_OrientationOffsetY: 0
+    m_Level: 0
+    m_CycleOffset: 0
+    m_HasAdditiveReferencePose: 0
+    m_LoopTime: 0
+    m_LoopBlend: 0
+    m_LoopBlendOrientation: 0
+    m_LoopBlendPositionY: 0
+    m_LoopBlendPositionXZ: 0
+    m_KeepOriginalOrientation: 0
+    m_KeepOriginalPositionY: 1
+    m_KeepOriginalPositionXZ: 0
+    m_HeightFromFeet: 0
+    m_Mirror: 0
+  m_EditorCurves:
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 33.433334
+        value: -1145
+        inSlope: 298.26407
+        outSlope: 298.26407
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 1
+      - serializedVersion: 3
+        time: 50.966667
+        value: 4859
+        inSlope: 330.59616
+        outSlope: 330.59616
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.87424487
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_AnchoredPosition.y
+    path: 
+    classID: 224
+    script: {fileID: 0}
+    flags: 0
+  m_EulerEditorCurves: []
+  m_HasGenericRootTransform: 0
+  m_HasMotionFloatCurves: 0
+  m_Events: []
 --- !u!114 &6662038563732022291
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1897,11 +2059,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f10dd60657c6004587f237a7e90f8e4, type: 3}
   m_Name: AudioPlayableAsset
   m_EditorClassIdentifier: 
-  m_Clip: {fileID: 8300000, guid: bd331113d65c48346bf23f66fad94d98, type: 3}
+  m_Clip: {fileID: 8300000, guid: 41da9888577a4294ea3d37435e0572f6, type: 3}
   m_Loop: 1
   m_bufferingTime: 0.1
   m_ClipProperties:
-    volume: 0.08
+    volume: 0.1
 --- !u!114 &7405817244942448959
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1914,7 +2076,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
   m_Name: Signal Emitter
   m_EditorClassIdentifier: 
-  m_Time: 34.15
+  m_Time: 51.21666666666667
   m_Retroactive: 0
   m_EmitOnce: 0
   m_Asset: {fileID: 11400000, guid: 14448a6291c52324d834c10d76bc9cc7, type: 2}

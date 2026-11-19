@@ -437,7 +437,7 @@ public class TrashCraftingSystem : MonoBehaviour
             int itemCount = ItemManager.Instance.GetItemCount(currentItem.requiredItemType);
             if (itemCount < currentItem.requiredAmount)
             {
-           
+                PlayerItemAudioFeedback.Instance?.PlayOutOfItemSound(currentItem.requiredItemType);
                 return;
             }
         }
@@ -896,6 +896,16 @@ public class TrashCraftingSystem : MonoBehaviour
     /// </summary>
     public void OnCraftedObjectDestroyed(Vector3 position)
     {
+        // หากผู้เล่นกำลังจับ/ลากวัตถุที่คราฟต์อยู่ตอนที่มันพัง ให้สั่งหยุดผลักทันที
+        if (player != null && currentCraftedObject != null)
+        {
+            PlayerPush playerPush = player.GetComponent<PlayerPush>();
+            if (playerPush != null && playerPush.IsHolding && playerPush.GetCurrentPushTarget() == currentCraftedObject)
+            {
+                playerPush.ForceStopPushing();
+            }
+        }
+
         currentCraftedObject = null;
 
         // ทำให้กองขยะ Active กลับมาก่อนเพื่อให้ StartCoroutine ทำงานได้

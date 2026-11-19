@@ -14,6 +14,8 @@ public class GlueShooting : MonoBehaviour
     public float projectileSpeed = 15f;
     public float maxShootingRange = 20f;
     public float shootCooldown = 1f;
+    [Tooltip("ปุ่มสำหรับกดสลับไอเทม (ค่าเริ่มต้นคือ Tab)")]
+    [SerializeField] private KeyCode switchItemKey = KeyCode.Tab;
 
     [Header("Trajectory Preview")]
     public LineRenderer trajectoryLine;
@@ -196,6 +198,14 @@ public class GlueShooting : MonoBehaviour
 
     private void HandleItemSwitching()
     {
+        // สลับไอเทมด้วยปุ่ม Tab (หรือปุ่มที่ตั้งค่าไว้ใน Inspector)
+        if (Input.GetKeyDown(KeyCode.Tab) || (switchItemKey != KeyCode.None && Input.GetKeyDown(switchItemKey)))
+        {
+            SwitchItem(true);
+            return;
+        }
+
+        // สลับไอเทมด้วย Scroll Wheel เมาส์ (ของเดิม)
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.01f)
         {
@@ -286,9 +296,23 @@ public class GlueShooting : MonoBehaviour
 
     private void HandleGlueAiming()
     {
-        if (selectedItem != ItemManager.ItemType.Glue || (ItemManager.Instance != null && !ItemManager.Instance.HasItem(ItemManager.ItemType.Glue)))
+        bool hasGlue = ItemManager.Instance == null || ItemManager.Instance.HasItem(ItemManager.ItemType.Glue);
+
+        if (selectedItem != ItemManager.ItemType.Glue || !hasGlue)
         {
             HideAiming();
+
+            // แจ้งเตือนเสียงเมื่อผู้เล่นพยายามเล็งหรือยิงตอนกาวหมด
+            if (selectedItem == ItemManager.ItemType.Glue && !hasGlue)
+            {
+                if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0))
+                {
+                    if (!IsMouseOverSubBubble())
+                    {
+                        PlayerItemAudioFeedback.Instance?.PlayOutOfItemSound(ItemManager.ItemType.Glue);
+                    }
+                }
+            }
             return;
         }
 
@@ -390,6 +414,7 @@ public class GlueShooting : MonoBehaviour
         if (ItemManager.Instance != null && !ItemManager.Instance.UseItem(ItemManager.ItemType.Glue))
         {
             Debug.LogWarning("Failed to use glue");
+            PlayerItemAudioFeedback.Instance?.PlayOutOfItemSound(ItemManager.ItemType.Glue);
             return;
         }
 

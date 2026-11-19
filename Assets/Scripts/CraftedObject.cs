@@ -341,6 +341,7 @@ public class CraftedObject : MonoBehaviour
     public void ReturnToTrash()
     {
         TogglePromptUI(false);
+        StopPlayerPushIfAttached();
 
         if (itemData.destroyEffect) Instantiate(itemData.destroyEffect, transform.position, transform.rotation);
         if (itemData.destroySound && parentCraftingSystem != null)
@@ -358,6 +359,19 @@ public class CraftedObject : MonoBehaviour
     {
         StopAllCoroutines();
         ReturnToTrash();
+    }
+
+    private void StopPlayerPushIfAttached()
+    {
+        FixedJoint2D joint = GetComponent<FixedJoint2D>();
+        if (joint != null && joint.connectedBody != null)
+        {
+            PlayerPush playerPush = joint.connectedBody.GetComponent<PlayerPush>();
+            if (playerPush != null && playerPush.GetCurrentPushTarget() == gameObject)
+            {
+                playerPush.ForceStopPushing();
+            }
+        }
     }
 
     #endregion
@@ -382,6 +396,7 @@ public class CraftedObject : MonoBehaviour
     void OnDestroy()
     {
         StopAllCoroutines();
+        StopPlayerPushIfAttached();
         if (interactPromptRef != null && isPlayerNear)
         {
             interactPromptRef.SetActive(false);

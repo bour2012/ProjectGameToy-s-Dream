@@ -11163,11 +11163,11 @@ AudioSource:
   m_GameObject: {fileID: 719445224}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
-  m_Resource: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
+  OutputAudioMixerGroup: {fileID: 1661298218731311874, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 237be3c2bd5a8084dacf2bc618049e7b, type: 3}
+  m_Resource: {fileID: 8300000, guid: 237be3c2bd5a8084dacf2bc618049e7b, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -11264,7 +11264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgmAudioSource: {fileID: 719445225}
-  sceneBGM: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
+  sceneBGM: {fileID: 8300000, guid: 237be3c2bd5a8084dacf2bc618049e7b, type: 3}
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 01
@@ -29072,6 +29072,8 @@ MonoBehaviour:
   dialogCamera: {fileID: 0}
   dialogCameraPriority: 100
   cameraMovementThreshold: 0.01
+  resetCameraOnDialogEnd: 1
+  cameraResetDelay: 1
   useTypewriterEffect: 1
   typewriterSpeed: 0.015
 --- !u!114 &1653006902
@@ -29224,6 +29226,7 @@ MonoBehaviour:
   projectileSpeed: 8
   maxShootingRange: 10
   shootCooldown: 1.5
+  switchItemKey: 9
   trajectoryLine: {fileID: 1297375967}
   trajectoryAimFactor: 1
   trajectoryPoints: 20
@@ -29244,6 +29247,7 @@ MonoBehaviour:
   audioMixerGroup: {fileID: 0}
   mainSlotIcon: {fileID: 0}
   mainSlotText: {fileID: 0}
+  subBubbleRect: {fileID: 0}
   subSlotIcon: {fileID: 0}
   subSlotText: {fileID: 0}
   glueSprite: {fileID: 0}
@@ -29304,6 +29308,15 @@ MonoBehaviour:
     m_Bits: 8192
   ropeMaxCastDistance: 4
   ropeStandardDistance: 1.8
+  enableAimAssist: 1
+  snapToHookCenter: 1
+  snapMaxAngle: 75
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  crosshairNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  crosshairHighlightColor: {r: 0, g: 1, b: 0, a: 1}
+  snapCrosshairToTarget: 1
   respectGameManagerState: 1
   swingStartSound: {fileID: 0}
   audioSource: {fileID: 0}
@@ -29347,6 +29360,8 @@ MonoBehaviour:
   airControl: 0.5
   maxAirSpeed: 2
   swingForce: 4
+  coyoteTime: 0.12
+  jumpBufferTime: 0.15
   stompCheck: {fileID: 1520771037}
   groundLayer:
     serializedVersion: 2
@@ -29373,6 +29388,8 @@ MonoBehaviour:
   jumpSfx: {fileID: 0}
   jumpSfxVolume: 1
   walkSfx: {fileID: 0}
+  climbSfx: {fileID: 0}
+  climbSfxVolume: 1
   audioMixerGroup: {fileID: 0}
   isSwinging: 0
   ropeHook: {x: 0, y: 0}

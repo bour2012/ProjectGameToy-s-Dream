@@ -53,7 +53,7 @@ public class SceneButtonSound : MonoBehaviour
                 plate.audioSource = localAudioSource;
                 plate.activateSound = pressurePlateSound;
             }
-            Debug.Log($"�����������§���������º������ {allPlates.Length} �ѹ���º����!");
+            //Debug.Log($"�����������§���������º������ {allPlates.Length} �ѹ���º����!");
         }
 
         if (leverToggleSound != null)
@@ -67,7 +67,7 @@ public class SceneButtonSound : MonoBehaviour
                 lever.audioSource = localAudioSource;
                 lever.toggleSound = leverToggleSound;
             }
-            Debug.Log($"�����������§���ѹ�¡������ {allLevers.Length} �ѹ���º����!");
+            //Debug.Log($"�����������§���ѹ�¡������ {allLevers.Length} �ѹ���º����!");
         }
     }
 }

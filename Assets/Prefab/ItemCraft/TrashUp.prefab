@@ -60,7 +60,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: -1801414243
+  m_SortingLayerID: -1858882953
   m_SortingOrder: 14
   m_TargetDisplay: 0
 --- !u!114 &2674478554568836351
@@ -1114,6 +1114,8 @@ MonoBehaviour:
     destroyEffect: {fileID: 265766274217486953, guid: 92072c862e751bf4dad748129cb56883, type: 3}
     spawnSound: {fileID: 0}
     destroySound: {fileID: 0}
+  useLifetimeOverride: 0
+  overrideLifetime: 5
   craftingUIContainer: {fileID: 797132539339368269}
   iconHolder: {fileID: 2917660981205205867}
   itemIcons:
@@ -1131,6 +1133,15 @@ MonoBehaviour:
   craftCompleteSfx: {fileID: 8300000, guid: 66c3a9d68d3cc42489c9cecf2b0773df, type: 3}
   craftCompleteVolume: 1
   onPickup:
+    m_PersistentCalls:
+      m_Calls: []
+  onCraftCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  onReturnToTrash:
+    m_PersistentCalls:
+      m_Calls: []
+  onCraftedObjectDestroyed:
     m_PersistentCalls:
       m_Calls: []
   gameManager: {fileID: 0}

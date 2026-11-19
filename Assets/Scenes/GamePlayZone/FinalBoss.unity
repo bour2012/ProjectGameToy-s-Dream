@@ -2103,6 +2103,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 0
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -15683,6 +15686,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls:
@@ -36460,6 +36466,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls:
@@ -49995,7 +50004,7 @@ AudioSource:
   m_GameObject: {fileID: 1243119096}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 1661298218731311874, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -50096,7 +50105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgmAudioSource: {fileID: 1243119098}
-  sceneBGM: {fileID: 8300000, guid: 8d5645ac9b4bcdc429492636d2ada284, type: 3}
+  sceneBGM: {fileID: 8300000, guid: e56b4e29d848d3041900f3eebc69c180, type: 3}
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 01
@@ -56271,6 +56280,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 0
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -62127,6 +62139,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls:
@@ -65512,6 +65527,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls:
@@ -75004,6 +75022,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls:

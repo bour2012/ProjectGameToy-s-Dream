@@ -45786,6 +45786,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -47498,6 +47501,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls:
@@ -47778,9 +47784,9 @@ AudioSource:
   m_GameObject: {fileID: 1846221059}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
-  m_Resource: {fileID: 8300000, guid: 301ace4dfdc2c10488ad08a86b35d69c, type: 3}
+  OutputAudioMixerGroup: {fileID: 1661298218731311874, guid: c7c6d146f6d2bd64b872f00bd3ac2950, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 237be3c2bd5a8084dacf2bc618049e7b, type: 3}
+  m_Resource: {fileID: 8300000, guid: 237be3c2bd5a8084dacf2bc618049e7b, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.08
   m_Pitch: 1

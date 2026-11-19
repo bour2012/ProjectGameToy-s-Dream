@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using TMPro;
 using Unity.Cinemachine;
 using Unity.VisualScripting;
@@ -45,6 +45,7 @@ public class DialogManager : MonoBehaviour
 
     private Coroutine typewriterCoroutine;
     private Coroutine cameraResetCoroutine;
+    private Coroutine endDialogCoroutine;
 
     private DialogTrigger currentOriginator;
     private DialogData[] currentSequence;
@@ -98,7 +99,7 @@ public class DialogManager : MonoBehaviour
 
         if (!isDialogActive) return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
             StopAutoAdvance();
             if (isTyping)
@@ -122,6 +123,7 @@ public class DialogManager : MonoBehaviour
         if (autoAdvanceCoroutine != null) StopCoroutine(autoAdvanceCoroutine);
 
         if (cameraResetCoroutine != null) StopCoroutine(cameraResetCoroutine);
+        if (endDialogCoroutine != null) StopCoroutine(endDialogCoroutine);
 
         isDialogActive = false;
         isTyping = false;
@@ -160,6 +162,12 @@ public class DialogManager : MonoBehaviour
         {
             StopCoroutine(cameraResetCoroutine);
             cameraResetCoroutine = null;
+        }
+
+        if (endDialogCoroutine != null)
+        {
+            StopCoroutine(endDialogCoroutine);
+            endDialogCoroutine = null;
         }
 
         currentOriginator = originator;
@@ -425,8 +433,17 @@ public class DialogManager : MonoBehaviour
 
         CleanupCameraState(false);
 
+        if (endDialogCoroutine != null) StopCoroutine(endDialogCoroutine);
+        endDialogCoroutine = StartCoroutine(EndDialogRoutine());
+    }
+
+    private IEnumerator EndDialogRoutine()
+    {
+        // หน่วงเวลา 1 เฟรม เพื่อไม่ให้ Input (เช่น Spacebar) ในเฟรมที่จบบทสนทนา ทะลุไปสั่งให้ Player กระโดด
+        yield return null;
         if (GameManager.Instance != null) GameManager.Instance.EndDialogState();
         currentOriginator?.InvokeCompletionEvent();
+        endDialogCoroutine = null;
     }
 
     // ---------------------------------------------------------

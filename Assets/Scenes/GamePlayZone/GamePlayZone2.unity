@@ -2373,6 +2373,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -3339,6 +3342,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -4185,6 +4191,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -13760,6 +13769,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -24220,6 +24232,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -31586,6 +31601,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -40040,6 +40058,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -53088,6 +53109,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -64238,6 +64262,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -130409,6 +130436,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -132266,6 +132296,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -136068,6 +136101,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 2.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -141644,7 +141680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bgmAudioSource: {fileID: 1243119098}
-  sceneBGM: {fileID: 8300000, guid: c6d4be27035c6664eaf6edb51e269d49, type: 3}
+  sceneBGM: {fileID: 8300000, guid: 2f0e821aaed4c064d9f15a8ba1fc93ba, type: 3}
   godModeKey: 291
   godModeSpeed: 10
   defaultStartCheckpointID: 01
@@ -179588,6 +179624,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 4
   conflictStrategy: 0
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -191546,6 +191585,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -199786,6 +199828,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -200081,6 +200126,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -221173,6 +221221,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -230383,6 +230434,9 @@ MonoBehaviour:
   autoAdvance: 1
   autoAdvanceDelay: 3.5
   conflictStrategy: 1
+  triggerOnEnter: 1
+  requirePlayerInside: 0
+  closeDialogOnExit: 0
   onDialogComplete:
     m_PersistentCalls:
       m_Calls: []

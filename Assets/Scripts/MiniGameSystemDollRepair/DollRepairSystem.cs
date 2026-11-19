@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -393,7 +393,7 @@ public class DollRepairSystem : MonoBehaviour
             if (itemCount <= 0)
             {
                 Debug.Log($"Cannot repair - no {requiredItem} available (remaining: {itemCount})");
-                // อาจจะแสดง UI แจ้งเตือนที่นี่
+                PlayerItemAudioFeedback.Instance?.PlayOutOfItemSound(requiredItem);
                 return;
             }
         }

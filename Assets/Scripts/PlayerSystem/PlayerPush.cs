@@ -509,17 +509,6 @@ public class PlayerPush : MonoBehaviour
                 joint.connectedBody = null;
             }
 
-            // หยุดเสียงลากเมื่อปล่อย
-            if (audioSource != null)
-            {
-                // หยุดเฉพาะถ้าเป็นคลิปลากปัจจุบัน
-                if (audioSource.isPlaying && audioSource.clip == grabSound)
-                {
-                    audioSource.Stop();
-                    audioSource.loop = false;
-                    audioSource.clip = null;
-                }
-            }
             Debug.Log($"[Push Debug] Successfully stopped pushing: {targetBox.name}");
         }
         else
@@ -530,6 +519,9 @@ public class PlayerPush : MonoBehaviour
 
         // --- ส่วนนี้จะทำงานเสมอ ไม่ว่ากล่องจะอยู่หรือไม่ ---
         // เพื่อรีเซ็ตสถานะของ "ผู้เล่น" กลับสู่ปกติ
+
+        // หยุดเสียงลากเสมอ ไม่ว่าจะปล่อยกล่องปกติ หรือกล่องพัง/หายไป
+        StopGrabAudio();
 
         // 1. แจ้ง GameManager ว่าหยุดดันของ
         if (gameManager != null)
@@ -585,6 +577,19 @@ public class PlayerPush : MonoBehaviour
         if (audioSource != null && clip != null)
         {
             audioSource.PlayOneShot(clip);
+        }
+    }
+
+    void StopGrabAudio()
+    {
+        if (audioSource != null)
+        {
+            if (audioSource.isPlaying && audioSource.clip == grabSound)
+            {
+                audioSource.Stop();
+                audioSource.loop = false;
+                audioSource.clip = null;
+            }
         }
     }
 
@@ -689,6 +694,7 @@ public class PlayerPush : MonoBehaviour
 
     void OnDisable()
     {
+        StopGrabAudio();
         if (GameManager.OnGameStateChanged != null)
             GameManager.OnGameStateChanged -= OnGameStateChanged;
     }
